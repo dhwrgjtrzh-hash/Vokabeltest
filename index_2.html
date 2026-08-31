@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vokabeltest Unit 1</title>
+<style>
+:root{--paper:#F4F2F6;--surface:#FFF;--surface2:#EDE9F1;--ink:#221E28;--soft:#5C5566;--faint:#8A8393;--line:#DCD6E2;--strong:#C4BCCC;--accent:#6D2E6B;--accentsoft:#F3E7F2;--accentink:#FFF;--good:#17734F;--goodbg:#E4F1EA;--half:#9C6608;--halfbg:#FBEEDA;--wrong:#A93A34;--wrongbg:#F8E6E4;--focus:#2F6FB5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#17131B;--surface:#211C27;--surface2:#2A2431;--ink:#EDE7F1;--soft:#B6ADBF;--faint:#8B8295;--line:#372F41;--strong:#4A4155;--accent:#D49FD0;--accentsoft:#3A2B3D;--accentink:#1A141D;--good:#6FD3A6;--goodbg:#1C3A2E;--half:#E8B564;--halfbg:#3B2F1A;--wrong:#EE9189;--wrongbg:#3D2320;--focus:#7FB3EA}}
+:root[data-theme="dark"]{--paper:#17131B;--surface:#211C27;--surface2:#2A2431;--ink:#EDE7F1;--soft:#B6ADBF;--faint:#8B8295;--line:#372F41;--strong:#4A4155;--accent:#D49FD0;--accentsoft:#3A2B3D;--accentink:#1A141D;--good:#6FD3A6;--goodbg:#1C3A2E;--half:#E8B564;--halfbg:#3B2F1A;--wrong:#EE9189;--wrongbg:#3D2320;--focus:#7FB3EA}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.55}
+h1,h2{margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wrap{width:min(100% - 2rem,66rem);margin-inline:auto}
+.eyebrow{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accentink);padding:.7em 1.4em;border-radius:10px;font-weight:600}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{padding:.45em .9em;font-size:.82rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.linkish{background:none;border:0;color:var(--faint);font-size:.82rem;text-decoration:underline;padding:.3em 0}
+.linkish:hover{color:var(--accent)}
+.pane{display:flex;flex-direction:column;gap:1.5rem;padding:clamp(2rem,7vh,5rem) 0 2rem}
+h1{font-size:2.6rem;letter-spacing:-.02em}
+.lead{color:var(--soft);max-width:38rem;font-size:1.15rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.3rem}
+.card.narrow{max-width:42rem}
+.card ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+.card li{display:flex;gap:.7rem;align-items:baseline}
+.pt{font-family:ui-monospace,"Courier New",monospace;font-weight:700;font-size:.8rem;padding:.1em .5em;border-radius:99px;white-space:nowrap;background:var(--accentsoft);color:var(--accent)}
+.pt.good{background:var(--goodbg);color:var(--good)}
+.pt.half{background:var(--halfbg);color:var(--half)}
+.pt.wrong{background:var(--wrongbg);color:var(--wrong)}
+.row{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end}
+label{display:block;font-size:.82rem;color:var(--soft);margin-bottom:.3rem;font-weight:700}
+input[type=text],input[type=password]{font-family:ui-monospace,"Courier New",monospace;font-size:1rem;padding:.62em .8em;border:1px solid var(--strong);border-radius:10px;background:var(--surface);color:var(--ink);width:100%}
+input::placeholder{color:var(--faint)}
+.f-name{flex:1 1 16rem}.f-class{flex:0 1 9rem}
+.check{display:flex;align-items:center;gap:.5rem;color:var(--soft);font-size:.82rem}
+.check input{width:1.1rem;height:1.1rem;accent-color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:.7rem 0}
+.bar-in{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.who{font-weight:700}
+.count{color:var(--soft);font-family:ui-monospace,monospace;font-size:.82rem}
+.spacer{margin-left:auto}
+.prog{height:4px;background:var(--accentsoft);border-radius:99px;overflow:hidden;flex:1 1 8rem;min-width:6rem}
+.prog i{display:block;height:100%;width:0;background:var(--accent)}
+.list{display:grid;gap:.4rem;padding:1.6rem 0 4rem}
+.q{display:grid;grid-template-columns:2.2rem minmax(10rem,1fr) minmax(12rem,1.1fr);gap:.9rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem}
+.q .n{font-family:ui-monospace,monospace;color:var(--faint);font-size:.82rem}
+@media (max-width:38rem){.q{grid-template-columns:2rem 1fr}.q input{grid-column:2}}
+.handin{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;background:var(--accentsoft);border:1px solid var(--line);border-radius:10px;padding:.9rem 1.1rem}
+.handin .txt{color:var(--soft);font-size:.82rem;flex:1 1 18rem}
+.score{display:flex;flex-wrap:wrap;gap:1.4rem 2.4rem;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.3rem 1.4rem;margin-top:1.4rem}
+.score .big{font-size:2.6rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.score .sub{color:var(--soft);font-size:.82rem}
+.score .cell{display:grid;gap:.25rem}
+.tally{display:flex;gap:.4rem;flex-wrap:wrap}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+td.num,th.num{text-align:right;font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums}
+tr.klick:hover td{background:var(--surface2);cursor:pointer}
+td.chev{color:var(--faint);text-align:right;width:1.5rem}
+.fail{color:var(--wrong);font-weight:700}
+.tablewrap{overflow-x:auto}
+.grid2{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));margin-top:1.2rem}
+.rows{display:grid;gap:.35rem;padding:.6rem 0 2rem}
+.r{display:grid;grid-template-columns:2.2rem minmax(8rem,.9fr) minmax(9rem,1fr) minmax(9rem,1fr) auto;gap:.9rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--strong);border-radius:10px;padding:.5rem .7rem}
+.r.good{border-left-color:var(--good)}.r.half{border-left-color:var(--half)}.r.wrong{border-left-color:var(--wrong)}
+.r .n{font-family:ui-monospace,monospace;color:var(--faint);font-size:.82rem}
+.r .de{font-size:.82rem;color:var(--soft);line-height:1.3}
+.r .ans,.r .sol{font-family:ui-monospace,monospace;font-size:.82rem;word-break:break-word}
+.r .ans.good{color:var(--good)}.r .ans.half{color:var(--half)}.r .ans.wrong{color:var(--wrong)}
+.r .sol{color:var(--soft)}
+.r .note{display:block;font-family:inherit;color:var(--faint);font-size:.75rem}
+.marks{display:flex;gap:.25rem}
+.mark{font-family:ui-monospace,monospace;font-size:.82rem;font-weight:700;border:1px solid var(--strong);background:transparent;color:var(--soft);border-radius:6px;width:2.1rem;height:2rem;display:grid;place-items:center}
+.mark[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+@media (max-width:52rem){.r{grid-template-columns:2rem 1fr auto}.r .sol{grid-column:2/span 2}}
+.ws{display:grid;grid-template-columns:1.7rem minmax(6rem,1fr) 8rem 3.4rem;gap:.7rem;align-items:center;font-size:.82rem;margin-bottom:.3rem}
+.ws .en{font-family:ui-monospace,monospace;word-break:break-word}
+.ws .bar3{display:flex;height:9px;border-radius:99px;overflow:hidden;background:var(--surface2)}
+.ws .bar3 span{display:block;height:100%}
+.ws .s1{background:var(--good)}.ws .sh{background:var(--half)}.ws .s0{background:var(--wrong)}
+.ws .val{text-align:right;font-family:ui-monospace,monospace;color:var(--soft)}
+.msg{font-size:.82rem;color:var(--accent);min-height:1.4em}
+.empty{color:var(--faint);font-size:.82rem}
+@page{margin:14mm 12mm}
+@media print{
+:root:not([data-theme="never"]),:root[data-theme="dark"]:not([data-theme="never"]){--paper:#FFF;--surface:#FFF;--surface2:#F1F1F3;--ink:#15131A;--soft:#4A4552;--faint:#6E6877;--line:#C9C4D0;--strong:#A9A2B3;--accent:#5B2A5A;--accentsoft:#F3E7F2;--good:#0F5F41;--goodbg:#E6F2EC;--half:#8A5A06;--halfbg:#FAEFDC;--wrong:#93302B;--wrongbg:#F8E7E5}
+.bar,.mark,.no-print,.handin{display:none!important}
+body{background:#fff}
+.r,.score,.card,tr{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<main>
+
+<!-- ================= START ================= -->
+<section id="s-start" class="wrap pane">
+  <div>
+    <p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Class vocabulary</p>
+    <h1>Vokabeltest<br>The way we live</h1>
+  </div>
+  <p class="lead">Du siehst 10 deutsche Wörter. Schreibe zu jedem das englische Wort. Du bekommst keine Rückmeldung &ndash; die Auswertung macht deine Lehrperson.</p>
+  <div class="card narrow">
+    <ul>
+      <li><span class="pt good">1 P.</span><span>Das Wort ist richtig geschrieben.</span></li>
+      <li><span class="pt half">½ P.</span><span>Das Wort klingt richtig, hat aber einen Schreibfehler.</span></li>
+      <li><span class="pt wrong">0 P.</span><span>Das Wort fehlt oder ist ein anderes Wort.</span></li>
+    </ul>
+  </div>
+  <div class="row">
+    <div class="f-name"><label for="f-name">Dein Name</label><input type="text" id="f-name" autocomplete="off" placeholder="Vorname Nachname"></div>
+    <div class="f-class"><label for="f-class">Klasse</label><input type="text" id="f-class" autocomplete="off" placeholder="6a"></div>
+    <button class="btn" id="b-start">Test starten</button>
+  </div>
+  <label class="check"><input type="checkbox" id="f-shuffle"> Wörter in zufälliger Reihenfolge</label>
+  <p style="margin-top:1.5rem"><button class="linkish" id="b-teacher">Lehrperson</button></p>
+</section>
+
+<!-- ================= TEST ================= -->
+<section id="s-test" hidden>
+  <div class="bar"><div class="wrap bar-in">
+    <span class="who" id="b-who"></span>
+    <span class="count" id="b-count">0 / 10</span>
+    <span class="prog"><i id="b-fill"></i></span>
+    <span class="spacer"></span>
+    <button class="btn" id="b-submit">Abgeben</button>
+  </div></div>
+  <div class="wrap"><div class="list" id="list"></div></div>
+</section>
+
+<!-- ================= ABGEGEBEN ================= -->
+<section id="s-done" hidden>
+  <div class="wrap pane">
+    <div><p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Vokabeln</p><h1 style="font-size:2rem" id="d-who">Danke!</h1></div>
+    <p class="lead">Dein Test ist abgegeben. Die Auswertung bekommt deine Lehrperson.</p>
+    <div class="handin">
+      <span class="txt" id="d-txt">Deine Antworten sind gespeichert.</span>
+      <button class="btn small" id="b-file" hidden>Abgabe-Datei speichern</button>
+    </div>
+    <div class="row"><button class="btn" id="b-done">Fertig</button></div>
+  </div>
+</section>
+
+<!-- ================= KLASSENÜBERSICHT ================= -->
+<section id="s-class" hidden>
+  <div class="bar no-print"><div class="wrap bar-in">
+    <span class="who">Klassenübersicht</span>
+    <span class="count" id="c-count"></span>
+    <span class="spacer"></span>
+    <button class="btn ghost small" id="b-reload">Neu laden</button>
+    <button class="btn ghost small" id="b-cprint">Drucken</button>
+    <button class="btn ghost small" id="b-cclose">Schliessen</button>
+  </div></div>
+  <div class="wrap pane" style="padding-top:1.4rem">
+    <div><p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Vokabeln</p><h2 style="font-size:1.5rem">Abgaben der Klasse</h2></div>
+    <div class="score">
+      <div class="cell"><span class="big" id="c-n">0</span><span class="sub">Abgaben</span></div>
+      <div class="cell"><span class="big" id="c-avg">–</span><span class="sub" id="c-max">Ø Punkte</span></div>
+      <div class="cell"><span class="big" id="c-note">–</span><span class="sub">Ø Notenvorschlag</span></div>
+      <div class="cell"><span class="big" id="c-pass">–</span><span class="sub">Note 4 und besser</span></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2 style="font-size:1.18rem;margin-bottom:.5rem">Kinder</h2>
+        <p class="empty" id="c-empty" hidden>Noch keine Abgaben.</p>
+        <div class="tablewrap"><table><thead><tr><th>Name</th><th>Klasse</th><th>Datum</th><th class="num">Punkte</th><th class="num">Note</th><th></th></tr></thead><tbody id="c-rows"></tbody></table></div>
+        <p class="empty no-print" style="padding-top:.5rem">Zeile anklicken &rarr; alle Antworten des Kindes, korrigierbar.</p>
+        <p class="msg no-print" id="c-msg"></p>
+      </div>
+      <div class="card">
+        <h2 style="font-size:1.18rem;margin-bottom:.2rem">Welche Wörter machen Mühe?</h2>
+        <p class="empty" style="margin-bottom:.6rem">Schwierigste zuerst &ndash; grün ganz, gelb halb, rot falsch.</p>
+        <div id="c-words"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BLATT EINES KINDES ================= -->
+<section id="s-sheet" hidden>
+  <div class="bar no-print"><div class="wrap bar-in">
+    <span class="who">Auswertung</span>
+    <span class="spacer"></span>
+    <button class="btn ghost small" id="b-back">Zurück zur Klassenliste</button>
+    <button class="btn ghost small" id="b-sprint">Drucken / als PDF</button>
+  </div></div>
+  <div class="wrap pane" style="padding-top:1.4rem">
+    <div><p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Vokabeln</p><h2 style="font-size:1.5rem" id="s-who">&nbsp;</h2></div>
+    <div class="score">
+      <div class="cell"><span class="big" id="s-points">0</span><span class="sub" id="s-max">von 10 Punkten</span></div>
+      <div class="cell"><span class="big" id="s-note">–</span><span class="sub">Notenvorschlag (linear)</span></div>
+      <div class="cell"><span class="big" id="s-pct">0%</span><span class="sub">erreicht</span></div>
+      <div class="cell"><span class="tally" id="s-tally"></span><span class="sub">Verteilung</span></div>
+    </div>
+    <p class="empty no-print">Bewertung ändern mit <strong>1 &middot; ½ &middot; 0</strong> &ndash; wird in der Tabelle gespeichert.</p>
+    <div class="rows" id="s-rows"></div>
+    <p class="msg no-print" id="s-msg"></p>
+  </div>
+</section>
+
+</main>
+<script>
+/* Adresse der Google-Tabelle, die Abgaben entgegennimmt und korrigiert. */
+var ENDPOINT = "https://script.google.com/macros/s/AKfycbzGZ7m6sMQvwdIcMgtvwLEpBxS8aeTUVxO8I6XtOqhAa5X_zFk1yJv5KaxOzQNUe5q7/exec";
+
+var WOERTER = ["Konfitüre","Orangenmarmelade","Spiegeleier / hart gekochte Eier / Rühreier","Speck","Wurst",
+"Bohnen in Tomatensauce","Honig","Beere","eine Schüssel/Schale Haferbrei","ein Laib Brot"];
+
+var KEY = "yw4-u1-abgaben";
+var $ = function (id) { return document.getElementById(id); };
+var order = [], answers = [], kind = {}, last = null;
+var code = "", klasse = [], aktuell = null;
+var panes = { start: $("s-start"), test: $("s-test"), done: $("s-done"), klasse: $("s-class"), blatt: $("s-sheet") };
+
+function show(name) { for (var k in panes) panes[k].hidden = k !== name; window.scrollTo(0, 0); }
+function speicher() { try { var r = localStorage.getItem(KEY); return r ? (JSON.parse(r).abgaben || []) : []; } catch (e) { return []; } }
+function merken(liste) { try { localStorage.setItem(KEY, JSON.stringify({ v: 2, abgaben: liste })); return true; } catch (e) { return false; } }
+function slug(s) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") || "Kind"; }
+function datum(iso) { var d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" }); }
+function zahl(p) { var g = Math.floor(p); return (p - g === 0.5) ? (g ? g + "½" : "½") : String(g); }
+function stufe(p) { return p === 1 ? "good" : p === 0.5 ? "half" : "wrong"; }
+
+/* ================= Test ================= */
+$("b-start").addEventListener("click", start);
+$("f-name").addEventListener("keydown", function (e) { if (e.key === "Enter") start(); });
+$("f-class").addEventListener("keydown", function (e) { if (e.key === "Enter") start(); });
+
+function start() {
+  var name = $("f-name").value.trim();
+  if (!name) { $("f-name").focus(); $("f-name").placeholder = "Bitte Namen eintragen"; return; }
+  kind = { name: name, klasse: $("f-class").value.trim(), start: new Date() };
+  order = WOERTER.map(function (_, i) { return i; });
+  if ($("f-shuffle").checked) {
+    for (var i = order.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = order[i]; order[i] = order[j]; order[j] = t; }
+  }
+  answers = order.map(function () { return ""; });
+  var liste = $("list");
+  liste.textContent = "";
+  order.forEach(function (wi, pos) {
+    var zeile = document.createElement("div"); zeile.className = "q";
+    var n = document.createElement("span"); n.className = "n"; n.textContent = ("0" + (pos + 1)).slice(-2);
+    var de = document.createElement("label"); de.textContent = WOERTER[wi]; de.setAttribute("for", "in-" + pos);
+    var inp = document.createElement("input");
+    inp.type = "text"; inp.id = "in-" + pos; inp.placeholder = "English";
+    inp.setAttribute("autocomplete", "off"); inp.setAttribute("autocorrect", "off");
+    inp.setAttribute("autocapitalize", "off"); inp.spellcheck = false;
+    inp.addEventListener("input", function () { answers[pos] = inp.value; zaehler(); });
+    inp.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      var next = $("in-" + (pos + 1));
+      if (next) { next.focus(); next.scrollIntoView({ block: "center", behavior: "smooth" }); } else { $("b-submit").focus(); }
+    });
+    zeile.appendChild(n); zeile.appendChild(de); zeile.appendChild(inp);
+    liste.appendChild(zeile);
+  });
+  $("b-who").textContent = kind.klasse ? kind.name + " · " + kind.klasse : kind.name;
+  zaehler(); show("test");
+  var erstes = $("in-0"); if (erstes) erstes.focus();
+  window.addEventListener("beforeunload", warnen);
+}
+function warnen(e) { e.preventDefault(); e.returnValue = ""; }
+function zaehler() {
+  var fertig = answers.filter(function (a) { return a.trim(); }).length;
+  $("b-count").textContent = fertig + " / " + WOERTER.length;
+  $("b-fill").style.width = (fertig / WOERTER.length * 100) + "%";
+}
+
+$("b-submit").addEventListener("click", function () {
+  var leer = answers.map(function (a, i) { return a.trim() ? 0 : i + 1; }).filter(Boolean);
+  var frage = "Test abgeben?";
+  if (leer.length === 1) frage = "Nr. " + leer[0] + " ist noch leer – wirklich abgeben?";
+  else if (leer.length > 1) frage = "Noch leer: Nr. " + leer.slice(0, -1).join(", ") + " und " + leer[leer.length - 1] + " – wirklich abgeben?";
+  if (!window.confirm(frage)) return;
+  window.removeEventListener("beforeunload", warnen);
+  last = {
+    typ: "yw4-unit1-abgabe", v: 2,
+    name: kind.name, klasse: kind.klasse, datum: (kind.start || new Date()).toISOString(),
+    max: WOERTER.length,
+    antworten: order.map(function (wi, pos) { return { i: wi, deutsch: WOERTER[wi], antwort: answers[pos].trim() }; })
+  };
+  var alle = speicher(); alle.push(last); merken(alle);
+  $("d-who").textContent = "Danke, " + kind.name.split(" ")[0] + "!";
+  $("b-file").hidden = true;
+  show("done");
+  senden(last);
+});
+
+function gutgegangen(text) {
+  try { return JSON.parse(text).ok === true; } catch (e) { return /"ok"\s*:\s*true/.test(text || ""); }
+}
+
+function senden(rec) {
+  $("d-txt").textContent = "Wird an die Lehrperson geschickt …";
+  fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) })
+    .then(function (r) { if (!r.ok) throw new Error("Status " + r.status); return r.text(); })
+    .then(function (t) {
+      if (!gutgegangen(t)) throw new Error("abgelehnt");
+      $("d-txt").textContent = "Abgegeben ✓ Deine Antworten sind bei der Lehrperson angekommen.";
+    })
+    .catch(function () {
+      $("d-txt").textContent = "Konnte nicht gesendet werden – deine Antworten sind auf diesem Computer gespeichert. Bitte die Abgabe-Datei speichern und der Lehrperson geben.";
+      $("b-file").hidden = false;
+    });
+}
+
+$("b-file").addEventListener("click", function () {
+  if (!last) return;
+  try {
+    var url = URL.createObjectURL(new Blob([JSON.stringify(last, null, 1)], { type: "application/json" }));
+    var a = document.createElement("a");
+    a.href = url; a.download = "Abgabe_" + slug(last.name) + ".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    $("d-txt").textContent = "Abgabe-Datei gespeichert – bitte so abgeben, wie ihr das sonst auch macht.";
+  } catch (e) {
+    $("d-txt").textContent = "Das Speichern hat nicht geklappt – bitte der Lehrperson Bescheid sagen.";
+  }
+});
+
+$("b-done").addEventListener("click", function () {
+  $("f-name").value = ""; $("f-class").value = ""; $("f-name").placeholder = "Vorname Nachname";
+  last = null; show("start"); $("f-name").focus();
+});
+
+/* ================= Lehrperson ================= */
+$("b-teacher").addEventListener("click", function () {
+  var eingabe = window.prompt("Passwort der Lehrperson:");
+  if (eingabe === null) return;
+  code = eingabe.trim();
+  laden(true);
+});
+$("b-reload").addEventListener("click", function () { laden(false); });
+$("b-cclose").addEventListener("click", function () { klasse = []; code = ""; show("start"); });
+$("b-cprint").addEventListener("click", function () { window.print(); });
+$("b-sprint").addEventListener("click", function () { window.print(); });
+$("b-back").addEventListener("click", function () { zeigeKlasse(); show("klasse"); });
+
+function abrufen() {
+  return new Promise(function (fertig, fehler) {
+    var name = "yw4cb" + Date.now();
+    var skript = document.createElement("script");
+    var erledigt = false;
+    window[name] = function (daten) { erledigt = true; delete window[name]; skript.remove(); fertig(daten); };
+    skript.onerror = function () { if (!erledigt) { delete window[name]; skript.remove(); fehler(new Error("nicht erreichbar")); } };
+    skript.src = ENDPOINT + "?abgaben=1&code=" + encodeURIComponent(code) + "&callback=" + name;
+    document.head.appendChild(skript);
+    setTimeout(function () { if (!erledigt) { delete window[name]; skript.remove(); fehler(new Error("Zeitüberschreitung")); } }, 20000);
+  });
+}
+
+function laden(neuOeffnen) {
+  var knopf = $("b-teacher");
+  if (neuOeffnen) { knopf.disabled = true; knopf.textContent = "lädt …"; }
+  else { $("c-msg").textContent = "Hole die Abgaben …"; }
+
+  function fertig() { knopf.disabled = false; knopf.textContent = "Lehrperson"; }
+
+  abrufen().then(function (daten) {
+    fertig();
+    if (!daten || !daten.ok) {
+      var text = (daten && daten.fehler) || "Die Tabelle antwortet nicht.";
+      if (neuOeffnen) { window.alert(text); } else { $("c-msg").textContent = text; }
+      return;
+    }
+    klasse = daten.abgaben || [];
+    zeigeKlasse();
+    if (neuOeffnen) show("klasse");
+    $("c-msg").textContent = klasse.length ? "" : "Es sind noch keine Abgaben da.";
+  }).catch(function (e) {
+    fertig();
+    var text = "Die Tabelle antwortet nicht (" + e.message + ").";
+    if (neuOeffnen) { window.alert(text); } else { $("c-msg").textContent = text; }
+  });
+}
+
+function summe(rec) { return rec.entries.reduce(function (a, e) { return a + e.punkte; }, 0); }
+function note(rec) { return Math.round((1 + 5 * summe(rec) / (rec.max || rec.entries.length)) * 10) / 10; }
+
+function zeigeKlasse() {
+  var liste = klasse.slice().sort(function (a, b) { return (a.name || "").localeCompare(b.name || "", "de"); });
+  $("c-count").textContent = liste.length + (liste.length === 1 ? " Abgabe" : " Abgaben");
+  $("c-empty").hidden = liste.length > 0;
+  var max = liste.length ? (liste[0].max || 10) : 10;
+  $("c-max").textContent = "Ø Punkte von " + max;
+  var punkte = liste.map(summe), noten = liste.map(note);
+  var mittel = punkte.length ? punkte.reduce(function (a, b) { return a + b; }, 0) / punkte.length : 0;
+  var mnote = noten.length ? noten.reduce(function (a, b) { return a + b; }, 0) / noten.length : 0;
+  $("c-n").textContent = String(liste.length);
+  $("c-avg").textContent = liste.length ? (Math.round(mittel * 10) / 10).toFixed(1) : "–";
+  $("c-note").textContent = liste.length ? mnote.toFixed(1) : "–";
+  $("c-pass").textContent = liste.length ? noten.filter(function (n) { return n >= 4; }).length + " / " + liste.length : "–";
+
+  var tb = $("c-rows"); tb.textContent = "";
+  liste.forEach(function (rec) {
+    var tr = document.createElement("tr"); tr.className = "klick";
+    var n = note(rec);
+    [[rec.name, ""], [rec.klasse || "", ""], [datum(rec.datum), ""],
+     [zahl(summe(rec)) + " / " + (rec.max || rec.entries.length), "num"],
+     [n.toFixed(1), "num" + (n < 4 ? " fail" : "")]].forEach(function (z) {
+      var td = document.createElement("td"); if (z[1]) td.className = z[1]; td.textContent = z[0]; tr.appendChild(td);
+    });
+    var chev = document.createElement("td"); chev.className = "chev"; chev.textContent = "›"; tr.appendChild(chev);
+    tr.addEventListener("click", function () { zeigeBlatt(rec); });
+    tb.appendChild(tr);
+  });
+
+  /* Wort-Statistik */
+  var stat = {};
+  liste.forEach(function (rec) {
+    rec.entries.forEach(function (e) {
+      var s = stat[e.i] || (stat[e.i] = { en: e.loesung, n: 0, sum: 0, g: 0, h: 0, f: 0 });
+      s.n++; s.sum += e.punkte;
+      if (e.punkte === 1) s.g++; else if (e.punkte === 0.5) s.h++; else s.f++;
+    });
+  });
+  var box = $("c-words"); box.textContent = "";
+  var werte = Object.keys(stat).map(function (k) { return stat[k]; }).sort(function (a, b) { return a.sum / a.n - b.sum / b.n; });
+  if (!werte.length) { var p = document.createElement("p"); p.className = "empty"; p.textContent = "Sobald Abgaben da sind, siehst du hier die schwierigsten Wörter."; box.appendChild(p); }
+  werte.forEach(function (s, idx) {
+    var zeile = document.createElement("div"); zeile.className = "ws";
+    var n = document.createElement("span"); n.className = "val"; n.textContent = String(idx + 1);
+    var en = document.createElement("span"); en.className = "en"; en.textContent = s.en;
+    var bar = document.createElement("span"); bar.className = "bar3";
+    [["s1", s.g], ["sh", s.h], ["s0", s.f]].forEach(function (t) {
+      if (!t[1]) return;
+      var seg = document.createElement("span"); seg.className = t[0]; seg.style.width = (t[1] / s.n * 100) + "%"; bar.appendChild(seg);
+    });
+    var val = document.createElement("span"); val.className = "val"; val.textContent = Math.round(s.sum / s.n * 100) + "%";
+    zeile.appendChild(n); zeile.appendChild(en); zeile.appendChild(bar); zeile.appendChild(val);
+    box.appendChild(zeile);
+  });
+}
+
+function zeigeBlatt(rec) {
+  aktuell = rec;
+  $("s-who").textContent = rec.name + (rec.klasse ? ", Klasse " + rec.klasse : "") + " · " + datum(rec.datum);
+  $("s-max").textContent = "von " + (rec.max || rec.entries.length) + " Punkten";
+  var box = $("s-rows"); box.textContent = "";
+  rec.entries.forEach(function (e, idx) {
+    var zeile = document.createElement("div"); zeile.className = "r " + stufe(e.punkte);
+    var n = document.createElement("span"); n.className = "n"; n.textContent = ("0" + (idx + 1)).slice(-2);
+    var de = document.createElement("span"); de.className = "de"; de.textContent = e.deutsch;
+    var ans = document.createElement("span"); ans.className = "ans " + stufe(e.punkte);
+    ans.textContent = e.antwort || "—";
+    var hin = document.createElement("span"); hin.className = "note";
+    hin.textContent = e.hinweis || (e.antwort ? "" : "nichts geschrieben");
+    ans.appendChild(hin);
+    var sol = document.createElement("span"); sol.className = "sol"; sol.textContent = e.loesung;
+    var marks = document.createElement("span"); marks.className = "marks";
+    [1, 0.5, 0].forEach(function (v) {
+      var b = document.createElement("button");
+      b.className = "mark"; b.type = "button"; b.textContent = v === 0.5 ? "½" : String(v);
+      b.setAttribute("aria-pressed", String(e.punkte === v));
+      b.addEventListener("click", function () {
+        e.punkte = v;
+        zeile.className = "r " + stufe(v); ans.className = "ans " + stufe(v);
+        marks.querySelectorAll(".mark").forEach(function (x, k) { x.setAttribute("aria-pressed", String([1, 0.5, 0][k] === v)); });
+        kopf();
+        korrigieren(rec, e.i, v);
+      });
+      marks.appendChild(b);
+    });
+    zeile.appendChild(n); zeile.appendChild(de); zeile.appendChild(ans); zeile.appendChild(sol); zeile.appendChild(marks);
+    box.appendChild(zeile);
+  });
+  kopf();
+  $("s-msg").textContent = "";
+  show("blatt");
+
+  function kopf() {
+    var s = summe(rec), max = rec.max || rec.entries.length;
+    $("s-points").textContent = zahl(s);
+    $("s-note").textContent = note(rec).toFixed(1);
+    $("s-pct").textContent = Math.round(s / max * 100) + "%";
+    var t = { good: 0, half: 0, wrong: 0 };
+    rec.entries.forEach(function (e) { t[stufe(e.punkte)]++; });
+    var tally = $("s-tally"); tally.textContent = "";
+    [["good", t.good + "× ganz"], ["half", t.half + "× halb"], ["wrong", t.wrong + "× falsch"]].forEach(function (p) {
+      var sp = document.createElement("span"); sp.className = "pt " + p[0]; sp.textContent = p[1]; tally.appendChild(sp);
+    });
+  }
+}
+
+function korrigieren(rec, i, punkte) {
+  $("s-msg").textContent = "Speichere die Korrektur …";
+  fetch(ENDPOINT, {
+    method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ typ: "korrektur", code: code, id: rec.id, i: i, punkte: punkte })
+  })
+    .then(function (r) { return r.text(); })
+    .then(function (t) {
+      $("s-msg").textContent = gutgegangen(t)
+        ? "Korrektur gespeichert."
+        : "Korrektur konnte nicht gespeichert werden – sie gilt nur in dieser Ansicht.";
+    })
+    .catch(function () { $("s-msg").textContent = "Korrektur konnte nicht gespeichert werden – sie gilt nur in dieser Ansicht."; });
+}
+</script>
+</body>
+</html>
