@@ -108,7 +108,7 @@ body{background:#fff}
     <p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Class vocabulary</p>
     <h1>Vokabeltest<br>The way we live</h1>
   </div>
-  <p class="lead">Du siehst 10 deutsche Wörter. Schreibe zu jedem das englische Wort. Du bekommst keine Rückmeldung &ndash; die Auswertung macht deine Lehrperson.</p>
+  <p class="lead">Du bearbeitest alle 40 Vokabeleinträge der Unit 1. Schreibe zu jedem das englische Wort. Du bekommst keine Rückmeldung &ndash; die Auswertung macht deine Lehrperson.</p>
   <div class="card narrow">
     <ul>
       <li><span class="pt good">1 P.</span><span>Das Wort ist richtig geschrieben.</span></li>
@@ -129,7 +129,7 @@ body{background:#fff}
 <section id="s-test" hidden>
   <div class="bar"><div class="wrap bar-in">
     <span class="who" id="b-who"></span>
-    <span class="count" id="b-count">0 / 10</span>
+    <span class="count" id="b-count">0 / 40</span>
     <span class="prog"><i id="b-fill"></i></span>
     <span class="spacer"></span>
     <button class="btn" id="b-submit">Abgeben</button>
@@ -196,7 +196,7 @@ body{background:#fff}
   <div class="wrap pane" style="padding-top:1.4rem">
     <div><p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Vokabeln</p><h2 style="font-size:1.5rem" id="s-who">&nbsp;</h2></div>
     <div class="score">
-      <div class="cell"><span class="big" id="s-points">0</span><span class="sub" id="s-max">von 10 Punkten</span></div>
+      <div class="cell"><span class="big" id="s-points">0</span><span class="sub" id="s-max">von 40 Punkten</span></div>
       <div class="cell"><span class="big" id="s-note">–</span><span class="sub">Notenvorschlag (linear)</span></div>
       <div class="cell"><span class="big" id="s-pct">0%</span><span class="sub">erreicht</span></div>
       <div class="cell"><span class="tally" id="s-tally"></span><span class="sub">Verteilung</span></div>
@@ -212,8 +212,48 @@ body{background:#fff}
 /* Adresse der Google-Tabelle, die Abgaben entgegennimmt und korrigiert. */
 var ENDPOINT = "https://script.google.com/macros/s/AKfycbzGZ7m6sMQvwdIcMgtvwLEpBxS8aeTUVxO8I6XtOqhAa5X_zFk1yJv5KaxOzQNUe5q7/exec";
 
-var WOERTER = ["Konfitüre","Orangenmarmelade","Spiegeleier / hart gekochte Eier / Rühreier","Speck","Wurst",
-"Bohnen in Tomatensauce","Honig","Beere","eine Schüssel/Schale Haferbrei","ein Laib Brot"];
+var WOERTER = [
+  "Konfitüre",
+  "Orangenmarmelade",
+  "Spiegeleier / hart gekochte Eier / Rühreier",
+  "Speck",
+  "Wurst",
+  "Bohnen in Tomatensauce",
+  "Honig",
+  "Beere",
+  "eine Schüssel/Schale Haferbrei",
+  "ein Laib Brot",
+  "ein Glas Milch",
+  "eine Schachtel Frühstücksflocken",
+  "eine Scheibe Käse",
+  "eine Packung Aufschnitt",
+  "zum Frühstück essen",
+  "zu besonderen Anlässen",
+  "immer",
+  "oft, häufig",
+  "gewöhnlich, normalerweise",
+  "manchmal",
+  "nie",
+  "Molkereiprodukte",
+  "Fleisch",
+  "verarbeitetes Nahrungsmittel",
+  "wie viel/viele",
+  "Lebensmittelverschwendung",
+  "Kompost",
+  "Mülleimer, Abfalleimer",
+  "regional, aus der Region",
+  "saisonal, der Jahreszeit entsprechend",
+  "in der Nähe",
+  "weit weg",
+  "wächst / wächst nicht in/im",
+  "weniger heizen",
+  "wiederverwenden",
+  "Energie sparen",
+  "recyceln, wiederverwerten",
+  "wegwerfen",
+  "verschenken",
+  "abgepackte Portionen"
+];
 
 var KEY = "yw4-u1-abgaben";
 var $ = function (id) { return document.getElementById(id); };
@@ -390,7 +430,7 @@ function zeigeKlasse() {
   var liste = klasse.slice().sort(function (a, b) { return (a.name || "").localeCompare(b.name || "", "de"); });
   $("c-count").textContent = liste.length + (liste.length === 1 ? " Abgabe" : " Abgaben");
   $("c-empty").hidden = liste.length > 0;
-  var max = liste.length ? (liste[0].max || 10) : 10;
+  var max = liste.length ? (liste[0].max || liste[0].entries.length) : WOERTER.length;
   $("c-max").textContent = "Ø Punkte von " + max;
   var punkte = liste.map(summe), noten = liste.map(note);
   var mittel = punkte.length ? punkte.reduce(function (a, b) { return a + b; }, 0) / punkte.length : 0;
