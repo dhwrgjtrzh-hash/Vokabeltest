@@ -108,7 +108,7 @@ body{background:#fff}
     <p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Class vocabulary</p>
     <h1>Vokabeltest<br>The way we live</h1>
   </div>
-  <p class="lead">Du bearbeitest alle 40 Vokabeleinträge der Unit 1. Schreibe zu jedem das englische Wort. Du bekommst keine Rückmeldung &ndash; die Auswertung macht deine Lehrperson.</p>
+  <p class="lead">Du bearbeitest alle 40 Vokabeleinträge der Unit 1. Schreibe zu jedem das englische Wort. Nach der Abgabe siehst du deine Antworten, die Lösungen und deine Punkte.</p>
   <div class="card narrow">
     <ul>
       <li><span class="pt good">1 P.</span><span>Das Wort ist richtig geschrieben.</span></li>
@@ -141,10 +141,16 @@ body{background:#fff}
 <section id="s-done" hidden>
   <div class="wrap pane">
     <div><p class="eyebrow">Young World 4 &middot; Unit 1 &middot; Vokabeln</p><h1 style="font-size:2rem" id="d-who">Danke!</h1></div>
-    <p class="lead">Dein Test ist abgegeben. Die Auswertung bekommt deine Lehrperson.</p>
+    <p class="lead">Nach erfolgreicher Übermittlung erscheint hier deine persönliche Auswertung.</p>
     <div class="handin">
       <span class="txt" id="d-txt">Deine Antworten sind gespeichert.</span>
       <button class="btn small" id="b-file" hidden>Abgabe-Datei speichern</button>
+    </div>
+    <div id="d-result" hidden>
+      <h2>Deine Auswertung</h2>
+      <p class="lead" id="d-score"></p>
+      <p>Automatisch bewertet. Deine Lehrperson kann die Bewertung noch anpassen.</p>
+      <div class="tablewrap"><table><thead><tr><th>Deutsch</th><th>Deine Antwort</th><th>Lösung</th><th>Punkte</th></tr></thead><tbody id="d-answers"></tbody></table></div>
     </div>
     <div class="row"><button class="btn" id="b-done">Fertig</button></div>
   </div>
@@ -323,7 +329,7 @@ $("b-submit").addEventListener("click", function () {
   if (!window.confirm(frage)) return;
   window.removeEventListener("beforeunload", warnen);
   last = {
-    typ: "yw4-unit1-abgabe", v: 2,
+    typ: "yw4-unit1-abgabe", v: 3,
     name: kind.name, klasse: kind.klasse, datum: (kind.start || new Date()).toISOString(),
     max: WOERTER.length,
     antworten: order.map(function (wi, pos) { return { i: wi, deutsch: WOERTER[wi], antwort: answers[pos].trim() }; })
@@ -339,18 +345,37 @@ function gutgegangen(text) {
   try { return JSON.parse(text).ok === true; } catch (e) { return /"ok"\s*:\s*true/.test(text || ""); }
 }
 
+function eigeneAuswertung(rec) {
+  var box = $("d-answers"); box.textContent = "";
+  rec.entries.forEach(function (e) {
+    var row = document.createElement("tr");
+    [e.deutsch, e.antwort || "—", e.loesung, zahl(e.punkte) + " / 1"].forEach(function (value) {
+      var cell = document.createElement("td"); cell.textContent = value; row.appendChild(cell);
+    });
+    box.appendChild(row);
+  });
+  $("d-score").textContent = zahl(summe(rec)) + " von " + rec.max + " Punkten · Notenvorschlag: " + note(rec).toFixed(1);
+  $("d-result").hidden = false;
+}
+
 function senden(rec) {
+  $("d-result").hidden = true;
+  $("d-answers").textContent = "";
+  $("b-done").disabled = true;
   $("d-txt").textContent = "Wird an die Lehrperson geschickt …";
   fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) })
     .then(function (r) { if (!r.ok) throw new Error("Status " + r.status); return r.text(); })
     .then(function (t) {
       if (!gutgegangen(t)) throw new Error("abgelehnt");
       $("d-txt").textContent = "Abgegeben ✓ Deine Antworten sind bei der Lehrperson angekommen.";
+      var daten = JSON.parse(t);
+      if (daten.auswertung && Array.isArray(daten.auswertung.entries)) eigeneAuswertung(daten.auswertung);
+      else $("d-txt").textContent += " Die persönliche Auswertung ist noch nicht verfügbar. Bitte der Lehrperson Bescheid sagen.";
     })
     .catch(function () {
       $("d-txt").textContent = "Konnte nicht gesendet werden – deine Antworten sind auf diesem Computer gespeichert. Bitte die Abgabe-Datei speichern und der Lehrperson geben.";
       $("b-file").hidden = false;
-    });
+    }).finally(function () { $("b-done").disabled = false; });
 }
 
 $("b-file").addEventListener("click", function () {
@@ -369,6 +394,7 @@ $("b-file").addEventListener("click", function () {
 
 $("b-done").addEventListener("click", function () {
   $("f-name").value = ""; $("f-class").value = ""; $("f-name").placeholder = "Vorname Nachname";
+  $("d-result").hidden = true; $("d-answers").textContent = ""; $("d-score").textContent = "";
   last = null; show("start"); $("f-name").focus();
 });
 
