@@ -1,0 +1,1903 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rechtschreibung üben</title>
+<link rel="icon" type="image/png" href="icons/icon-rechtschreibung-64.png">
+<link rel="apple-touch-icon" href="icons/icon-rechtschreibung-180.png">
+<style>
+:root{
+  --bg:#f3f6fb; --card:#ffffff; --ink:#1b2433; --mute:#64708a; --line:#dfe5ef;
+  --accent:#2f5bea; --accent-soft:#e8eeff; --good:#127a3c; --good-bg:#dcf5e4; --bad:#b42318; --bad-bg:#fde4e1;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;padding:18px 16px 48px}
+button{font:inherit;color:inherit}
+.wrap{max-width:860px;margin:0 auto}
+.wrap.wide{max-width:1180px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.logo{min-width:48px;height:48px;padding:0 8px;border-radius:14px;background:#0f8a6b;color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.05rem;letter-spacing:-.02em;flex:none}
+header h1{font-size:1.5rem;margin:0;line-height:1.15}
+header h1 small{display:block;font-size:.8rem;font-weight:600;color:var(--mute)}
+header .grow{flex:1}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 2px 8px rgba(27,36,51,.05)}
+.sub{color:var(--mute);margin:0 0 16px}
+.muted{color:var(--mute);font-size:.85rem;font-weight:400}
+h2{font-size:1.2rem;margin:0 0 6px}
+h3{font-size:1.02rem;margin:22px 0 8px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grow{flex:1}
+
+/* Start */
+.who{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:22px}
+.who label{font-weight:700}
+.who .ans{width:6.5em}
+.who .note{color:var(--mute);font-size:.88rem;flex-basis:100%;margin:0}
+.warn{background:#fff6dc;border:2px solid #f3d98a;border-radius:14px;padding:10px 14px;margin:0 0 16px;font-size:.92rem}
+.intro{background:var(--accent-soft);border-radius:18px;padding:18px 20px}
+.intro p{margin:6px 0 12px}
+.path{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:18px;position:relative}
+.node{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.node b{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--line);color:var(--mute);font-weight:800;font-size:1.1rem;border:3px solid transparent}
+.node span{font-size:.72rem;color:var(--mute);line-height:1.2}
+.node.done b{background:#3fbf6f;color:#fff}
+.node.now b{background:#fff;border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+.node.now span{color:var(--ink);font-weight:700}
+.etappe{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;background:#f8faff;border:2px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:14px}
+.dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.dots i{width:18px;height:18px;border-radius:50%;background:var(--line);display:inline-block}
+.dots i.on{background:#3fbf6f}
+.dots span{font-size:.9rem;font-weight:700;margin-left:6px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;min-height:110px}
+.tile .ic{font-size:1.5rem;line-height:1}
+.tile b{font-size:1.02rem}
+.tile span{color:var(--mute);font-size:.85rem;line-height:1.3}
+.tile:disabled{opacity:.55;cursor:default}
+.tile.hot{border-color:#f5a400;background:#fffaf0}
+.badge{font-style:normal;background:var(--accent);color:#fff;border-radius:999px;padding:0 8px;font-size:.8rem;margin-left:4px}
+details.mine{margin-top:18px;border:2px solid var(--line);border-radius:16px;padding:4px 16px}
+details.mine summary{cursor:pointer;font-weight:700;padding:10px 0;list-style:none}
+details.mine summary::-webkit-details-marker{display:none}
+.mlist{display:grid;gap:8px;padding:4px 0 8px}
+.mrow{display:grid;grid-template-columns:9.5em 1fr 3em;gap:10px;align-items:center;font-size:.9rem}
+.mrow b{text-align:right;font-variant-numeric:tabular-nums}
+.teacher{margin-top:22px;text-align:right}
+.linkish{background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;font-size:.85rem;padding:4px}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.topic{--c:#2f5bea;display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fff;border:2px solid var(--line);border-left:8px solid var(--c);border-radius:16px;padding:12px 14px;cursor:pointer}
+.topic b{display:block;font-size:.98rem;margin-bottom:2px}
+.topic span span{display:block;color:var(--mute);font-size:.82rem}
+
+/* Knöpfe & Eingaben */
+.btn{font-weight:700;border:0;border-radius:14px;padding:14px 26px;background:var(--accent);color:#fff;cursor:pointer;min-height:54px;font-size:1.05rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.small{padding:8px 14px;min-height:40px;font-size:.9rem}
+.btn:disabled{opacity:.4}
+.big-btn{flex-direction:column;align-items:flex-start;text-align:left;line-height:1.25}
+.big-btn small{font-weight:600;opacity:.85;font-size:.8rem}
+.actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.resume{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
+input.ans,textarea.ans{font:inherit;font-size:1.6rem;font-weight:700;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);-webkit-appearance:none;max-width:100%}
+input.ans.small{width:5.2em;text-align:center}
+.ans.wide{width:100%}
+textarea.ans{resize:none;font-size:1.4rem;line-height:1.4}
+.ans:focus{outline:none;border-color:var(--accent)}
+.ans.ok{border-color:#3fbf6f;background:var(--good-bg)}
+.ans.no{border-color:#ef7b6f;background:var(--bad-bg)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* Aufgabe */
+.sesshead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}
+.qtype{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:700;background:var(--accent-soft);color:#24439e}
+.progress{display:flex;gap:4px;margin:0 0 18px}
+.progress i{flex:1;height:10px;border-radius:999px;background:var(--line)}
+.progress i.ok{background:#3fbf6f}.progress i.half{background:#f5c04a}.progress i.no{background:#ef7b6f}.progress i.now{background:var(--accent)}
+.hear{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.hearbtn{font-size:1.2rem;padding:16px 30px}
+.hear small{font-weight:600;opacity:.7}
+.hint{color:var(--mute);font-size:.9rem;margin:0 0 8px}
+.flash{font-size:2rem;font-weight:800;padding:14px 0;transition:opacity .3s}
+.flash.hidden{opacity:0}
+
+/* Rückmeldung */
+.explain{margin-top:16px;border-radius:16px;background:#fff8ec;border:2px solid #f6d39b;padding:14px 18px}
+.explain h3{margin:0 0 6px;font-size:1.05rem;color:#8a3c06}
+.explain.ok{background:#f2fbf5;border-color:#bfe8cc}
+.explain.ok h3{color:var(--good)}
+.lab{margin:10px 0 2px;font-size:.85rem;font-weight:700;color:var(--mute)}
+.satz{font-size:1.25rem;line-height:1.9;margin:0}
+.tok{display:inline-block;padding:0 3px;border-radius:6px}
+.tok.good{color:var(--good)}
+.tok.bad{background:var(--bad-bg)}
+.tok.fix{background:#dcf5e4;font-weight:700}
+.tok.miss{color:var(--bad);font-weight:800}
+.tok.extra{text-decoration:line-through;color:var(--bad)}
+mark.x{background:#ffb4a8;color:#7a0d03;border-radius:3px;padding:0 1px}
+mark.y{background:#b9ecc9;color:#0a5a2a;border-radius:3px;padding:0 1px;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:5px}
+.fix-card{margin-top:14px;border:3px solid var(--accent);border-radius:18px;padding:16px 18px;background:#fbfcff}
+.wort{font-size:2.1rem;font-weight:800;margin:0;letter-spacing:.02em;word-break:break-word}
+.wort.falsch{color:#7a2a20}
+.wort.zu{color:var(--line);letter-spacing:.15em}
+.rule{--c:#2f5bea;margin-top:12px;border-left:6px solid var(--c);background:#f6f8fd;border-radius:0 14px 14px 0;padding:10px 14px}
+.rule h3{margin:0 0 4px;font-size:.95rem;color:var(--c)}
+.rule p{margin:0;font-size:.95rem}
+.big-rule{margin-top:16px}
+.big-rule p{font-size:1.05rem}
+.again{background:var(--bad-bg);color:var(--bad);font-weight:700;border-radius:12px;padding:8px 12px;margin-bottom:6px}
+
+/* Resultat */
+.result{text-align:center}
+.result .score{font-size:3.4rem;font-weight:800;margin:4px 0}
+.stars{font-size:2.4rem;letter-spacing:.12em;margin:2px 0 8px}
+.sent{display:block;margin-top:10px;font-size:.9rem;color:var(--mute)}
+.sent.ok{color:var(--good)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0}
+.chips span{background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-weight:700;font-size:.92rem}
+.sbq{display:grid;gap:8px;max-width:440px;margin:14px auto 0;text-align:left}
+.sbq>div{display:grid;grid-template-columns:5em 1fr 3em;gap:10px;align-items:center;font-size:.92rem}
+.sbq b{text-align:right}
+.bar{height:12px;border-radius:999px;background:var(--line);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;background:#3fbf6f;border-radius:999px}
+
+/* Lehrperson */
+.wide-card{max-width:none}
+.tscroll{overflow-x:auto;margin:0 -8px;padding:0 8px}
+table.t{width:100%;border-collapse:collapse;font-size:.86rem;font-variant-numeric:tabular-nums}
+table.t th,table.t td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.t th{color:var(--mute);font-weight:700;font-size:.72rem;letter-spacing:.02em;line-height:1.2}
+table.t th.vert{min-width:62px;max-width:76px;white-space:normal;font-size:.66rem;hyphens:auto;-webkit-hyphens:auto}
+table.t tr.klick{cursor:pointer}
+table.t tr.klick:hover td{background:#f6f8fd}
+.num{text-align:right!important;white-space:nowrap}
+.tag{display:inline-block;border-radius:999px;padding:1px 8px;font-size:.8rem;font-weight:700}
+.tag.ok{background:var(--good-bg);color:var(--good)}.tag.half{background:#fff3cd;color:#8a6100}.tag.no{background:var(--bad-bg);color:var(--bad)}
+.cbars{display:grid;gap:8px}
+.cbar{display:grid;grid-template-columns:minmax(10em,22em) 1fr 3em;gap:12px;align-items:center;font-size:.9rem}
+.cbar b{text-align:right}
+.namen{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.namen label{display:flex;align-items:center;gap:10px}
+.namen b{min-width:2.4em;text-align:right}
+.namen .ans{font-size:1.05rem;padding:8px 10px;width:100%}
+.ptitle{font-size:1.7rem;margin:2px 0 14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.kpis div{background:#f6f8fd;border-radius:14px;padding:12px 14px}
+.kpis b{display:block;font-size:1.4rem}
+.kpis span{font-size:.78rem;color:var(--mute);line-height:1.2;display:block}
+.assess{margin-top:16px;background:#f2fbf5;border:2px solid #bfe8cc;border-radius:16px;padding:6px 18px 8px}
+.assess h3{margin:10px 0 4px;color:var(--good)}
+.assess p{margin:6px 0;font-size:.95rem}
+.pbars{display:grid;gap:12px}
+.prow{display:grid;grid-template-columns:minmax(12em,20em) 1fr 3em;gap:4px 12px;align-items:center}
+.pname b{display:block;font-size:.92rem}
+.pname .muted{font-size:.76rem}
+.pp{text-align:right;font-variant-numeric:tabular-nums}
+.bsp{grid-column:2/4;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--mute)}
+.bsp s{color:var(--bad)}
+.verlauf{width:100%;height:auto;max-width:700px;color:var(--ink)}
+.satzliste{list-style:none;padding:0;margin:0}
+.satzliste li{display:grid;grid-template-columns:5.5em 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.95rem;line-height:1.6}
+.stufenlegende{margin-top:22px;font-size:.75rem}
+
+@media (max-width:560px){
+  body{font-size:17px;padding:12px}
+  .card{padding:16px;border-radius:18px}
+  .node span{display:none}
+  input.ans,textarea.ans{font-size:1.35rem}
+  .wort{font-size:1.7rem}
+  .prow,.cbar{grid-template-columns:1fr 3em}
+  .prow .bar,.cbar .bar{grid-column:1/3;grid-row:2}
+  .bsp{grid-column:1/3}
+}
+@media print{
+  body{background:#fff;padding:0;font-size:12pt}
+  header,.no-print,.teacher{display:none!important}
+  .card{box-shadow:none;border:0;padding:0}
+  .wrap.wide{max-width:none}
+  .assess,.kpis div{break-inside:avoid}
+  .prow{break-inside:avoid}
+  h3{break-after:avoid}
+  .tag,.bar i,mark,.kpis div,.assess{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header>
+    <div class="logo">Abc</div>
+    <h1 class="grow"><small>Deutsch · Diktat-Training</small>Rechtschreibung üben</h1>
+    <div class="pill" id="pill" hidden></div>
+  </header>
+  <main id="app"></main>
+</div>
+<script>
+/* Adresse des Google-Skripts, das die Antworten speichert (leer = nichts senden). */
+const ENDPOINT = "";
+const UEBUNG = "Rechtschreibung";
+/* ===== Wortschatz (Schweizer Rechtschreibung, kein ß) =====
+   Zeile: Wort|Satz, in dem das Wort vorkommt (wird vorgelesen)
+   Stufe 1: kurze, häufige Wörter · 2: Grundwortschatz mit Regelwörtern · 3: längere Wörter, Zusammensetzungen
+   Stufe 4: anspruchsvolle Wörter · 5: schwierige Wörter (Sek-Niveau)
+   In Sätzen markiert ^ ein Verb/Adjektiv, das als Nomen gebraucht wird (das ^Lesen). */
+const WORT_DATEN = {
+1:`Hund|Der Hund bellt laut.
+Kind|Das Kind lacht.
+Wald|Im Wald stehen viele Bäume.
+Bild|Ich male ein Bild.
+Geld|Ich spare mein Geld.
+Feld|Auf dem Feld wächst Mais.
+Land|Die Schweiz ist ein kleines Land.
+Hand|Gib mir die Hand.
+Mund|Ich halte die Hand vor den Mund.
+rund|Der Ball ist rund.
+Berg|Wir wandern auf einen Berg.
+Zug|Der Zug fährt pünktlich ab.
+Tag|Heute ist ein schöner Tag.
+Weg|Der Weg ist steil.
+Korb|Die Äpfel liegen im Korb.
+gelb|Die Sonne ist gelb.
+Kalb|Das Kalb trinkt Milch.
+Ball|Wir spielen mit dem Ball.
+Bett|Ich gehe früh ins Bett.
+Mutter|Meine Mutter arbeitet heute.
+Vater|Mein Vater kocht gern.
+Sonne|Die Sonne scheint.
+Wasser|Ich trinke ein Glas Wasser.
+Tasse|Die Tasse ist heiss.
+Puppe|Meine Schwester spielt mit der Puppe.
+Kamm|Ich brauche einen Kamm.
+Mann|Der Mann wartet auf den Bus.
+Schiff|Das Schiff fährt über den See.
+hell|Am Morgen wird es hell.
+voll|Der Bus ist voll.
+dünn|Das Brett ist dünn.
+satt|Nach dem Essen bin ich satt.
+nass|Meine Schuhe sind nass.
+Bus|Ich fahre mit dem Bus zur Schule.
+Haus|Unser Haus hat einen Garten.
+Maus|Die Maus frisst Käse.
+Baum|Der Baum ist sehr alt.
+Bäume|Im Park stehen hohe Bäume.
+Häuser|In der Stadt gibt es viele Häuser.
+Hände|Ich wasche meine Hände.
+Äpfel|Wir pflücken Äpfel.
+Käse|Ich esse gern Käse.
+Bär|Der Bär schläft im Winter.
+Mädchen|Das Mädchen rennt schnell.
+Tier|Welches Tier magst du am liebsten?
+Brief|Ich schreibe einen Brief.
+Lied|Wir singen ein Lied.
+viel|Ich habe viel Hunger.
+vier|Ich habe vier Bleistifte.
+Biene|Die Biene sammelt Honig.
+Spiel|Das Spiel ist spannend.
+Ziel|Wir sind am Ziel.
+lieb|Unsere Katze ist lieb.
+tief|Der See ist tief.
+nie|Ich komme nie zu spät.
+Uhr|Die Uhr tickt.
+Jahr|Das Jahr hat zwölf Monate.
+Zahl|Schreib die Zahl an die Tafel.
+Kuh|Die Kuh steht auf der Weide.
+Schuh|Mein Schuh ist zu klein.
+Sohn|Der Sohn hilft seinem Vater.
+Huhn|Das Huhn legt ein Ei.
+fahren|Wir fahren in die Ferien.
+mehr|Ich möchte mehr Saft.
+Meer|Im Sommer fahren wir ans Meer.
+Boot|Das Boot schaukelt auf dem Wasser.
+Tee|Am Abend trinke ich Tee.
+Zoo|Im Zoo sehen wir Löwen.
+Haar|Mein Haar ist lang.
+Katze|Die Katze schläft auf dem Sofa.
+Platz|Setz dich auf deinen Platz.
+Herz|Mein Herz klopft schnell.
+Glück|Ich wünsche dir viel Glück.
+Rock|Sie trägt einen blauen Rock.
+Sack|Der Sack ist schwer.
+dick|Das Buch ist dick.
+Stück|Möchtest du ein Stück Kuchen?
+Vogel|Der Vogel singt im Baum.
+Vase|Die Blumen stehen in der Vase.
+Schule|Ich gehe gern in die Schule.
+Tisch|Das Buch liegt auf dem Tisch.
+Stuhl|Der Stuhl wackelt.
+Fisch|Der Fisch schwimmt im Teich.
+Freund|Mein Freund wohnt nebenan.
+Abend|Am Abend lese ich ein Buch.
+Brot|Wir essen Brot mit Butter.
+Milch|Die Milch ist kalt.
+Wurst|Die Wurst liegt auf dem Grill.
+Garten|Im Garten wachsen Blumen.
+Blume|Die Blume blüht rot.
+Strasse|Wir überqueren die Strasse.
+gross|Der Elefant ist gross.
+heiss|Die Suppe ist heiss.
+Fuss|Mein Fuss tut weh.
+klein|Die Maus ist klein.
+schnell|Der Hase ist schnell.
+laut|Die Musik ist laut.
+gehen|Wir gehen nach Hause.
+sehen|Kannst du den Vogel sehen?
+spielen|Wir spielen draussen.
+lesen|Ich kann schon lange lesen.
+schreiben|Wir schreiben ein Diktat.
+kalt|Im Winter ist es kalt.
+warm|Der Tee ist warm.
+Winter|Im Winter fällt Schnee.
+Sommer|Im Sommer gehen wir baden.
+Schnee|Der Schnee ist weiss.
+Regen|Der Regen prasselt aufs Dach.
+Wind|Der Wind ist stark.
+Nase|Meine Nase läuft.
+Hose|Die Hose ist zu lang.
+Rose|Die Rose duftet.
+Kopf|Ich trage einen Hut auf dem Kopf.`,
+2:`Mittag|Am Mittag essen wir zu Hause.
+Mittwoch|Am Mittwoch habe ich frei.
+Donnerstag|Am Donnerstag haben wir Turnen.
+Kartoffel|Die Kartoffel ist gekocht.
+Teller|Der Teller ist leer.
+Löffel|Ich esse die Suppe mit dem Löffel.
+Pfeffer|Gib mir bitte den Pfeffer.
+Treppe|Ich renne die Treppe hinauf.
+Zimmer|Mein Zimmer ist aufgeräumt.
+Himmel|Der Himmel ist blau.
+kommen|Wir kommen morgen zu Besuch.
+rennen|Die Kinder rennen über den Platz.
+schwimmen|Im See kann man schwimmen.
+wissen|Willst du die Antwort wissen?
+essen|Wir essen um zwölf Uhr.
+treffen|Wir treffen uns am Bahnhof.
+hoffen|Wir hoffen auf schönes Wetter.
+bitter|Die Schokolade schmeckt bitter.
+dumm|Das ist nicht dumm.
+Klasse|Unsere Klasse macht einen Ausflug.
+Zucker|Ich nehme keinen Zucker in den Tee.
+Rucksack|Mein Rucksack ist schwer.
+Decke|Die Decke ist warm.
+Ecke|Der Ball rollt in die Ecke.
+Brücke|Die Brücke führt über den Fluss.
+backen|Wir backen einen Kuchen.
+packen|Wir packen den Koffer.
+schmecken|Die Erdbeeren schmecken süss.
+glücklich|Ich bin glücklich.
+plötzlich|Plötzlich klingelt das Telefon.
+Mütze|Ich setze meine Mütze auf.
+Pfütze|Der Hund springt in die Pfütze.
+Hitze|Die Hitze ist kaum auszuhalten.
+sitzen|Wir sitzen im Kreis.
+putzen|Ich muss noch meine Zähne putzen.
+jetzt|Wir gehen jetzt los.
+Spitze|Die Spitze vom Bleistift ist abgebrochen.
+Fluss|Der Fluss fliesst ins Meer.
+Schluss|Am Schluss klatschen alle.
+Kissen|Das Kissen ist weich.
+Schlüssel|Ich habe meinen Schlüssel verloren.
+müssen|Wir müssen uns beeilen.
+Familie|Meine Familie wohnt in Zürich.
+Ferien|In den Ferien schlafe ich lange.
+Riese|Der Riese ist stark.
+Wiese|Die Kühe grasen auf der Wiese.
+fliegen|Die Vögel fliegen nach Süden.
+schieben|Wir schieben den Wagen.
+liegen|Die Bücher liegen auf dem Boden.
+schief|Das Bild hängt schief.
+Papier|Ich brauche ein Blatt Papier.
+Klavier|Meine Schwester spielt Klavier.
+Tiger|Der Tiger hat Streifen.
+Maschine|Die Maschine macht Lärm.
+Kino|Am Samstag gehen wir ins Kino.
+Igel|Der Igel rollt sich ein.
+ihr|Habt ihr Hunger?
+ihm|Ich gebe ihm das Buch.
+wohnen|Wo wohnen deine Grosseltern?
+Wohnung|Unsere Wohnung hat einen Balkon.
+Fahne|Die Fahne flattert im Wind.
+fühlen|Kannst du das weiche Fell fühlen?
+Zähne|Ich putze mir die Zähne.
+Lehrer|Der Lehrer erklärt die Aufgabe.
+Stroh|Das Pferd liegt im Stroh.
+ohne|Ich gehe ohne Jacke hinaus.
+Mehl|Für den Teig brauchen wir Mehl.
+Bahn|Die Bahn hat Verspätung.
+Erdbeere|Die Erdbeere ist rot und süss.
+Kaffee|Mein Vater trinkt Kaffee.
+Idee|Ich habe eine gute Idee.
+Moos|Im Wald wächst weiches Moos.
+leer|Die Flasche ist leer.
+Paar|Ich brauche ein Paar neue Schuhe.
+Saal|Der Saal ist voller Leute.
+Kälte|Wegen der Kälte trage ich Handschuhe.
+Länder|Wir lernen die Länder Europas kennen.
+Gärtner|Der Gärtner pflanzt Tulpen.
+Räder|Das Fahrrad hat zwei Räder.
+Träume|Ich habe oft schöne Träume.
+Bäuerin|Die Bäuerin melkt die Kühe.
+Mäuse|Die Mäuse verstecken sich.
+läuft|Das Kind läuft zur Schule.
+fährt|Der Bus fährt um acht Uhr.
+Hälfte|Ich gebe dir die Hälfte.
+Verkäufer|Der Verkäufer ist freundlich.
+verlieren|Ich will das Spiel nicht verlieren.
+vergessen|Ich habe meine Hausaufgaben vergessen.
+vorlesen|Der Lehrer will uns eine Geschichte vorlesen.
+vorne|Ich sitze vorne im Bus.
+Pullover|Der Pullover ist warm.
+Wand|An der Wand hängt eine Karte.
+Hemd|Das Hemd ist frisch gewaschen.
+Pferd|Das Pferd galoppiert.
+Stadt|Wir wohnen in der Stadt.
+gibt|Es gibt heute Pizza.
+lebt|Der Fisch lebt im Wasser.
+Sieg|Unsere Mannschaft feiert den Sieg.
+Flugzeug|Das Flugzeug landet.
+Burg|Die Burg steht auf einem Hügel.
+lustig|Der Film ist lustig.
+traurig|Warum bist du traurig?
+hungrig|Nach dem Turnen bin ich hungrig.
+fertig|Ich bin mit den Aufgaben fertig.
+König|Der König trägt eine Krone.
+Honig|Ich esse Brot mit Honig.
+Käfig|Der Vogel sitzt im Käfig.
+Freitag|Am Freitag gehen wir schwimmen.
+draussen|Wir spielen draussen.
+Spass|Das Spiel macht Spass.
+süss|Der Kuchen ist süss.
+weiss|Der Schnee ist weiss.
+Fussball|Wir spielen Fussball.
+schliessen|Kannst du die Tür schliessen?
+Woche|Die Woche hat sieben Tage.
+Kirche|Die Kirche hat einen hohen Turm.
+Freude|Ich habe grosse Freude.
+heute|Heute regnet es.`,
+3:`Geburtstag|Zum Geburtstag bekomme ich ein Buch.
+Fahrrad|Ich fahre mit dem Fahrrad zur Schule.
+Schwimmbad|Im Sommer gehen wir ins Schwimmbad.
+Handschuh|Ich habe einen Handschuh verloren.
+Bahnhof|Wir treffen uns am Bahnhof.
+Spielplatz|Auf dem Spielplatz gibt es eine Rutschbahn.
+Klassenzimmer|Das Klassenzimmer ist hell.
+Mittagessen|Zum Mittagessen gibt es Spaghetti.
+Hausaufgaben|Ich mache meine Hausaufgaben.
+Wochenende|Am Wochenende besuchen wir die Grosseltern.
+Fussgänger|Der Fussgänger wartet am Zebrastreifen.
+Verkehr|Am Morgen hat es viel Verkehr.
+Erklärung|Die Erklärung ist einfach.
+gefährlich|Die Strasse ist gefährlich.
+ungefähr|Die Fahrt dauert ungefähr eine Stunde.
+erzählen|Grossvater kann spannende Geschichten erzählen.
+erklären|Kannst du mir das erklären?
+während|Während der Pause essen wir einen Apfel.
+Gespräch|Das Gespräch dauert lange.
+Geschäft|Das Geschäft öffnet um neun Uhr.
+Gemüse|Ich esse gern Gemüse.
+Gebäude|Das Gebäude hat zehn Stockwerke.
+Getränk|Welches Getränk möchtest du?
+Geräusch|Ich höre ein seltsames Geräusch.
+Abenteuer|Die Kinder erleben ein Abenteuer.
+Feuerwehr|Die Feuerwehr löscht den Brand.
+Freundschaft|Unsere Freundschaft ist mir wichtig.
+Mannschaft|Unsere Mannschaft hat gewonnen.
+Gesundheit|Bewegung ist gut für die Gesundheit.
+Freiheit|Die Vögel geniessen ihre Freiheit.
+Wahrheit|Sag mir die Wahrheit.
+Krankheit|Die Krankheit dauert eine Woche.
+Möglichkeit|Es gibt noch eine andere Möglichkeit.
+Zeitung|Mein Vater liest die Zeitung.
+Rechnung|Die Rechnung stimmt nicht.
+Übung|Diese Übung ist einfach.
+Ordnung|In meinem Zimmer herrscht Ordnung.
+Richtung|In welche Richtung müssen wir gehen?
+Bewegung|Bewegung tut gut.
+Wohnzimmer|Wir sitzen im Wohnzimmer.
+Kühlschrank|Die Milch steht im Kühlschrank.
+Fernseher|Der Fernseher ist kaputt.
+Vorsicht|Vorsicht, die Herdplatte ist heiss!
+Verein|Ich spiele in einem Verein.
+verstecken|Wir verstecken uns hinter dem Baum.
+verkaufen|Der Bauer will seine Äpfel verkaufen.
+vorbei|Die Ferien sind leider vorbei.
+vielleicht|Vielleicht regnet es morgen.
+Vorschlag|Ich habe einen Vorschlag.
+Vulkan|Der Vulkan spuckt Lava.
+Nachbar|Unser Nachbar hat einen Hund.
+endlich|Endlich sind Ferien!
+freundlich|Die Verkäuferin ist freundlich.
+gemütlich|Das Sofa ist gemütlich.
+ehrlich|Sei bitte ehrlich.
+fröhlich|Die Kinder sind fröhlich.
+wichtig|Diese Frage ist wichtig.
+ruhig|Im Wald ist es ruhig.
+richtig|Deine Antwort ist richtig.
+schmutzig|Meine Schuhe sind schmutzig.
+billig|Der Apfel ist billig.
+fleissig|Die Ameisen sind fleissig.
+häufig|Im Herbst regnet es häufig.
+Geschenk|Das Geschenk ist gross.
+Pflanze|Die Pflanze braucht Wasser.
+Apotheke|Die Apotheke ist geschlossen.
+Schmetterling|Ein Schmetterling sitzt auf der Blume.
+Eichhörnchen|Das Eichhörnchen sammelt Nüsse.
+Nüsse|Ich knacke Nüsse.
+Gewitter|Das Gewitter ist vorbei.
+Donner|Nach dem Blitz kommt der Donner.
+Wetter|Das Wetter ist schön.
+Brille|Meine Brille ist schmutzig.
+Schatten|Wir sitzen im Schatten.
+Schlitten|Wir fahren mit dem Schlitten den Hügel hinunter.
+Wecker|Der Wecker klingelt um sieben.
+Bäckerei|In der Bäckerei kaufen wir Brot.
+Stecker|Zieh den Stecker heraus.
+Schnecke|Die Schnecke kriecht langsam.
+Blitz|Der Blitz schlägt in den Baum ein.
+Witz|Erzähl mir einen Witz.
+Satz|Schreib einen ganzen Satz.
+Schatz|Die Piraten suchen einen Schatz.
+erschrecken|Ich will dich nicht erschrecken.
+Ziege|Die Ziege meckert.
+Spiegel|Ich schaue in den Spiegel.
+Fliege|Eine Fliege summt im Zimmer.
+wieder|Wir sehen uns bald wieder.
+Frieden|Alle wünschen sich Frieden.
+giessen|Ich muss die Blumen giessen.
+fliessen|Die Flüsse fliessen ins Meer.
+Fahrkarte|Ich kaufe eine Fahrkarte.
+Zahnarzt|Morgen gehe ich zum Zahnarzt.
+Uhrzeit|Kennst du die Uhrzeit?
+Frühling|Im Frühling blühen die Bäume.
+Fehler|Ich korrigiere meine Fehler.
+zählen|Wir zählen bis hundert.
+wählen|Du darfst eine Farbe wählen.
+Gefahr|Bei Gewitter besteht Gefahr.
+Lehrerin|Die Lehrerin lobt die Klasse.
+Gemeinde|Unsere Gemeinde baut ein neues Schulhaus.
+Schulhaus|Das Schulhaus hat drei Stockwerke.
+Turnhalle|In der Turnhalle spielen wir Unihockey.
+Pausenplatz|Auf dem Pausenplatz ist es laut.`,
+4:`nämlich|Ich komme nicht mit, ich bin nämlich krank.
+allmählich|Allmählich wird es dunkel.
+ziemlich|Der Weg ist ziemlich weit.
+ähnlich|Die Zwillinge sehen sich ähnlich.
+gewöhnlich|Gewöhnlich stehe ich um sieben Uhr auf.
+ausserdem|Ausserdem brauchen wir noch Brot.
+deshalb|Es regnet, deshalb bleiben wir drinnen.
+trotzdem|Es regnet, trotzdem gehen wir hinaus.
+Ergebnis|Das Ergebnis der Rechnung stimmt.
+Erlebnis|Die Reise war ein tolles Erlebnis.
+Zeugnis|Ich bin mit meinem Zeugnis zufrieden.
+Geheimnis|Kannst du ein Geheimnis bewahren?
+Verständnis|Danke für dein Verständnis.
+Erfahrung|Ich habe schon Erfahrung mit Pferden.
+Entscheidung|Die Entscheidung fällt mir schwer.
+Entschuldigung|Ich bitte um Entschuldigung.
+Verabredung|Ich habe heute eine Verabredung.
+Überraschung|Die Überraschung ist gelungen.
+Unterschied|Siehst du den Unterschied?
+Verhalten|Sein Verhalten ist höflich.
+Verspätung|Der Zug hat Verspätung.
+Vergangenheit|In der Vergangenheit gab es keine Handys.
+Vorbereitung|Die Vorbereitung dauert lange.
+Vorstellung|Die Vorstellung beginnt um acht.
+vollständig|Die Liste ist vollständig.
+Verwandte|Viele Verwandte kommen zu Besuch.
+Fahrzeug|Ein Fahrzeug blockiert die Einfahrt.
+Werkzeug|Der Hammer ist ein Werkzeug.
+Spielzeug|Das Spielzeug liegt am Boden.
+Jagd|Der Fuchs geht auf die Jagd.
+Erdbeben|Das Erdbeben war stark.
+Handlung|Die Handlung des Films ist spannend.
+endgültig|Die Entscheidung ist endgültig.
+gründlich|Ich lese den Text gründlich.
+mündlich|Die Prüfung ist mündlich.
+schriftlich|Die Prüfung ist schriftlich.
+Abfall|Wir trennen den Abfall.
+Gelände|Das Gelände ist steil.
+Gerät|Das Gerät ist kaputt.
+Ärger|Ich habe Ärger mit meiner Schwester.
+ärgerlich|Der Fehler ist ärgerlich.
+Gemälde|Das Gemälde hängt im Museum.
+Märchen|Die Grossmutter erzählt ein Märchen.
+Mähne|Das Pferd hat eine lange Mähne.
+Lärm|Der Lärm ist unerträglich.
+ändern|Das kann man nicht ändern.
+erwähnen|Vergiss nicht, das zu erwähnen.
+Ernährung|Eine gesunde Ernährung ist wichtig.
+Säugetier|Der Wal ist ein Säugetier.
+äusserst|Das ist äusserst spannend.
+Ausnahme|Das ist eine Ausnahme.
+Wahl|Du hast die Wahl.
+Stahl|Die Brücke ist aus Stahl.
+Mahlzeit|Das Frühstück ist eine wichtige Mahlzeit.
+Fahrer|Der Fahrer hält an.
+nehmen|Darf ich ein Stück nehmen?
+Rahm|Ich esse Erdbeeren mit Rahm.
+Vieh|Das Vieh steht im Stall.
+Stiefel|Im Winter trage ich Stiefel.
+Ziegel|Ein Ziegel ist vom Dach gefallen.
+Benzin|Das Auto braucht Benzin.
+Medizin|Die Medizin schmeckt bitter.
+Musik|Ich höre gern Musik.
+Krokodil|Das Krokodil liegt am Ufer.
+Lineal|Ich zeichne mit dem Lineal.
+Termin|Ich habe morgen einen Termin.
+Kompass|Mit dem Kompass finden wir den Weg.
+Interesse|Ich habe Interesse an Tieren.
+Adresse|Schreib deine Adresse auf den Umschlag.
+Programm|Das Programm beginnt um acht.
+Kontrolle|Die Kontrolle findet am Freitag statt.
+Mitteilung|Ich habe eine wichtige Mitteilung.
+Schwierigkeit|Die Aufgabe hat eine Schwierigkeit.
+Tätigkeit|Lesen ist meine liebste Tätigkeit.
+Sauberkeit|Sauberkeit ist wichtig.
+Höflichkeit|Höflichkeit kostet nichts.
+spannend|Das Buch ist spannend.
+Rätsel|Kannst du das Rätsel lösen?
+Rücksicht|Nimm Rücksicht auf die Kleinen.
+Lücke|Fülle die Lücke aus.
+Verpackung|Die Verpackung ist aus Karton.
+Glocke|Die Glocke läutet.
+schrecklich|Das Wetter ist schrecklich.
+Netz|Der Ball landet im Netz.
+Gesetz|Das Gesetz gilt für alle.
+ersetzen|Wir müssen die Lampe ersetzen.
+Notiz|Ich mache mir eine Notiz.
+Schwanz|Der Hund wedelt mit dem Schwanz.
+Pilz|Im Wald wächst ein Pilz.
+Onkel|Mein Onkel wohnt in Bern.
+Gurke|Die Gurke ist grün.
+Wolke|Eine Wolke verdeckt die Sonne.
+Brezel|Ich kaufe eine Brezel.
+Holz|Der Tisch ist aus Holz.
+Frühstück|Zum Frühstück esse ich Brot.`,
+5:`Bibliothek|In der Bibliothek leihe ich Bücher aus.
+Theater|Wir gehen ins Theater.
+Thema|Das Thema ist spannend.
+Rhythmus|Wir klatschen im Rhythmus.
+Verantwortung|Ich übernehme die Verantwortung.
+selbstständig|Wir arbeiten selbstständig.
+Gleichgewicht|Ich verliere das Gleichgewicht.
+Wissenschaft|Die Wissenschaft erforscht das Weltall.
+Gesellschaft|Wir leben in einer Gesellschaft.
+Vergnügen|Es war mir ein Vergnügen.
+Verzeichnis|Das Verzeichnis ist alphabetisch geordnet.
+Fahrradständer|Das Fahrrad steht im Fahrradständer.
+Schifffahrt|Die Schifffahrt auf dem See ist schön.
+Bettdecke|Ich verkrieche mich unter der Bettdecke.
+Wasserfall|Der Wasserfall rauscht.
+Wettbewerb|Ich nehme an einem Wettbewerb teil.
+Geschwindigkeit|Die Geschwindigkeit ist zu hoch.
+Gewohnheit|Das ist eine schlechte Gewohnheit.
+Missverständnis|Das war ein Missverständnis.
+Zusammenhang|Ich verstehe den Zusammenhang.
+Entwicklung|Die Entwicklung dauert Jahre.
+Nachrichten|Am Abend schauen wir die Nachrichten.
+Aufmerksamkeit|Danke für eure Aufmerksamkeit.
+Gerechtigkeit|Wir setzen uns für Gerechtigkeit ein.
+Persönlichkeit|Sie hat eine starke Persönlichkeit.
+Selbstvertrauen|Mit Übung wächst das Selbstvertrauen.
+Umweltverschmutzung|Die Umweltverschmutzung schadet den Tieren.
+Lebensmittel|Wir kaufen Lebensmittel ein.
+Klimawandel|Der Klimawandel betrifft alle.
+Gebirge|Die Alpen sind ein grosses Gebirge.
+Gletscher|Der Gletscher schmilzt.
+Lawine|Die Lawine donnert ins Tal.
+Jahreszeit|Der Herbst ist meine liebste Jahreszeit.
+Zahnbürste|Meine Zahnbürste ist blau.
+Mehrheit|Die Mehrheit stimmt dafür.
+ehrgeizig|Die Spielerin ist sehr ehrgeizig.
+Ähnlichkeit|Die Ähnlichkeit ist verblüffend.
+Verkäuferin|Die Verkäuferin packt das Geschenk ein.
+Gebäck|Zum Tee gibt es Gebäck.
+Gedächtnis|Ich habe ein gutes Gedächtnis.
+Abkürzung|Wir nehmen eine Abkürzung.
+Verkehrsmittel|Der Bus ist ein öffentliches Verkehrsmittel.
+Fahrplan|Der Fahrplan hängt an der Haltestelle.
+Haltestelle|Wir warten an der Haltestelle.
+Vorteil|Das hat einen grossen Vorteil.
+Nachteil|Der Nachteil ist der hohe Preis.
+Vorurteil|Das ist nur ein Vorurteil.
+verschieden|Die Kinder sind verschieden gross.
+Viertel|Es ist Viertel nach drei.
+Vielfalt|Die Vielfalt der Pflanzen ist gross.
+Ventilator|Der Ventilator surrt.
+Volk|Das Volk stimmt ab.
+Abstimmung|Am Sonntag ist eine Abstimmung.
+widersprechen|Ich muss dir widersprechen.
+Widerstand|Er leistet keinen Widerstand.
+wiederholen|Kannst du die Frage wiederholen?
+Endstation|Wir fahren bis zur Endstation.
+Entfernung|Die Entfernung beträgt zehn Kilometer.
+entdecken|Wir wollen die Höhle entdecken.
+Stadtrand|Wir wohnen am Stadtrand.
+Werkstatt|Der Mechaniker arbeitet in der Werkstatt.
+Hindernis|Das Pferd springt über das Hindernis.
+Ereignis|Das Ereignis stand in allen Zeitungen.
+Beschäftigung|Lesen ist eine gute Beschäftigung.
+Fortschritt|Das ist ein grosser Fortschritt.
+Spaziergang|Wir machen einen Spaziergang.
+Empfang|Der Empfang war herzlich.
+empfehlen|Ich kann dir das Buch empfehlen.
+Lokomotive|Die Lokomotive zieht viele Wagen.
+Zitrone|Die Zitrone ist sauer.
+Ballett|Meine Schwester tanzt Ballett.
+Batterie|Die Batterie ist leer.
+Paket|Das Paket kommt morgen.
+Krawatte|Der Mann trägt eine Krawatte.
+Rücksichtnahme|Im Verkehr ist Rücksichtnahme wichtig.
+Verletzung|Die Verletzung heilt schnell.
+Mittelpunkt|Der Mittelpunkt des Kreises ist markiert.
+Schwimmflügel|Das kleine Kind trägt Schwimmflügel.
+Wahrscheinlichkeit|Die Wahrscheinlichkeit für Regen ist gross.`
+};
+
+const SATZ_DATEN = {
+1:`Der Hund rennt über die Wiese.
+Im Sommer ist es heiss.
+Ich trinke ein Glas Wasser.
+Die Katze schläft im Bett.
+Wir spielen mit dem Ball.
+Mein Vater fährt mit dem Zug.
+Die Biene fliegt zur Blume.
+Im Winter fällt viel Schnee.
+Das Kind hat vier Äpfel.
+Der Vogel sitzt auf dem Baum.
+Ich gehe gern in die Schule.
+Die Kuh steht auf dem Feld.
+Am Abend lese ich ein Buch.
+Mein Freund hat einen Hund.
+Die Sonne scheint hell.
+Wir singen ein Lied.
+Das Schiff fährt auf dem Meer.
+Der Tisch steht im Zimmer.
+Meine Mutter backt Brot.
+Der Weg führt in den Wald.
+Ich esse gern Käse.
+Die Maus ist klein und schnell.
+Wir gehen über die Strasse.
+Der Bär lebt im Wald.
+Mein Fuss ist nass.`,
+2:`Am Mittwoch essen wir Kartoffeln mit Gemüse.
+Die Kinder rennen schnell über den Platz.
+Im Sommer schwimmen wir im See.
+Meine Familie wohnt in einer kleinen Wohnung.
+Der Tiger liegt faul im Schatten.
+Ich packe meinen Rucksack für den Ausflug.
+Plötzlich springt die Katze auf den Tisch.
+Die Vögel fliegen im Herbst nach Süden.
+Wir müssen jetzt nach Hause gehen.
+Der König wohnt in einer alten Burg.
+Mein Bruder ist hungrig und müde.
+Das Pferd steht ruhig im Stall.
+In den Ferien fahren wir ans Meer.
+Ich habe meinen Schlüssel vergessen.
+Die Mäuse verstecken sich unter dem Bett.
+Der Lehrer liest uns eine Geschichte vor.
+Im Garten wachsen süsse Erdbeeren.
+Die Kinder spielen draussen Fussball.
+Ich putze mir jeden Morgen die Zähne.
+Der Zucker steht neben dem Kaffee.
+Am Freitag gibt es eine Überraschung.
+Mein Hund läuft gern durch den Wald.
+Wir backen heute einen Kuchen.
+Die Bäuerin füttert die Hühner.
+Das Flugzeug fliegt über die Stadt.`,
+3:`Ich hoffe, dass morgen die Sonne scheint.
+Das Fahrrad, das im Keller steht, gehört mir.
+Beim ^Schwimmen trage ich eine Badekappe.
+Am Wochenende besuchen wir unsere Grosseltern.
+Die Feuerwehr kommt sehr schnell zum Brand.
+Vielleicht regnet es heute Nachmittag.
+Der Verkehr am Morgen ist gefährlich.
+Mein Nachbar erzählt immer lustige Witze.
+Ich weiss, dass du die Wahrheit sagst.
+Das ^Lesen macht mir grosse Freude.
+Im Frühling blühen die Blumen auf der Wiese.
+Während der Pause essen wir einen Apfel.
+Das Gewitter kam ganz plötzlich.
+Wir verstecken uns hinter einem dicken Baum.
+Unsere Mannschaft hat das Spiel gewonnen.
+Die Lehrerin erklärt uns die Aufgabe.
+Es ist wichtig, dass wir pünktlich sind.
+Auf dem Pausenplatz spielen die Kinder Fussball.
+Das Eichhörnchen sammelt Nüsse für den Winter.
+Zum Geburtstag bekomme ich ein neues Fahrrad.
+Der Fussgänger wartet geduldig an der Ampel.
+Ich glaube, dass das Schwimmbad heute offen ist.
+Die Schnecke kriecht langsam über den Weg.
+Nach dem ^Essen gehen wir spazieren.
+Im Wohnzimmer steht ein grosser Fernseher.`,
+4:`Beim ^Wandern habe ich viel ^Schönes gesehen.
+Ich bin nicht mitgekommen, ich war nämlich krank.
+Das Ergebnis der Prüfung war ziemlich gut.
+Es ist schade, dass der Zug Verspätung hat.
+Allmählich wird es draussen dunkel.
+Das Buch, das du mir geschenkt hast, ist spannend.
+Zum ^Schreiben brauche ich einen spitzen Bleistift.
+Es regnet, trotzdem gehen wir hinaus.
+Ich wünsche dir alles ^Gute zum Geburtstag.
+Die Überraschung ist uns wirklich gelungen.
+Er hat gesagt, dass er morgen nicht kommt.
+Im Museum hängt ein wertvolles Gemälde.
+Das ^Rechnen fällt mir leicht, das ^Schreiben eher schwer.
+Ausserdem brauchen wir noch Mehl und Zucker.
+Wir haben etwas ^Neues über die Römer gelernt.
+Bei der Entscheidung muss ich gründlich nachdenken.
+Der Hammer ist ein nützliches Werkzeug.
+Ich hoffe, dass das Wetter am Sonntag schön bleibt.
+Die Grossmutter erzählt uns ein spannendes Märchen.
+Das ist eine Ausnahme, die man sich merken muss.
+Ohne ^Üben wird man nicht besser.
+Gewöhnlich fahre ich mit dem Fahrrad zur Schule.
+Der Lärm auf der Baustelle ist unerträglich.
+Sie hat mir ein Geheimnis verraten.
+Viele Verwandte kommen zu unserem Fest.`,
+5:`Ich bin überzeugt, dass wir den Wettbewerb gewinnen.
+In der Bibliothek ist ^Lesen erlaubt, aber ^Essen nicht.
+Das Missverständnis hat sich schnell geklärt.
+Wir übernehmen Verantwortung für unsere Umwelt.
+Beim ^Fahrradfahren muss man auf den Verkehr achten.
+Das Theater, das wir besucht haben, war voll.
+Der Gletscher ist in den letzten Jahren stark geschmolzen.
+Ich kann dir dieses Buch nur empfehlen.
+Sie hat das ^Wichtigste in einem Satz zusammengefasst.
+Es ist erstaunlich, dass die Lawine niemanden verletzt hat.
+Die Geschwindigkeit des Zuges ist beeindruckend.
+Wir arbeiten heute selbstständig an unseren Aufgaben.
+Mit grosser Aufmerksamkeit hören alle zu.
+Die Schifffahrt auf dem See war wunderschön.
+Ich muss dir leider widersprechen.
+Kannst du die Frage bitte noch einmal wiederholen?
+Der Fahrplan hängt direkt an der Haltestelle.
+Unser Klassenlager war ein unvergessliches Erlebnis.
+Der Vorteil ist, dass wir viel Zeit sparen.
+Nach der langen Wanderung waren alle erschöpft.
+Die Vielfalt der Pflanzen im Gebirge ist gross.
+Wir haben gestern etwas ^Spannendes entdeckt.
+Viele Lebensmittel landen leider im Abfall.
+Ich habe gemerkt, dass mein Gedächtnis gut trainiert ist.
+Das lange ^Warten hat sich gelohnt.`
+};
+
+/* Standortbestimmung: zwei gleichwertige Formen (abwechselnd), je 30 Wörter + 6 Sätze */
+const SB_FORMEN = {
+A:{ woerter:{1:"Hund Schiff Bäume Biene Uhr Katze",2:"Zucker Familie Wohnung Räder Flugzeug verlieren",3:"Geburtstag gefährlich Schwimmbad vielleicht wichtig Erklärung",4:"nämlich Ergebnis Verspätung Jagd Rücksicht Mahlzeit",5:"Bibliothek selbstständig Gleichgewicht Missverständnis Verkehrsmittel widersprechen"},
+    saetze:[[1,"Der Hund rennt über die Wiese."],[2,"Wir müssen jetzt nach Hause gehen."],[3,"Ich hoffe, dass morgen die Sonne scheint."],[3,"Das ^Lesen macht mir grosse Freude."],[4,"Beim ^Wandern habe ich viel ^Schönes gesehen."],[5,"Das Theater, das wir besucht haben, war voll."]]},
+B:{ woerter:{1:"Wald Mann Häuser Brief Schuh Stück",2:"Mütze Klavier Fahne Mäuse König vorlesen",3:"Fahrrad erzählen Gewitter Vorsicht freundlich Zeitung",4:"allmählich Geheimnis Überraschung Werkzeug Lücke Märchen",5:"Theater Verantwortung Schifffahrt Gerechtigkeit Vielfalt wiederholen"},
+    saetze:[[1,"Am Abend lese ich ein Buch."],[2,"Plötzlich springt die Katze auf den Tisch."],[3,"Ich weiss, dass du die Wahrheit sagst."],[3,"Nach dem ^Essen gehen wir spazieren."],[4,"Er hat gesagt, dass er morgen nicht kommt."],[5,"Wir haben gestern etwas ^Spannendes entdeckt."]]}
+};
+/* ===== Rechtschreibbereiche ===== */
+const CATS = {
+  GK:{name:"Gross- und Kleinschreibung", kurz:"Gross/klein", farbe:"#2f5bea",
+      tipp:"Nomen schreibt man gross. Probe: Kannst du «der», «die», «das» oder «ein» davorsetzen? Dann ist es ein Nomen. Am Satzanfang schreibt man immer gross. Alle anderen Wörter schreibt man klein.",
+      satzanfang:"Am Satzanfang schreibt man immer gross – egal, was für ein Wort es ist. Schau nach jedem Punkt, Fragezeichen oder Ausrufezeichen: Das nächste Wort beginnt gross.",
+      lp:"Nomenprobe (Begleiter davorsetzen) und Satzanfänge gezielt kontrollieren."},
+  NG:{name:"Verben und Adjektive als Nomen", kurz:"Nominalisierung", farbe:"#5b3fd6",
+      tipp:"Auch Verben und Adjektive werden zu Nomen, wenn ein Signalwort davorsteht: das Lesen, beim Spielen, zum Schreiben, etwas Schönes, viel Neues, alles Gute. Dann schreibt man sie gross.",
+      lp:"Signalwörter für Nominalisierungen trainieren (das, beim, zum, etwas, viel, nichts, alles + Verb/Adjektiv)."},
+  DK:{name:"Doppelte Mitlaute (ll, mm, nn, ss, tt …)", kurz:"Doppel-Mitlaut", farbe:"#d0451b",
+      tipp:"Sprich das Wort langsam und hör genau hin: Ist der Selbstlaut davor kurz (Sonne, Mitte, Teller)? Dann folgen meistens zwei gleiche Mitlaute. Ist er lang (Hose, Vater), steht nur einer.",
+      lp:"Vokallänge abhören (kurz/lang) und Silben schwingen: Bei kurzem Vokal wird der Mitlaut am Silbengelenk verdoppelt (Son-ne)."},
+  CK:{name:"ck und tz", kurz:"ck / tz", farbe:"#b26b00",
+      tipp:"Nach einem kurzen Selbstlaut schreibt man ck statt kk und tz statt zz: Zucker, Katze. Nach l, n, r steht nie ck oder tz: Onkel, Herz, Pilz. Nach einem langen Selbstlaut auch nicht: Haken, Brezel.",
+      lp:"ck/tz nur nach kurzem Vokal; Merksatz «Nach l, n, r – das merke ja – steht nie tz und nie ck»."},
+  IE:{name:"ie oder i", kurz:"ie / i", farbe:"#0f8a6b",
+      tipp:"Das lange i schreibt man meistens ie: Biene, spielen, Brief. Ein paar Wörter musst du dir merken, weil sie nur i haben: mir, dir, wir, Tiger, Igel, Maschine, Kino. Kurzes i schreibt man immer i.",
+      lp:"Langes i = ie als Regelfall; Ausnahmen (mir, dir, Tiger, Maschine …) als Merkwörter in der Lernkartei."},
+  DH:{name:"Dehnungs-h und doppelte Selbstlaute", kurz:"h / aa, ee, oo", farbe:"#a12d6e",
+      tipp:"Manche Wörter mit langem Selbstlaut haben ein h (Zahl, fahren, Schuh) oder einen doppelten Selbstlaut (Meer, Boot, Haar). Das hört man nicht – diese Wörter muss man sich merken und oft üben.",
+      lp:"Merkwörter mit Dehnungs-h und Doppelvokal regelmässig in einer Lernkartei üben; Wortfamilien bilden (fahren – Fahrt – Fahrer)."},
+  AV:{name:"Verlängern: d/t, b/p, g/k am Ende", kurz:"Verlängern", farbe:"#3f7d20",
+      tipp:"Am Wortende klingt d wie t, b wie p und g wie k. Verlängere das Wort, dann hörst du es: Hund – die Hunde, Korb – die Körbe, Zug – die Züge, wichtig – eine wichtige Frage.",
+      lp:"Verlängerungsprobe üben: Mehrzahl bilden, Adjektiv steigern oder Verb in die Grundform setzen (Hund – Hunde, wichtig – wichtiger, gibt – geben)."},
+  AE:{name:"Ableiten: ä/e und äu/eu", kurz:"ä / äu", farbe:"#0b6fa4",
+      tipp:"Suche ein verwandtes Wort mit a oder au: Bäume kommt von Baum, Hände von Hand, fährt von fahren. Findest du keins, schreibt man meistens e oder eu.",
+      lp:"Ableitungsprobe: verwandtes Wort mit a/au suchen (Bäume – Baum, gefährlich – Gefahr)."},
+  V:{name:"Wörter mit v", kurz:"v / f", farbe:"#7a5a00",
+      tipp:"Die Wortbausteine ver- und vor- schreibt man immer mit v: verlieren, vorlesen, Vorsicht. Auch Vater, Vogel, viel, vier, voll schreibt man mit v. Das sind Merkwörter.",
+      lp:"Vorsilben ver-/vor- als feste Bausteine einprägen und v-Merkwörter sammeln."},
+  DS:{name:"das oder dass", kurz:"das / dass", farbe:"#6b4f9e",
+      tipp:"Kannst du «dieses», «jenes» oder «welches» einsetzen? Dann schreibst du das. Wenn nicht, schreibst du dass. Nach Wörtern wie «hoffen», «wissen», «glauben», «sagen» und einem Komma steht oft dass.",
+      lp:"Ersatzprobe üben: Lässt sich «dieses/welches» einsetzen, steht «das»; sonst «dass»."},
+  SO:{name:"Genau hinhören (Buchstaben vergessen oder vertauscht)", kurz:"Genau hören", farbe:"#5d6b82",
+      tipp:"Sprich das Wort beim Schreiben langsam und in Silben mit: Ge-burts-tag, Schmet-ter-ling. Schreib jeden Laut, den du hörst, und lies das Wort danach nochmals genau durch.",
+      lp:"Langsames, silbiertes Mitsprechen beim Schreiben und Kontrolllesen; Wörter nach dem Schreiben Buchstabe für Buchstabe vergleichen."}
+};
+const CAT_ORDER = ["GK","NG","DK","CK","IE","DH","AV","AE","V","DS","SO"];
+
+const VOK = "aeiouäöüy";
+const isVok = c => !!c && VOK.includes(c);
+const isLetter = c => !!c && /[a-zäöüß]/i.test(c);
+const isUpper = c => c !== c.toLowerCase() && c === c.toUpperCase();
+
+/* Normalisieren: Leerzeichen, ß → ss, typografische Zeichen */
+function norm(s){
+  return String(s||"").replace(/ß/g,"ss").replace(/ẞ/g,"SS").replace(/[‘’`´]/g,"'").replace(/\s+/g," ").trim();
+}
+const stripPunct = t => t.replace(/^[«»"„“”'(\[]+|[«»"„“”'.,;:!?)\]]+$/g,"");
+
+/* Stellen im Zielwort, an denen eine Regel greift */
+function stellen(w, imSatz){
+  let ng = false;
+  if(w[0]==="^"){ ng = true; w = w.slice(1); }
+  const L = w.toLowerCase(), o = [];
+  o.push({c: ng ? "NG" : "GK", s:0, e:1});
+  if(imSatz && (L==="das" || L==="dass")){ o.push({c:"DS", s:0, e:L.length}); return o; }
+  let m;
+  const re1 = /([bdfglmnprst])\1+/g;
+  while((m = re1.exec(L))) o.push({c:"DK", s:m.index, e:m.index+m[0].length});
+  const re2 = /ck|tz/g;
+  while((m = re2.exec(L))) o.push({c:"CK", s:m.index, e:m.index+2});
+  const re3 = /ie/g;
+  while((m = re3.exec(L))) o.push({c:"IE", s:m.index, e:m.index+2});
+  for(let i=1;i<L.length;i++){ if(L[i]==="h" && isVok(L[i-1])) o.push({c:"DH", s:i-1, e:i+1}); }
+  const re4 = /aa|ee|oo/g;
+  while((m = re4.exec(L))) o.push({c:"DH", s:m.index, e:m.index+2});
+  for(let i=1;i<L.length;i++){
+    const c = L[i], p = L[i-1], n = L[i+1];
+    if(!"dbg".includes(c) || p===c || n===c) continue;
+    if(c==="g" && p==="n") continue;
+    if(n===undefined || (!isVok(n) && n!=="r" && n!=="h" && n!=="j")) o.push({c:"AV", s:i, e:i+1});
+  }
+  const re5 = /äu|ä/g;
+  while((m = re5.exec(L))) o.push({c:"AE", s:m.index, e:m.index+m[0].length});
+  const re6 = /v/g;
+  while((m = re6.exec(L))) o.push({c:"V", s:m.index, e:m.index+1});
+  return o;
+}
+
+/* Zeichen-Ausrichtung (Levenshtein mit Rückverfolgung) */
+function ausrichten(t, a){
+  const n = t.length, m = a.length, D = [];
+  for(let i=0;i<=n;i++){ D.push(new Array(m+1).fill(0)); D[i][0] = i; }
+  for(let j=0;j<=m;j++) D[0][j] = j;
+  for(let i=1;i<=n;i++) for(let j=1;j<=m;j++){
+    const sub = D[i-1][j-1] + (t[i-1]===a[j-1] ? 0 : 1);
+    D[i][j] = Math.min(sub, D[i-1][j]+1, D[i][j-1]+1);
+  }
+  const map = new Array(n).fill(null), mapIdx = new Array(n).fill(-1), ins = [];
+  for(let i=0;i<=n;i++) ins.push([]);
+  let i=n, j=m;
+  while(i>0 || j>0){
+    if(i>0 && j>0 && D[i][j] === D[i-1][j-1] + (t[i-1]===a[j-1]?0:1)){ map[i-1]=a[j-1]; mapIdx[i-1]=j-1; i--; j--; }
+    else if(i>0 && D[i][j] === D[i-1][j]+1){ i--; }
+    else { ins[i].unshift(j-1); j--; }
+  }
+  return {map, mapIdx, ins, dist:D[n][m]};
+}
+
+/* Ein Wort prüfen.  ziel: Zielwort (evtl. mit ^), antwort: Eingabe.
+   Rückgabe: ok, stellen (mit Fehlerkennzeichen), zusatz (Fehler ausserhalb der Regelstellen),
+   markT (Zielwort-Indizes zum Hervorheben), markA (falsche Zeichen in der Eingabe), luecken (fehlende Zeichen) */
+function pruefeWort(ziel, antwort, imSatz){
+  const zielRein = ziel.replace(/^\^/,"");
+  const a = norm(antwort);
+  const res = {ok: a === zielRein, stellen: stellen(ziel, imSatz).map(s=>({...s, f:false})), zusatz:[], markT:new Set(), markA:new Set(), luecken:[] };
+  if(res.ok) return res;
+  if(!a){ res.fehlt = true; res.zusatz.push({c:"SO"}); for(let k=0;k<zielRein.length;k++) res.markT.add(k); return res; }
+  const t = zielRein.toLowerCase(), al = a.toLowerCase();
+  const A = ausrichten(t, al);
+  const covered = new Set();          // Zielpositionen, die durch eine Regelstelle erklärt sind
+  const coveredIns = new Set();       // Einfügepositionen (Index in ins), die erklärt sind
+  // Regelstellen prüfen
+  for(const st of res.stellen){
+    if(st.c==="GK" || st.c==="NG") continue;
+    let seg = "";
+    for(let k=st.s;k<st.e;k++){ if(k>st.s) seg += A.ins[k].map(j=>al[j]).join(""); seg += A.map[k]||""; }
+    if(seg !== t.slice(st.s, st.e)){
+      st.f = true;
+      for(let k=st.s;k<st.e;k++){ covered.add(k); res.markT.add(k); }
+      for(let k=st.s;k<=st.e;k++) coveredIns.add(k);
+    }
+  }
+  // Gross/klein: erster Buchstabe und Buchstaben im Wort
+  const gk = res.stellen.find(s=>s.c==="GK"||s.c==="NG");
+  const a0 = a[0], t0 = zielRein[0];
+  let gkFehler = false;
+  if(isLetter(a0) && isLetter(t0) && isUpper(a0) !== isUpper(t0)) gkFehler = true;
+  for(let k=1;k<zielRein.length;k++){
+    const j = A.mapIdx[k];
+    if(j>=0 && al[j]===t[k] && isLetter(a[j]) && isUpper(a[j]) !== isUpper(zielRein[k])){ gkFehler = true; res.markA.add(j); res.markT.add(k); }
+  }
+  if(gkFehler){ gk.f = true; res.markT.add(0); if(isLetter(a0)) res.markA.add(0); }
+  // übrige Abweichungen einordnen
+  const zusatz = c => res.zusatz.push({c});
+  for(let k=0;k<t.length;k++){
+    // Einfügungen vor Position k
+    if(A.ins[k].length && !coveredIns.has(k)){
+      const x = A.ins[k].map(j=>al[j]).join(""), prev = k>0 ? (A.map[k-1]||t[k-1]) : "", next = t[k];
+      A.ins[k].forEach(j=>res.markA.add(j));
+      if(k>0) res.markT.add(k-1);
+      zusatz(einordnenEinfuegung(x, prev, next));
+    }
+    if(covered.has(k)) continue;
+    const got = A.map[k];
+    if(got === null){ res.markT.add(k); res.luecken.push(k); zusatz(einordnenFehlend(t, k)); }
+    else if(got !== t[k]){ res.markT.add(k); res.markA.add(A.mapIdx[k]); zusatz(einordnenTausch(t, k, got)); }
+  }
+  if(A.ins[t.length].length && !coveredIns.has(t.length)){
+    const x = A.ins[t.length].map(j=>al[j]).join("");
+    A.ins[t.length].forEach(j=>res.markA.add(j));
+    res.markT.add(t.length-1);
+    zusatz(einordnenEinfuegung(x, A.map[t.length-1]||t[t.length-1], ""));
+  }
+  // gleiche Zusatzfehler in einem Wort nur einmal zählen
+  const seen = new Set(); res.zusatz = res.zusatz.filter(z=>{ if(seen.has(z.c)) return false; seen.add(z.c); return true; });
+  return res;
+}
+function einordnenEinfuegung(x, prev, next){
+  const c = x[x.length-1], first = x[0];
+  if(x==="c" && next==="k") return "CK";
+  if(x==="t" && next==="z") return "CK";
+  if(x.length===1 && /[bdfglmnprst]/.test(c) && (c===prev || c===next)) return "DK";
+  if(x==="e" && prev==="i") return "IE";
+  if(x==="h" && isVok(prev)) return "DH";
+  if(x.length===1 && isVok(c) && "aeo".includes(c) && (c===prev || c===next)) return "DH";
+  if(first==="h" && isVok(prev)) return "DH";
+  return "SO";
+}
+function einordnenFehlend(t, k){
+  const c = t[k];
+  // ein Buchstabe eines Doppelmitlauts fehlt (sollte als Regelstelle erfasst sein, Sicherheitsnetz)
+  if(/[bdfglmnprst]/.test(c) && (t[k-1]===c || t[k+1]===c)) return "DK";
+  if(c==="h" && isVok(t[k-1])) return "DH";
+  return "SO";
+}
+function einordnenTausch(t, k, got){
+  const c = t[k];
+  const paar = c+got;
+  if(paar==="eä" || paar==="äe") return "AE";
+  if(paar==="fv" || paar==="wv" || paar==="vf" || paar==="vw") return "V";
+  if(["td","pb","kg","dt","bp","gk"].includes(paar) && (k===t.length-1 || !isVok(t[k+1]))) return "AV";
+  if(c==="z" && got==="s") return "SO";
+  return "SO";
+}
+
+/* Satz prüfen: Wörter einander zuordnen */
+function satzTokens(s){ return norm(s).split(" ").map(stripPunct).filter(Boolean); }
+function pruefeSatz(ziel, antwort){
+  const T = satzTokens(ziel), A = satzTokens(antwort);
+  const n = T.length, m = A.length;
+  const cost = (x,y)=>{ const a=x.replace(/^\^/,"").toLowerCase(), b=y.toLowerCase(); if(a===b) return x.replace(/^\^/,"")===y?0:0.05;
+    const d = ausrichten(a,b).dist / Math.max(a.length,b.length); return d*1.7; };
+  const D = []; for(let i=0;i<=n;i++){ D.push(new Array(m+1).fill(0)); D[i][0]=i; } for(let j=0;j<=m;j++) D[0][j]=j;
+  for(let i=1;i<=n;i++) for(let j=1;j<=m;j++) D[i][j] = Math.min(D[i-1][j-1]+cost(T[i-1],A[j-1]), D[i-1][j]+1, D[i][j-1]+1);
+  const paare = []; let i=n, j=m;
+  while(i>0 || j>0){
+    if(i>0 && j>0 && Math.abs(D[i][j] - (D[i-1][j-1]+cost(T[i-1],A[j-1])))<1e-9){ paare.unshift({z:T[i-1], a:A[j-1]}); i--; j--; }
+    else if(i>0 && Math.abs(D[i][j]-(D[i-1][j]+1))<1e-9){ paare.unshift({z:T[i-1], a:""}); i--; }
+    else { paare.unshift({z:null, a:A[j-1]}); j--; }
+  }
+  let erstes = true;
+  return paare.map(p => { if(p.z===null) return {z:null, a:p.a, ok:false, extra:true};
+    const r = {z:p.z, a:p.a, erstes, ...pruefeWort(p.z, p.a, true)}; erstes = false; return r; });
+}
+
+/* Wortmodus: Begleiter vor einem Nomen erlauben («der Hund») */
+function wortEingabe(ziel, eingabe){
+  let a = norm(eingabe).replace(/[.!?,;:]+$/,"");
+  if(isUpper(ziel[0])){ const m = a.match(/^(der|die|das|ein|eine|einen)\s+(\S+)$/i); if(m) a = m[2]; }
+  return a;
+}
+
+/* Zählen pro Bereich: Chancen und Fehler */
+function zaehle(res, acc){
+  for(const s of res.stellen){ const x = acc[s.c] || (acc[s.c]={n:0,f:0}); x.n++; if(s.f) x.f++; }
+  for(const z of res.zusatz){ if(z.c==="SO") continue; const x = acc[z.c] || (acc[z.c]={n:0,f:0}); x.n++; x.f++; }
+  const so = acc.SO || (acc.SO={n:0,f:0}); so.n++; if(res.zusatz.some(z=>z.c==="SO")) so.f++;
+  return acc;
+}
+function fehlerBereiche(res){
+  const f = res.stellen.filter(s=>s.f).map(s=>s.c).concat(res.zusatz.map(z=>z.c));
+  return [...new Set(f)];
+}
+/* ===== Einstellungen ===== */
+const ETAPPEN_PRO_STUFE = 6;   // bestandene Etappen bis zur nächsten Stufe
+const NEUE_WOERTER = 10;       // neue Wörter pro Etappe
+const KISTE_PRO_ETAPPE = 4;    // Wörter aus der Fehlerkiste pro Etappe
+const SAETZE_PRO_ETAPPE = 2;
+const BESTANDEN_AB = 0.8;
+const SB_NACH_ETAPPEN = 8;     // neue Standortbestimmung nach so vielen Etappen
+const KISTE_RAUS = 2;          // so oft richtig, dann verlässt ein Wort die Fehlerkiste
+const STUFEN = {1:"Kurze, häufige Wörter",2:"Grundwortschatz mit Regelwörtern",3:"Längere Wörter und Zusammensetzungen",4:"Anspruchsvolle Wörter",5:"Schwierige Wörter"};
+
+/* ===== Hilfsfunktionen ===== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+const rein = w => w.replace(/^\^/,"");
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const TA = 'autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"';
+
+/* ===== Daten aufbereiten ===== */
+const WORTE = [], SAETZE = [];
+(function(){
+  const gesehen = new Set();
+  for(const s of [1,2,3,4,5]){
+    WORT_DATEN[s].split("\n").forEach(z=>{ const [w,x] = z.split("|"); if(!w || gesehen.has(w)) return; gesehen.add(w); WORTE.push({id:"w"+s+":"+w, w:w.trim(), x:(x||"").trim(), s}); });
+    SATZ_DATEN[s].split("\n").forEach((t,i)=>{ if(t.trim()) SAETZE.push({id:"s"+s+":"+i, t:t.trim(), s}); });
+  }
+})();
+const WORT = Object.fromEntries(WORTE.map(w=>[w.w, w]));
+const SB_W = new Set(), SB_S = new Set();
+for(const f of Object.values(SB_FORMEN)){ for(const s in f.woerter) f.woerter[s].split(" ").forEach(w=>SB_W.add(w)); f.saetze.forEach(([s,t])=>SB_S.add(t)); }
+const POOL_W = {}, POOL_S = {};
+for(const s of [1,2,3,4,5]){ POOL_W[s] = WORTE.filter(w=>w.s===s && !SB_W.has(w.w)); POOL_S[s] = SAETZE.filter(x=>x.s===s && !SB_S.has(x.t)); }
+
+/* ===== Sprachausgabe ===== */
+const TTS = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+let VOICE = null;
+function waehleStimme(){
+  if(!TTS) return;
+  const vs = speechSynthesis.getVoices();
+  VOICE = vs.find(v=>/^de[-_]CH/i.test(v.lang)) || vs.find(v=>/^de[-_]DE/i.test(v.lang) && v.localService) || vs.find(v=>/^de/i.test(v.lang)) || null;
+}
+if(TTS){ waehleStimme(); speechSynthesis.onvoiceschanged = waehleStimme; }
+function sag(text, tempo){
+  if(!TTS) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = VOICE ? VOICE.lang : "de-DE"; if(VOICE) u.voice = VOICE;
+    u.rate = tempo || 0.85;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+const sprechText = t => t.replace(/\^/g,"");
+
+/* ===== Fortschritt (auf diesem Gerät) ===== */
+let gz = (store.get("rs.gz")||"").replace(/\D/g,"");
+let P = null;
+const pkey = () => "rs.p."+gz;
+function neuerStand(){ return {v:1, stufe:0, etappe:0, total:0, versuche:0, seit:0, sb:[], gesehen:{}, kiste:{}, stat:{}, worte:0}; }
+function ladeP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P = null; } if(!P || P.v!==1) P = neuerStand(); }
+function speichereP(){ if(gz) store.set(pkey(), JSON.stringify(P)); }
+const kisteN = () => Object.keys(P.kiste).length;
+
+/* ===== Übungsrunde ===== */
+let S = null;
+const skey = () => "rs.s."+gz;
+function speichereS(){ if(S && gz) store.set(skey(), JSON.stringify(S)); }
+function ladeS(){ try{ return JSON.parse(store.get(skey())||"null"); }catch(e){ return null; } }
+function loescheS(){ store.del(skey()); }
+
+function nimm(pool, n){
+  const g = P.gesehen;
+  return shuffle(pool.slice()).sort((a,b)=>(g[a.id]||0)-(g[b.id]||0)).slice(0,n);
+}
+function kisteItems(n, ausser){
+  return Object.entries(P.kiste).filter(([k,v])=>!ausser || v.t < ausser).sort((a,b)=>a[1].t-b[1].t).slice(0,n)
+    .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims}));
+}
+function starteEtappe(){
+  const st = P.stufe || 1;
+  const neu = nimm(POOL_W[st], NEUE_WOERTER).map(w=>({typ:"W", w:w.w, x:w.x, s:w.s, q:"E", id:w.id}));
+  const ki = kisteItems(KISTE_PRO_ETAPPE, Date.now()-60000);
+  const sa = nimm(POOL_S[st], SAETZE_PRO_ETAPPE).map(x=>({typ:"S", w:x.t, s:x.s, q:"E", id:x.id}));
+  const nr = P.etappe + 1;
+  S = {art:"etappe", sid:uid(), thema: st===5 && nr>ETAPPEN_PRO_STUFE ? `Stufe 5 · Meisterrunde ${nr-ETAPPEN_PRO_STUFE}` : `Stufe ${st} · Etappe ${nr}`,
+       items: shuffle(neu.concat(ki)).concat(sa), i:0, log:[], pending:[], z:0, start:Date.now()};
+  speichereS(); zeigeAufgabe(true);
+}
+function starteKiste(){
+  const items = kisteItems(12);
+  if(!items.length) return;
+  S = {art:"kiste", sid:uid(), thema:"Fehlerkiste", items: shuffle(items), i:0, log:[], pending:[], z:0, start:Date.now()};
+  speichereS(); zeigeAufgabe(true);
+}
+function regelKandidaten(c){
+  const max = Math.min(5, (P.stufe||1)+1);
+  if(c==="NG") return SAETZE.filter(x=>x.s<=5 && x.t.includes("^"));
+  if(c==="DS") return SAETZE.filter(x=>/\bdass\b|, das\b/.test(x.t));
+  return WORTE.filter(w=>w.s<=max && !SB_W.has(w.w) && (c==="SO" ? rein(w.w).length>=9 : stellen(w.w,false).some(o=>o.c===c)));
+}
+function starteRegel(c){
+  const kand = regelKandidaten(c);
+  let items;
+  if(c==="NG" || c==="DS") items = nimm(kand, 5).map(x=>({typ:"S", w:x.t, s:x.s, q:"R", id:x.id}));
+  else if(c==="GK"){
+    const gross = kand.filter(w=>/^[A-ZÄÖÜ]/.test(w.w)), klein = kand.filter(w=>!/^[A-ZÄÖÜ]/.test(w.w));
+    items = shuffle(nimm(gross,6).concat(nimm(klein,6))).map(w=>({typ:"W", w:w.w, x:w.x, s:w.s, q:"R", id:w.id}));
+  } else items = nimm(kand, 12).map(w=>({typ:"W", w:w.w, x:w.x, s:w.s, q:"R", id:w.id}));
+  S = {art:"regel", sid:uid(), cat:c, thema:"Regeltraining: "+CATS[c].kurz, items, i:0, log:[], pending:[], z:0, start:Date.now()};
+  speichereS(); zeigeAufgabe(true);
+}
+function starteSB(){
+  const form = P.sb.length % 2 === 0 ? "A" : "B", F = SB_FORMEN[form];
+  const items = [];
+  for(const s of [1,2,3,4,5]){
+    F.woerter[s].split(" ").forEach(w=>{ const d = WORT[w]; items.push({typ:"W", w, x:d?d.x:"", s, q:"B"}); });
+    F.saetze.filter(([st])=>st===s).forEach(([st,t])=>items.push({typ:"S", w:t, s:st, q:"B"}));
+  }
+  S = {art:"sb", sid:uid(), form, thema:"Standortbestimmung "+form, items, i:0, log:[], pending:[], z:0, start:Date.now()};
+  speichereS(); zeigeAufgabe(true);
+}
+
+/* ===== Ansicht: Start ===== */
+const app = $("app"), pill = $("pill");
+function home(){
+  $("wrap").classList.remove("wide");
+  if(TTS) speechSynthesis.cancel();
+  pill.hidden = !gz; pill.textContent = "Nr. "+gz;
+  if(gz) ladeP();
+  const offen = gz ? ladeS() : null;
+  let inhalt = "";
+  if(!gz){
+    inhalt = `<p class="sub">Hier übst du Rechtschreibung. Du hörst Wörter und Sätze und schreibst sie auf. Ist etwas falsch, siehst du, was nicht stimmt – und schreibst es richtig.</p>`;
+  } else if(offen){
+    const it = offen.items[offen.i] || {};
+    inhalt = `<div class="resume"><button class="btn big-btn" id="weiter">▶ Weitermachen<small>${esc(offen.thema)} · Aufgabe ${Math.min(offen.i+1,offen.items.length)} von ${offen.items.length}</small></button></div>
+      <p class="sub">Du hast mittendrin aufgehört. Mach dort weiter, wo du warst.</p>`;
+  } else if(!P.sb.length){
+    inhalt = `<div class="intro">
+      <h2>Bevor es losgeht: Standortbestimmung</h2>
+      <p>Du schreibst <b>30 Wörter</b> und <b>6 Sätze</b> – zuerst leichte, dann immer schwierigere. Dabei gibt es keine Hilfe: Schreib einfach so gut du kannst. Danach weisst du, auf welcher Stufe du startest.</p>
+      <p class="sub">Dauer: etwa 20 Minuten. Setz die Kopfhörer auf.</p>
+      <div class="row"><button class="btn" id="sb">📝 Standortbestimmung starten</button><button class="btn ghost" id="ton">🔊 Ton testen</button></div>
+    </div>`;
+  } else {
+    const st = P.stufe, nr = P.etappe;
+    const meister = st===5 && nr>=ETAPPEN_PRO_STUFE;
+    const dots = Array.from({length:ETAPPEN_PRO_STUFE},(_,i)=>`<i class="${i<Math.min(nr,ETAPPEN_PRO_STUFE)?"on":""}"></i>`).join("");
+    const pfad = [1,2,3,4,5].map(s=>`<div class="node ${s<st?"done":s===st?"now":""}"><b>${s<st?"✓":s}</b><span>${esc(STUFEN[s])}</span></div>`).join("");
+    const sbFrei = P.seit >= SB_NACH_ETAPPEN;
+    const kn = kisteN();
+    inhalt = `<div class="path">${pfad}</div>
+      <div class="etappe">
+        <div><div class="dots">${dots}<span>${meister?`Stufe 5 geschafft – Meisterrunden`:`Etappe ${nr+1} von ${ETAPPEN_PRO_STUFE}`}</span></div>
+        <p class="sub" style="margin:6px 0 0">Stufe ${st}: ${esc(STUFEN[st])}</p></div>
+        <button class="btn big-btn" id="etappe">▶ ${meister?"Meisterrunde":"Etappe "+(nr+1)} starten<small>${NEUE_WOERTER} Wörter${kn?` + bis ${KISTE_PRO_ETAPPE} aus der Fehlerkiste`:""} · ${SAETZE_PRO_ETAPPE} Sätze</small></button>
+      </div>
+      <div class="tiles">
+        <button class="tile" id="kiste" ${kn?"":"disabled"}><span class="ic">📦</span><b>Fehlerkiste <em class="badge">${kn}</em></b><span>${kn?"Wörter, die noch nicht sicher sitzen. Zweimal richtig – dann sind sie draussen.":"Leer – super!"}</span></button>
+        <button class="tile" id="regel"><span class="ic">🎯</span><b>Regeltraining</b><span>Übe gezielt eine Rechtschreibregel.</span></button>
+        <button class="tile ${sbFrei?"hot":""}" id="sb" ${sbFrei?"":"disabled"}><span class="ic">📝</span><b>Standortbestimmung</b><span>${sbFrei?"Wieder freigeschaltet – zeig, was du gelernt hast!":`Wieder möglich nach ${SB_NACH_ETAPPEN-P.seit} weiteren Etappen.`}</span></button>
+      </div>
+      ${meinStand()}`;
+  }
+  app.innerHTML = `<div class="card">
+    <div class="who">
+      <label for="gz">Deine Glückszahl</label>
+      <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="4" ${TA} value="${esc(gz)}" placeholder="?">
+      ${gz?`<button class="btn ghost small" id="ton2">🔊 Ton testen</button>`:""}
+      <p class="note">Schreib hier deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl.</p>
+    </div>
+    ${!TTS?`<div class="warn">Auf diesem Gerät gibt es keine Sprachausgabe. Die Wörter werden darum kurz angezeigt und dann versteckt.</div>`:""}
+    ${inhalt}
+    <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
+  </div>`;
+  const inp = $("gz");
+  const upd = () => { const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value=v; const neu = v!==gz; gz=v; store.set("rs.gz",gz); return neu; };
+  inp.addEventListener("change", ()=>{ if(upd()) home(); });
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); if(upd()) home(); } });
+  const on = (id,f) => { const b=$(id); if(b) b.onclick=f; };
+  on("weiter", ()=>{ S = offen; zeigeAufgabe(true); });
+  on("sb", starteSB);
+  on("etappe", starteEtappe);
+  on("kiste", starteKiste);
+  on("regel", regelWahl);
+  on("ton", ()=>sag("Hallo! Wenn du mich gut hörst, funktioniert der Ton."));
+  on("ton2", ()=>sag("Hallo! Wenn du mich gut hörst, funktioniert der Ton."));
+  on("teach", lehrperson);
+  if(!gz) inp.focus({preventScroll:true});
+}
+function meinStand(){
+  const st = P.stat, liste = CAT_ORDER.filter(c=>st[c] && st[c].n>=5);
+  if(P.worte < 30 || !liste.length) return "";
+  const rows = liste.map(c=>{ const p = Math.round((1-st[c].f/st[c].n)*100);
+    return `<div class="mrow"><span>${esc(CATS[c].kurz)}</span><div class="bar"><i style="width:${p}%;background:${p>=90?"#3fbf6f":p>=75?"#f5c04a":"#ef7b6f"}"></i></div><b>${p}%</b></div>`; }).join("");
+  const schwach = liste.slice().sort((a,b)=>st[b].f/st[b].n - st[a].f/st[a].n).filter(c=>st[c].f/st[c].n>0.15).slice(0,2);
+  return `<details class="mine"><summary>📊 Meine Rechtschreibung · ${P.worte} Wörter geschrieben</summary>
+    <div class="mlist">${rows}</div>
+    ${schwach.length?`<p class="sub" style="margin-top:12px">Darauf solltest du besonders achten: <b>${schwach.map(c=>esc(CATS[c].kurz)).join("</b> und <b>")}</b>. Im Regeltraining kannst du das gezielt üben.</p>`:""}
+  </details>`;
+}
+function regelWahl(){
+  const st = P.stat;
+  app.innerHTML = `<div class="card">
+    <h2>🎯 Regeltraining</h2>
+    <p class="sub">Wähle eine Regel. Du bekommst Wörter oder Sätze, in denen genau diese Regel wichtig ist.</p>
+    <div class="topics">${CAT_ORDER.map(c=>{ const x=st[c], p = x&&x.n>=5 ? Math.round((1-x.f/x.n)*100) : null;
+      return `<button class="topic" data-c="${c}" style="--c:${CATS[c].farbe}"><span><b>${esc(CATS[c].name)}</b><span>${p===null?"noch wenig geübt":`bisher ${p}% richtig`}</span></span></button>`; }).join("")}</div>
+    <div class="actions"><button class="btn ghost" id="zur">Zurück</button></div>
+  </div>`;
+  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>regelIntro(b.dataset.c));
+  $("zur").onclick = home;
+}
+function regelIntro(c){
+  app.innerHTML = `<div class="card">
+    <span class="qtype" style="background:${CATS[c].farbe}1a;color:${CATS[c].farbe}">🎯 ${esc(CATS[c].name)}</span>
+    <div class="rule big-rule"><h3>So geht die Regel</h3><p>${esc(CATS[c].tipp)}</p></div>
+    <div class="actions"><button class="btn" id="go">Los geht's</button><button class="btn ghost" id="zur">Zurück</button></div>
+  </div>`;
+  $("go").onclick = ()=>starteRegel(c);
+  $("zur").onclick = regelWahl;
+}
+
+/* ===== Ansicht: Aufgabe ===== */
+let teilIdx = 0;
+function teile(text){
+  const toks = sprechText(text).split(" "), out = []; let cur = [];
+  toks.forEach(t=>{ cur.push(t); if(/[,;:]$/.test(t) || cur.length>=4){ out.push(cur.join(" ")); cur=[]; } });
+  if(cur.length) out.push(cur.join(" "));
+  return out;
+}
+function vorlesen(it, langsam){
+  if(it.typ==="W"){ const w = rein(it.w); sag(it.x ? `${w}. … ${sprechText(it.x)} … ${w}.` : `${w}.`, langsam?0.6:0.85); }
+  else sag(sprechText(it.w), langsam?0.6:0.82);
+}
+function zeigeAufgabe(vorlesenJetzt){
+  if(!S) return home();
+  if(S.i >= S.items.length) return abschluss();
+  const it = S.items[S.i], n = S.items.length;
+  const istSatz = it.typ==="S";
+  teilIdx = 0;
+  const prog = S.items.map((x,k)=>{ const l = S.log[k]; return `<i class="${k===S.i?"now":l?(l.ok?"ok":l.teil?"half":"no"):""}"></i>`; }).join("");
+  const sb = S.art==="sb";
+  app.innerHTML = `<div class="card task">
+    <div class="sesshead"><span class="qtype">${istSatz?"💬 Satz":"✏️ Wort"} ${S.i+1} von ${n}</span><span class="grow sub" style="margin:0">${esc(S.thema)}</span><button class="btn ghost small" id="pause">Pause</button></div>
+    <div class="progress">${prog}</div>
+    ${TTS ? `<div class="hear">
+      <button class="btn hearbtn" id="h1">🔊 ${istSatz?"Satz anhören":"Anhören"}</button>
+      <button class="btn ghost" id="h2">🐢 Langsam</button>
+      ${istSatz?`<button class="btn ghost" id="h3">Stück für Stück <small id="teilnr"></small></button>`:""}
+    </div>` : `<div class="flash" id="flash">${esc(sprechText(it.w))}</div>`}
+    <p class="hint">${istSatz?"Schreib den ganzen Satz auf. Achte auf Gross- und Kleinschreibung.":"Schreib das Wort auf. Nomen schreibst du gross."}</p>
+    ${istSatz ? `<textarea class="ans wide" id="inp" rows="2" ${TA} placeholder="Satz hier schreiben …"></textarea>`
+              : `<input class="ans wide" id="inp" ${TA} placeholder="Wort hier schreiben …">`}
+    <div class="actions"><button class="btn" id="chk">Prüfen</button>${sb?`<span class="sub" style="margin:0">Standortbestimmung: Es gibt keine Hilfe – du siehst dein Resultat am Schluss.</span>`:""}</div>
+    <div id="fb"></div>
+  </div>`;
+  const inp = $("inp");
+  if(TTS){
+    $("h1").onclick = ()=>{ vorlesen(it,false); inp.focus({preventScroll:true}); };
+    $("h2").onclick = ()=>{ vorlesen(it,true); inp.focus({preventScroll:true}); };
+    if(istSatz){ const T = teile(it.w); const lab = $("teilnr"); lab.textContent = `1/${T.length}`;
+      $("h3").onclick = ()=>{ sag(T[teilIdx], 0.7); teilIdx = (teilIdx+1) % T.length; lab.textContent = `${teilIdx+1}/${T.length}`; inp.focus({preventScroll:true}); }; }
+    if(vorlesenJetzt) vorlesen(it,false);
+  } else {
+    setTimeout(()=>{ const f=$("flash"); if(f) f.classList.add("hidden"); }, istSatz ? 6000 : 2500);
+  }
+  $("pause").onclick = ()=>{ sendePending(); S = null; home(); };
+  $("chk").onclick = pruefen;
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); pruefen(); } });
+  inp.focus({preventScroll:true});
+}
+
+function protokolliere(it, eintraege){
+  // eintraege: [{w, a, ok, ims}] – je Wort (bei Sätzen jedes Wort einzeln)
+  const z = it.typ==="S" ? ++S.z : 0;
+  for(const e of eintraege){
+    const rec = {w:e.w, a:e.a, ok:e.ok?1:0, s:it.s, k:it.typ, q:it.q};
+    if(z) rec.z = z;
+    if(e.ims && it.typ==="W") rec.ims = 1;
+    S.pending.push(rec);
+    // Statistik und Fehlerkiste
+    if(e.w){
+      const r = e.res; zaehle(r, P.stat); P.worte++;
+      const key = e.w;
+      const nurSatzanfang = e.erstes && fehlerBereiche(r).every(c=>c==="GK");
+      if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, n:0, t:Date.now()}; }
+      else if(P.kiste[key] && (it.q==="K" || P.kiste[key].t < S.start)){ P.kiste[key].n++; P.kiste[key].t = Date.now(); if(P.kiste[key].n >= KISTE_RAUS) delete P.kiste[key]; }
+    }
+  }
+  if(z) (S.saetze || (S.saetze = [])).push({z, t:it.w, a:eintraege.antwort||""});
+  if(it.id) P.gesehen[it.id] = (P.gesehen[it.id]||0)+1;
+}
+
+function pruefen(){
+  const it = S.items[S.i], inp = $("inp");
+  const roh = inp.value;
+  if(!norm(roh)){ inp.focus(); inp.classList.add("shake"); setTimeout(()=>inp.classList.remove("shake"),400); return; }
+  if(TTS) speechSynthesis.cancel();
+  inp.readOnly = true; $("chk").hidden = true;
+  let ok, falsche = [], logEintrag;
+  if(it.typ==="W"){
+    const a = wortEingabe(rein(it.w), roh);
+    const res = pruefeWort(it.w, a, !!it.ims);
+    ok = res.ok;
+    const e = [{w:it.w, a, ok, res, ims:!!it.ims}];
+    protokolliere(it, e);
+    logEintrag = {ok, teil:false};
+    if(!ok) falsche = [{z:it.w, a, res}];
+  } else {
+    const paare = pruefeSatz(it.w, roh);
+    const e = paare.filter(p=>!p.extra).map(p=>({w:p.z, a:p.a, ok:p.ok, res:p, erstes:p.erstes}));
+    paare.filter(p=>p.extra).forEach(p=>e.push({w:"", a:p.a, ok:false, res:null}));
+    e.antwort = norm(roh);
+    protokolliere(it, e);
+    const richtig = paare.filter(p=>!p.extra && p.ok).length, total = paare.filter(p=>!p.extra).length, extra = paare.filter(p=>p.extra).length;
+    ok = richtig===total && !extra;
+    logEintrag = {ok, teil: !ok && richtig/Math.max(total,1) >= 0.5, anteil: Math.max(0, richtig - extra)/total};
+    falsche = paare.filter(p=>!p.extra && !p.ok).map(p=>({z:p.z, a:p.a, res:p, erstes:p.erstes}));
+    it._paare = paare;
+  }
+  S.log[S.i] = logEintrag;
+  S.i++;
+  speichereP(); speichereS();
+  if(S.pending.length >= 12) sendePending();
+  inp.classList.add(ok?"ok":"no");
+  if(S.art==="sb"){ return zeigeAufgabe(true); }
+  if(ok){
+    $("fb").innerHTML = `<div class="explain ok"><h3>✅ Richtig!</h3>${lob()}</div><div class="actions"><button class="btn" id="next">Weiter →</button></div>`;
+    $("next").onclick = ()=>zeigeAufgabe(true); $("next").focus({preventScroll:true});
+    return;
+  }
+  korrektur(it, falsche);
+}
+function lob(){ const L = ["Genau so!","Super geschrieben.","Stimmt alles.","Perfekt.","Sehr gut!"]; return `<p style="margin:0">${L[Math.floor(Math.random()*L.length)]}</p>`; }
+
+/* Markierte Darstellung */
+function zeigeMarkiert(text, set, cls){
+  return [...text].map((ch,k)=> set && set.has(k) ? `<mark class="${cls}">${esc(ch)}</mark>` : esc(ch)).join("");
+}
+function regelBoxen(bereiche, satzanfang){
+  return bereiche.map(c=>`<div class="rule" style="--c:${CATS[c].farbe}"><h3>${esc(c==="GK"&&satzanfang?"Satzanfang":CATS[c].name)}</h3><p>${esc(c==="GK"&&satzanfang?CATS.GK.satzanfang:CATS[c].tipp)}</p></div>`).join("");
+}
+
+/* Pflicht-Korrektur: jedes falsche Wort einprägen, abdecken, richtig schreiben */
+function korrektur(it, falsche){
+  const fb = $("fb");
+  let kopf = "";
+  if(it.typ==="S"){
+    const paare = it._paare;
+    const deins = paare.map(p=>{ if(p.extra) return `<span class="tok extra">${esc(p.a)}</span>`; if(!p.a) return `<span class="tok miss">___</span>`;
+      return `<span class="tok ${p.ok?"good":"bad"}">${p.ok?esc(p.a):zeigeMarkiert(p.a, p.markA, "x")}</span>`; }).join(" ");
+    const zeichen = /[.?!]$/.test(it.w) ? it.w.slice(-1) : "";
+    const richtig = paare.filter(p=>!p.extra).map(p=>`<span class="tok ${p.ok?"":"fix"}">${p.ok?esc(rein(p.z)):zeigeMarkiert(rein(p.z), p.markT, "y")}</span>`).join(" ").replace(/<\/span>$/, esc(zeichen)+"</span>");
+    const extra = paare.filter(p=>p.extra).length;
+    kopf = `<div class="explain"><h3>Fast! Schau genau hin:</h3>
+      <p class="lab">Du hast geschrieben:</p><p class="satz">${deins}</p>
+      <p class="lab">So ist es richtig:</p><p class="satz">${richtig}</p>
+      ${extra?`<p class="sub">Durchgestrichen: Dieses Wort gehört nicht in den Satz.</p>`:""}
+      ${falsche.length?`<p style="margin:10px 0 0"><b>${falsche.length===1?"Dieses Wort":"Diese "+falsche.length+" Wörter"}</b> schreibst du jetzt richtig.</p>`:""}</div>`;
+  }
+  let k = 0;
+  const schritt = () => {
+    if(k >= falsche.length){
+      fb.innerHTML = kopf + `<div class="explain ok"><h3>Gut korrigiert!</h3><p style="margin:0">${falsche.length>1?"Diese Wörter kommen":"Das Wort kommt"} in deine Fehlerkiste und taucht später nochmals auf.</p></div>
+        <div class="actions"><button class="btn" id="next">Weiter →</button></div>`;
+      $("next").onclick = ()=>zeigeAufgabe(true); $("next").focus({preventScroll:true});
+      return;
+    }
+    const f = falsche[k], ziel = rein(f.z), res = f.res;
+    const bereiche = f.a ? fehlerBereiche(res) : ["SO"];
+    const nr = falsche.length>1 ? ` <span class="sub">(${k+1} von ${falsche.length})</span>` : "";
+    const merken = (hinweis) => {
+      fb.innerHTML = kopf + `<div class="fix-card">
+        ${hinweis||""}
+        ${f.a ? `<p class="lab">Du hast geschrieben:</p><p class="wort falsch">${zeigeMarkiert(f.a, res.markA, "x")}</p>` : `<p class="lab">Dieses Wort fehlt:</p>`}
+        <p class="lab">Richtig ist:${nr}</p><p class="wort richtig">${zeigeMarkiert(ziel, res.markT, "y")}</p>
+        ${regelBoxen(bereiche, f.erstes && !/^[a-zäöü]/.test(ziel) && f.a && /^[a-zäöü]/.test(f.a))}
+        <p class="sub" style="margin:12px 0 8px">Präg dir das Wort gut ein. Dann deckst du es zu und schreibst es aus dem Kopf.</p>
+        <div class="actions"><button class="btn" id="gemerkt">Ich habe es mir gemerkt</button>${TTS?`<button class="btn ghost" id="hoer">🔊</button>`:""}</div>
+      </div>`;
+      $("gemerkt").onclick = schreiben; $("gemerkt").focus({preventScroll:true});
+      const h = $("hoer"); if(h) h.onclick = ()=>sag(ziel, 0.75);
+      fb.scrollIntoView({behavior:"smooth", block:"start"});
+    };
+    const schreiben = () => {
+      fb.innerHTML = kopf + `<div class="fix-card">
+        <p class="lab">Jetzt aus dem Kopf: Schreib das Wort richtig.${nr}</p>
+        <p class="wort zu">${"•".repeat(Math.min(ziel.length, 14))}</p>
+        <input class="ans wide" id="nach" ${TA} placeholder="Wort richtig schreiben …">
+        <div class="actions"><button class="btn" id="ok2">Prüfen</button></div>
+      </div>`;
+      const ni = $("nach"); ni.focus({preventScroll:true});
+      const go = () => {
+        const v = norm(ni.value).replace(/[.!?,;:]+$/,"");
+        if(!v) return ni.focus();
+        if(v === ziel){ k++; schritt(); }
+        else merken(`<div class="again">Noch nicht ganz. Schau dir das Wort nochmals genau an.</div>`);
+      };
+      $("ok2").onclick = go;
+      ni.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); go(); } });
+    };
+    merken("");
+  };
+  if(it.typ==="W"){
+    kopf = `<div class="explain"><h3>Nicht ganz richtig</h3><p style="margin:0">Schau, was nicht stimmt – und lies die Regel dazu.</p></div>`;
+  }
+  schritt();
+}
+
+/* ===== Abschluss einer Runde ===== */
+function abschluss(){
+  sendePending(true);
+  const L = S.log.filter(Boolean);
+  const wert = L.reduce((a,l)=>a + (l.anteil!==undefined ? l.anteil : (l.ok?1:0)), 0), quote = L.length ? wert/L.length : 0;
+  const prozent = Math.round(quote*100);
+  let titel = "", text = "", extra = "";
+  if(S.art==="etappe"){
+    P.total++; P.seit++;
+    if(quote >= BESTANDEN_AB){
+      P.etappe++;
+      titel = "Etappe geschafft!";
+      if(P.stufe < 5 && P.etappe >= ETAPPEN_PRO_STUFE){ P.stufe++; P.etappe = 0; titel = `🎉 Stufe ${P.stufe-1} geschafft!`; text = `Ab jetzt übst du auf Stufe ${P.stufe}: ${STUFEN[P.stufe]}.`; }
+      else text = P.stufe===5 && P.etappe>ETAPPEN_PRO_STUFE ? "Meisterrunde bestanden." : `Noch ${Math.max(0,ETAPPEN_PRO_STUFE-P.etappe)} Etappen bis zur nächsten Stufe.`;
+    } else { P.versuche++; titel = "Noch nicht ganz"; text = `Für die Etappe brauchst du ${Math.round(BESTANDEN_AB*100)}% richtig. Versuch es nochmals – mit neuen Wörtern.`; }
+  } else if(S.art==="sb"){
+    const proStufe = {};
+    S.log.forEach((l,k)=>{ const s = S.items[k].s, x = proStufe[s] || (proStufe[s]={w:0,n:0}); x.n++; x.w += l.anteil!==undefined ? l.anteil : (l.ok?1:0); });
+    const q = {}; for(const s in proStufe) q[s] = Math.round(proStufe[s].w/proStufe[s].n*100);
+    const erste = !P.sb.length;
+    P.sb.push({form:S.form, datum:new Date().toISOString(), quote:prozent, stufen:q});
+    P.seit = 0;
+    if(erste){ let start = 5; for(const s of [1,2,3,4,5]){ if((q[s]||0) < 80){ start = s; break; } } P.stufe = start; P.etappe = 0; }
+    titel = "Standortbestimmung fertig";
+    text = erste ? `Du startest auf Stufe ${P.stufe}: ${STUFEN[P.stufe]}.` : `Du übst weiter auf Stufe ${P.stufe}.`;
+    extra = `<div class="sbq">${[1,2,3,4,5].map(s=>`<div><span>Stufe ${s}</span><div class="bar"><i style="width:${q[s]||0}%;background:${(q[s]||0)>=80?"#3fbf6f":(q[s]||0)>=60?"#f5c04a":"#ef7b6f"}"></i></div><b>${q[s]||0}%</b></div>`).join("")}</div>`;
+  } else if(S.art==="kiste"){ titel = "Fehlerkiste geübt"; text = kisteN() ? `In der Fehlerkiste sind noch ${kisteN()} Wörter.` : "Die Fehlerkiste ist leer!"; }
+  else { titel = "Regeltraining fertig"; text = "Gut gemacht. Achte beim Schreiben weiter auf diese Regel."; }
+  // falsche Wörter dieser Runde
+  const falsch = [];
+  S.items.forEach((it,k)=>{ const l = S.log[k]; if(!l || l.ok) return;
+    if(it.typ==="W") falsch.push(rein(it.w)); else if(it._paare) it._paare.filter(p=>!p.extra && !p.ok).forEach(p=>falsch.push(rein(p.z))); });
+  speichereP(); loescheS();
+  const sterne = quote>=0.95?"⭐⭐⭐":quote>=0.85?"⭐⭐":quote>=0.7?"⭐":"🙂";
+  const art = S.art;
+  app.innerHTML = `<div class="card result">
+    <p class="sub" style="margin:0">${esc(S.thema)}</p>
+    <div class="score">${prozent}%</div>
+    <div class="stars">${sterne}</div>
+    <h2>${esc(titel)}</h2><p>${esc(text)}</p>
+    ${extra}
+    ${falsch.length?`<p class="sub" style="margin-top:16px">${art==="sb"?"Diese Wörter kommen in deine Fehlerkiste:":"Übe diese Wörter weiter:"}</p><p class="chips">${[...new Set(falsch)].map(w=>`<span>${esc(w)}</span>`).join("")}</p>`:""}
+    <p class="sent" id="sent">${ENDPOINT?"Wird an die Lehrperson geschickt …":""}</p>
+    <div class="actions" style="justify-content:center"><button class="btn" id="menu">Zur Übersicht</button></div>
+  </div>`;
+  S = null;
+  $("menu").onclick = home; $("menu").focus({preventScroll:true});
+}
+
+/* ===== Senden an die Google-Tabelle ===== */
+const QKEY = "rs.queue";
+function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ return []; } }
+function makeRec(items, fertig){
+  const ok = items.filter(i=>i.ok).length;
+  const zs = new Set(items.filter(i=>i.z).map(i=>i.z));
+  return {typ:"uebung-runde", v:3, id:uid(), sid:S.sid, uebung:UEBUNG, glueckszahl:gz, thema:S.thema, art:S.art, form:S.form||"", cat:S.cat||"",
+    datum:new Date().toISOString(), punkte:ok, max:items.length, fertig:!!fertig,
+    stand:{stufe:P.stufe, etappe:P.etappe, total:P.total, kiste:kisteN(), sb:P.sb.length},
+    saetze:(S.saetze||[]).filter(x=>zs.has(x.z)), aufgaben:items};
+}
+function sendePending(fertig){
+  if(!S || !gz) return;
+  if(!S.pending.length && !fertig) return;
+  const items = S.pending.splice(0);
+  speichereS();
+  if(!ENDPOINT) return;
+  const q = queue(); q.push(makeRec(items, fertig)); store.set(QKEY, JSON.stringify(q.slice(-80)));
+  flush();
+}
+function sendOne(rec){
+  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec),keepalive:true})
+    .then(r=>r.text()).then(t=>{ if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt"); });
+}
+let flushing = false;
+async function flush(){
+  if(!ENDPOINT || flushing) return;
+  flushing = true;
+  let alleOk = true;
+  try{
+    const q = queue(), rest = [];
+    for(const rec of q){ try{ await sendOne(rec); }catch(e){ rest.push(rec); alleOk = false; } }
+    const neu = queue().slice(q.length);
+    store.set(QKEY, JSON.stringify(rest.concat(neu).slice(-80)));
+  } finally { flushing = false; }
+  const s = $("sent"); if(s){ s.textContent = alleOk ? "✓ An die Lehrperson geschickt." : "Noch nicht geschickt – das passiert automatisch beim nächsten Öffnen."; s.className = "sent"+(alleOk?" ok":""); }
+}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") sendePending(); });
+window.addEventListener("pagehide", ()=>sendePending());
+/* ===== Lehrperson ===== */
+let TD = null, K = null, NAMEN = {};
+function ladeNamen(){ try{ NAMEN = JSON.parse(store.get("rs.namen")||"{}")||{}; }catch(e){ NAMEN = {}; } }
+const nameVon = g => NAMEN[g] ? NAMEN[g] : "Nr. "+g;
+const datumKurz = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit",year:"2-digit"}); };
+const pc = (ok,n) => n ? Math.round(ok/n*100) : null;
+const farbe = p => p===null ? "" : p>=90 ? "ok" : p>=75 ? "half" : "no";
+
+function lehrperson(){
+  ladeNamen();
+  if(!ENDPOINT){
+    if(confirm("Die Google-Tabelle ist noch nicht verbunden.\n\nMöchtest du die Lehreransicht mit Beispieldaten anschauen?")){ TD = beispielDaten(); klasse(); }
+    return;
+  }
+  const code = prompt("Passwort der Lehrperson:");
+  if(code===null) return;
+  const btn = $("teach"); if(btn){ btn.textContent = "lädt …"; btn.disabled = true; }
+  const cb = "rscb"+Date.now(), s = document.createElement("script");
+  let fertig = false;
+  const reset = () => { if(btn){ btn.textContent = "Lehrperson"; btn.disabled = false; } };
+  window[cb] = d => { fertig = true; delete window[cb]; s.remove(); reset();
+    if(!d || !d.ok){ alert((d && d.fehler) || "Keine Antwort von der Tabelle."); return; }
+    TD = d; klasse(); };
+  s.onerror = () => { if(!fertig){ reset(); alert("Die Tabelle ist nicht erreichbar."); } };
+  s.src = ENDPOINT+"?uebung="+encodeURIComponent(UEBUNG)+"&code="+encodeURIComponent(code.trim())+"&callback="+cb;
+  document.head.appendChild(s);
+  setTimeout(()=>{ if(!fertig) reset(); }, 30000);
+}
+
+/* Anteil richtig wie bei den Kindern: Wort = 1 Aufgabe, Satz = 1 Aufgabe (Anteil richtiger Wörter) */
+function aufgabenQuote(items){
+  let w = 0, n = 0; const saetze = {};
+  for(const i of items){
+    if(i.k==="S"){ const key = i.rid+":"+i.z, x = saetze[key] || (saetze[key]={ok:0,n:0,extra:0}); if(i.extra) x.extra++; else { x.n++; if(i.ok) x.ok++; } }
+    else if(!i.extra){ n++; if(i.ok) w++; }
+  }
+  for(const x of Object.values(saetze)){ if(!x.n) continue; n++; w += Math.max(0, x.ok - x.extra)/x.n; }
+  return n ? Math.round(w/n*100) : null;
+}
+
+function auswerten(){
+  const K = {};
+  const runden = (TD.runden||[]).slice().sort((a,b)=>String(a.datum||a.zeit).localeCompare(String(b.datum||b.zeit)));
+  runden.forEach((r,ri)=>{
+    const g = String(r.glueckszahl||"?");
+    const k = K[g] || (K[g] = {g, items:[], stand:null, last:null, sb:{}, tage:new Set(), saetze:[]});
+    const d = r.datum || r.zeit;
+    if(r.stand) k.stand = r.stand;
+    k.last = d; k.tage.add(String(d).slice(0,10));
+    const satzText = {}; (r.saetze||[]).forEach(s=>{ satzText[s.z] = s; k.saetze.push({...s, datum:d, thema:r.thema}); });
+    for(const a of (r.aufgaben||[])){
+      const it = {...a, datum:d, art:r.art, rid:ri};
+      if(a.w){ it.res = pruefeWort(a.w, a.a||"", a.k==="S" || !!a.ims); it.ok = it.res.ok; it.fb = it.ok ? [] : fehlerBereiche(it.res); }
+      else { it.extra = true; it.ok = false; it.fb = ["SO"]; }
+      k.items.push(it);
+      if(r.art==="sb"){ const sb = k.sb[r.sid] || (k.sb[r.sid] = {form:r.form, datum:d, items:[]}); sb.items.push(it); }
+    }
+  });
+  for(const k of Object.values(K)){
+    const woerter = k.items.filter(i=>!i.extra);
+    k.n = woerter.length;
+    k.akt = k.items.slice(-400);
+    k.quoteAkt = aufgabenQuote(k.akt);
+    k.cat = {};
+    for(const i of k.akt){ if(i.extra){ const x = k.cat.SO || (k.cat.SO={n:0,f:0}); x.n++; x.f++; } else zaehle(i.res, k.cat); }
+    k.beispiele = {};
+    for(const i of k.items.slice().reverse()){ if(i.ok || i.extra || !i.a) continue;
+      for(const c of i.fb){ const l = k.beispiele[c] || (k.beispiele[c]=[]); if(l.length<4 && !l.some(x=>x.w===i.w)) l.push({w:rein(i.w), a:i.a}); } }
+    const letzte = {};
+    for(const i of k.items){ if(i.w) letzte[rein(i.w)] = i.ok; }
+    k.offen = Object.entries(letzte).filter(([w,ok])=>!ok).map(([w])=>w).slice(-24);
+    k.sbList = Object.values(k.sb).sort((a,b)=>String(a.datum).localeCompare(String(b.datum))).map(sb=>{
+      const q = aufgabenQuote(sb.items), st = {};
+      for(const s of [1,2,3,4,5]) st[s] = aufgabenQuote(sb.items.filter(i=>i.s===s));
+      // sicher bis Stufe s: Durchschnitt der Stufen 1..s mindestens 75% und Stufe s selbst mindestens 65%
+      let niveau = 0, summe = 0, anz = 0;
+      for(const s of [1,2,3,4,5]){ if(st[s]===null) continue; summe += st[s]; anz++; if(summe/anz >= 75 && st[s] >= 65) niveau = s; }
+      const cat = {}; sb.items.forEach(i=>{ if(!i.extra) zaehle(i.res, cat); });
+      return {...sb, q, st, niveau, cat, vollst: sb.items.length >= 50};
+    });
+    k.sbLetzte = k.sbList[k.sbList.length-1] || null;
+  }
+  return K;
+}
+
+function catZelle(x){
+  if(!x || x.n < 5) return `<td class="num muted">–</td>`;
+  const p = pc(x.n-x.f, x.n);
+  return `<td class="num"><span class="tag ${farbe(p)}" title="${x.n-x.f} von ${x.n} richtig">${p}%</span></td>`;
+}
+
+function klasse(){
+  K = auswerten(); pill.hidden = true; $("wrap").classList.add("wide"); if(TTS) speechSynthesis.cancel();
+  const liste = Object.values(K).sort((a,b)=>(+a.g)-(+b.g));
+  const zeilen = liste.map(k=>{ const st = k.stand || {};
+    return `<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}</td>
+      <td class="num">${st.stufe?`${st.stufe} · ${Math.min(st.etappe||0,ETAPPEN_PRO_STUFE)}/${ETAPPEN_PRO_STUFE}`:"–"}</td>
+      <td class="num">${k.n}</td>
+      <td class="num">${k.quoteAkt===null?"–":`<span class="tag ${farbe(k.quoteAkt)}">${k.quoteAkt}%</span>`}</td>
+      <td class="num">${k.sbLetzte?`${k.sbLetzte.q}% <span class="muted">${k.sbLetzte.niveau?"bis S"+k.sbLetzte.niveau:"&lt; S1"}</span>`:"–"}</td>
+      ${CAT_ORDER.map(c=>catZelle(k.cat[c])).join("")}
+      <td>${datumKurz(k.last)}</td></tr>`; }).join("");
+  app.innerHTML = `<div class="card wide-card">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Rechtschreibung · Klassenübersicht</h2>
+      <div class="row no-print">${TD.tabelle?`<a class="btn ghost small" href="${esc(TD.tabelle)}" target="_blank" rel="noopener">Google-Tabelle</a>`:""}
+        <button class="btn ghost small" id="namen">Namen</button><button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tclose">Schliessen</button></div>
+    </div>
+    ${TD.demo?`<div class="warn">Beispieldaten – so sieht die Auswertung aus, sobald die Kinder üben. Die Namen sind erfunden.</div>`:""}
+    <p class="sub" style="margin-top:8px">Prozent = Anteil richtig in den letzten 400 geschriebenen Wörtern. Bereiche: Anteil der Stellen, an denen die Regel richtig angewendet wurde. Grün ab 90%, gelb ab 75%. Zeile antippen für das Profil.</p>
+    <div class="tscroll"><table class="t"><tr><th>Kind</th><th class="num">Stufe · Etappe</th><th class="num">Wörter</th><th class="num">Richtig</th><th class="num">Standort&shy;bestimmung</th>
+      ${CAT_ORDER.map(c=>`<th class="num vert" title="${esc(CATS[c].name)}">${esc(CATS[c].kurz)}</th>`).join("")}<th>Zuletzt</th></tr>
+      ${zeilen || `<tr><td colspan="17">Noch keine Daten.</td></tr>`}</table></div>
+    ${klassenBereiche(liste)}
+  </div>`;
+  $("tclose").onclick = ()=>{ TD = null; K = null; home(); };
+  $("tprint").onclick = ()=>print();
+  $("namen").onclick = ()=>namenEditor(liste);
+  app.querySelectorAll("tr[data-g]").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
+  window.scrollTo(0,0);
+}
+function klassenBereiche(liste){
+  const sum = {};
+  liste.forEach(k=>{ for(const c in k.cat){ const x = sum[c] || (sum[c]={n:0,f:0}); x.n += k.cat[c].n; x.f += k.cat[c].f; } });
+  const cs = CAT_ORDER.filter(c=>sum[c] && sum[c].n>=10);
+  if(!cs.length) return "";
+  return `<h2 style="margin-top:26px">Ganze Klasse: Wo liegen die Schwierigkeiten?</h2>
+    <div class="cbars">${cs.sort((a,b)=>sum[b].f/sum[b].n - sum[a].f/sum[a].n).map(c=>{ const p = pc(sum[c].n-sum[c].f, sum[c].n);
+      return `<div class="cbar"><span>${esc(CATS[c].name)}</span><div class="bar"><i style="width:${p}%;background:${CATS[c].farbe}"></i></div><b>${p}%</b></div>`; }).join("")}</div>`;
+}
+function namenEditor(liste){
+  app.innerHTML = `<div class="card">
+    <h2>Namen zu den Glückszahlen</h2>
+    <p class="sub">Die Namen bleiben nur auf diesem Gerät gespeichert und werden nirgends hingeschickt. In der Google-Tabelle stehen nur die Glückszahlen.</p>
+    <div class="namen">${liste.map(k=>`<label><b>${esc(k.g)}</b><input class="ans" data-g="${esc(k.g)}" value="${esc(NAMEN[k.g]||"")}" placeholder="Name" ${TA}></label>`).join("")}</div>
+    <div class="actions"><button class="btn" id="save">Speichern</button><button class="btn ghost" id="zur">Zurück</button></div>
+  </div>`;
+  $("save").onclick = ()=>{ app.querySelectorAll("input[data-g]").forEach(i=>{ const v = i.value.trim(); if(v) NAMEN[i.dataset.g] = v; else delete NAMEN[i.dataset.g]; });
+    if(!TD.demo) store.set("rs.namen", JSON.stringify(NAMEN)); klasse(); };
+  $("zur").onclick = klasse;
+}
+
+function einschaetzung(k){
+  const nm = NAMEN[k.g] || "Das Kind";
+  const st = k.stand || {};
+  if(k.n < 40 && !k.sbLetzte) return `<p>Noch zu wenig Daten für eine verlässliche Einschätzung (${k.n} Wörter).</p>`;
+  const s = [];
+  s.push(`${esc(nm)} hat bisher <b>${k.n} Wörter</b> geschrieben, an ${k.tage.size} ${k.tage.size===1?"Tag":"Tagen"}, und übt zurzeit auf <b>Stufe ${st.stufe||"–"}</b>${st.stufe?` («${esc(STUFEN[st.stufe])}»)`:""}. Von den zuletzt geschriebenen Wörtern sind <b>${k.quoteAkt}%</b> richtig.`);
+  const sb = k.sbLetzte;
+  if(sb){
+    s.push(`In der letzten Standortbestimmung (${datumKurz(sb.datum)}) waren ${sb.q}% richtig. ` + (sb.niveau ? `Sicher gelingen die Wörter bis <b>Stufe ${sb.niveau}</b> («${esc(STUFEN[sb.niveau])}»)${sb.niveau<5?`; ab Stufe ${sb.niveau+1} nehmen die Fehler deutlich zu`:""}.` : `Schon auf Stufe 1 (kurze, häufige Wörter) sind weniger als 75% richtig – hier braucht es gezielte Unterstützung.`));
+    if(k.sbList.length>1){ const a = k.sbList[0], d = sb.q - a.q;
+      s.push(`Seit der ersten Standortbestimmung (${datumKurz(a.datum)}: ${a.q}%) hat sich das Resultat ${Math.abs(d)<3?"kaum verändert":d>0?`um <b>${d} Prozentpunkte verbessert</b>`:`um ${-d} Prozentpunkte verschlechtert`}.`); }
+  }
+  const cs = CAT_ORDER.filter(c=>k.cat[c]);
+  const rate = c => (k.cat[c].n-k.cat[c].f)/k.cat[c].n;
+  const stark = cs.filter(c=>c!=="SO" && k.cat[c].n>=10 && rate(c)>=0.9).sort((a,b)=>rate(b)-rate(a)).slice(0,4);
+  const schwach = cs.filter(c=>k.cat[c].n>=6 && rate(c)<0.75).sort((a,b)=>rate(a)-rate(b)).slice(0,3);
+  if(stark.length) s.push(`<b>Sicher:</b> ${stark.map(c=>`${esc(CATS[c].name)} (${Math.round(rate(c)*100)}%)`).join(", ")}.`);
+  if(schwach.length){
+    s.push(`<b>Schwierigkeiten:</b> ${schwach.map(c=>{ const b = (k.beispiele[c]||[])[0]; return `${esc(CATS[c].name)} (${Math.round(rate(c)*100)}%${b?`, z. B. «${esc(b.a)}» statt «${esc(b.w)}»`:""})`; }).join("; ")}.`);
+    s.push(`<b>Empfehlung:</b> ${schwach.slice(0,2).map(c=>esc(CATS[c].lp)).join(" ")}`);
+  } else if(k.n>=40) s.push(`In keinem Bereich zeigen sich grössere Schwierigkeiten.`);
+  if(st.kiste) s.push(`In der Fehlerkiste liegen zurzeit ${st.kiste} Wörter, die noch nicht sicher sitzen.`);
+  return s.map(x=>`<p>${x}</p>`).join("");
+}
+
+function verlaufSVG(k){
+  const wochen = {};
+  k.items.filter(i=>!i.extra).forEach(i=>{ const d = new Date(i.datum); if(isNaN(d)) return;
+    const mo = new Date(d); mo.setHours(0,0,0,0); mo.setDate(mo.getDate()-((mo.getDay()+6)%7));
+    const key = mo.toISOString().slice(0,10), x = wochen[key] || (wochen[key]={n:0,ok:0}); x.n++; if(i.ok) x.ok++; });
+  const keys = Object.keys(wochen).sort().slice(-16);
+  if(keys.length < 2) return "";
+  const W = 640, H = 170, pad = 28, bw = (W-pad*2)/keys.length;
+  const bars = keys.map((key,i)=>{ const x = wochen[key], p = x.ok/x.n, h = (H-50)*p, X = pad+i*bw+4, Y = H-26-h;
+    const d = new Date(key);
+    return `<rect x="${X}" y="${Y}" width="${bw-8}" height="${h}" rx="4" fill="${p>=0.9?"#3fbf6f":p>=0.75?"#f5c04a":"#ef7b6f"}"/>
+      <text x="${X+(bw-8)/2}" y="${Y-5}" text-anchor="middle" font-size="11" fill="currentColor">${Math.round(p*100)}%</text>
+      <text x="${X+(bw-8)/2}" y="${H-10}" text-anchor="middle" font-size="10" fill="#64708a">${d.getDate()}.${d.getMonth()+1}.</text>`; }).join("");
+  return `<h3>Verlauf pro Woche (Anteil richtig geschriebener Wörter)</h3>
+    <svg class="verlauf" viewBox="0 0 ${W} ${H}" role="img" aria-label="Anteil richtig pro Woche">
+      <line x1="${pad}" x2="${W-pad}" y1="${H-26-(H-50)*0.9}" y2="${H-26-(H-50)*0.9}" stroke="#3fbf6f" stroke-dasharray="4 4" stroke-width="1"/>
+      <line x1="${pad}" x2="${W-pad}" y1="${H-26}" y2="${H-26}" stroke="#dfe5ef"/>${bars}</svg>`;
+}
+
+function profil(g){
+  const k = K[g], st = k.stand || {};
+  const cs = CAT_ORDER.filter(c=>k.cat[c] && k.cat[c].n>=3);
+  const bereiche = cs.map(c=>{ const x = k.cat[c], p = pc(x.n-x.f, x.n), bsp = (k.beispiele[c]||[]).slice(0,3);
+    return `<div class="prow"><div class="pname"><b>${esc(CATS[c].name)}</b><span class="muted">${x.n-x.f} von ${x.n} Stellen richtig</span></div>
+      <div class="bar"><i style="width:${p}%;background:${p>=90?"#3fbf6f":p>=75?"#f5c04a":"#ef7b6f"}"></i></div><b class="pp">${p}%</b>
+      <div class="bsp">${bsp.map(b=>`<span><s>${esc(b.a)}</s> → ${esc(b.w)}</span>`).join("")}</div></div>`; }).join("");
+  const sbTab = k.sbList.length ? `<h3>Standortbestimmungen</h3><p class="muted" style="margin-top:-4px">Pro Stufe 6 Wörter und 1–2 Sätze, immer gleich aufgebaut (Form A und B wechseln ab). «Sicher bis»: bis zu dieser Stufe im Schnitt mindestens 75% richtig.</p><table class="t"><tr><th>Datum</th><th>Form</th><th class="num">Gesamt</th>${[1,2,3,4,5].map(s=>`<th class="num">Stufe ${s}</th>`).join("")}<th class="num">Sicher bis</th></tr>
+    ${k.sbList.map(sb=>`<tr><td>${datumKurz(sb.datum)}</td><td>${esc(sb.form)}${sb.vollst?"":" <span class='muted'>(unvollständig)</span>"}</td><td class="num"><b>${sb.q}%</b></td>${[1,2,3,4,5].map(s=>`<td class="num">${sb.st[s]===null?"–":`<span class="tag ${farbe(sb.st[s])}">${sb.st[s]}%</span>`}</td>`).join("")}<td class="num">${sb.niveau?"Stufe "+sb.niveau:"–"}</td></tr>`).join("")}</table>` : `<p class="muted">Noch keine Standortbestimmung.</p>`;
+  const saetze = k.saetze.slice(-6).reverse().map(s=>{
+    const paare = pruefeSatz(s.t, s.a||"");
+    const deins = paare.map(p=> p.extra ? `<span class="tok extra">${esc(p.a)}</span>` : !p.a ? `<span class="tok miss">___</span>` : `<span class="tok ${p.ok?"":"bad"}">${p.ok?esc(p.a):zeigeMarkiert(p.a,p.markA,"x")}</span>`).join(" ");
+    return `<li><span class="muted">${datumKurz(s.datum)}</span><div>${deins}<br><span class="muted">${esc(sprechText(s.t))}</span></div></li>`; }).join("");
+  app.innerHTML = `<div class="card wide-card profil">
+    <div class="row no-print" style="justify-content:space-between"><button class="btn ghost small" id="zur">← Klasse</button>
+      <div class="row"><button class="btn ghost small" id="tprint">Drucken</button></div></div>
+    <p class="sub" style="margin:14px 0 0">Rechtschreibprofil · Stand ${datumKurz(new Date().toISOString())}</p>
+    <h2 class="ptitle">${esc(nameVon(g))}${NAMEN[g]?` <span class="muted">· Glückszahl ${esc(g)}</span>`:""}</h2>
+    <div class="kpis">
+      <div><b>${!k.sbLetzte ? "–" : k.sbLetzte.niveau ? "Stufe "+k.sbLetzte.niveau : "unter Stufe 1"}</b><span>sicher bis (Standortbestimmung)</span></div>
+      <div><b>${st.stufe ? "Stufe "+st.stufe : "–"}</b><span>übt zurzeit${st.stufe?` · Etappe ${Math.min((st.etappe||0)+1,ETAPPEN_PRO_STUFE)}`:""}</span></div>
+      <div><b>${k.quoteAkt===null?"–":k.quoteAkt+"%"}</b><span>richtig (aktuell)</span></div>
+      <div><b>${k.n}</b><span>Wörter geschrieben</span></div>
+      <div><b>${k.tage.size}</b><span>Übungstage</span></div>
+      <div><b>${st.kiste??"–"}</b><span>Wörter in der Fehlerkiste</span></div>
+    </div>
+    <div class="assess"><h3>Einschätzung</h3>${einschaetzung(k)}</div>
+    <h3>Rechtschreibbereiche</h3>
+    <p class="muted" style="margin-top:-4px">Wie oft die Regel an den passenden Stellen richtig angewendet wurde (letzte 400 Wörter), mit Beispielen aus den Fehlern.</p>
+    <div class="pbars">${bereiche || `<p class="muted">Noch keine Daten.</p>`}</div>
+    ${sbTab}
+    ${verlaufSVG(k)}
+    ${k.offen.length?`<h3>Noch nicht sicher</h3><p class="muted" style="margin-top:-4px">Wörter, die beim letzten Versuch falsch waren.</p><p class="chips">${k.offen.map(w=>`<span>${esc(w)}</span>`).join("")}</p>`:""}
+    ${saetze?`<h3>Letzte Sätze</h3><ul class="satzliste">${saetze}</ul>`:""}
+    <p class="muted stufenlegende">Stufen: ${[1,2,3,4,5].map(s=>`${s} = ${esc(STUFEN[s])}`).join(" · ")}</p>
+  </div>`;
+  $("zur").onclick = klasse;
+  $("tprint").onclick = ()=>print();
+  window.scrollTo(0,0);
+}
+
+/* ===== Beispieldaten für die Vorschau ===== */
+function beispielDaten(){
+  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  const pick = a => a[Math.floor(rnd()*a.length)];
+  const kinder = [
+    {g:"7",  name:"Lina",  p:{GK:.04,NG:.25,DK:.05,CK:.03,IE:.03,DH:.08,AV:.05,AE:.05,V:.03,DS:.2,SO:.02}, stufe:4, et:22},
+    {g:"12", name:"Noah",  p:{GK:.25,NG:.7,DK:.2,CK:.15,IE:.1,DH:.3,AV:.3,AE:.25,V:.2,DS:.6,SO:.06}, stufe:2, et:14},
+    {g:"23", name:"Elif",  p:{GK:.08,NG:.4,DK:.3,CK:.25,IE:.05,DH:.2,AV:.1,AE:.1,V:.1,DS:.35,SO:.04}, stufe:3, et:18},
+    {g:"31", name:"Jonas", p:{GK:.02,NG:.1,DK:.03,CK:.02,IE:.02,DH:.05,AV:.03,AE:.03,V:.02,DS:.08,SO:.01}, stufe:5, et:26},
+    {g:"44", name:"Mia",   p:{GK:.12,NG:.5,DK:.1,CK:.1,IE:.25,DH:.35,AV:.15,AE:.3,V:.15,DS:.5,SO:.05}, stufe:2, et:11},
+    {g:"58", name:"Luca",  p:{GK:.35,NG:.8,DK:.35,CK:.3,IE:.2,DH:.4,AV:.45,AE:.4,V:.35,DS:.7,SO:.12}, stufe:1, et:9},
+    {g:"63", name:"Sara",  p:{GK:.05,NG:.3,DK:.08,CK:.05,IE:.04,DH:.12,AV:.2,AE:.08,V:.05,DS:.25,SO:.03}, stufe:3, et:20},
+    {g:"77", name:"Ben",   p:{GK:.15,NG:.5,DK:.15,CK:.1,IE:.1,DH:.15,AV:.15,AE:.15,V:.1,DS:.4,SO:.08}, stufe:2, et:15}
+  ];
+  const mut = (w, ims, p, f) => {
+    let x = rein(w);
+    const ops = stellen(w, ims).slice().sort((a,b)=>b.s-a.s);
+    for(const o of ops){
+      if(rnd() >= p[o.c]*f) continue;
+      const seg = x.slice(o.s,o.e); let neu = seg;
+      if(o.c==="GK"||o.c==="NG") neu = seg===seg.toUpperCase() ? seg.toLowerCase() : seg.toUpperCase();
+      else if(o.c==="DK") neu = seg.slice(1);
+      else if(o.c==="CK") neu = seg==="ck"?"k":"z";
+      else if(o.c==="IE") neu = "i";
+      else if(o.c==="DH") neu = seg[1]==="h" ? seg[0] : seg[0];
+      else if(o.c==="AV") neu = o.s===x.length-1 && seg==="g" && x[o.s-1]==="i" ? "ch" : ({d:"t",b:"p",g:"k"})[seg] || seg;
+      else if(o.c==="AE") neu = seg==="äu" ? "eu" : "e";
+      else if(o.c==="V") neu = "f";
+      else if(o.c==="DS") neu = seg==="dass" ? "das" : "dass";
+      x = x.slice(0,o.s) + neu + x.slice(o.e);
+    }
+    if(x.length>4 && rnd() < p.SO*f){ const i = 1+Math.floor(rnd()*(x.length-2)); x = x.slice(0,i)+x.slice(i+1); }
+    return x;
+  };
+  const runden = [];
+  const start = new Date("2026-09-07T08:30:00");
+  kinder.forEach(kd=>{
+    const tag = n => { const d = new Date(start); d.setDate(d.getDate()+n); d.setMinutes(d.getMinutes()+Math.floor(rnd()*300)); return d.toISOString(); };
+    const sbRunde = (form, d, f) => {
+      const F = SB_FORMEN[form], auf = [], saetze = []; let z = 0;
+      for(const s of [1,2,3,4,5]){
+        F.woerter[s].split(" ").forEach(w=>{ const a = mut(w,false,kd.p,f*(0.6+s*0.2)); auf.push({w,a,ok:a===w?1:0,s,k:"W",q:"B"}); });
+        F.saetze.filter(x=>x[0]===s).forEach(([st,t])=>{ z++; const toks = satzTokens(t); const as = toks.map(w=>mut(w,true,kd.p,f*(0.6+s*0.2)));
+          toks.forEach((w,i)=>auf.push({w,a:as[i],ok:as[i]===rein(w)?1:0,s,k:"S",q:"B",z})); saetze.push({z,t,a:as.join(" ")+"."}); });
+      }
+      runden.push({glueckszahl:kd.g, art:"sb", sid:"sb"+kd.g+form, form, thema:"Standortbestimmung "+form, datum:d, saetze, aufgaben:auf, stand:{stufe:kd.stufe, etappe:0, total:0, kiste:0, sb:1}});
+    };
+    sbRunde("A", tag(0), 1.15);
+    let stufe = Math.max(1, kd.stufe-2), et = 0;
+    for(let e=0;e<kd.et;e++){
+      const f = 1.1 - e/kd.et*0.35, auf = [], saetze = [];
+      nimmDemo(POOL_W[stufe], 12, rnd).forEach(w=>{ const a = mut(w.w,false,kd.p,f*(0.7+stufe*0.15)); auf.push({w:w.w,a,ok:a===w.w?1:0,s:stufe,k:"W",q:"E"}); });
+      nimmDemo(POOL_S[stufe], 2, rnd).forEach((x,zi)=>{ const toks = satzTokens(x.t), as = toks.map(w=>mut(w,true,kd.p,f*(0.7+stufe*0.15)));
+        toks.forEach((w,i)=>auf.push({w,a:as[i],ok:as[i]===rein(w)?1:0,s:stufe,k:"S",q:"E",z:zi+1})); saetze.push({z:zi+1,t:x.t,a:as.join(" ")+"."}); });
+      const ok = auf.filter(a=>a.ok).length/auf.length >= 0.8;
+      if(ok){ et++; if(et>=ETAPPEN_PRO_STUFE && stufe<5){ stufe++; et=0; } }
+      runden.push({glueckszahl:kd.g, art:"etappe", sid:"e"+kd.g+e, thema:`Stufe ${stufe} · Etappe ${et+1}`, datum:tag(2+Math.floor(e*42/kd.et)), saetze, aufgaben:auf,
+        stand:{stufe, etappe:et, total:e+1, kiste:Math.floor(rnd()*9)+(kd.p.GK>0.2?6:0), sb:1}});
+    }
+    sbRunde("B", tag(45), 0.85);
+    runden[runden.length-1].stand = {...runden[runden.length-2].stand, sb:2};
+    NAMEN_DEMO[kd.g] = kd.name;
+  });
+  if(!Object.keys(NAMEN).length) Object.assign(NAMEN, NAMEN_DEMO);
+  return {ok:true, demo:true, runden};
+}
+const NAMEN_DEMO = {};
+function nimmDemo(pool, n, rnd){ const a = pool.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a.slice(0,n); }
+
+/* Start */
+home();
+flush();
+</script>
+</body>
+</html>
