@@ -716,7 +716,7 @@ function finish(ok, given, extra){
   }
   saveP();
   const entry = {nr:S.nr, thema:g.title, stufe:t.lv, frage:t.text, antworten:[given], loesung:t.show, punkte:ok?1:0, test:S.mode==="test"};
-  S.log.push(entry); S.pending.push(entry);
+  S.log.push(entry); S.pending.push(entry); savePending();
   const fb = document.getElementById("fb");
   if(ok){
     fb.innerHTML = `<div class="fb show good">${pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐","Perfekt! ⭐"])}</div>
@@ -776,17 +776,26 @@ async function flush(){
     store.set(QKEY, JSON.stringify(rest.concat(now).slice(-60)));
   } finally { flushing = false; }
 }
+const PENDKEY = "uebung.pending."+UEBUNG;
+function makeRec(items, thema, g){
+  return {typ:"uebung-runde", v:2, uebung:UEBUNG, glueckszahl:g, thema, datum:new Date().toISOString(),
+    punkte:items.filter(i=>i.punkte).length, max:items.length,
+    aufgaben:items.map(i=>({nr:i.nr, thema:i.thema, stufe:i.stufe, frage:i.frage, antworten:i.antworten, loesung:i.loesung, punkte:i.punkte}))};
+}
+function curThema(){ return S.mode==="test" ? "Test-Training" : GOAL[S.goal].title; }
+function savePending(){ if(S) store.set(PENDKEY, JSON.stringify({gz, thema:curThema(), items:S.pending})); }
 function sendPending(){
   if(!S || !S.pending.length) return;
-  if(ENDPOINT){
-    const items = S.pending.splice(0);
-    const thema = S.mode==="test" ? "Test-Training" : GOAL[S.goal].title;
-    const rec = {typ:"uebung-runde", v:2, uebung:UEBUNG, glueckszahl:gz, thema, datum:new Date().toISOString(),
-      punkte:items.filter(i=>i.punkte).length, max:items.length,
-      aufgaben:items.map(i=>({nr:i.nr, thema:i.thema, stufe:i.stufe, frage:i.frage, antworten:i.antworten, loesung:i.loesung, punkte:i.punkte}))};
-    const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-60)));
-    flush();
-  } else S.pending.length = 0;
+  const items = S.pending.splice(0);
+  store.set(PENDKEY, "");
+  if(!ENDPOINT) return;
+  const q = queue(); q.push(makeRec(items, curThema(), gz)); store.set(QKEY, JSON.stringify(q.slice(-60)));
+  flush();
+}
+function recoverPending(){      // Antworten, die beim letzten Mal nicht mehr verschickt wurden
+  let p = null; try{ p = JSON.parse(store.get(PENDKEY)||"null"); }catch(e){}
+  store.set(PENDKEY, "");
+  if(p && p.items && p.items.length && ENDPOINT){ const q = queue(); q.push(makeRec(p.items, p.thema, p.gz)); store.set(QKEY, JSON.stringify(q.slice(-60))); }
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") sendPending(); });
 window.addEventListener("pagehide", sendPending);
@@ -853,6 +862,7 @@ function teacherView(filter){
   });
 }
 
+recoverPending();
 home();
 flush();
 
