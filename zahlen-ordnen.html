@@ -151,26 +151,60 @@ table.t tr.klick:hover td{background:#f6f8fd}
   .tok{font-size:1.4rem;min-width:64px;height:60px}
 }
 @media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;border:0;padding:0}}
+
+/* Lernpfad */
+.resume{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+.resume .btn{display:flex;flex-direction:column;align-items:flex-start;text-align:left;line-height:1.25}
+.resume .btn small{font-weight:600;opacity:.85;font-size:.8rem}
+.goal{position:relative}
+.goal .tag2{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;border-radius:6px;padding:1px 6px;margin:0 0 4px;background:#eef2fa;color:#45506a}
+.goal .tag2.erw{background:#e6f4ea;color:#127a3c}
+.lv{display:flex;align-items:center;gap:6px;margin-top:8px}
+.lv .st{display:flex;gap:3px}
+.lv .st i{width:22px;height:8px;border-radius:4px;background:var(--line)}
+.lv .st i.on{background:var(--c)}
+.lv .st i.part{background:linear-gradient(90deg,var(--c) var(--p),var(--line) var(--p))}
+.lv b{font-size:.78rem;color:var(--mute);font-weight:700;margin:0}
+.goal.mastered{background:#fbfffc}
+.sesshead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.sesshead .grow{flex:1}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--line);display:inline-block}
+.dots i.on{background:#3fbf6f}
+.dots span{font-size:.85rem;font-weight:700;color:var(--mute);margin-left:4px}
+.explain{margin-top:16px;border-radius:16px;background:#fff8ec;border:2px solid #f6d39b;padding:14px 18px}
+.explain h3{margin:0 0 8px;font-size:1.05rem;color:#8a3c06}
+.explain ol{margin:0;padding-left:1.3em}
+.explain li{margin:4px 0}
+.explain .ans{display:inline-block;margin-top:8px;font-weight:800;font-size:1.15rem}
+.explain.ok{background:#f2fbf5;border-color:#bfe8cc}
+.explain.ok h3{color:var(--good)}
+details.way{margin-top:12px}
+details.way summary{cursor:pointer;color:#24439e;font-weight:700}
+.toast{margin-top:16px;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,#fff4cc,#ffe2f0);font-weight:700;font-size:1.1rem;text-align:center}
+svg.nl .hit{cursor:pointer}
+.placehint{color:var(--mute);font-size:.9rem;margin:-6px 0 12px}
+.lzkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.lzkgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.lzkgrid .topic{min-height:0;padding:10px 12px;align-items:center}
+.lzkgrid .topic b{margin:0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo">&lt; &gt;</div>
-    <h1 class="grow"><small>Mathematik 6 · Thema 7</small>Zahlen ordnen</h1>
+    <h1 class="grow"><small>Mathematik 6 · Thema 7 · LZK 6.3</small>Zahlen ordnen</h1>
     <div class="pill" id="pill" hidden></div>
   </header>
   <main id="app"></main>
 </div>
-
 <script>
-/* Adresse des Google-Skripts, das die Runden speichert (leer = nichts senden). */
+/* Adresse des Google-Skripts, das die Antworten speichert (leer = nichts senden). */
 const ENDPOINT = "";
 const UEBUNG = "Zahlen ordnen";
-const GZKEY = "uebung.gz";
-
-/* Alle Dezimalzahlen intern in Tausendsteln (ganze Zahlen) – so gibt es keine Rundungsfehler. */
-const T = 1000;
+/* ===== Grundfunktionen ===== */
+const T = 1000;                       // Dezimalzahlen intern in Tausendsteln
 const rnd = (a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick = a=>a[Math.floor(Math.random()*a.length)];
 const shuffle = a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -179,8 +213,7 @@ const store = {
   get(k){ try{return localStorage.getItem(k)}catch(e){return null} },
   set(k,v){ try{localStorage.setItem(k,v)}catch(e){} }
 };
-
-function fmt(m, minDec=0){            // Tausendstel -> "12.05"
+function fmt(m, minDec=0){
   const neg = m<0; m=Math.abs(m);
   const whole = Math.floor(m/T), frac = m%T;
   let f = String(frac).padStart(3,"0").replace(/0+$/,"");
@@ -188,7 +221,7 @@ function fmt(m, minDec=0){            // Tausendstel -> "12.05"
   const w = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g,"’");
   return (neg?"−":"")+w+(f?"."+f:"");
 }
-function parse(s){                      // Eingabe -> Tausendstel, null (keine Zahl) oder NaN (zu viele Stellen)
+function parse(s){
   if(s==null) return null;
   s = String(s).trim().replace(/[\s'’]/g,"").replace(",",".");
   if(s.startsWith(".")) s="0"+s;
@@ -198,14 +231,22 @@ function parse(s){                      // Eingabe -> Tausendstel, null (keine Z
   return parseInt(w,10)*T + parseInt((f+"000").slice(0,3),10);
 }
 function parseInt0(s){ s=String(s||"").trim(); return /^\d+$/.test(s) ? parseInt(s,10) : null; }
+const decs = m => (fmt(m).split(".")[1]||"").length;
 
 /* Brüche */
 const gcd = (a,b)=>{ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; };
+const lcm = (a,b)=> a*b/gcd(a,b);
 const red = (n,d)=>{ const g=gcd(n,d); return {n:n/g, d:d/g}; };
 const fr = (n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
 const frT = (n,d)=>`${n}/${d}`;
 const isTerm = d=>{ while(d%2===0) d/=2; while(d%5===0) d/=5; return d===1; };
-const milli = (n,d)=> n*T/d;   // nur bei abbrechenden Brüchen mit höchstens 3 Dezimalen ganzzahlig
+const milli = (n,d)=> n*T/d;
+function powTo(d){ return [10,100,1000].find(p=>p%d===0); }
+function kuerzSteps(n,d){        // Schritte beim Kürzen als HTML-Kette
+  const out=[fr(n,d)]; let a=n,b=d;
+  for(const p of [10,5,2,3,7,11,13]){ while(a%p===0 && b%p===0 && gcd(a,b)>1){ a/=p; b/=p; out.push(fr(a,b)); } }
+  return {html: out.join(" = "), n:a, d:b};
+}
 
 /* Stellenwerttafel */
 const PLACES = [
@@ -223,221 +264,294 @@ function svt(digits, from=1){
   const td = pl.map((p,i)=>`<td class="${p.m<1000?"dec":""} ${p.m===100?"dot":""}">${digits[i]}</td>`).join("");
   return `<div style="overflow-x:auto"><table class="svt"><tr>${th}</tr><tr>${td}</tr></table></div>`;
 }
+function svtOf(m){        // Stellenwerttafel einer Zahl (H Z E | z h t)
+  const d=[Math.floor(m/100000)%10,Math.floor(m/10000)%10,Math.floor(m/1000)%10,Math.floor(m/100)%10,Math.floor(m/10)%10,m%10];
+  let first = d.findIndex(x=>x>0); if(first<0||first>2) first=2;
+  return svt(d.slice(first).map((x,i)=>String(x)), 1+first);
+}
 
-/* Zahlenstrahl: n Abschnitte, Beschriftungen {i:text}, Pfeile {i:label} */
-function numberLine(n, labels, arrows, sub=0){
-  const W=680,H=130,x0=34,x1=W-34,y=66;
-  const total = n*(sub||1);
+/* Zahlenstrahl: total Striche-Abschnitte; big = alle wieviel ein langer Strich; mid = alle wieviel ein mittlerer */
+function numberLine(o){
+  const {total, big=total, mid=0, labels={}, arrows={}, id=""} = o;
+  const W=680,H=150,x0=34,x1=W-34,y=78;
   const X=i=>x0+(x1-x0)*i/total;
   let ticks="";
   for(let i=0;i<=total;i++){
-    const major = sub ? i%sub===0 : true;
-    const big = i===0||i===total||(labels && labels[sub?i/sub:i]!==undefined && major);
-    const h = big?18:(major?12:7);
-    ticks+=`<line x1="${X(i)}" y1="${y-h}" x2="${X(i)}" y2="${y+h}" stroke="#1b2433" stroke-width="${big?3.5:major?2.2:1.4}" stroke-linecap="round"/>`;
+    const isBig = i%big===0, isMid = mid && i%mid===0;
+    const h = isBig?18:isMid?12:7;
+    ticks+=`<line x1="${X(i)}" y1="${y-h}" x2="${X(i)}" y2="${y+h}" stroke="#1b2433" stroke-width="${isBig?3.2:isMid?2.2:1.4}" stroke-linecap="round"/>`;
   }
   let lab="";
-  for(const [i,t] of Object.entries(labels||{})) lab+=`<text x="${X(sub?i*sub:+i)}" y="${y+50}" text-anchor="middle" font-size="24" font-weight="800" fill="#1b2433" font-family="inherit">${t}</text>`;
+  for(const [i,t] of Object.entries(labels)) lab+=`<text x="${X(+i)}" y="${y+48}" text-anchor="middle" font-size="24" font-weight="800" fill="#1b2433" font-family="inherit">${t}</text>`;
   let arr="";
-  for(const [i,t] of Object.entries(arrows||{})){
+  for(const [i,t] of Object.entries(arrows)){
     const x=X(+i);
-    arr+=`<path d="M ${x} ${y-22} l -13 -24 h 26 z" fill="#f59f00"/><rect x="${x-4}" y="${y-64}" width="8" height="20" rx="3" fill="#f59f00"/>`;
-    if(t) arr+=`<text x="${x}" y="${y-72}" text-anchor="middle" font-size="22" font-weight="800" fill="#c47f00" font-family="inherit">${t}</text>`;
+    arr+=`<path d="M ${x} ${y-22} l -12 -22 h 24 z" fill="#f59f00"/><rect x="${x-4}" y="${y-62}" width="8" height="20" rx="3" fill="#f59f00"/>`;
+    if(t) arr+=`<text x="${x}" y="${y-70}" text-anchor="middle" font-size="22" font-weight="800" fill="#c47f00" font-family="inherit">${t}</text>`;
   }
-  return `<svg class="nl" viewBox="0 -20 ${W} ${H+20}" role="img" aria-label="Zahlenstrahl">
-    <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#1b2433" stroke-width="3.5" stroke-linecap="round"/>${ticks}${lab}${arr}</svg>`;
+  return `<svg class="nl" ${id?`id="${id}"`:""} viewBox="0 -10 ${W} ${H+10}" data-x0="${x0}" data-x1="${x1}" data-total="${total}" role="img" aria-label="Zahlenstrahl">
+    <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#1b2433" stroke-width="3.5" stroke-linecap="round"/>${ticks}${lab}${arr}
+    <g class="mark"></g>${id?`<rect class="hit" x="0" y="0" width="${W}" height="${H}" fill="transparent"/>`:""}</svg>`;
 }
+const ol = steps => `<ol>${steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
 
 const START_NOTE = "Brüche schreibst du in die beiden Kästchen: oben der Zähler, unten der Nenner.";
-
-/* Zahl als Bruch oder Dezimalzahl: {html, txt, v} */
-const F = (n,d)=>({html:fr(n,d), txt:frT(n,d), v:n/d});
-const D = m=>({html:fmt(m), txt:fmt(m), v:m/T});
+const F = (n,d)=>({html:fr(n,d), txt:frT(n,d), v:n/d, n, d});
+const D = m=>({html:fmt(m), txt:fmt(m), v:m/T, m});
 const cmpSign = (x,y)=> Math.abs(x-y)<1e-9 ? "=" : x<y ? "<" : ">";
-function randFrac(maxD=12, maxV=1.6){
-  for(let i=0;i<300;i++){ const d=rnd(2,maxD), n=rnd(1,Math.floor(d*maxV)); if(n%d && gcd(n,d)===1) return {n,d}; }
+function randFrac(maxD=12, maxV=1.6, minD=2){
+  for(let i=0;i<300;i++){ const d=rnd(minD,maxD), n=rnd(1,Math.max(1,Math.floor(d*maxV))); if(n%d && gcd(n,d)===1) return {n,d}; }
   return {n:3,d:4};
 }
-function asForm(n,d){   // gleicher Wert in zufälliger Schreibweise
-  const r = red(n,d), opts = [F(r.n,r.d)];
-  const k = rnd(2,4); if(r.d*k<=60) opts.push(F(r.n*k,r.d*k));
-  if(isTerm(r.d) && (r.n*T)%r.d===0) opts.push(D(milli(r.n,r.d)), D(milli(r.n,r.d)));
-  return pick(opts);
+function decOf(n,d){ if(isTerm(d) && (n*T)%d===0) return fmt(milli(n,d)); const v=(n/d).toFixed(4); return v.slice(0,-1)+"…"; }
+function cmpExplain(a,b,s){
+  if(a.d===b.d) return ol([`Gleicher Nenner (${a.d}): Vergleiche die Zähler. ${a.n} ${s} ${b.n}.`, `Also ${fr(a.n,a.d)} <b>${esc(s)}</b> ${fr(b.n,b.d)}`]);
+  if(a.n===b.n) return ol([`Gleicher Zähler (${a.n}): Je kleiner der Nenner, desto grösser die Stücke.`, `${a.d} ${a.d<b.d?"<":">"} ${b.d}, also ${fr(a.n,a.d)} <b>${esc(s)}</b> ${fr(b.n,b.d)}`]);
+  const L = lcm(a.d,b.d), ka=L/a.d, kb=L/b.d;
+  return ol([`Gemeinsamer Nenner: ${L} (ein Vielfaches von ${a.d} und ${b.d}).`,
+    `Erweitern: ${fr(a.n,a.d)} = ${fr(a.n*ka,L)} und ${fr(b.n,b.d)} = ${fr(b.n*kb,L)}`, `Zähler vergleichen: ${a.n*ka} ${s} ${b.n*kb} → ${fr(a.n,a.d)} <b>${esc(s)}</b> ${fr(b.n,b.d)}`]);
 }
 
-const TOPICS = {
-  bb:{title:"Brüche vergleichen", ic:"⚖️", c:"#d6336c", info:"Welcher Bruch ist grösser?", tb:"TB S. 28, 30",
-    help:()=>`<p><b>Gleicher Nenner:</b> Der grössere Zähler gewinnt. ${fr(5,7)} &gt; ${fr(2,7)}<br>
-      <b>Gleicher Zähler:</b> Der kleinere Nenner gewinnt (grössere Stücke). ${fr(5,7)} &gt; ${fr(5,12)}</p>
-      <p><b>Sonst:</b> Erweitere auf einen gemeinsamen Nenner. ${fr(3,4)} = ${fr(9,12)} und ${fr(4,6)} = ${fr(8,12)} → ${fr(3,4)} &gt; ${fr(4,6)}<br>
-      <b>Tipp:</b> Schau, was bis zum Ganzen fehlt. Bei ${fr(7,8)} fehlt ${fr(1,8)}, bei ${fr(5,6)} fehlt ${fr(1,6)} → ${fr(7,8)} ist grösser.</p>`},
-  bd:{title:"Bruch und Dezimalzahl", ic:"🔀", c:"#e0732b", info:"Vergleiche Bruch und Dezimalzahl", tb:"TB S. 29, 30",
-    help:()=>`<p>Schreibe den Bruch als Dezimalzahl, dann kannst du gut vergleichen.</p>
-      <p>${fr(2,5)} = ${fr(4,10)} = 0.4 → ${fr(2,5)} &gt; 0.3<br>${fr(2,3)} = 2 : 3 = 0.666… → 0.6 &lt; ${fr(2,3)}</p>`},
-  ord:{title:"Der Grösse nach ordnen", ic:"📶", c:"#13a36b", info:"Ordne Brüche und Dezimalzahlen", tb:"TB S. 29, 30",
-    help:()=>`<p>1. Schreibe alle Zahlen als Dezimalzahlen (oder mit gleichem Nenner).<br>2. Vergleiche und ordne – beginne mit der kleinsten Zahl.</p>
-      <p>${fr(1,2)}, 0.3, ${fr(1,6)}, ${fr(4,5)} → 0.5, 0.3, 0.166…, 0.8 → <b>${fr(1,6)} &lt; 0.3 &lt; ${fr(1,2)} &lt; ${fr(4,5)}</b></p>`},
-  strahl:{title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Welche Zahl gehört zum Pfeil?", tb:"TB S. 29",
-    help:()=>`<p>Die Strecke von 0 bis 1 ist in 20 gleiche Teile geteilt. Ein kleiner Strich ist ${fr(1,20)} = 0.05.<br>Die langen Striche sind ${fr(1,4)}, ${fr(2,4)} und ${fr(3,4)}.</p>
-      <p>Rechne jede Auswahl um: ${fr(3,5)} = ${fr(12,20)} = 0.6 → 12 kleine Striche nach der 0.</p>`},
-  kuerz:{title:"Kürzen", ic:"✂️", c:"#7c4dff", info:"Kürze so weit wie möglich", tb:"TB S. 31",
-    help:()=>`<p>Teile Zähler und Nenner durch dieselbe Zahl. Mach weiter, bis es nicht mehr geht.</p>
-      <p>${fr(50,60)} = ${fr(5,6)} (durch 10) · ${fr(6,9)} = ${fr(2,3)} (durch 3) · ${fr(75,100)} = ${fr(3,4)} (durch 25)</p>`},
-};
+const GOALS = [
+/* ---------- C1 Brüche vergleichen ---------- */
+{id:"C1", code:"C1", title:"Brüche vergleichen", ic:"⚖️", c:"#d6336c", info:"Brüche mit unterschiedlichen Nennern vergleichen", tb:"TB S. 28, 30",
+ help:()=>`<p><b>Gleicher Nenner:</b> Der grössere Zähler gewinnt. ${fr(5,7)} &gt; ${fr(2,7)}<br><b>Gleicher Zähler:</b> Der kleinere Nenner gewinnt. ${fr(5,7)} &gt; ${fr(5,12)}</p>
+   <p><b>Sonst:</b> Gemeinsamen Nenner suchen und erweitern. ${fr(3,4)} = ${fr(9,12)}, ${fr(4,6)} = ${fr(8,12)} → ${fr(3,4)} &gt; ${fr(4,6)}</p>`,
+ gen(lv){
+   let a,b;
+   if(lv===1){
+     if(Math.random()<.5){ const d=rnd(3,12); let x=rnd(1,d+3), y=rnd(1,d+3); if(x===y) y=x+1; a={n:x,d}; b={n:y,d}; }
+     else { const n=rnd(1,7); let x=rnd(n+1,14), y=rnd(n+1,14); if(x===y) y=x+1; a={n,d:x}; b={n,d:y}; }
+   } else if(lv===2){
+     const r=randFrac(10,1.2), k=pick([2,3,4,5,10]);
+     a = r; b = Math.random()<.4 ? {n:r.n*k, d:r.d*k} : {n:r.n*k+pick([-1,1]), d:r.d*k};
+     if(b.n<=0) b.n=1;
+   } else {
+     a=randFrac(12,1.5,3); b=randFrac(12,1.5,3);
+     if(Math.random()<.4){ const x=rnd(4,12); let y=rnd(4,12); if(x===y) y=x+1; a={n:x-1,d:x}; b={n:y-1,d:y}; }
+     if(a.n*b.d===a.d*b.n) b={n:b.n+1,d:b.d};
+   }
+   if(Math.random()<.5) [a,b]=[b,a];
+   const s = cmpSign(a.n/a.d, b.n/b.d);
+   return {type:"cmp", q:"Vergleiche die Brüche. Setze &lt;, &gt; oder = ein.", a:fr(a.n,a.d), b:fr(b.n,b.d), answer:s,
+     text:`${frT(a.n,a.d)} ? ${frT(b.n,b.d)}`, show:`${frT(a.n,a.d)} ${s} ${frT(b.n,b.d)}`, showHtml:`${fr(a.n,a.d)} ${esc(s)} ${fr(b.n,b.d)}`, explain:cmpExplain(a,b,s)};
+ }},
 
-const GEN = {
-  bb(){
-    const v = rnd(0,4);
-    let a,b;
-    if(v===0){ const d=rnd(3,12); let x=rnd(1,d*1.5|0), y=rnd(1,d*1.5|0); if(x===y) y=x+1; a={n:x,d}; b={n:y,d}; }
-    else if(v===1){ const n=rnd(1,7); let x=rnd(n+1,14), y=rnd(n+1,14); if(x===y) y=x+1; a={n,d:x}; b={n,d:y}; }
-    else if(v===2){ const x=rnd(3,10); let y=rnd(3,10); if(x===y) y=x+1; a={n:x-1,d:x}; b={n:y-1,d:y}; }
-    else if(v===3){ const r=randFrac(10,1.4), k=rnd(2,4); a={n:r.n*k,d:r.d*k}; b=r; }
-    else { a=randFrac(12,1.6); b=randFrac(12,1.6); if(a.n*b.d===a.d*b.n) b={n:b.n+1,d:b.d}; }
-    if(Math.random()<.5) [a,b]=[b,a];
-    const s = cmpSign(a.n/a.d, b.n/b.d);
-    const ra=red(a.n,a.d), rb=red(b.n,b.d);
-    const L = ra.d*rb.d/gcd(ra.d,rb.d);
-    return {type:"cmp", q:"Welcher Bruch ist grösser? Setze &lt;, &gt; oder = ein.", a:fr(a.n,a.d), b:fr(b.n,b.d), answer:s,
-      text:`${frT(a.n,a.d)} ? ${frT(b.n,b.d)}`, show:`${frT(a.n,a.d)} ${s} ${frT(b.n,b.d)}`, showHtml:`${fr(a.n,a.d)} ${esc(s)} ${fr(b.n,b.d)}`,
-      hint: a.d===b.d ? "Gleicher Nenner: Vergleiche die Zähler." : a.n===b.n ? "Gleicher Zähler: Je kleiner der Nenner, desto grösser die Stücke."
-        : `Erweitere beide Brüche auf den Nenner ${L}.`};
-  },
-  bd(){
-    const pool = [[1,3],[2,3],[1,6],[5,6],[1,7],[3,8],[5,8],[7,8],[1,8],[2,5],[3,5],[4,5],[3,4],[1,4],[7,20],[9,20],[13,20],[7,5],[5,4],[11,10],[3,2],[14,20],[6,25],[11,3],[21,10],[13,8]];
-    const [n,d] = pick(pool);
-    const v = n/d;
-    let m;
-    const term = isTerm(d) && (n*T)%d===0;
-    if(term && Math.random()<.25) m = milli(n,d);
-    else {
-      const off = pick([-1,1]) * pick([10,50,100,5,20]);
-      m = Math.max(5, Math.round(v*T/5)*5 + off);
-      if(Math.abs(m/T - v)<1e-9) m += 10;
-    }
-    let a = {html:fr(n,d), txt:frT(n,d), v}, b = D(m);
-    if(Math.random()<.5) [a,b]=[b,a];
-    const s = cmpSign(a.v,b.v);
-    return {type:"cmp", q:"Vergleiche. Setze &lt;, &gt; oder = ein.", a:a.html, b:b.html, answer:s,
-      text:`${a.txt} ? ${b.txt}`, show:`${a.txt} ${s} ${b.txt}`, showHtml:`${a.html} ${esc(s)} ${b.html}`,
-      hint: term ? `Schreibe ${frT(n,d)} als Dezimalzahl: ${frT(n,d)} = ${n} : ${d}.` : `Rechne ${n} : ${d} – das Resultat hat unendlich viele Stellen. Die ersten zwei oder drei reichen zum Vergleichen.`};
-  },
-  ord(){
-    for(let tries=0; tries<200; tries++){
-      const items = [];
-      const nF = rnd(2,3);
-      for(let i=0;i<nF;i++){ const f=randFrac(10, pick([1,1,1.6])); items.push(F(f.n,f.d)); }
-      while(items.length<4){ items.push(D(rnd(1,190)*5 + (Math.random()<.3?1000:0))); }
-      const vs = items.map(x=>x.v).sort((a,b)=>a-b);
-      if(vs.some((x,i)=>i && x-vs[i-1]<0.015)) continue;
-      shuffle(items);
-      const sorted = items.slice().sort((a,b)=>a.v-b.v);
-      return {type:"order", html:`<p class="q">Ordne die Zahlen der Grösse nach. Beginne mit der kleinsten Zahl.</p>`, items,
-        text:`Ordnen: ${items.map(x=>x.txt).join(", ")}`, show:sorted.map(x=>x.txt).join(" < "), showHtml:sorted.map(x=>x.html).join(" &lt; "),
-        hint:"Schreibe jeden Bruch zuerst als Dezimalzahl (Zähler : Nenner). Dann kannst du gut vergleichen."};
-    }
-  },
-  strahl(){
-    const k = rnd(1,19);
-    const right = asForm(k,20);
-    const cands = shuffle([k-1,k+1,k-2,k+2,k+4,k-4,k+5,k-5,20-k].filter(x=>x>0 && x<20 && x!==k)).slice(0,3);
-    const opts = shuffle([{...right, ok:true}, ...cands.map(c=>({...asForm(c,20), ok:false}))]);
-    const html = `<p class="q">Welche Zahl zeigt der Pfeil?</p>` + numberLine(4, {0:"0",4:"1"}, {[k]:""}, 5);
-    const ri = opts.findIndex(o=>o.ok);
-    const r = red(k,20);
-    return {type:"choice", html, options:opts.map(o=>({label:o.html})), answer:ri,
-      text:`Pfeil bei ${k}/20, Auswahl: ${opts.map(o=>o.txt).join(", ")}`, show:`${right.txt} (= ${frT(r.n,r.d)} = ${fmt(milli(k,20))})`,
-      showHtml:`${right.html} = ${fr(r.n,r.d)} = ${fmt(milli(k,20))}`,
-      hint:`Ein kleiner Strich ist ${frT(1,20)} = 0.05. Zähle die kleinen Striche von 0 bis zum Pfeil.`};
-  },
-  kuerz(){
-    const r = randFrac(12, pick([1,1,1.5]));
-    const k = pick([2,3,4,5,6,8,10,12,25]);
-    const n = r.n*k, d = r.d*k;
-    return {type:"frac", html:`<p class="q">Kürze so weit wie möglich.</p>`, lead:fr(n,d), answer:r, reduced:true,
-      text:`${frT(n,d)} kürzen`, show:frT(r.n,r.d), showHtml:fr(r.n,r.d),
-      hint:`Zähler und Nenner lassen sich beide durch ${k} teilen.`};
-  },
-};
+/* ---------- Bruch und Dezimalzahl ---------- */
+{id:"BD", code:"C2", title:"Bruch und Dezimalzahl", ic:"🔀", c:"#e0732b", info:"Bruch und Dezimalzahl vergleichen", tb:"TB S. 29, 30",
+ help:()=>`<p>Schreibe den Bruch als Dezimalzahl, dann kannst du gut vergleichen.</p><p>${fr(2,5)} = ${fr(4,10)} = 0.4 → ${fr(2,5)} &gt; 0.3<br>${fr(2,3)} = 2 : 3 = 0.666… → 0.6 &lt; ${fr(2,3)}</p>`,
+ gen(lv){
+   const P1=[[2,5],[3,5],[4,5],[1,2],[3,4],[1,4],[7,10],[3,10],[9,10],[1,5]];
+   const P2=[[3,8],[5,8],[7,8],[7,20],[9,20],[13,20],[7,5],[5,4],[11,10],[3,2],[14,20],[6,25],[21,10],[33,50]];
+   const P3=[[1,3],[2,3],[1,6],[5,6],[1,7],[11,3],[4,9],[7,6],[5,3],[1,8],[3,7]];
+   const [n,d] = pick(lv===1?P1:lv===2?P2:P3);
+   const v = n/d, term = isTerm(d);
+   let m;
+   if(term && Math.random()<.25) m = milli(n,d);
+   else { const off = pick([-1,1])*pick(lv===3?[1,5,10]:[10,50,100,20]); m = Math.max(5, Math.round(v*T/(lv===3?1:5))*(lv===3?1:5) + off); if(Math.abs(m/T-v)<1e-9) m+=10; }
+   let a = {html:fr(n,d), txt:frT(n,d), v}, b = D(m);
+   const sw = Math.random()<.5; if(sw) [a,b]=[b,a];
+   const s = cmpSign(a.v,b.v);
+   const dv = term ? fmt(milli(n,d)) : decOf(n,d);
+   return {type:"cmp", q:"Vergleiche. Setze &lt;, &gt; oder = ein.", a:a.html, b:b.html, answer:s, text:`${a.txt} ? ${b.txt}`, show:`${a.txt} ${s} ${b.txt}`, showHtml:`${a.html} ${esc(s)} ${b.html}`,
+     explain: ol([term ? `Bruch als Dezimalzahl: ${fr(n,d)} = ${fr(milli(n,d)/ (T/powTo(d)), powTo(d))} = ${dv}` : `Bruch als Dezimalzahl: ${fr(n,d)} = ${n} : ${d} = ${dv} (die Ziffern gehen immer weiter)`,
+       `Vergleiche ${sw?fmt(m)+" und "+dv:dv+" und "+fmt(m)} Stelle für Stelle.`, `Also: <b>${a.txt} ${esc(s)} ${b.txt}</b>`])};
+ }},
 
+/* ---------- Ordnen ---------- */
+{id:"OR", code:"C2", title:"Der Grösse nach ordnen", ic:"📶", c:"#13a36b", info:"Brüche und Dezimalzahlen ordnen", tb:"TB S. 29, 30",
+ help:()=>`<p>1. Schreibe alle Zahlen als Dezimalzahlen.<br>2. Vergleiche und ordne – beginne mit der kleinsten Zahl.</p><p>${fr(1,2)}, 0.3, ${fr(1,6)}, ${fr(4,5)} → 0.5, 0.3, 0.166…, 0.8 → <b>${fr(1,6)} &lt; 0.3 &lt; ${fr(1,2)} &lt; ${fr(4,5)}</b></p>`,
+ gen(lv){
+   const N = lv===1?3:lv===2?4:5;
+   for(let tries=0; tries<300; tries++){
+     const items=[]; const nF = lv===1?1+rnd(0,1):rnd(2,3);
+     for(let i=0;i<nF;i++){ const f = lv===1 ? pick([[1,2],[1,4],[3,4],[1,5],[2,5],[1,10],[3,10]]) : (()=>{ const r=randFrac(lv===3?12:10, lv===3?2:1.3); return [r.n,r.d]; })(); items.push(F(f[0],f[1])); }
+     while(items.length<N) items.push(D(lv===1 ? rnd(1,9)*100 : rnd(1,190)*5 + (lv===3&&Math.random()<.4?1000:0)));
+     const vs = items.map(x=>x.v).sort((a,b)=>a-b);
+     if(vs.some((x,i)=>i && x-vs[i-1]<(lv===3?0.008:0.03))) continue;
+     shuffle(items);
+     const sorted = items.slice().sort((a,b)=>a.v-b.v);
+     return {type:"order", html:`<p class="q">Ordne die Zahlen der Grösse nach. Beginne mit der kleinsten Zahl.</p>`, items,
+       text:`Ordnen: ${items.map(x=>x.txt).join(", ")}`, show:sorted.map(x=>x.txt).join(" < "), showHtml:sorted.map(x=>x.html).join(" &lt; "),
+       explain: ol([`Schreibe alle Zahlen als Dezimalzahlen:<br>${items.map(x=>x.n?`${x.html} = ${decOf(x.n,x.d)}`:x.html).join(" · ")}`, `Jetzt der Grösse nach: <b>${sorted.map(x=>x.html).join(" &lt; ")}</b>`])};
+   }
+ }},
 
-/* ---------- Ablauf ---------- */
+/* ---------- Zahlenstrahl ---------- */
+{id:"ZS", code:"C2", title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Brüche und Dezimalzahlen auf dem Zahlenstrahl", tb:"TB S. 29, 31",
+ help:()=>`<p>1. Schreibe die Zahl als Dezimalzahl (oder als Hundertstel).<br>2. Zähle auf dem Zahlenstrahl ab: Wie viele Abschnitte hat die Strecke von 0 bis 1?</p><p>${fr(22,25)} = ${fr(88,100)} = 0.88 → nach dem langen Strich 0.8 noch 8 kleine Striche.</p>`,
+ gen(lv){
+   if(lv===1){
+     const k = rnd(1,19), right = [F(red(k,20).n,red(k,20).d), D(milli(k,20))][rnd(0,1)];
+     const cands = shuffle([...new Set([k-1,k+1,k-2,k+2,k+4,k-4,k+5,k-5,20-k])].filter(x=>x>0&&x<20&&x!==k)).slice(0,3);
+     const opts = shuffle([{...right,ok:true}, ...cands.map(c=>({...(Math.random()<.5?F(red(c,20).n,red(c,20).d):D(milli(c,20))), ok:false}))]);
+     return {type:"choice", html:`<p class="q">Welche Zahl zeigt der Pfeil?</p>` + numberLine({total:20, big:20, mid:5, labels:{0:"0",20:"1"}, arrows:{[k]:""}}),
+       options:opts.map(o=>({label:o.html})), answer:opts.findIndex(o=>o.ok), text:`Pfeil bei ${k}/20`, show:`${right.txt}`, showHtml:right.html,
+       explain: ol([`Die Strecke von 0 bis 1 hat 20 Abschnitte. Ein Abschnitt ist ${fr(1,20)} = 0.05.`, `Der Pfeil steht beim ${k}. Abschnitt: ${fr(k,20)} = ${fmt(milli(k,20))}${red(k,20).d!==20?` = ${fr(red(k,20).n,red(k,20).d)}`:""}.`, `Richtig ist <b>${right.html}</b>.`])};
+   }
+   const total = lv===2 ? 20 : 100;
+   let target, it;
+   if(lv===2){ target = rnd(1,19); const r=red(target,20); it = Math.random()<.6 ? F(r.n,r.d) : D(milli(target,20)); if(it.n && it.d===20 && Math.random()<.5){ it=F(target*5,100);} }
+   else { const opts=[4,5,10,20,25,50,100]; const d=pick(opts); let n; do{ n=rnd(1,d-1); }while(gcd(n,d)!==1 && d!==100 && Math.random()<.5); target=n*100/d; it = Math.random()<.65 ? F(n,d) : D(target*10); }
+   const step = 1000/total;
+   return {type:"place", html:`<p class="q">Wo liegt <b>${it.html}</b>? Tippe die Stelle auf dem Zahlenstrahl an.</p>`,
+     line:{total, big: total===20?20:10, mid:5, labels:{0:"0",[total]:"1"}}, target, label:i=>fmt(i*step),
+     text:`${it.txt} eintragen (0 bis 1 in ${total} Abschnitten)`, show:`${it.txt} = ${fmt(target*step)}`,
+     explain: ol([`Als Dezimalzahl: ${it.n?`${it.html} = ${fmt(target*step)}`:it.html}.`, `Von 0 bis 1 gibt es ${total} Abschnitte. Einer ist ${fmt(step)}.`,
+       total===100 ? (target%10 ? `${fmt(target*step)} liegt nach dem langen Strich <b>${fmt(Math.floor(target/10)*100,1)}</b> noch ${target%10} kleine Striche weiter.` : `${fmt(target*step)} ist genau der lange Strich <b>${fmt(target*step,1)}</b>.`) : `${fmt(target*step)} : ${fmt(step)} = ${target} → der <b>${target}.</b> Strich nach 0.`])};
+ }},
+
+/* ---------- Kürzen ---------- */
+{id:"KZ", code:"", title:"Kürzen", ic:"✂️", c:"#7c4dff", info:"Brüche so weit wie möglich kürzen", tb:"TB S. 31",
+ help:()=>`<p>Teile Zähler und Nenner durch dieselbe Zahl. Mach weiter, bis es nicht mehr geht.</p><p>${fr(50,60)} = ${fr(5,6)} (durch 10) · ${fr(6,9)} = ${fr(2,3)} (durch 3) · ${fr(75,100)} = ${fr(3,4)} (durch 25)</p>`,
+ gen(lv){
+   const r = randFrac(lv===3?15:10, lv===3?1.6:1);
+   const k = lv===1 ? pick([2,5,10]) : lv===2 ? pick([3,4,6,25,8]) : pick([12,14,15,18,24,16,36]);
+   const n=r.n*k, d=r.d*k, ks = kuerzSteps(n,d);
+   return {type:"frac", html:`<p class="q">Kürze so weit wie möglich.</p>`, lead:fr(n,d), answer:r, reduced:true, text:`${frT(n,d)} kürzen`, show:frT(r.n,r.d), showHtml:fr(r.n,r.d),
+     explain: ol([`Zähler und Nenner lassen sich beide durch <b>${k}</b> teilen${k>10?` (oder schrittweise durch kleinere Zahlen)`:""}.`, ks.html, `Jetzt haben ${r.n} und ${r.d} keinen gemeinsamen Teiler mehr: <b>${fr(r.n,r.d)}</b>`])};
+ }},
+
+/* ---------- Bruch in der Mitte (erweitert) ---------- */
+{id:"MB", code:"", erw:true, title:"Bruch in der Mitte", ic:"🎯", c:"#a05a00", info:"Den Bruch genau zwischen zwei Brüchen finden", tb:"TB S. 31",
+ help:()=>`<p>1. Mache die Brüche gleichnamig (gleicher Nenner).<br>2. Liegt zwischen den Zählern keine ganze Zahl in der Mitte, erweitere beide noch mit 2.<br>3. Der Zähler in der Mitte ergibt den Bruch in der Mitte.</p>
+   <p>${fr(1,8)} und ${fr(3,8)} → ${fr(2,8)} = ${fr(1,4)} · ${fr(1,8)} und ${fr(1,16)} → ${fr(2,16)} und ${fr(1,16)} → ${fr(4,32)} und ${fr(2,32)} → <b>${fr(3,32)}</b></p>`,
+ gen(lv){
+   let a,b;
+   if(lv===1){ const d=rnd(3,12); const x=rnd(1,d); a={n:x,d}; b={n:x+2,d}; }
+   else if(lv===2){ const r=randFrac(10,1), k=pick([2,5,10]); a=r; b={n:r.n*k+pick([-2,-1,1,2]), d:r.d*k}; if(b.n<=0) b.n=1; if(b.n===b.d) b.n-=2; if(b.n<=0) b.n=1; }
+   else { a=randFrac(9,1.2); b=randFrac(9,1.2); if(Math.abs(a.n/a.d-b.n/b.d)<1e-9) b={n:b.n+1,d:b.d}; if(Math.random()<.4){ const d=pick([4,6,8]); a={n:1,d}; b={n:1,d:2*d}; } }
+   if(Math.random()<.5) [a,b]=[b,a];
+   const L = lcm(a.d,b.d); let na=a.n*L/a.d, nb=b.n*L/b.d, D2=L, dbl=false;
+   if((na+nb)%2){ na*=2; nb*=2; D2*=2; dbl=true; }
+   const mn=(na+nb)/2, r=red(mn,D2);
+   return {type:"frac", html:`<p class="q">Welcher Bruch liegt <b>genau</b> in der Mitte?</p><p class="big">${fr(a.n,a.d)} <span style="color:#a3adbf">…</span> ? <span style="color:#a3adbf">…</span> ${fr(b.n,b.d)}</p>`,
+     answer:{n:mn,d:D2}, reduced:false, text:`Mitte zwischen ${frT(a.n,a.d)} und ${frT(b.n,b.d)}`, show:frT(r.n,r.d), showHtml:fr(r.n,r.d),
+     explain: ol([`Gleichnamig machen: ${fr(a.n,a.d)} = ${fr(a.n*L/a.d,L)} und ${fr(b.n,b.d)} = ${fr(b.n*L/b.d,L)}`,
+       ...(dbl?[`Zwischen ${a.n*L/a.d} und ${b.n*L/b.d} liegt keine ganze Zahl genau in der Mitte. Erweitere beide mit 2: ${fr(na,D2)} und ${fr(nb,D2)}`]:[]),
+       `Der Zähler in der Mitte von ${na} und ${nb} ist ${mn}: <b>${fr(mn,D2)}</b>${r.d!==D2?` = ${fr(r.n,r.d)}`:""}`])};
+ }},
+];
+
+/* ===== Lernpfad ===== */
 const app = document.getElementById("app"), pill = document.getElementById("pill");
-const ROUND = 10;
-let S = null;
-let gz = (store.get(GZKEY)||store.get("dz.gz")||"").replace(/\D/g,"");
+const NEED = 5;              // so viele Punkte braucht es pro Stufe
+const LEVELS = 3;
+const TEST_N = GOALS.length >= 8 ? GOALS.length : 10;
+const GOAL = Object.fromEntries(GOALS.map(g=>[g.id,g]));
+const LVNAME = ["","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
+let gz = (store.get("uebung.gz")||store.get("dz.gz")||"").replace(/\D/g,"");
+let P = null, S = null;
+
+function pkey(){ return "uebung.p."+UEBUNG+"."+gz; }
+function loadP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P=null; } if(!P||!P.goals) P={goals:{}, last:null}; }
+function saveP(){ store.set(pkey(), JSON.stringify(P)); }
+function gs(id){ return P.goals[id] || (P.goals[id]={lv:1, pr:0, done:false, n:0, ok:0}); }
+
+function levelBar(id){
+  const s = gs(id), c = GOAL[id].c;
+  let h = "";
+  for(let l=1;l<=LEVELS;l++){
+    const cls = (s.done || l<s.lv) ? "on" : l===s.lv && s.pr>0 ? "part" : "";
+    h += `<i class="${cls}" style="--c:${c};--p:${Math.round(s.pr/NEED*100)}%"></i>`;
+  }
+  return `<div class="lv"><span class="st">${h}</span><b>${s.done?"geschafft ⭐":"Stufe "+s.lv}</b></div>`;
+}
 
 function home(){
   pill.hidden = true;
-  const cards = Object.entries(TOPICS).map(([k,t])=>
-    `<button class="topic" data-k="${k}" style="--c:${t.c}"><span class="ic">${t.ic}</span><span><b>${t.title}</b><span>${t.info}</span><span>${t.tb}</span></span></button>`).join("");
+  if(gz) loadP();
+  const cards = GOALS.map(g=>{
+    const s = gz ? gs(g.id) : null;
+    return `<button class="topic goal ${s&&s.done?"mastered":""}" data-k="${g.id}" style="--c:${g.c}"><span class="ic">${g.ic}</span>
+      <span><span class="tag2 ${g.erw?"erw":""}">${g.code?g.code+" · ":""}${g.erw?"erweitert":"Grundanforderung"}</span><b>${g.title}</b><span>${g.info}</span><span>${g.tb}</span>${s?levelBar(g.id):""}</span></button>`;
+  }).join("");
+  const last = gz && P.last && GOAL[P.last] ? P.last : null;
+  const nextGoal = gz ? (GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done)) : null;
+  const resumeId = last && !gs(last).done ? last : nextGoal && nextGoal.id;
   app.innerHTML = `<div class="card">
     <div class="who">
       <label for="gz">Deine Glückszahl</label>
       <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" value="${esc(gz)}" placeholder="?">
-      <p class="note">Schreib hier deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl.</p>
+      <p class="note">Schreib hier deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl – dann machst du dort weiter, wo du aufgehört hast.</p>
     </div>
-    <h2>Wähle ein Thema</h2>
-    <p class="sub">Eine Runde hat ${ROUND} Aufgaben. Pro Aufgabe hast du zwei Versuche.</p>
-    <div class="topics">
-      <button class="topic mix" data-k="mix" style="--c:#f5a400"><span class="ic">⭐</span><span><b>Alles gemischt</b><span>Aufgaben aus allen Themen</span></span></button>
-      ${cards}
-    </div>
+    ${gz ? `<div class="resume">
+      ${resumeId?`<button class="btn" id="resume">▶ Weitermachen<small>${GOAL[resumeId].title} · Stufe ${gs(resumeId).lv}</small></button>`:""}
+      <button class="btn ghost" id="testmode">📝 Test-Training<small>${TEST_N} gemischte Aufgaben wie in der Lernzielkontrolle</small></button>
+    </div>` : ""}
+    <h2>Lernziele</h2>
+    <p class="sub">Jedes Lernziel hat 3 Stufen. Für jede Stufe brauchst du ${NEED} richtige Antworten. Ist eine Antwort falsch, siehst du, wie es geht – und bekommst gleich eine ähnliche Aufgabe.</p>
+    <div class="topics">${cards}</div>
     <p class="sub" style="margin:18px 0 0">${START_NOTE}</p>
     <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
   </div>`;
   const inp = document.getElementById("gz");
-  const upd = ()=>{ gz = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==gz) inp.value=gz; store.set(GZKEY,gz); };
-  inp.addEventListener("input", upd);
-  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{
-    upd();
-    if(!gz){ inp.focus(); inp.classList.add("no"); document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return; }
-    start(b.dataset.k);
-  });
+  const upd = ()=>{ const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value=v; const changed = v!==gz; gz=v; store.set("uebung.gz",gz); return changed; };
+  inp.addEventListener("change", ()=>{ if(upd()) home(); });
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); if(upd()) home(); } });
+  const need = ()=>{ upd(); if(!gz){ inp.focus(); inp.classList.add("no"); document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return false; } loadP(); return true; };
+  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{ if(need()) startGoal(b.dataset.k); });
+  const r = document.getElementById("resume"); if(r) r.onclick=()=>{ if(need()) startGoal(resumeId); };
+  const t = document.getElementById("testmode"); if(t) t.onclick=()=>{ if(need()) startTest(); };
   document.getElementById("teach").onclick = teacher;
   if(!gz) inp.focus({preventScroll:true});
 }
 
-function start(k){
-  const keys = Object.keys(TOPICS);
-  const list = [];
-  for(let i=0;i<ROUND;i++) list.push(k==="mix" ? keys[i%keys.length] : k);
-  if(k==="mix") shuffle(list);
-  S = {topic:k, list, i:0, points:0, log:[], started:new Date()};
+function startGoal(id){
+  P.last = id; saveP();
+  S = {mode:"goal", goal:id, log:[], pending:[], nr:0};
+  next();
+}
+function startTest(){
+  const grund = GOALS.filter(g=>!g.erw).map(g=>g.id), erw = GOALS.filter(g=>g.erw).map(g=>g.id);
+  let q = shuffle(grund.slice()).concat(shuffle(erw.slice()));
+  while(q.length<TEST_N) q.push(pick(grund));
+  q = q.slice(0,TEST_N);
+  S = {mode:"test", queue:q, qi:0, log:[], pending:[], nr:0};
   next();
 }
 
-function next(){
-  if(S.i>=ROUND) return result();
-  S.task = GEN[S.list[S.i]]();
-  S.task.topic = S.list[S.i];
-  S.tries = 0; S.done = false; S.inputs = [];
-  draw();
-}
+function curGoal(){ return S.mode==="goal" ? S.goal : (S.twin || S.queue[S.qi]); }
+function curLevel(id){ const s=gs(id); return S.mode==="test" ? Math.max(2, Math.min(s.lv, LEVELS)) : s.lv; }
 
-function progressBar(){
-  let h = "";
-  for(let i=0;i<ROUND;i++){
-    const l = S.log[i];
-    h += `<i class="${l? (l.p===1?"ok":l.p>0?"half":"no") : i===S.i?"now":""}"></i>`;
-  }
-  return `<div class="progress">${h}</div>`;
+function next(){
+  if(S.mode==="test" && S.qi>=S.queue.length && !S.twin) return testResult();
+  const id = curGoal();
+  const lv = curLevel(id);
+  let t; for(let k=0;k<20;k++){ t = GOAL[id].gen(lv); if(t) break; }
+  t.goal = id; t.lv = lv;
+  S.task = t; S.done = false; S.answer = null; S.nr++;
+  draw();
 }
 
 const inp = (id, cls="", mode="decimal")=>`<input class="ans ${cls}" id="${id}" inputmode="${mode}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?">`;
 const fracInput = (a,b)=>`<span class="fin">${inp(a,"small","numeric")}<i></i>${inp(b,"small","numeric")}</span>`;
 
+function head(){
+  const g = GOAL[S.task.goal], s = gs(g.id);
+  if(S.mode==="test"){
+    const n = S.queue.length, k = Math.min(S.twin ? S.qi : S.qi+1, n);
+    return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">📝 Test-Training · Aufgabe ${k} von ${n}${S.twin?" (ähnliche Aufgabe)":""}</span><span class="grow"></span>
+      <button class="btn ghost small" id="quit">✕ Beenden</button></div>
+      <p class="sub" style="margin:-4px 0 10px">${g.ic} ${g.title}</p>`;
+  }
+  let dots=""; for(let i=0;i<NEED;i++) dots+=`<i class="${i<s.pr?"on":""}"></i>`;
+  return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span><span class="grow"></span>
+    <button class="btn ghost small" id="quit">⟵ Übersicht</button></div>
+    <div class="sesshead"><b>${s.done?"Alle Stufen geschafft – du übst weiter auf Stufe 3":LVNAME[s.lv]}</b><span class="grow"></span><span class="dots">${dots}<span>${s.pr}/${NEED}</span></span></div>`;
+}
+
 function draw(){
-  const t = S.task, top = TOPICS[t.topic];
-  pill.hidden = false; pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
+  const t = S.task, g = GOAL[t.goal];
+  pill.hidden = false; pill.textContent = `Nr. ${gz}`;
   let body = "", needsCheck = true;
   if(t.type==="input"){
-    body = t.html + inp("a0");
+    body = t.html + `<div class="fd">${t.lead?`<span class="big" style="margin:0">${t.lead}</span>`:""}${inp("a0")}</div>`;
   }else if(t.type==="two"){
-    body = t.html + `<div class="two">${inp("a0","small")}<span>&lt;</span><span class="x">${t.mid}</span><span>&lt;</span>${inp("a1","small")}</div>`;
+    body = t.html + `<div class="two">${inp("a0","small")}<span>${t.sep||"&lt;"}</span><span class="x">${t.mid}</span><span>${t.sep||"&lt;"}</span>${inp("a1","small")}</div>`;
   }else if(t.type==="seq"){
-    body = t.html + `<div class="seq">${t.given.map(v=>`<span class="given">${fmt(v)}</span><span class="arr">→</span>`).join("")}
-      ${t.answers.map((_,j)=>inp("a"+j,"small")+(j<t.answers.length-1?'<span class="arr">→</span>':"")).join("")}</div>`;
+    let j=0;
+    body = t.html + `<div class="seq">${t.pattern.map((v,i)=>(i?'<span class="arr">→</span>':"")+(v===null?inp("a"+(j++),"small"):`<span class="given">${fmt(v)}</span>`)).join("")}</div>`;
   }else if(t.type==="frac"){
     body = t.html + `<div class="fd">${t.lead?`<span class="big" style="margin:0">${t.lead}</span><span class="eq">=</span>`:""}${fracInput("a0","a1")}</div>`;
   }else if(t.type==="fracdec"){
@@ -453,199 +567,235 @@ function draw(){
     needsCheck = false;
     body = t.html + `<div class="cmpbtns ${t.words?"words":""}">${t.options.map((o,j)=>`<button data-c="${j}">${o.label}</button>`).join("")}</div>`;
   }else if(t.type==="order"){
-    body = t.html + `<div class="order"><p class="lbl">Tippe die Zahlen der Reihe nach an – zuerst die ${t.desc?"grösste":"kleinste"}:</p>
-      <div class="slots" id="slots"><span class="ph">${t.desc?"grösste":"kleinste"} … ${t.desc?"kleinste":"grösste"}</span></div>
-      <div class="pool" id="pool">${t.items.map((it,j)=>`<button class="tok" data-j="${j}">${it.html}</button>`).join("")}</div></div>`;
+    body = t.html + `<div class="order"><p class="lbl">Tippe die Zahlen der Reihe nach an – zuerst die kleinste:</p>
+      <div class="slots" id="slots"></div><div class="pool" id="pool"></div></div>`;
+  }else if(t.type==="place"){
+    body = t.html + numberLine({...t.line, id:"pl"}) + `<p class="placehint">Tippe auf den Zahlenstrahl. Mit ◀ ▶ kannst du den Pfeil um einen Strich verschieben.</p>
+      <div class="row" style="margin-bottom:6px"><button class="btn ghost small" id="nl-l" aria-label="einen Strich nach links">◀</button><button class="btn ghost small" id="nl-r" aria-label="einen Strich nach rechts">▶</button></div>`;
   }
-  app.innerHTML = `${progressBar()}
-    <div class="card">
-      <span class="qtype" style="background:${top.c}1a;color:${top.c}">${top.ic} ${top.title} · Aufgabe ${S.i+1} von ${ROUND}</span>
+  app.innerHTML = `<div class="card">${head()}
       ${body}
-      <div class="fb" id="fb"></div>
+      <div id="fb"></div>
       <div class="actions">
         ${needsCheck?`<button class="btn" id="check">Prüfen</button>`:""}
         ${t.type==="order"?`<button class="btn ghost" id="reset">↺ Neu ordnen</button>`:""}
         <button class="btn" id="nextBtn" hidden>Weiter →</button>
       </div>
-      <details class="help"><summary>💡 So geht's</summary>${top.help()}</details>
-    </div>
-    <div class="actions no-print"><button class="btn ghost small" id="quit">✕ Runde beenden</button></div>`;
+      <details class="help"><summary>💡 So geht's</summary>${g.help()}</details>
+    </div>`;
   const inputs = [...app.querySelectorAll("input.ans")];
   inputs.forEach((el,j)=>el.addEventListener("keydown",e=>{
     if(e.key==="Enter"){ e.preventDefault();
-      if(S.done) return next2();
+      if(S.done) return go();
       if(j<inputs.length-1 && !inputs[j+1].value) inputs[j+1].focus(); else check(); }
   }));
   if(inputs[0]) inputs[0].focus({preventScroll:true});
   const c = document.getElementById("check"); if(c) c.onclick = ()=>check();
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.onclick=()=>check(b.dataset.c, b));
   if(t.type==="order") setupOrder();
-  document.getElementById("nextBtn").onclick = next2;
-  document.getElementById("quit").onclick = ()=>{ if(!S.log.length && !S.tries) home(); else result(true); };
+  if(t.type==="place") setupPlace();
+  document.getElementById("nextBtn").onclick = go;
+  document.getElementById("quit").onclick = leave;
 }
 
 function setupOrder(){
   const t = S.task, slots = document.getElementById("slots"), pool = document.getElementById("pool");
   S.order = [];
   const paint = ()=>{
-    slots.innerHTML = S.order.length ? S.order.map((j,k)=>`${k?'<span class="lt">'+(t.desc?"&gt;":"&lt;")+'</span>':""}<button class="tok" data-j="${j}">${t.items[j].html}</button>`).join("")
-      : `<span class="ph">${t.desc?"grösste":"kleinste"} … ${t.desc?"kleinste":"grösste"}</span>`;
+    slots.innerHTML = S.order.length ? S.order.map((j,k)=>`${k?'<span class="lt">&lt;</span>':""}<button class="tok" data-j="${j}">${t.items[j].html}</button>`).join("")
+      : `<span class="ph">kleinste … grösste</span>`;
     pool.innerHTML = t.items.map((it,j)=> S.order.includes(j) ? "" : `<button class="tok" data-j="${j}">${it.html}</button>`).join("");
     slots.querySelectorAll(".tok").forEach(b=>b.onclick=()=>{ if(S.done) return; S.order = S.order.filter(x=>x!==+b.dataset.j); paint(); });
     pool.querySelectorAll(".tok").forEach(b=>b.onclick=()=>{ if(S.done) return; S.order.push(+b.dataset.j); paint(); });
     const c = document.getElementById("check"); if(c) c.disabled = S.order.length!==t.items.length;
   };
-  S.paintOrder = paint;
-  document.getElementById("reset").onclick = ()=>{ if(S.done) return; S.order=[]; paint(); document.getElementById("fb").className="fb"; };
+  document.getElementById("reset").onclick = ()=>{ if(S.done) return; S.order=[]; paint(); };
   paint();
 }
-
-function feedback(kind, text){
-  const fb = document.getElementById("fb");
-  fb.className = "fb show "+kind; fb.innerHTML = text;
+function setupPlace(){
+  const svg = document.getElementById("pl"), t = S.task;
+  const x0=+svg.dataset.x0, x1=+svg.dataset.x1, total=+svg.dataset.total;
+  S.placed = null;
+  const c = document.getElementById("check"); c.disabled = true;
+  const mark = svg.querySelector(".mark");
+  const put = i=>{
+    const x = x0+(x1-x0)*i/total;
+    mark.innerHTML = `<path d="M ${x} 56 l -12 -22 h 24 z" fill="#2f5bea"/><rect x="${x-4}" y="14" width="8" height="22" rx="3" fill="#2f5bea"/>`;
+  };
+  const pt = svg.createSVGPoint();
+  svg.addEventListener("pointerdown", e=>{
+    if(S.done) return;
+    pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    let i = Math.round((p.x-x0)/(x1-x0)*total); i = Math.max(0, Math.min(total, i));
+    S.placed = i; put(i); c.disabled = false;
+  });
+  S.putMark = put;
+  const nudge = d=>{ if(S.done) return; const i = S.placed===null ? Math.round(total/2) : Math.max(0, Math.min(total, S.placed+d)); S.placed=i; put(i); c.disabled=false; };
+  document.getElementById("nl-l").onclick = ()=>nudge(-1);
+  document.getElementById("nl-r").onclick = ()=>nudge(1);
 }
 
 function check(choice, btn){
   if(S.done) return;
   const t = S.task;
-  let ok = false, extra = "";
+  let ok = false, extra = "", given = "";
   const inputs = [...app.querySelectorAll("input.ans")];
   if(t.type==="cmp" || t.type==="choice"){
     const want = t.type==="cmp" ? t.answer : String(t.answer);
     ok = choice===want;
-    app.querySelectorAll(".cmpbtns button").forEach(b=>b.classList.remove("no"));
     btn.classList.add(ok?"ok":"no");
     if(t.type==="cmp") document.getElementById("slot").textContent = choice;
-    S.inputs.push(t.type==="cmp" ? choice : btn.textContent.trim());
-    S.tries++;
+    given = t.type==="cmp" ? choice : btn.textContent.trim();
+    app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===want) b.classList.add("ok"); });
   }else if(t.type==="order"){
-    if(S.order.length!==t.items.length){ feedback("bad","Tippe zuerst alle Zahlen an."); return; }
+    if(S.order.length!==t.items.length) return;
     const vals = S.order.map(j=>t.items[j].v);
-    ok = vals.every((v,k)=>k===0 || (t.desc ? vals[k-1]>v : vals[k-1]<v));
-    S.inputs.push(S.order.map(j=>t.items[j].txt).join(t.desc?" > ":" < "));
-    S.tries++;
-    const sorted = t.items.map((_,j)=>j).sort((a,b)=> t.desc ? t.items[b].v-t.items[a].v : t.items[a].v-t.items[b].v);
+    ok = vals.every((v,k)=>k===0 || vals[k-1]<v);
+    given = S.order.map(j=>t.items[j].txt).join(" < ");
+    const sorted = t.items.map((_,j)=>j).sort((a,b)=>t.items[a].v-t.items[b].v);
     document.querySelectorAll("#slots .tok").forEach((b,k)=>b.classList.add(+b.dataset.j===sorted[k]?"ok":"no"));
+  }else if(t.type==="place"){
+    if(S.placed===null) return;
+    ok = Math.abs(S.placed - t.target) <= (t.tol||0);
+    given = t.label(S.placed);
+    if(!ok){ const svg=document.getElementById("pl"); const x0=+svg.dataset.x0, x1=+svg.dataset.x1, total=+svg.dataset.total; const x=x0+(x1-x0)*t.target/total;
+      svg.querySelector(".mark").insertAdjacentHTML("beforeend", `<path d="M ${x} 56 l -12 -22 h 24 z" fill="#127a3c"/><text x="${x}" y="8" text-anchor="middle" font-size="18" font-weight="800" fill="#127a3c">hier</text>`); }
   }else{
     if(inputs.some(el=>!el.value.trim())){ feedback("bad","Bitte fülle zuerst alles aus."); return; }
     const res = [];
     let invalid = "";
     if(t.type==="frac" || t.type==="fracdec"){
       const n = parseInt0(inputs[0].value), d = parseInt0(inputs[1].value);
-      if(n===null || d===null || d===0){ invalid = "Schreibe beim Bruch oben und unten eine ganze Zahl (unten nicht 0)."; inputs[0].classList.toggle("no",n===null); inputs[1].classList.toggle("no",d===null||d===0); }
+      if(n===null || d===null || d===0){ invalid = "Schreibe beim Bruch oben und unten eine ganze Zahl (unten nicht 0)."; }
       else{
         const want = t.type==="frac" ? t.answer : t.frac;
         const same = n*want.d === d*want.n;
         const isRed = gcd(n,d)===1;
         const fok = same && (!t.reduced || isRed);
         res.push(fok, fok);
-        if(same && t.reduced && !isRed) extra = "Der Wert stimmt, aber du kannst den Bruch noch kürzen.";
+        if(same && t.reduced && !isRed) extra = "Der Wert stimmt, aber der Bruch ist noch nicht ganz gekürzt.";
       }
       if(t.type==="fracdec" && !invalid){
         const v = parse(inputs[2].value);
-        if(v===null || Number.isNaN(v)){ invalid = "Bei der Dezimalzahl: Schreibe zum Beispiel 0.75"; inputs[2].classList.add("no"); }
+        if(v===null || Number.isNaN(v)) invalid = "Bei der Dezimalzahl: Schreibe zum Beispiel 0.75";
         else res.push(v===t.dec);
       }
     }else{
       const vals = inputs.map(el=>parse(el.value));
-      if(vals.some(v=>v===null||Number.isNaN(v))){
-        inputs.forEach((el,j)=>el.classList.toggle("no", vals[j]===null||Number.isNaN(vals[j])));
-        invalid = vals.some(Number.isNaN) ? "Höchstens drei Stellen nach dem Punkt." : "Das ist keine gültige Zahl. Schreibe zum Beispiel 4.25";
-      } else {
-        const want = t.type==="input" ? [t.answer] : t.answers;
-        vals.forEach((v,j)=>res.push(v===want[j]));
-      }
+      if(vals.some(v=>v===null||Number.isNaN(v))) invalid = vals.some(Number.isNaN) ? "Höchstens drei Stellen nach dem Punkt." : "Das ist keine gültige Zahl. Schreibe zum Beispiel 4.25";
+      else { const want = t.type==="input" ? [t.answer] : t.answers; vals.forEach((v,j)=>res.push(v===want[j])); }
     }
-    if(invalid){ feedback("bad", invalid); return; }   // zählt nicht als Versuch
+    if(invalid){ feedback("bad", invalid); return; }     // zählt nicht
     inputs.forEach((el,j)=>{ el.classList.toggle("ok",res[j]); el.classList.toggle("no",!res[j]); });
     ok = res.every(Boolean);
-    S.inputs.push(t.type==="frac" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()}`
+    given = t.type==="frac" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()}`
       : t.type==="fracdec" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()} = ${inputs[2].value.trim()}`
-      : inputs.map(el=>el.value.trim()).join(" | "));
-    S.tries++;
+      : inputs.map(el=>el.value.trim()).join(" | ");
   }
-  if(ok){
-    const pts = S.tries===1?1:0.5;
-    S.points += pts;
-    feedback("good", S.tries===1? pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐","Perfekt! ⭐"]) : "Richtig im zweiten Versuch – ½ ⭐");
-    finish(pts);
-  }else if(S.tries<2){
-    feedback("bad", (extra? extra+" " : "Noch nicht ganz. ")+"💡 "+t.hint+" Versuch es nochmals.");
-    if(t.type==="order"){ setTimeout(()=>{ if(!S.done){ S.order=[]; S.paintOrder(); } }, 1400); }
-    const firstWrong = inputs.find(el=>el.classList.contains("no"));
-    if(firstWrong) firstWrong.select();
-  }else{
-    feedback("sol", `Richtig wäre: <b>${t.showHtml||esc(t.show)}</b>`);
-    if(t.type==="cmp") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===t.answer) b.classList.add("ok"); });
-    if(t.type==="choice") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===String(t.answer)) b.classList.add("ok"); });
-    finish(0);
-  }
+  finish(ok, given, extra);
 }
 
-function finish(p){
+function feedback(kind, text){ document.getElementById("fb").innerHTML = `<div class="fb show ${kind}">${text}</div>`; }
+
+function finish(ok, given, extra){
   S.done = true;
-  S.log.push({nr:S.i+1, thema:TOPICS[S.task.topic].title, frage:S.task.text, antworten:S.inputs.slice(), loesung:S.task.show, p});
+  const t = S.task, g = GOAL[t.goal], s = gs(g.id);
   app.querySelectorAll("input.ans").forEach(el=>el.readOnly=true);
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.disabled=true);
   const c=document.getElementById("check"); if(c) c.hidden=true;
   const r=document.getElementById("reset"); if(r) r.hidden=true;
+  s.n++; if(ok) s.ok++;
+  let toast = "";
+  if(S.mode==="goal"){
+    if(ok){
+      s.pr = Math.min(NEED, s.pr+1);
+      if(s.pr>=NEED){
+        if(s.lv<LEVELS){ s.lv++; s.pr=0; toast = `🎉 Stufe ${s.lv-1} geschafft! Jetzt geht es weiter mit <b>Stufe ${s.lv}</b>.`; }
+        else if(!s.done){ s.done=true; s.pr=NEED; toast = `🏆 Super! Du hast alle 3 Stufen von «${g.title}» geschafft.`; }
+        else s.pr = NEED;
+      }
+    } else if(!s.done) s.pr = Math.max(0, s.pr-1);
+  } else {
+    if(!ok && !S.twin) S.twinNext = t.goal;
+    if(S.twin) S.twin = null; else S.qi++;
+  }
+  saveP();
+  const entry = {nr:S.nr, thema:g.title, stufe:t.lv, frage:t.text, antworten:[given], loesung:t.show, punkte:ok?1:0, test:S.mode==="test"};
+  S.log.push(entry); S.pending.push(entry);
+  const fb = document.getElementById("fb");
+  if(ok){
+    fb.innerHTML = `<div class="fb show good">${pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐","Perfekt! ⭐"])}</div>
+      <details class="way"><summary>Lösungsweg anschauen</summary><div class="explain ok">${t.explain}</div></details>`;
+  } else {
+    fb.innerHTML = `<div class="fb show bad">${extra || "Leider nicht richtig."}</div>
+      <div class="explain"><h3>💡 So geht es</h3>${t.explain}<div class="ans">Lösung: ${t.showHtml||esc(t.show)}</div></div>
+      <p class="sub" style="margin:10px 0 0">Lies die Erklärung genau. Danach bekommst du eine ähnliche Aufgabe.</p>`;
+  }
+  if(toast) fb.insertAdjacentHTML("beforeend", `<div class="toast">${toast}</div>`);
+  if(S.mode==="test" && S.twinNext){ S.twin = S.twinNext; S.twinNext = null; }
   const n=document.getElementById("nextBtn"); n.hidden=false; n.focus({preventScroll:true});
-  if(S.i===ROUND-1) n.textContent = "Zum Resultat →";
-  pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
+  if(S.mode==="test" && S.qi>=S.queue.length && !S.twin) n.textContent = "Zum Resultat →";
+  if(S.pending.length>=10 || toast) sendPending();
 }
-function next2(){ S.i++; next(); }
+function go(){ next(); }
+function leave(){ sendPending(); S=null; home(); }
+
+function testResult(){
+  sendPending();
+  const L = S.log.filter(l=>l.test);
+  // Wertung: nach einer falschen Antwort folgt eine ähnliche Aufgabe – die zählt nicht für das Resultat
+  const main = [];
+  let skip=false; for(const l of L){ if(skip){ skip=false; continue; } main.push(l); if(!l.punkte) skip=true; }
+  const p = main.filter(l=>l.punkte).length, n = main.length;
+  const ratio = n? p/n : 0;
+  const weak = [...new Set(main.filter(l=>!l.punkte).map(l=>l.thema))];
+  app.innerHTML = `<div class="card result">
+    <p class="sub" style="margin:0">📝 Test-Training · Glückszahl ${esc(gz)}</p>
+    <div class="score">${p} / ${n}</div>
+    <div class="stars">${ratio>=.9?"⭐⭐⭐":ratio>=.7?"⭐⭐":ratio>=.4?"⭐":"🙂"}</div>
+    <p style="font-weight:700;margin:0">${ratio>=.9?"Du bist bereit für die Lernzielkontrolle!":ratio>=.7?"Schon gut – übe noch die markierten Lernziele.":"Übe die Lernziele unten noch einmal in Ruhe."}</p>
+    ${weak.length?`<p class="sub" style="margin-top:14px">Das solltest du noch üben:</p><div class="lzkgrid">${weak.map(w=>{ const g=GOALS.find(x=>x.title===w); return `<button class="topic" data-k="${g.id}" style="--c:${g.c};min-height:0"><span class="ic">${g.ic}</span><span><b>${g.title}</b></span></button>`; }).join("")}</div>`:""}
+    <ul class="list">${main.map((l,i)=>`<li><b>${i+1}.</b><span>${l.punkte?"✅":"❌"} ${esc(l.thema)} – <b>${esc(l.loesung)}</b></span></li>`).join("")}</ul>
+    <div class="actions" style="justify-content:center"><button class="btn" id="again">Nochmals</button><button class="btn ghost" id="menu">Zur Übersicht</button></div>
+  </div>`;
+  document.getElementById("again").onclick = startTest;
+  document.getElementById("menu").onclick = ()=>{ S=null; home(); };
+  app.querySelectorAll(".lzkgrid .topic").forEach(b=>b.onclick=()=>startGoal(b.dataset.k));
+}
 
 /* ---------- Senden ---------- */
 const QKEY = "uebung.queue";
 function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ return []; } }
 function sendOne(rec){
-  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)})
+  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec),keepalive:true})
     .then(r=>r.text()).then(t=>{ if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt"); });
 }
+let flushing = false;
 async function flush(){
-  if(!ENDPOINT) return true;
-  let q = queue(), rest = [];
-  for(const rec of q){ try{ await sendOne(rec); }catch(e){ rest.push(rec); } }
-  store.set(QKEY, JSON.stringify(rest));
-  return rest.length===0;
+  if(!ENDPOINT || flushing) return;
+  flushing = true;
+  try{
+    let q = queue(), rest = [];
+    for(const rec of q){ try{ await sendOne(rec); }catch(e){ rest.push(rec); } }
+    const now = queue().slice(q.length);       // was inzwischen dazukam
+    store.set(QKEY, JSON.stringify(rest.concat(now).slice(-60)));
+  } finally { flushing = false; }
 }
-function submit(){
-  if(!ENDPOINT || !S.log.length) return Promise.resolve(null);
-  const rec = {typ:"uebung-runde", v:1, uebung:UEBUNG, glueckszahl:gz,
-    thema: S.topic==="mix" ? "Alles gemischt" : TOPICS[S.topic].title,
-    datum:S.started.toISOString(), punkte:S.points, max:S.log.length,
-    aufgaben:S.log.map(l=>({nr:l.nr, thema:l.thema, frage:l.frage, antworten:l.antworten, loesung:l.loesung, punkte:l.p}))};
-  const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-30)));
-  return flush();
+function sendPending(){
+  if(!S || !S.pending.length) return;
+  if(ENDPOINT){
+    const items = S.pending.splice(0);
+    const thema = S.mode==="test" ? "Test-Training" : GOAL[S.goal].title;
+    const rec = {typ:"uebung-runde", v:2, uebung:UEBUNG, glueckszahl:gz, thema, datum:new Date().toISOString(),
+      punkte:items.filter(i=>i.punkte).length, max:items.length,
+      aufgaben:items.map(i=>({nr:i.nr, thema:i.thema, stufe:i.stufe, frage:i.frage, antworten:i.antworten, loesung:i.loesung, punkte:i.punkte}))};
+    const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-60)));
+    flush();
+  } else S.pending.length = 0;
 }
-
-function result(early){
-  pill.hidden = true;
-  const n = S.log.length, p = S.points;
-  const ratio = n ? p/n : 0;
-  const stars = !n ? "" : ratio>=.9?"⭐⭐⭐":ratio>=.6?"⭐⭐":ratio>=.3?"⭐":"";
-  const msg = !n ? "Keine Aufgabe gelöst." : ratio>=.9?"Hervorragend!":ratio>=.6?"Gut gemacht!":ratio>=.3?"Weiter üben lohnt sich!":"Schau dir «💡 So geht's» an und probier es nochmals.";
-  const t = S.topic==="mix" ? "Alles gemischt" : TOPICS[S.topic].title;
-  app.innerHTML = `<div class="card result">
-    <p class="sub" style="margin:0">${t} · Glückszahl ${esc(gz)}</p>
-    <div class="score">${String(p).replace(".5","½")} / ${n}</div>
-    <div class="stars">${stars||"🙂"}</div>
-    <p style="font-weight:700;margin:0">${msg}</p>
-    <span class="sent" id="sent">${ENDPOINT && n ? "Wird an die Lehrperson geschickt …" : ""}</span>
-    <ul class="list">${S.log.map(l=>`<li><b>${l.nr}.</b><span>${l.p===1?"✅":l.p>0?"☑️":"❌"} ${esc(l.thema)} – <b>${esc(l.loesung)}</b></span></li>`).join("")}</ul>
-    <div class="actions" style="justify-content:center">
-      <button class="btn" id="again">Nochmals</button>
-      <button class="btn ghost" id="menu">Anderes Thema</button>
-    </div>
-  </div>`;
-  document.getElementById("again").onclick=()=>start(S.topic);
-  document.getElementById("menu").onclick=home;
-  submit().then(ok=>{
-    const el = document.getElementById("sent"); if(!el || ok===null) return;
-    if(ok){ el.textContent = "✓ Bei der Lehrperson angekommen"; el.className="sent ok"; }
-    else el.textContent = "Konnte noch nicht gesendet werden – wird beim nächsten Mal automatisch nachgeschickt.";
-  });
-}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") sendPending(); });
+window.addEventListener("pagehide", sendPending);
 
 /* ---------- Lehrperson ---------- */
 let TD = null;
@@ -671,12 +821,12 @@ const pct = (p,m)=> m? Math.round(p/m*100) : 0;
 function teacherView(filter){
   pill.hidden = true;
   const R = (TD.runden||[]).slice().sort((a,b)=>String(b.zeit).localeCompare(String(a.zeit)));
-  const by = {};
-  R.forEach(r=>{ const g=by[r.glueckszahl]||(by[r.glueckszahl]={n:0,p:0,m:0,last:r.zeit}); g.n++; g.p+=+r.punkte; g.m+=+r.max; });
-  const kids = Object.entries(by).sort((a,b)=>(+a[0])-(+b[0]));
-  const th = {};
-  R.forEach(r=>(r.aufgaben||[]).forEach(a=>{ const s=th[a.thema]||(th[a.thema]={n:0,p:0}); s.n++; s.p+=+a.punkte; }));
-  const themen = Object.entries(th).sort((a,b)=>a[1].p/a[1].n-b[1].p/b[1].n);
+  const kids = {};
+  R.slice().reverse().forEach(r=>{ const k=kids[r.glueckszahl]||(kids[r.glueckszahl]={g:{},last:r.zeit,n:0}); k.last=r.zeit; k.n+=(r.aufgaben||[]).length;
+    (r.aufgaben||[]).forEach(a=>{ const x=k.g[a.thema]||(k.g[a.thema]={lv:0,res:[]}); x.lv=Math.max(x.lv,+a.stufe||1); x.res.push(+a.punkte); }); });
+  const cell = x=>{ if(!x) return `<td class="num" style="color:#a3adbf">–</td>`; const l=x.res.slice(-10); const p=Math.round(l.reduce((a,b)=>a+b,0)/l.length*100);
+    return `<td class="num"><span class="tag ${p>=80?"ok":p>=50?"half":"no"}">S${x.lv} · ${p}%</span></td>`; };
+  const list = Object.entries(kids).sort((a,b)=>(+a[0])-(+b[0]));
   const rows = R.filter(r=>!filter || r.glueckszahl===filter);
   app.innerHTML = `<div class="card">
     <div class="row" style="justify-content:space-between">
@@ -684,20 +834,13 @@ function teacherView(filter){
       <div class="row no-print"><a class="btn ghost small" href="${esc(TD.tabelle||"#")}" target="_blank" rel="noopener">Google-Tabelle</a>
       <button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tclose">Schliessen</button></div>
     </div>
-    <p class="sub" style="margin-top:6px">${R.length} Runden von ${kids.length} Glückszahlen.</p>
-    <div class="grid2">
-      <div><h2>Pro Glückszahl</h2>
-        <table class="t"><tr><th>Zahl</th><th class="num">Runden</th><th>richtig</th><th>zuletzt</th></tr>
-        ${kids.map(([k,g])=>`<tr class="klick" data-gz="${esc(k)}"><td><b>${esc(k)}</b></td><td class="num">${g.n}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar"><i style="width:${pct(g.p,g.m)}%"></i></div>${pct(g.p,g.m)}%</div></td><td>${dt(g.last)}</td></tr>`).join("") || `<tr><td colspan="4">Noch keine Runden.</td></tr>`}
-        </table></div>
-      <div><h2>Was macht Mühe?</h2>
-        <table class="t"><tr><th>Thema</th><th class="num">Aufgaben</th><th>richtig</th></tr>
-        ${themen.map(([k,s])=>`<tr><td>${esc(k)}</td><td class="num">${s.n}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar"><i style="width:${pct(s.p,s.n)}%"></i></div>${pct(s.p,s.n)}%</div></td></tr>`).join("")}
-        </table></div>
-    </div>
-    <h2 style="margin-top:22px">Runden ${filter?`von Glückszahl ${esc(filter)} <button class="linkish" id="tall">alle zeigen</button>`:""}</h2>
-    <table class="t"><tr><th>Zeit</th><th>Zahl</th><th>Thema</th><th class="num">Punkte</th><th></th></tr>
-    ${rows.map(r=>`<tr class="klick" data-i="${R.indexOf(r)}"><td>${dt(r.zeit)}</td><td><b>${esc(r.glueckszahl)}</b></td><td>${esc(r.thema)}</td><td class="num">${String(r.punkte).replace(".5","½")} / ${r.max}</td><td>›</td></tr>`).join("")}
+    <p class="sub" style="margin-top:6px">S = höchste Stufe · % = Anteil richtig in den letzten 10 Aufgaben dieses Lernziels</p>
+    <div style="overflow-x:auto"><table class="t"><tr><th>Zahl</th>${GOALS.map(g=>`<th class="num">${esc(g.code||"")} ${esc(g.title)}</th>`).join("")}<th class="num">Aufgaben</th><th>zuletzt</th></tr>
+      ${list.map(([k,v])=>`<tr class="klick" data-gz="${esc(k)}"><td><b>${esc(k)}</b></td>${GOALS.map(g=>cell(v.g[g.title])).join("")}<td class="num">${v.n}</td><td>${dt(v.last)}</td></tr>`).join("") || `<tr><td>Noch keine Daten.</td></tr>`}
+    </table></div>
+    <h2 style="margin-top:22px">Abgaben ${filter?`von Glückszahl ${esc(filter)} <button class="linkish" id="tall">alle zeigen</button>`:""}</h2>
+    <table class="t"><tr><th>Zeit</th><th>Zahl</th><th>Thema</th><th class="num">richtig</th><th></th></tr>
+    ${rows.map(r=>`<tr class="klick" data-i="${R.indexOf(r)}"><td>${dt(r.zeit)}</td><td><b>${esc(r.glueckszahl)}</b></td><td>${esc(r.thema)}</td><td class="num">${r.punkte} / ${r.max}</td><td>›</td></tr>`).join("")}
     </table>
     <div id="detail"></div>
   </div>`;
@@ -707,18 +850,18 @@ function teacherView(filter){
   app.querySelectorAll("tr[data-gz]").forEach(tr=>tr.onclick=()=>teacherView(tr.dataset.gz));
   app.querySelectorAll("tr[data-i]").forEach(tr=>tr.onclick=()=>{
     const r = R[+tr.dataset.i];
-    const d = document.getElementById("detail");
-    d.innerHTML = `<h2 style="margin-top:22px">Glückszahl ${esc(r.glueckszahl)} · ${esc(r.thema)} · ${dt(r.zeit)}</h2>
-      <table class="t"><tr><th>Nr.</th><th>Aufgabe</th><th>Antwort(en)</th><th>Lösung</th><th></th></tr>
-      ${(r.aufgaben||[]).map(a=>`<tr><td>${a.nr}</td><td>${esc(a.frage)}</td><td>${(a.antworten||[]).map(esc).join("<br>")}</td><td><b>${esc(a.loesung)}</b></td>
-        <td><span class="tag ${a.punkte===1?"ok":a.punkte>0?"half":"no"}">${a.punkte===1?"1":a.punkte>0?"½":"0"}</span></td></tr>`).join("")}
+    document.getElementById("detail").innerHTML = `<h2 style="margin-top:22px">Glückszahl ${esc(r.glueckszahl)} · ${esc(r.thema)} · ${dt(r.zeit)}</h2>
+      <table class="t"><tr><th>Nr.</th><th>Lernziel</th><th>Stufe</th><th>Aufgabe</th><th>Antwort</th><th>Lösung</th><th></th></tr>
+      ${(r.aufgaben||[]).map(a=>`<tr><td>${a.nr}</td><td>${esc(a.thema)}</td><td>${a.stufe||""}</td><td>${esc(a.frage)}</td><td>${(a.antworten||[]).map(esc).join("<br>")}</td><td><b>${esc(a.loesung)}</b></td>
+        <td><span class="tag ${a.punkte>=1?"ok":a.punkte>0?"half":"no"}">${a.punkte>=1?"✓":a.punkte>0?"½":"✗"}</span></td></tr>`).join("")}
       </table>`;
-    d.scrollIntoView({behavior:"smooth"});
+    document.getElementById("detail").scrollIntoView({behavior:"smooth"});
   });
 }
 
 home();
 flush();
+
 </script>
 </body>
 </html>
