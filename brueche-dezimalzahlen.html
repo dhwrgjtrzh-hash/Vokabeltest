@@ -151,26 +151,60 @@ table.t tr.klick:hover td{background:#f6f8fd}
   .tok{font-size:1.4rem;min-width:64px;height:60px}
 }
 @media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;border:0;padding:0}}
+
+/* Lernpfad */
+.resume{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+.resume .btn{display:flex;flex-direction:column;align-items:flex-start;text-align:left;line-height:1.25}
+.resume .btn small{font-weight:600;opacity:.85;font-size:.8rem}
+.goal{position:relative}
+.goal .tag2{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;border-radius:6px;padding:1px 6px;margin:0 0 4px;background:#eef2fa;color:#45506a}
+.goal .tag2.erw{background:#e6f4ea;color:#127a3c}
+.lv{display:flex;align-items:center;gap:6px;margin-top:8px}
+.lv .st{display:flex;gap:3px}
+.lv .st i{width:22px;height:8px;border-radius:4px;background:var(--line)}
+.lv .st i.on{background:var(--c)}
+.lv .st i.part{background:linear-gradient(90deg,var(--c) var(--p),var(--line) var(--p))}
+.lv b{font-size:.78rem;color:var(--mute);font-weight:700;margin:0}
+.goal.mastered{background:#fbfffc}
+.sesshead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.sesshead .grow{flex:1}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--line);display:inline-block}
+.dots i.on{background:#3fbf6f}
+.dots span{font-size:.85rem;font-weight:700;color:var(--mute);margin-left:4px}
+.explain{margin-top:16px;border-radius:16px;background:#fff8ec;border:2px solid #f6d39b;padding:14px 18px}
+.explain h3{margin:0 0 8px;font-size:1.05rem;color:#8a3c06}
+.explain ol{margin:0;padding-left:1.3em}
+.explain li{margin:4px 0}
+.explain .ans{display:inline-block;margin-top:8px;font-weight:800;font-size:1.15rem}
+.explain.ok{background:#f2fbf5;border-color:#bfe8cc}
+.explain.ok h3{color:var(--good)}
+details.way{margin-top:12px}
+details.way summary{cursor:pointer;color:#24439e;font-weight:700}
+.toast{margin-top:16px;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,#fff4cc,#ffe2f0);font-weight:700;font-size:1.1rem;text-align:center}
+svg.nl .hit{cursor:pointer}
+.placehint{color:var(--mute);font-size:.9rem;margin:-6px 0 12px}
+.lzkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.lzkgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.lzkgrid .topic{min-height:0;padding:10px 12px;align-items:center}
+.lzkgrid .topic b{margin:0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo">¾ = 0.75</div>
-    <h1 class="grow"><small>Mathematik 6 · Thema 6</small>Brüche und Dezimalzahlen</h1>
+    <h1 class="grow"><small>Mathematik 6 · Thema 6 · LZK 6.3</small>Brüche und Dezimalzahlen</h1>
     <div class="pill" id="pill" hidden></div>
   </header>
   <main id="app"></main>
 </div>
-
 <script>
-/* Adresse des Google-Skripts, das die Runden speichert (leer = nichts senden). */
+/* Adresse des Google-Skripts, das die Antworten speichert (leer = nichts senden). */
 const ENDPOINT = "";
 const UEBUNG = "Brüche und Dezimalzahlen";
-const GZKEY = "uebung.gz";
-
-/* Alle Dezimalzahlen intern in Tausendsteln (ganze Zahlen) – so gibt es keine Rundungsfehler. */
-const T = 1000;
+/* ===== Grundfunktionen ===== */
+const T = 1000;                       // Dezimalzahlen intern in Tausendsteln
 const rnd = (a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick = a=>a[Math.floor(Math.random()*a.length)];
 const shuffle = a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -179,8 +213,7 @@ const store = {
   get(k){ try{return localStorage.getItem(k)}catch(e){return null} },
   set(k,v){ try{localStorage.setItem(k,v)}catch(e){} }
 };
-
-function fmt(m, minDec=0){            // Tausendstel -> "12.05"
+function fmt(m, minDec=0){
   const neg = m<0; m=Math.abs(m);
   const whole = Math.floor(m/T), frac = m%T;
   let f = String(frac).padStart(3,"0").replace(/0+$/,"");
@@ -188,7 +221,7 @@ function fmt(m, minDec=0){            // Tausendstel -> "12.05"
   const w = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g,"’");
   return (neg?"−":"")+w+(f?"."+f:"");
 }
-function parse(s){                      // Eingabe -> Tausendstel, null (keine Zahl) oder NaN (zu viele Stellen)
+function parse(s){
   if(s==null) return null;
   s = String(s).trim().replace(/[\s'’]/g,"").replace(",",".");
   if(s.startsWith(".")) s="0"+s;
@@ -198,14 +231,22 @@ function parse(s){                      // Eingabe -> Tausendstel, null (keine Z
   return parseInt(w,10)*T + parseInt((f+"000").slice(0,3),10);
 }
 function parseInt0(s){ s=String(s||"").trim(); return /^\d+$/.test(s) ? parseInt(s,10) : null; }
+const decs = m => (fmt(m).split(".")[1]||"").length;
 
 /* Brüche */
 const gcd = (a,b)=>{ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; };
+const lcm = (a,b)=> a*b/gcd(a,b);
 const red = (n,d)=>{ const g=gcd(n,d); return {n:n/g, d:d/g}; };
 const fr = (n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
 const frT = (n,d)=>`${n}/${d}`;
 const isTerm = d=>{ while(d%2===0) d/=2; while(d%5===0) d/=5; return d===1; };
-const milli = (n,d)=> n*T/d;   // nur bei abbrechenden Brüchen mit höchstens 3 Dezimalen ganzzahlig
+const milli = (n,d)=> n*T/d;
+function powTo(d){ return [10,100,1000].find(p=>p%d===0); }
+function kuerzSteps(n,d){        // Schritte beim Kürzen als HTML-Kette
+  const out=[fr(n,d)]; let a=n,b=d;
+  for(const p of [10,5,2,3,7,11,13]){ while(a%p===0 && b%p===0 && gcd(a,b)>1){ a/=p; b/=p; out.push(fr(a,b)); } }
+  return {html: out.join(" = "), n:a, d:b};
+}
 
 /* Stellenwerttafel */
 const PLACES = [
@@ -223,221 +264,286 @@ function svt(digits, from=1){
   const td = pl.map((p,i)=>`<td class="${p.m<1000?"dec":""} ${p.m===100?"dot":""}">${digits[i]}</td>`).join("");
   return `<div style="overflow-x:auto"><table class="svt"><tr>${th}</tr><tr>${td}</tr></table></div>`;
 }
+function svtOf(m){        // Stellenwerttafel einer Zahl (H Z E | z h t)
+  const d=[Math.floor(m/100000)%10,Math.floor(m/10000)%10,Math.floor(m/1000)%10,Math.floor(m/100)%10,Math.floor(m/10)%10,m%10];
+  let first = d.findIndex(x=>x>0); if(first<0||first>2) first=2;
+  return svt(d.slice(first).map((x,i)=>String(x)), 1+first);
+}
 
-/* Zahlenstrahl: n Abschnitte, Beschriftungen {i:text}, Pfeile {i:label} */
-function numberLine(n, labels, arrows, sub=0){
-  const W=680,H=130,x0=34,x1=W-34,y=66;
-  const total = n*(sub||1);
+/* Zahlenstrahl: total Striche-Abschnitte; big = alle wieviel ein langer Strich; mid = alle wieviel ein mittlerer */
+function numberLine(o){
+  const {total, big=total, mid=0, labels={}, arrows={}, id=""} = o;
+  const W=680,H=150,x0=34,x1=W-34,y=78;
   const X=i=>x0+(x1-x0)*i/total;
   let ticks="";
   for(let i=0;i<=total;i++){
-    const major = sub ? i%sub===0 : true;
-    const big = i===0||i===total||(labels && labels[sub?i/sub:i]!==undefined && major);
-    const h = big?18:(major?12:7);
-    ticks+=`<line x1="${X(i)}" y1="${y-h}" x2="${X(i)}" y2="${y+h}" stroke="#1b2433" stroke-width="${big?3.5:major?2.2:1.4}" stroke-linecap="round"/>`;
+    const isBig = i%big===0, isMid = mid && i%mid===0;
+    const h = isBig?18:isMid?12:7;
+    ticks+=`<line x1="${X(i)}" y1="${y-h}" x2="${X(i)}" y2="${y+h}" stroke="#1b2433" stroke-width="${isBig?3.2:isMid?2.2:1.4}" stroke-linecap="round"/>`;
   }
   let lab="";
-  for(const [i,t] of Object.entries(labels||{})) lab+=`<text x="${X(sub?i*sub:+i)}" y="${y+50}" text-anchor="middle" font-size="24" font-weight="800" fill="#1b2433" font-family="inherit">${t}</text>`;
+  for(const [i,t] of Object.entries(labels)) lab+=`<text x="${X(+i)}" y="${y+48}" text-anchor="middle" font-size="24" font-weight="800" fill="#1b2433" font-family="inherit">${t}</text>`;
   let arr="";
-  for(const [i,t] of Object.entries(arrows||{})){
+  for(const [i,t] of Object.entries(arrows)){
     const x=X(+i);
-    arr+=`<path d="M ${x} ${y-22} l -13 -24 h 26 z" fill="#f59f00"/><rect x="${x-4}" y="${y-64}" width="8" height="20" rx="3" fill="#f59f00"/>`;
-    if(t) arr+=`<text x="${x}" y="${y-72}" text-anchor="middle" font-size="22" font-weight="800" fill="#c47f00" font-family="inherit">${t}</text>`;
+    arr+=`<path d="M ${x} ${y-22} l -12 -22 h 24 z" fill="#f59f00"/><rect x="${x-4}" y="${y-62}" width="8" height="20" rx="3" fill="#f59f00"/>`;
+    if(t) arr+=`<text x="${x}" y="${y-70}" text-anchor="middle" font-size="22" font-weight="800" fill="#c47f00" font-family="inherit">${t}</text>`;
   }
-  return `<svg class="nl" viewBox="0 -20 ${W} ${H+20}" role="img" aria-label="Zahlenstrahl">
-    <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#1b2433" stroke-width="3.5" stroke-linecap="round"/>${ticks}${lab}${arr}</svg>`;
+  return `<svg class="nl" ${id?`id="${id}"`:""} viewBox="0 -10 ${W} ${H+10}" data-x0="${x0}" data-x1="${x1}" data-total="${total}" role="img" aria-label="Zahlenstrahl">
+    <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#1b2433" stroke-width="3.5" stroke-linecap="round"/>${ticks}${lab}${arr}
+    <g class="mark"></g>${id?`<rect class="hit" x="0" y="0" width="${W}" height="${H}" fill="transparent"/>`:""}</svg>`;
 }
+const ol = steps => `<ol>${steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
 
 const START_NOTE = "Brüche schreibst du in die beiden Kästchen: oben der Zähler, unten der Nenner. Dezimalzahlen mit Punkt oder Komma, zum Beispiel 0.75 oder 0,75.";
+const PNAME = {10:"Zehntel",100:"Hundertstel",1000:"Tausendstel"};
 
-/* Brüche, die als Dezimalzahl höchstens drei Stellen nach dem Punkt haben */
-const NENNER = [2,4,5,8,10,20,25,40,50,100,125,200,250,500,1000];
-function termFrac(maxVal, opts={}){
+function termFrac(maxVal, dens, reduced){
   for(let tries=0; tries<500; tries++){
-    const d = pick(opts.dens || NENNER);
-    const n = rnd(1, Math.floor(d*maxVal));
-    if(n%d===0) continue;
-    if((n*T)%d!==0) continue;
-    if(opts.reduced && gcd(n,d)!==1) continue;
+    const d = pick(dens), n = rnd(1, Math.max(1,Math.floor(d*maxVal)));
+    if(n%d===0 || (n*T)%d!==0) continue;
+    if(reduced && gcd(n,d)!==1) continue;
     return {n,d};
   }
   return {n:3,d:4};
 }
-function powHint(n,d){
-  const P = [10,100,1000].find(p=>p%d===0);
-  return P ? `Erweitere so, dass im Nenner ${P} steht: ${frT(n,d)} = ${frT(n*P/d,P)}.` : "Teile den Zähler durch den Nenner.";
+function b2dSteps(n,d){
+  const P = powTo(d), k = P/d, m = milli(n,d);
+  if(d===P) return ol([`Der Nenner ist schon ${P}: ${fr(n,d)} = ${n} ${PNAME[P]}.`, `${n} ${PNAME[P]} = <b>${fmt(m)}</b>`]);
+  return ol([`Erweitere so, dass im Nenner ${P} steht: ${d} · <b>${k}</b> = ${P}.`, `${fr(n,d)} = ${fr(n+" · "+k, d+" · "+k)} = ${fr(n*k,P)}`, `${fr(n*k,P)} = ${n*k} ${PNAME[P]} = <b>${fmt(m)}</b>`]);
 }
-const decStr = m => fmt(m);
+function d2bSteps(m){
+  const dn = decs(m), P = Math.pow(10,dn), z = Math.round(m*P/T);
+  const k = kuerzSteps(z,P);
+  return {html: ol([`${fmt(m)} = ${z} ${PNAME[P]} = ${fr(z,P)}`, `Kürzen, so weit es geht: ${k.html}`, k.n===z?`Der Bruch lässt sich nicht weiter kürzen.`:`Gekürzt: <b>${fr(k.n,k.d)}</b>`]), n:k.n, d:k.d};
+}
 
-const TOPICS = {
-  b2d:{title:"Bruch → Dezimalzahl", ic:"➗", c:"#2f5bea", info:"Schreibe den Bruch als Dezimalzahl", tb:"TB S. 25, 27",
-    help:()=>`<p><b>Weg 1 – Erweitern:</b> Erweitere den Bruch so, dass im Nenner 10, 100 oder 1000 steht.<br>${fr(3,25)} = ${fr(12,100)} = 12 Hundertstel = <b>0.12</b></p>
-      <p><b>Weg 2 – Dividieren:</b> Ein Bruch ist eine Division: ${fr(1,4)} = 1 : 4 = <b>0.25</b></p>`},
-  d2b:{title:"Dezimalzahl → Bruch", ic:"🔁", c:"#7c4dff", info:"Schreibe die Dezimalzahl als gekürzten Bruch", tb:"TB S. 24, 26",
-    help:()=>`<p>1. Lies die Dezimalzahl in Zehnteln, Hundertsteln oder Tausendsteln.<br>2. Schreibe sie als Bruch.<br>3. Kürze, so weit es geht.</p>
-      <p>0.28 = 28 Hundertstel = ${fr(28,100)} = ${fr(14,50)} = <b>${fr(7,25)}</b><br>2.25 = ${fr(225,100)} = ${fr(45,20)} = <b>${fr(9,4)}</b></p>`},
-  div:{title:"Division → Bruch und Dezimalzahl", ic:"🧩", c:"#e0732b", info:"Resultat als gekürzten Bruch und als Dezimalzahl", tb:"TB S. 25, 26",
-    help:()=>`<p>Eine Division kannst du als Bruch schreiben: 15 : 20 = ${fr(15,20)}</p>
-      <p>Kürzen: ${fr(15,20)} = <b>${fr(3,4)}</b><br>Dezimalzahl: ${fr(15,20)} = ${fr(75,100)} = <b>0.75</b></p>`},
-  strahl:{title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Pfeil als Bruch und als Dezimalzahl", tb:"TB S. 26",
-    help:()=>`<p>1. Zähle, in wie viele gleiche Abschnitte die Strecke von 0 bis 1 geteilt ist. Das ist der <b>Nenner</b>.<br>2. Zähle die Abschnitte bis zum Pfeil. Das ist der <b>Zähler</b>.</p>
-      <p>Beispiel: 5 Abschnitte, Pfeil beim 2. Strich → ${fr(2,5)} = ${fr(4,10)} = <b>0.4</b></p>`},
-  check:{title:"Stimmt das?", ic:"🔎", c:"#d6336c", info:"Haben Bruch und Dezimalzahl den gleichen Wert?", tb:"TB S. 24",
-    help:()=>`<p>Rechne den Bruch in eine Dezimalzahl um und vergleiche.</p>
-      <p>${fr(1,4)} = 0.25 ✓ – aber ${fr(1,4)} ist <b>nicht</b> 0.4 (der Nenner ist nicht die Dezimalzahl!)<br>${fr(3,5)} = ${fr(6,10)} = 0.6 – <b>nicht</b> 0.35</p>`},
-};
+const GOALS = [
+/* ---------- B2 Bruch → Dezimalzahl ---------- */
+{id:"B2", code:"B2", title:"Bruch → Dezimalzahl", ic:"➗", c:"#2f5bea", info:"Brüche in Dezimalzahlen umwandeln", tb:"TB S. 25, 27",
+ help:()=>`<p><b>Erweitern:</b> Erweitere den Bruch so, dass im Nenner 10, 100 oder 1000 steht.<br>${fr(3,25)} = ${fr(12,100)} = 12 Hundertstel = <b>0.12</b> · ${fr(3,8)} = ${fr(375,1000)} = <b>0.375</b></p>
+   <p><b>Oder dividieren:</b> ${fr(1,4)} = 1 : 4 = <b>0.25</b></p>`,
+ gen(lv){
+   const f = lv===1 ? termFrac(1,[2,4,5,10,100],false) : lv===2 ? termFrac(1,[4,5,8,20,25,50],false) : termFrac(pick([1,2.2]),[8,40,125,200,250,500,1000,20,25],false);
+   const m = milli(f.n,f.d);
+   return {type:"input", html:`<p class="q">Schreibe den Bruch als Dezimalzahl.</p>`, lead:`${fr(f.n,f.d)} =`, answer:m, show:fmt(m),
+     text:`${frT(f.n,f.d)} als Dezimalzahl`, explain:b2dSteps(f.n,f.d)};
+ }},
 
-const GEN = {
-  b2d(){
-    const f = Math.random()<.25 ? termFrac(2.4, {dens:[2,4,5,8,10,20,25]}) : termFrac(1, {dens:[2,4,5,8,10,20,25,40,50,100,200,250,1000]});
-    const m = milli(f.n,f.d);
-    return {type:"input", html:`<p class="q">Schreibe den Bruch als Dezimalzahl.</p><p class="big">${fr(f.n,f.d)} =</p>`,
-      text:`${frT(f.n,f.d)} als Dezimalzahl`, answer:m, show:decStr(m), hint:powHint(f.n,f.d)};
-  },
-  d2b(){
-    const f = Math.random()<.25 ? termFrac(2.6, {dens:[2,4,5,8,10,20,25], reduced:true}) : termFrac(1, {reduced:true, dens:[2,4,5,8,10,20,25,40,50,100,125,200,250,500,1000]});
-    const m = milli(f.n,f.d);
-    const s = decStr(m);
-    const places = (s.split(".")[1]||"").length;
-    let lead = s;
-    let html = `<p class="q">Schreibe die Dezimalzahl als <b>gekürzten</b> Bruch.</p>`;
-    if(Math.random()<.35){
-      const digits = [Math.floor(m/1000)%10, Math.floor(m/100)%10, Math.floor(m/10)%10, m%10];
-      const shown = digits.slice(0, 1+Math.max(places,1)).map(String);
-      html = `<p class="q">Schreibe die Zahl in der Stellenwerttafel als <b>gekürzten</b> Bruch.</p>` + svt(shown, 3);
-      lead = "";
-    }
-    const P = Math.pow(10, places);
-    return {type:"frac", html, lead, answer:{n:f.n,d:f.d}, reduced:true,
-      text:`${s} als gekürzter Bruch`, show:`${frT(f.n,f.d)}`, showHtml:fr(f.n,f.d),
-      hint:`${s} = ${frT(Math.round(m*P/1000),P)}. Kürze jetzt so weit wie möglich.`};
-  },
-  div(){
-    const base = termFrac(1.6, {reduced:true, dens:[2,4,5,8,10,20,25,50]});
-    let a,b;
-    const v = rnd(0,3);
-    if(v===0){ const k = rnd(2,6); a = base.n*k; b = base.d*k; }
-    else if(v===1){ a = rnd(1,9); b = pick([10,100,1000]); }
-    else if(v===2){ a = rnd(1,9)*pick([1,5,25]); b = pick([10,100,1000]); if(a>=b) a = rnd(1,9); }
-    else { a = base.n; b = base.d; }
-    const r = red(a,b), m = milli(a,b);
-    return {type:"fracdec", html:`<p class="q">Schreibe das Resultat als <b>gekürzten Bruch</b> und als <b>Dezimalzahl</b>.</p>`,
-      lead:`${a} : ${b}`, frac:r, dec:m, reduced:true,
-      text:`${a} : ${b} als Bruch und Dezimalzahl`, show:`${frT(r.n,r.d)} = ${decStr(m)}`, showHtml:`${fr(r.n,r.d)} = ${decStr(m)}`,
-      hint:`${a} : ${b} = ${frT(a,b)}. Kürze den Bruch. ${powHint(r.n,r.d)}`};
-  },
-  strahl(){
-    const n = pick([4,5,8,10,20,25,2,4,5,10,20]);
-    let k = rnd(1,n-1);
-    const sub = n<=5 ? (n===2?5:n===4?5:2) : 0;   // feinere Zwischenstriche zur Orientierung
-    const total = sub ? n*sub : n;
-    const html = `<p class="q">Welche Zahl zeigt der Pfeil? Schreibe sie als <b>Bruch</b> und als <b>Dezimalzahl</b>.</p>` +
-      numberLine(n, {0:"0", [n]:"1"}, {[sub? k*sub : k]:""}, sub);
-    const r = red(k,n), m = milli(k,n);
-    return {type:"fracdec", html, frac:{n:k,d:n}, dec:m, reduced:false,
-      text:`Zahlenstrahl 0 bis 1 in ${n} Abschnitten, Pfeil beim ${k}.`, show:`${frT(r.n,r.d)} = ${decStr(m)}`, showHtml:`${fr(r.n,r.d)} = ${decStr(m)}`,
-      hint: sub ? `Zähle nur die langen Striche: Die Strecke von 0 bis 1 hat ${n} gleiche Teile.` : `Die Strecke von 0 bis 1 hat ${n} gleiche Teile.`};
-  },
-  check(){
-    const f = termFrac(1.8, {reduced:true, dens:[2,4,5,8,10,20,25,50]});
-    const m = milli(f.n,f.d);
-    const truth = Math.random()<.5;
-    let shown = decStr(m);
-    if(!truth){
-      const cands = [];
-      cands.push(parse("0."+f.d));                       // 1/4 -> 0.4
-      cands.push(parse("0."+f.n+""+f.d));                // 3/5 -> 0.35
-      cands.push(parse(f.n+"."+f.d));                    // 3/5 -> 3.5
-      if(m%10===0) cands.push(m/10);                     // 0.5 -> 0.05
-      cands.push(m*10);
-      const ok = cands.filter(c=>c!=null && !Number.isNaN(c) && c!==m && c>0 && c<100000);
-      shown = decStr(pick(ok.length?ok:[m+100]));
-    }
-    return {type:"choice", words:true, html:`<p class="q">Stimmt das?</p><p class="big">${fr(f.n,f.d)} = ${shown}</p>`,
-      options:[{label:"✓ Stimmt"},{label:"✗ Stimmt nicht"}], answer: truth?0:1,
-      text:`${frT(f.n,f.d)} = ${shown} ?`, show: truth ? `stimmt (${frT(f.n,f.d)} = ${decStr(m)})` : `stimmt nicht – ${frT(f.n,f.d)} = ${decStr(m)}`,
-      hint:`Rechne ${frT(f.n,f.d)} selber in eine Dezimalzahl um. ${powHint(f.n,f.d)}`};
-  },
-};
+/* ---------- B1 Dezimalzahl → gekürzter Bruch ---------- */
+{id:"B1", code:"B1", title:"Dezimalzahl → Bruch", ic:"🔁", c:"#7c4dff", info:"Als Bruch schreiben und so weit wie möglich kürzen", tb:"TB S. 24, 26, 27",
+ help:()=>`<p>1. Lies die Dezimalzahl in Zehnteln, Hundertsteln oder Tausendsteln.<br>2. Schreibe sie als Bruch.<br>3. Kürze, so weit es geht.</p>
+   <p>0.32 = 32 Hundertstel = ${fr(32,100)} = ${fr(16,50)} = <b>${fr(8,25)}</b><br>0.04 = ${fr(4,100)} = <b>${fr(1,25)}</b> · 2.25 = ${fr(225,100)} = <b>${fr(9,4)}</b></p>`,
+ gen(lv){
+   const f = lv===1 ? termFrac(1,[2,4,5,10],true) : lv===2 ? termFrac(1,[4,5,20,25,50,8],true) : termFrac(pick([1,2.6]),[8,40,125,200,250,4,5,20],true);
+   const m = milli(f.n,f.d);
+   const st = d2bSteps(m);
+   let html = `<p class="q">Schreibe die Dezimalzahl als Bruch und <b>kürze so weit wie möglich</b>.</p>`, lead = fmt(m);
+   if(lv>=2 && m<10000 && Math.random()<.3){ html = `<p class="q">Schreibe die Zahl in der Stellenwerttafel als Bruch und <b>kürze so weit wie möglich</b>.</p>` + svtOf(m); lead=""; }
+   return {type:"frac", html, lead, answer:{n:st.n,d:st.d}, reduced:true, text:`${fmt(m)} als gekürzter Bruch`, show:frT(st.n,st.d), showHtml:fr(st.n,st.d), explain:st.html};
+ }},
 
+/* ---------- Division ---------- */
+{id:"DV", code:"B1/B2", title:"Division → Bruch und Dezimalzahl", ic:"🧩", c:"#e0732b", info:"Resultat als gekürzten Bruch und als Dezimalzahl", tb:"TB S. 25, 26",
+ help:()=>`<p>Eine Division kannst du als Bruch schreiben: 15 : 20 = ${fr(15,20)}</p><p>Kürzen: ${fr(15,20)} = <b>${fr(3,4)}</b> · Dezimalzahl: ${fr(3,4)} = ${fr(75,100)} = <b>0.75</b></p>`,
+ gen(lv){
+   let a,b;
+   if(lv===1){ a=rnd(1,9); b=pick([10,100,1000]); }
+   else if(lv===2){ const base=termFrac(1,[2,4,5,10,20,25],true), k=rnd(2,5); a=base.n*k; b=base.d*k; }
+   else { const base=termFrac(1.4,[8,20,25,40,50],true), k=rnd(2,4); a=base.n*k; b=base.d*k; }
+   const r = red(a,b), m = milli(a,b);
+   const k = kuerzSteps(a,b);
+   return {type:"fracdec", html:`<p class="q">Schreibe das Resultat als <b>gekürzten Bruch</b> und als <b>Dezimalzahl</b>.</p>`, lead:`${a} : ${b}`, frac:r, dec:m, reduced:true,
+     text:`${a} : ${b}`, show:`${frT(r.n,r.d)} = ${fmt(m)}`, showHtml:`${fr(r.n,r.d)} = ${fmt(m)}`,
+     explain: ol([`Als Bruch: ${a} : ${b} = ${fr(a,b)}`, r.n===a?`Kürzen geht nicht: <b>${fr(a,b)}</b>`:`Kürzen: ${k.html}`]) + `<p style="margin:6px 0 0">Dezimalzahl:</p>` + b2dSteps(r.n,r.d)};
+ }},
 
-/* ---------- Ablauf ---------- */
+/* ---------- Zahlenstrahl ---------- */
+{id:"ZS", code:"B1/B2", title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Brüche und Dezimalzahlen am Zahlenstrahl", tb:"TB S. 24, 26",
+ help:()=>`<p>1. In wie viele gleiche Abschnitte ist die Strecke von 0 bis 1 geteilt? Das ist der <b>Nenner</b>.<br>2. Wie viele Abschnitte sind es bis zum Pfeil? Das ist der <b>Zähler</b>.</p>
+   <p>20 Abschnitte, Pfeil beim 7. → ${fr(7,20)} = ${fr(35,100)} = <b>0.35</b></p>`,
+ gen(lv){
+   if(lv<3){
+     const n = lv===1 ? pick([4,5,10,2]) : pick([20,20,25,8]);
+     const k = rnd(1,n-1);
+     const mid = n===20?5:n===10?5:n===8?2:n===25?5:0;
+     const r = red(k,n), m = milli(k,n);
+     return {type:"fracdec", html:`<p class="q">Welche Zahl zeigt der Pfeil? Schreibe sie als <b>Bruch</b> und als <b>Dezimalzahl</b>.</p>` + numberLine({total:n, big:n, mid, labels:{0:"0",[n]:"1"}, arrows:{[k]:""}}),
+       frac:{n:k,d:n}, dec:m, reduced:false, text:`0 bis 1 in ${n} Abschnitten, Pfeil beim ${k}.`, show:`${frT(r.n,r.d)} = ${fmt(m)}`, showHtml:`${fr(r.n,r.d)} = ${fmt(m)}`,
+       explain: ol([`Die Strecke von 0 bis 1 ist in <b>${n}</b> gleiche Abschnitte geteilt → Nenner ${n}.`, `Bis zum Pfeil sind es <b>${k}</b> Abschnitte → ${fr(k,n)}${r.n!==k?` = ${fr(r.n,r.d)}`:""}.`]) + `<p style="margin:6px 0 0">Als Dezimalzahl:</p>` + b2dSteps(k,n)};
+   }
+   const f = termFrac(1,[4,5,10,20,25,50,100],false);
+   const target = Math.round(f.n*100/f.d);
+   const show = Math.random()<.3 ? {html:fmt(target*10), txt:fmt(target*10)} : {html:fr(f.n,f.d), txt:frT(f.n,f.d)};
+   return {type:"place", html:`<p class="q">Wo liegt <b>${show.html}</b>? Tippe die Stelle auf dem Zahlenstrahl an.</p>`, line:{total:100, big:10, mid:5, labels:{0:"0",100:"1"}}, target, label:i=>fmt(i*10),
+     text:`${show.txt} auf dem Zahlenstrahl 0 bis 1 eintragen`, show:`${show.txt} = ${fmt(target*10)}`,
+     explain: ol([`Rechne zuerst in eine Dezimalzahl um: ${show.txt} = <b>${fmt(target*10)}</b>${show.txt.includes("/")&&f.d!==100?` (${fr(f.n,f.d)} = ${fr(target,100)})`:""}.`,
+       `Von 0 bis 1 gibt es 100 kleine Abschnitte, einer ist 0.01. Die langen Striche sind 0.1, 0.2, …`, target%10 ? `${fmt(target*10)} liegt nach dem langen Strich <b>${fmt(Math.floor(target/10)*100,1)}</b> noch ${target%10} kleine Striche weiter.` : `${fmt(target*10)} ist genau der lange Strich <b>${fmt(target*10,1)}</b>.`])};
+ }},
+
+/* ---------- Stimmt das? ---------- */
+{id:"SD", code:"B2", title:"Stimmt das?", ic:"🔎", c:"#d6336c", info:"Haben Bruch und Dezimalzahl den gleichen Wert?", tb:"TB S. 24",
+ help:()=>`<p>Rechne den Bruch selber in eine Dezimalzahl um und vergleiche.</p><p>${fr(1,4)} = 0.25 ✓ – aber <b>nicht</b> 0.4! Der Nenner ist nicht die Dezimalzahl.<br>${fr(3,5)} = ${fr(6,10)} = 0.6 – <b>nicht</b> 0.35</p>`,
+ gen(lv){
+   const f = termFrac(lv===3?2:1.2, lv===1?[2,4,5,10]:[4,5,8,20,25,50], true);
+   const m = milli(f.n,f.d), truth = Math.random()<.45;
+   let shown = m;
+   if(!truth){ const c=[parse("0."+f.d), parse("0."+f.n+""+f.d), parse(f.n+"."+f.d), m*10, m%10===0?m/10:null, m+pick([10,100])].filter(x=>x!=null && !Number.isNaN(x) && x!==m && x>0); shown = pick(c); }
+   return {type:"choice", words:true, html:`<p class="q">Stimmt das?</p><p class="big">${fr(f.n,f.d)} = ${fmt(shown)}</p>`, options:[{label:"✓ Stimmt"},{label:"✗ Stimmt nicht"}], answer: truth?0:1,
+     text:`${frT(f.n,f.d)} = ${fmt(shown)} ?`, show: truth?`stimmt`:`stimmt nicht – ${frT(f.n,f.d)} = ${fmt(m)}`, showHtml: truth?`stimmt`:`stimmt nicht: ${fr(f.n,f.d)} = ${fmt(m)}`,
+     explain: b2dSteps(f.n,f.d) + `<p style="margin:6px 0 0">${truth?`${fmt(m)} = ${fmt(shown)} → <b>stimmt</b>.`:`${fmt(m)} ist nicht ${fmt(shown)} → <b>stimmt nicht</b>.`}</p>`};
+ }},
+
+/* ---------- Unendlich viele Dezimalen (erweitert) ---------- */
+{id:"UE", code:"", erw:true, title:"Unendlich viele Dezimalen", ic:"♾️", c:"#5b6b8a", info:"Periodische Dezimalzahlen wie 0.333…", tb:"TB S. 27, S. 154",
+ help:()=>`<p>Manche Divisionen hören nie auf: 1 : 3 = 0.333… · 2 : 3 = 0.666…<br>Bei Neuntel wiederholt sich der Zähler: ${fr(1,9)} = 0.111… · ${fr(4,9)} = 0.444…<br>Bei 99-stel wiederholen sich zwei Ziffern: ${fr(5,99)} = 0.0505… · ${fr(25,99)} = 0.2525…</p>`,
+ gen(lv){
+   if(lv===1){
+     const z = rnd(2,8);
+     const opts = shuffle([`0.${String(z).repeat(4)}…`, `0.${z}`, `0.${z}9`, `${z}.9`]);
+     return {type:"choice", words:true, html:`<p class="q">1 : 9 = 0.1111… &nbsp; 2 : 9 = 0.2222…<br>Was ist <b>${z} : 9</b>?</p>`, options:opts.map(o=>({label:o})), answer:opts.indexOf(`0.${String(z).repeat(4)}…`),
+       text:`${z} : 9`, show:`0.${String(z).repeat(4)}…`, explain: ol([`Bei Divisionen durch 9 wiederholt sich der Zähler immer wieder: 1 : 9 = 0.111…`, `Also ${z} : 9 = <b>0.${String(z).repeat(4)}…</b>`])};
+   }
+   if(lv===2){
+     const c = pick([[1,3,"0.3333…"],[2,3,"0.6666…"],[1,6,"0.1666…"],[5,6,"0.8333…"],[1,9,"0.1111…"],[7,9,"0.7777…"]]);
+     const wrong = [`0.${c[0]}${c[1]}`, `${c[0]}.${c[1]}`, `0.${c[0]}`, `0.${String(c[0]*10/c[1]).slice(0,1)}`].filter((x,i,a)=>x!==c[2] && a.indexOf(x)===i).slice(0,3);
+     const opts = shuffle([c[2], ...wrong]);
+     return {type:"choice", words:true, html:`<p class="q">Schreibe den Bruch als Dezimalzahl.</p><p class="big">${fr(c[0],c[1])} = ?</p>`, options:opts.map(o=>({label:o})), answer:opts.indexOf(c[2]),
+       text:`${c[0]}/${c[1]} als Dezimalzahl`, show:c[2], explain: ol([`${fr(c[0],c[1])} = ${c[0]} : ${c[1]}`, `Schriftlich dividieren: Es bleibt immer wieder derselbe Rest, darum wiederholt sich die Ziffer.`, `${c[0]} : ${c[1]} = <b>${c[2]}</b>`])};
+   }
+   if(Math.random()<.5){
+     const z = rnd(1,8), nine = Math.random()<.6;
+     const shown = nine ? `0.${String(z).repeat(6)}…` : `0.${String(z).padStart(2,"0").repeat(4)}…`;
+     const d = nine?9:99, r = red(z,d);
+     return {type:"frac", html:`<p class="q">Schreibe die Dezimalzahl als Bruch.</p>`, lead:shown, answer:{n:z,d}, reduced:false, text:`${shown} als Bruch`, show:frT(r.n,r.d), showHtml:fr(r.n,r.d),
+       explain: ol([nine?`0.111… = ${fr(1,9)}. Bei Neuntel wiederholt sich der Zähler.`:`0.0101… = ${fr(1,99)}. Bei 99-stel wiederholen sich zwei Ziffern.`, `${shown} = <b>${fr(z,d)}</b>`])};
+   }
+   const z = rnd(2,40); const s = String(z).padStart(2,"0");
+   const opts = shuffle([`${z} : 99`, `${z} : 9`, `${z} : 100`, `${z} : 90`]);
+   return {type:"choice", words:true, html:`<p class="q">Welche Division ergibt dieses Resultat?</p><p class="big">0.${s.repeat(4)}…</p>`, options:opts.map(o=>({label:o})), answer:opts.indexOf(`${z} : 99`),
+     text:`Division zu 0.${s}${s}…`, show:`${z} : 99`, explain: ol([`1 : 99 = 0.0101… – bei 99 wiederholen sich <b>zwei</b> Ziffern.`, `Hier wiederholt sich «${s}». Also: <b>${z} : 99</b> = 0.${s.repeat(3)}…`])};
+ }},
+];
+
+/* ===== Lernpfad ===== */
 const app = document.getElementById("app"), pill = document.getElementById("pill");
-const ROUND = 10;
-let S = null;
-let gz = (store.get(GZKEY)||store.get("dz.gz")||"").replace(/\D/g,"");
+const NEED = 5;              // so viele Punkte braucht es pro Stufe
+const LEVELS = 3;
+const TEST_N = GOALS.length >= 8 ? GOALS.length : 10;
+const GOAL = Object.fromEntries(GOALS.map(g=>[g.id,g]));
+const LVNAME = ["","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
+let gz = (store.get("uebung.gz")||store.get("dz.gz")||"").replace(/\D/g,"");
+let P = null, S = null;
+
+function pkey(){ return "uebung.p."+UEBUNG+"."+gz; }
+function loadP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P=null; } if(!P||!P.goals) P={goals:{}, last:null}; }
+function saveP(){ store.set(pkey(), JSON.stringify(P)); }
+function gs(id){ return P.goals[id] || (P.goals[id]={lv:1, pr:0, done:false, n:0, ok:0}); }
+
+function levelBar(id){
+  const s = gs(id), c = GOAL[id].c;
+  let h = "";
+  for(let l=1;l<=LEVELS;l++){
+    const cls = (s.done || l<s.lv) ? "on" : l===s.lv && s.pr>0 ? "part" : "";
+    h += `<i class="${cls}" style="--c:${c};--p:${Math.round(s.pr/NEED*100)}%"></i>`;
+  }
+  return `<div class="lv"><span class="st">${h}</span><b>${s.done?"geschafft ⭐":"Stufe "+s.lv}</b></div>`;
+}
 
 function home(){
   pill.hidden = true;
-  const cards = Object.entries(TOPICS).map(([k,t])=>
-    `<button class="topic" data-k="${k}" style="--c:${t.c}"><span class="ic">${t.ic}</span><span><b>${t.title}</b><span>${t.info}</span><span>${t.tb}</span></span></button>`).join("");
+  if(gz) loadP();
+  const cards = GOALS.map(g=>{
+    const s = gz ? gs(g.id) : null;
+    return `<button class="topic goal ${s&&s.done?"mastered":""}" data-k="${g.id}" style="--c:${g.c}"><span class="ic">${g.ic}</span>
+      <span><span class="tag2 ${g.erw?"erw":""}">${g.code?g.code+" · ":""}${g.erw?"erweitert":"Grundanforderung"}</span><b>${g.title}</b><span>${g.info}</span><span>${g.tb}</span>${s?levelBar(g.id):""}</span></button>`;
+  }).join("");
+  const last = gz && P.last && GOAL[P.last] ? P.last : null;
+  const nextGoal = gz ? (GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done)) : null;
+  const resumeId = last && !gs(last).done ? last : nextGoal && nextGoal.id;
   app.innerHTML = `<div class="card">
     <div class="who">
       <label for="gz">Deine Glückszahl</label>
       <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" value="${esc(gz)}" placeholder="?">
-      <p class="note">Schreib hier deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl.</p>
+      <p class="note">Schreib hier deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl – dann machst du dort weiter, wo du aufgehört hast.</p>
     </div>
-    <h2>Wähle ein Thema</h2>
-    <p class="sub">Eine Runde hat ${ROUND} Aufgaben. Pro Aufgabe hast du zwei Versuche.</p>
-    <div class="topics">
-      <button class="topic mix" data-k="mix" style="--c:#f5a400"><span class="ic">⭐</span><span><b>Alles gemischt</b><span>Aufgaben aus allen Themen</span></span></button>
-      ${cards}
-    </div>
+    ${gz ? `<div class="resume">
+      ${resumeId?`<button class="btn" id="resume">▶ Weitermachen<small>${GOAL[resumeId].title} · Stufe ${gs(resumeId).lv}</small></button>`:""}
+      <button class="btn ghost" id="testmode">📝 Test-Training<small>${TEST_N} gemischte Aufgaben wie in der Lernzielkontrolle</small></button>
+    </div>` : ""}
+    <h2>Lernziele</h2>
+    <p class="sub">Jedes Lernziel hat 3 Stufen. Für jede Stufe brauchst du ${NEED} richtige Antworten. Ist eine Antwort falsch, siehst du, wie es geht – und bekommst gleich eine ähnliche Aufgabe.</p>
+    <div class="topics">${cards}</div>
     <p class="sub" style="margin:18px 0 0">${START_NOTE}</p>
     <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
   </div>`;
   const inp = document.getElementById("gz");
-  const upd = ()=>{ gz = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==gz) inp.value=gz; store.set(GZKEY,gz); };
-  inp.addEventListener("input", upd);
-  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{
-    upd();
-    if(!gz){ inp.focus(); inp.classList.add("no"); document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return; }
-    start(b.dataset.k);
-  });
+  const upd = ()=>{ const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value=v; const changed = v!==gz; gz=v; store.set("uebung.gz",gz); return changed; };
+  inp.addEventListener("change", ()=>{ if(upd()) home(); });
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); if(upd()) home(); } });
+  const need = ()=>{ upd(); if(!gz){ inp.focus(); inp.classList.add("no"); document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return false; } loadP(); return true; };
+  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{ if(need()) startGoal(b.dataset.k); });
+  const r = document.getElementById("resume"); if(r) r.onclick=()=>{ if(need()) startGoal(resumeId); };
+  const t = document.getElementById("testmode"); if(t) t.onclick=()=>{ if(need()) startTest(); };
   document.getElementById("teach").onclick = teacher;
   if(!gz) inp.focus({preventScroll:true});
 }
 
-function start(k){
-  const keys = Object.keys(TOPICS);
-  const list = [];
-  for(let i=0;i<ROUND;i++) list.push(k==="mix" ? keys[i%keys.length] : k);
-  if(k==="mix") shuffle(list);
-  S = {topic:k, list, i:0, points:0, log:[], started:new Date()};
+function startGoal(id){
+  P.last = id; saveP();
+  S = {mode:"goal", goal:id, log:[], pending:[], nr:0};
+  next();
+}
+function startTest(){
+  const grund = GOALS.filter(g=>!g.erw).map(g=>g.id), erw = GOALS.filter(g=>g.erw).map(g=>g.id);
+  let q = shuffle(grund.slice()).concat(shuffle(erw.slice()));
+  while(q.length<TEST_N) q.push(pick(grund));
+  q = q.slice(0,TEST_N);
+  S = {mode:"test", queue:q, qi:0, log:[], pending:[], nr:0};
   next();
 }
 
-function next(){
-  if(S.i>=ROUND) return result();
-  S.task = GEN[S.list[S.i]]();
-  S.task.topic = S.list[S.i];
-  S.tries = 0; S.done = false; S.inputs = [];
-  draw();
-}
+function curGoal(){ return S.mode==="goal" ? S.goal : (S.twin || S.queue[S.qi]); }
+function curLevel(id){ const s=gs(id); return S.mode==="test" ? Math.max(2, Math.min(s.lv, LEVELS)) : s.lv; }
 
-function progressBar(){
-  let h = "";
-  for(let i=0;i<ROUND;i++){
-    const l = S.log[i];
-    h += `<i class="${l? (l.p===1?"ok":l.p>0?"half":"no") : i===S.i?"now":""}"></i>`;
-  }
-  return `<div class="progress">${h}</div>`;
+function next(){
+  if(S.mode==="test" && S.qi>=S.queue.length && !S.twin) return testResult();
+  const id = curGoal();
+  const lv = curLevel(id);
+  let t; for(let k=0;k<20;k++){ t = GOAL[id].gen(lv); if(t) break; }
+  t.goal = id; t.lv = lv;
+  S.task = t; S.done = false; S.answer = null; S.nr++;
+  draw();
 }
 
 const inp = (id, cls="", mode="decimal")=>`<input class="ans ${cls}" id="${id}" inputmode="${mode}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?">`;
 const fracInput = (a,b)=>`<span class="fin">${inp(a,"small","numeric")}<i></i>${inp(b,"small","numeric")}</span>`;
 
+function head(){
+  const g = GOAL[S.task.goal], s = gs(g.id);
+  if(S.mode==="test"){
+    const n = S.queue.length, k = Math.min(S.twin ? S.qi : S.qi+1, n);
+    return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">📝 Test-Training · Aufgabe ${k} von ${n}${S.twin?" (ähnliche Aufgabe)":""}</span><span class="grow"></span>
+      <button class="btn ghost small" id="quit">✕ Beenden</button></div>
+      <p class="sub" style="margin:-4px 0 10px">${g.ic} ${g.title}</p>`;
+  }
+  let dots=""; for(let i=0;i<NEED;i++) dots+=`<i class="${i<s.pr?"on":""}"></i>`;
+  return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span><span class="grow"></span>
+    <button class="btn ghost small" id="quit">⟵ Übersicht</button></div>
+    <div class="sesshead"><b>${s.done?"Alle Stufen geschafft – du übst weiter auf Stufe 3":LVNAME[s.lv]}</b><span class="grow"></span><span class="dots">${dots}<span>${s.pr}/${NEED}</span></span></div>`;
+}
+
 function draw(){
-  const t = S.task, top = TOPICS[t.topic];
-  pill.hidden = false; pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
+  const t = S.task, g = GOAL[t.goal];
+  pill.hidden = false; pill.textContent = `Nr. ${gz}`;
   let body = "", needsCheck = true;
   if(t.type==="input"){
-    body = t.html + inp("a0");
+    body = t.html + `<div class="fd">${t.lead?`<span class="big" style="margin:0">${t.lead}</span>`:""}${inp("a0")}</div>`;
   }else if(t.type==="two"){
-    body = t.html + `<div class="two">${inp("a0","small")}<span>&lt;</span><span class="x">${t.mid}</span><span>&lt;</span>${inp("a1","small")}</div>`;
+    body = t.html + `<div class="two">${inp("a0","small")}<span>${t.sep||"&lt;"}</span><span class="x">${t.mid}</span><span>${t.sep||"&lt;"}</span>${inp("a1","small")}</div>`;
   }else if(t.type==="seq"){
-    body = t.html + `<div class="seq">${t.given.map(v=>`<span class="given">${fmt(v)}</span><span class="arr">→</span>`).join("")}
-      ${t.answers.map((_,j)=>inp("a"+j,"small")+(j<t.answers.length-1?'<span class="arr">→</span>':"")).join("")}</div>`;
+    let j=0;
+    body = t.html + `<div class="seq">${t.pattern.map((v,i)=>(i?'<span class="arr">→</span>':"")+(v===null?inp("a"+(j++),"small"):`<span class="given">${fmt(v)}</span>`)).join("")}</div>`;
   }else if(t.type==="frac"){
     body = t.html + `<div class="fd">${t.lead?`<span class="big" style="margin:0">${t.lead}</span><span class="eq">=</span>`:""}${fracInput("a0","a1")}</div>`;
   }else if(t.type==="fracdec"){
@@ -453,199 +559,235 @@ function draw(){
     needsCheck = false;
     body = t.html + `<div class="cmpbtns ${t.words?"words":""}">${t.options.map((o,j)=>`<button data-c="${j}">${o.label}</button>`).join("")}</div>`;
   }else if(t.type==="order"){
-    body = t.html + `<div class="order"><p class="lbl">Tippe die Zahlen der Reihe nach an – zuerst die ${t.desc?"grösste":"kleinste"}:</p>
-      <div class="slots" id="slots"><span class="ph">${t.desc?"grösste":"kleinste"} … ${t.desc?"kleinste":"grösste"}</span></div>
-      <div class="pool" id="pool">${t.items.map((it,j)=>`<button class="tok" data-j="${j}">${it.html}</button>`).join("")}</div></div>`;
+    body = t.html + `<div class="order"><p class="lbl">Tippe die Zahlen der Reihe nach an – zuerst die kleinste:</p>
+      <div class="slots" id="slots"></div><div class="pool" id="pool"></div></div>`;
+  }else if(t.type==="place"){
+    body = t.html + numberLine({...t.line, id:"pl"}) + `<p class="placehint">Tippe auf den Zahlenstrahl. Mit ◀ ▶ kannst du den Pfeil um einen Strich verschieben.</p>
+      <div class="row" style="margin-bottom:6px"><button class="btn ghost small" id="nl-l" aria-label="einen Strich nach links">◀</button><button class="btn ghost small" id="nl-r" aria-label="einen Strich nach rechts">▶</button></div>`;
   }
-  app.innerHTML = `${progressBar()}
-    <div class="card">
-      <span class="qtype" style="background:${top.c}1a;color:${top.c}">${top.ic} ${top.title} · Aufgabe ${S.i+1} von ${ROUND}</span>
+  app.innerHTML = `<div class="card">${head()}
       ${body}
-      <div class="fb" id="fb"></div>
+      <div id="fb"></div>
       <div class="actions">
         ${needsCheck?`<button class="btn" id="check">Prüfen</button>`:""}
         ${t.type==="order"?`<button class="btn ghost" id="reset">↺ Neu ordnen</button>`:""}
         <button class="btn" id="nextBtn" hidden>Weiter →</button>
       </div>
-      <details class="help"><summary>💡 So geht's</summary>${top.help()}</details>
-    </div>
-    <div class="actions no-print"><button class="btn ghost small" id="quit">✕ Runde beenden</button></div>`;
+      <details class="help"><summary>💡 So geht's</summary>${g.help()}</details>
+    </div>`;
   const inputs = [...app.querySelectorAll("input.ans")];
   inputs.forEach((el,j)=>el.addEventListener("keydown",e=>{
     if(e.key==="Enter"){ e.preventDefault();
-      if(S.done) return next2();
+      if(S.done) return go();
       if(j<inputs.length-1 && !inputs[j+1].value) inputs[j+1].focus(); else check(); }
   }));
   if(inputs[0]) inputs[0].focus({preventScroll:true});
   const c = document.getElementById("check"); if(c) c.onclick = ()=>check();
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.onclick=()=>check(b.dataset.c, b));
   if(t.type==="order") setupOrder();
-  document.getElementById("nextBtn").onclick = next2;
-  document.getElementById("quit").onclick = ()=>{ if(!S.log.length && !S.tries) home(); else result(true); };
+  if(t.type==="place") setupPlace();
+  document.getElementById("nextBtn").onclick = go;
+  document.getElementById("quit").onclick = leave;
 }
 
 function setupOrder(){
   const t = S.task, slots = document.getElementById("slots"), pool = document.getElementById("pool");
   S.order = [];
   const paint = ()=>{
-    slots.innerHTML = S.order.length ? S.order.map((j,k)=>`${k?'<span class="lt">'+(t.desc?"&gt;":"&lt;")+'</span>':""}<button class="tok" data-j="${j}">${t.items[j].html}</button>`).join("")
-      : `<span class="ph">${t.desc?"grösste":"kleinste"} … ${t.desc?"kleinste":"grösste"}</span>`;
+    slots.innerHTML = S.order.length ? S.order.map((j,k)=>`${k?'<span class="lt">&lt;</span>':""}<button class="tok" data-j="${j}">${t.items[j].html}</button>`).join("")
+      : `<span class="ph">kleinste … grösste</span>`;
     pool.innerHTML = t.items.map((it,j)=> S.order.includes(j) ? "" : `<button class="tok" data-j="${j}">${it.html}</button>`).join("");
     slots.querySelectorAll(".tok").forEach(b=>b.onclick=()=>{ if(S.done) return; S.order = S.order.filter(x=>x!==+b.dataset.j); paint(); });
     pool.querySelectorAll(".tok").forEach(b=>b.onclick=()=>{ if(S.done) return; S.order.push(+b.dataset.j); paint(); });
     const c = document.getElementById("check"); if(c) c.disabled = S.order.length!==t.items.length;
   };
-  S.paintOrder = paint;
-  document.getElementById("reset").onclick = ()=>{ if(S.done) return; S.order=[]; paint(); document.getElementById("fb").className="fb"; };
+  document.getElementById("reset").onclick = ()=>{ if(S.done) return; S.order=[]; paint(); };
   paint();
 }
-
-function feedback(kind, text){
-  const fb = document.getElementById("fb");
-  fb.className = "fb show "+kind; fb.innerHTML = text;
+function setupPlace(){
+  const svg = document.getElementById("pl"), t = S.task;
+  const x0=+svg.dataset.x0, x1=+svg.dataset.x1, total=+svg.dataset.total;
+  S.placed = null;
+  const c = document.getElementById("check"); c.disabled = true;
+  const mark = svg.querySelector(".mark");
+  const put = i=>{
+    const x = x0+(x1-x0)*i/total;
+    mark.innerHTML = `<path d="M ${x} 56 l -12 -22 h 24 z" fill="#2f5bea"/><rect x="${x-4}" y="14" width="8" height="22" rx="3" fill="#2f5bea"/>`;
+  };
+  const pt = svg.createSVGPoint();
+  svg.addEventListener("pointerdown", e=>{
+    if(S.done) return;
+    pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    let i = Math.round((p.x-x0)/(x1-x0)*total); i = Math.max(0, Math.min(total, i));
+    S.placed = i; put(i); c.disabled = false;
+  });
+  S.putMark = put;
+  const nudge = d=>{ if(S.done) return; const i = S.placed===null ? Math.round(total/2) : Math.max(0, Math.min(total, S.placed+d)); S.placed=i; put(i); c.disabled=false; };
+  document.getElementById("nl-l").onclick = ()=>nudge(-1);
+  document.getElementById("nl-r").onclick = ()=>nudge(1);
 }
 
 function check(choice, btn){
   if(S.done) return;
   const t = S.task;
-  let ok = false, extra = "";
+  let ok = false, extra = "", given = "";
   const inputs = [...app.querySelectorAll("input.ans")];
   if(t.type==="cmp" || t.type==="choice"){
     const want = t.type==="cmp" ? t.answer : String(t.answer);
     ok = choice===want;
-    app.querySelectorAll(".cmpbtns button").forEach(b=>b.classList.remove("no"));
     btn.classList.add(ok?"ok":"no");
     if(t.type==="cmp") document.getElementById("slot").textContent = choice;
-    S.inputs.push(t.type==="cmp" ? choice : btn.textContent.trim());
-    S.tries++;
+    given = t.type==="cmp" ? choice : btn.textContent.trim();
+    app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===want) b.classList.add("ok"); });
   }else if(t.type==="order"){
-    if(S.order.length!==t.items.length){ feedback("bad","Tippe zuerst alle Zahlen an."); return; }
+    if(S.order.length!==t.items.length) return;
     const vals = S.order.map(j=>t.items[j].v);
-    ok = vals.every((v,k)=>k===0 || (t.desc ? vals[k-1]>v : vals[k-1]<v));
-    S.inputs.push(S.order.map(j=>t.items[j].txt).join(t.desc?" > ":" < "));
-    S.tries++;
-    const sorted = t.items.map((_,j)=>j).sort((a,b)=> t.desc ? t.items[b].v-t.items[a].v : t.items[a].v-t.items[b].v);
+    ok = vals.every((v,k)=>k===0 || vals[k-1]<v);
+    given = S.order.map(j=>t.items[j].txt).join(" < ");
+    const sorted = t.items.map((_,j)=>j).sort((a,b)=>t.items[a].v-t.items[b].v);
     document.querySelectorAll("#slots .tok").forEach((b,k)=>b.classList.add(+b.dataset.j===sorted[k]?"ok":"no"));
+  }else if(t.type==="place"){
+    if(S.placed===null) return;
+    ok = Math.abs(S.placed - t.target) <= (t.tol||0);
+    given = t.label(S.placed);
+    if(!ok){ const svg=document.getElementById("pl"); const x0=+svg.dataset.x0, x1=+svg.dataset.x1, total=+svg.dataset.total; const x=x0+(x1-x0)*t.target/total;
+      svg.querySelector(".mark").insertAdjacentHTML("beforeend", `<path d="M ${x} 56 l -12 -22 h 24 z" fill="#127a3c"/><text x="${x}" y="8" text-anchor="middle" font-size="18" font-weight="800" fill="#127a3c">hier</text>`); }
   }else{
     if(inputs.some(el=>!el.value.trim())){ feedback("bad","Bitte fülle zuerst alles aus."); return; }
     const res = [];
     let invalid = "";
     if(t.type==="frac" || t.type==="fracdec"){
       const n = parseInt0(inputs[0].value), d = parseInt0(inputs[1].value);
-      if(n===null || d===null || d===0){ invalid = "Schreibe beim Bruch oben und unten eine ganze Zahl (unten nicht 0)."; inputs[0].classList.toggle("no",n===null); inputs[1].classList.toggle("no",d===null||d===0); }
+      if(n===null || d===null || d===0){ invalid = "Schreibe beim Bruch oben und unten eine ganze Zahl (unten nicht 0)."; }
       else{
         const want = t.type==="frac" ? t.answer : t.frac;
         const same = n*want.d === d*want.n;
         const isRed = gcd(n,d)===1;
         const fok = same && (!t.reduced || isRed);
         res.push(fok, fok);
-        if(same && t.reduced && !isRed) extra = "Der Wert stimmt, aber du kannst den Bruch noch kürzen.";
+        if(same && t.reduced && !isRed) extra = "Der Wert stimmt, aber der Bruch ist noch nicht ganz gekürzt.";
       }
       if(t.type==="fracdec" && !invalid){
         const v = parse(inputs[2].value);
-        if(v===null || Number.isNaN(v)){ invalid = "Bei der Dezimalzahl: Schreibe zum Beispiel 0.75"; inputs[2].classList.add("no"); }
+        if(v===null || Number.isNaN(v)) invalid = "Bei der Dezimalzahl: Schreibe zum Beispiel 0.75";
         else res.push(v===t.dec);
       }
     }else{
       const vals = inputs.map(el=>parse(el.value));
-      if(vals.some(v=>v===null||Number.isNaN(v))){
-        inputs.forEach((el,j)=>el.classList.toggle("no", vals[j]===null||Number.isNaN(vals[j])));
-        invalid = vals.some(Number.isNaN) ? "Höchstens drei Stellen nach dem Punkt." : "Das ist keine gültige Zahl. Schreibe zum Beispiel 4.25";
-      } else {
-        const want = t.type==="input" ? [t.answer] : t.answers;
-        vals.forEach((v,j)=>res.push(v===want[j]));
-      }
+      if(vals.some(v=>v===null||Number.isNaN(v))) invalid = vals.some(Number.isNaN) ? "Höchstens drei Stellen nach dem Punkt." : "Das ist keine gültige Zahl. Schreibe zum Beispiel 4.25";
+      else { const want = t.type==="input" ? [t.answer] : t.answers; vals.forEach((v,j)=>res.push(v===want[j])); }
     }
-    if(invalid){ feedback("bad", invalid); return; }   // zählt nicht als Versuch
+    if(invalid){ feedback("bad", invalid); return; }     // zählt nicht
     inputs.forEach((el,j)=>{ el.classList.toggle("ok",res[j]); el.classList.toggle("no",!res[j]); });
     ok = res.every(Boolean);
-    S.inputs.push(t.type==="frac" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()}`
+    given = t.type==="frac" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()}`
       : t.type==="fracdec" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()} = ${inputs[2].value.trim()}`
-      : inputs.map(el=>el.value.trim()).join(" | "));
-    S.tries++;
+      : inputs.map(el=>el.value.trim()).join(" | ");
   }
-  if(ok){
-    const pts = S.tries===1?1:0.5;
-    S.points += pts;
-    feedback("good", S.tries===1? pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐","Perfekt! ⭐"]) : "Richtig im zweiten Versuch – ½ ⭐");
-    finish(pts);
-  }else if(S.tries<2){
-    feedback("bad", (extra? extra+" " : "Noch nicht ganz. ")+"💡 "+t.hint+" Versuch es nochmals.");
-    if(t.type==="order"){ setTimeout(()=>{ if(!S.done){ S.order=[]; S.paintOrder(); } }, 1400); }
-    const firstWrong = inputs.find(el=>el.classList.contains("no"));
-    if(firstWrong) firstWrong.select();
-  }else{
-    feedback("sol", `Richtig wäre: <b>${t.showHtml||esc(t.show)}</b>`);
-    if(t.type==="cmp") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===t.answer) b.classList.add("ok"); });
-    if(t.type==="choice") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===String(t.answer)) b.classList.add("ok"); });
-    finish(0);
-  }
+  finish(ok, given, extra);
 }
 
-function finish(p){
+function feedback(kind, text){ document.getElementById("fb").innerHTML = `<div class="fb show ${kind}">${text}</div>`; }
+
+function finish(ok, given, extra){
   S.done = true;
-  S.log.push({nr:S.i+1, thema:TOPICS[S.task.topic].title, frage:S.task.text, antworten:S.inputs.slice(), loesung:S.task.show, p});
+  const t = S.task, g = GOAL[t.goal], s = gs(g.id);
   app.querySelectorAll("input.ans").forEach(el=>el.readOnly=true);
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.disabled=true);
   const c=document.getElementById("check"); if(c) c.hidden=true;
   const r=document.getElementById("reset"); if(r) r.hidden=true;
+  s.n++; if(ok) s.ok++;
+  let toast = "";
+  if(S.mode==="goal"){
+    if(ok){
+      s.pr = Math.min(NEED, s.pr+1);
+      if(s.pr>=NEED){
+        if(s.lv<LEVELS){ s.lv++; s.pr=0; toast = `🎉 Stufe ${s.lv-1} geschafft! Jetzt geht es weiter mit <b>Stufe ${s.lv}</b>.`; }
+        else if(!s.done){ s.done=true; s.pr=NEED; toast = `🏆 Super! Du hast alle 3 Stufen von «${g.title}» geschafft.`; }
+        else s.pr = NEED;
+      }
+    } else if(!s.done) s.pr = Math.max(0, s.pr-1);
+  } else {
+    if(!ok && !S.twin) S.twinNext = t.goal;
+    if(S.twin) S.twin = null; else S.qi++;
+  }
+  saveP();
+  const entry = {nr:S.nr, thema:g.title, stufe:t.lv, frage:t.text, antworten:[given], loesung:t.show, punkte:ok?1:0, test:S.mode==="test"};
+  S.log.push(entry); S.pending.push(entry);
+  const fb = document.getElementById("fb");
+  if(ok){
+    fb.innerHTML = `<div class="fb show good">${pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐","Perfekt! ⭐"])}</div>
+      <details class="way"><summary>Lösungsweg anschauen</summary><div class="explain ok">${t.explain}</div></details>`;
+  } else {
+    fb.innerHTML = `<div class="fb show bad">${extra || "Leider nicht richtig."}</div>
+      <div class="explain"><h3>💡 So geht es</h3>${t.explain}<div class="ans">Lösung: ${t.showHtml||esc(t.show)}</div></div>
+      <p class="sub" style="margin:10px 0 0">Lies die Erklärung genau. Danach bekommst du eine ähnliche Aufgabe.</p>`;
+  }
+  if(toast) fb.insertAdjacentHTML("beforeend", `<div class="toast">${toast}</div>`);
+  if(S.mode==="test" && S.twinNext){ S.twin = S.twinNext; S.twinNext = null; }
   const n=document.getElementById("nextBtn"); n.hidden=false; n.focus({preventScroll:true});
-  if(S.i===ROUND-1) n.textContent = "Zum Resultat →";
-  pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
+  if(S.mode==="test" && S.qi>=S.queue.length && !S.twin) n.textContent = "Zum Resultat →";
+  if(S.pending.length>=10 || toast) sendPending();
 }
-function next2(){ S.i++; next(); }
+function go(){ next(); }
+function leave(){ sendPending(); S=null; home(); }
+
+function testResult(){
+  sendPending();
+  const L = S.log.filter(l=>l.test);
+  // Wertung: nach einer falschen Antwort folgt eine ähnliche Aufgabe – die zählt nicht für das Resultat
+  const main = [];
+  let skip=false; for(const l of L){ if(skip){ skip=false; continue; } main.push(l); if(!l.punkte) skip=true; }
+  const p = main.filter(l=>l.punkte).length, n = main.length;
+  const ratio = n? p/n : 0;
+  const weak = [...new Set(main.filter(l=>!l.punkte).map(l=>l.thema))];
+  app.innerHTML = `<div class="card result">
+    <p class="sub" style="margin:0">📝 Test-Training · Glückszahl ${esc(gz)}</p>
+    <div class="score">${p} / ${n}</div>
+    <div class="stars">${ratio>=.9?"⭐⭐⭐":ratio>=.7?"⭐⭐":ratio>=.4?"⭐":"🙂"}</div>
+    <p style="font-weight:700;margin:0">${ratio>=.9?"Du bist bereit für die Lernzielkontrolle!":ratio>=.7?"Schon gut – übe noch die markierten Lernziele.":"Übe die Lernziele unten noch einmal in Ruhe."}</p>
+    ${weak.length?`<p class="sub" style="margin-top:14px">Das solltest du noch üben:</p><div class="lzkgrid">${weak.map(w=>{ const g=GOALS.find(x=>x.title===w); return `<button class="topic" data-k="${g.id}" style="--c:${g.c};min-height:0"><span class="ic">${g.ic}</span><span><b>${g.title}</b></span></button>`; }).join("")}</div>`:""}
+    <ul class="list">${main.map((l,i)=>`<li><b>${i+1}.</b><span>${l.punkte?"✅":"❌"} ${esc(l.thema)} – <b>${esc(l.loesung)}</b></span></li>`).join("")}</ul>
+    <div class="actions" style="justify-content:center"><button class="btn" id="again">Nochmals</button><button class="btn ghost" id="menu">Zur Übersicht</button></div>
+  </div>`;
+  document.getElementById("again").onclick = startTest;
+  document.getElementById("menu").onclick = ()=>{ S=null; home(); };
+  app.querySelectorAll(".lzkgrid .topic").forEach(b=>b.onclick=()=>startGoal(b.dataset.k));
+}
 
 /* ---------- Senden ---------- */
 const QKEY = "uebung.queue";
 function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ return []; } }
 function sendOne(rec){
-  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)})
+  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec),keepalive:true})
     .then(r=>r.text()).then(t=>{ if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt"); });
 }
+let flushing = false;
 async function flush(){
-  if(!ENDPOINT) return true;
-  let q = queue(), rest = [];
-  for(const rec of q){ try{ await sendOne(rec); }catch(e){ rest.push(rec); } }
-  store.set(QKEY, JSON.stringify(rest));
-  return rest.length===0;
+  if(!ENDPOINT || flushing) return;
+  flushing = true;
+  try{
+    let q = queue(), rest = [];
+    for(const rec of q){ try{ await sendOne(rec); }catch(e){ rest.push(rec); } }
+    const now = queue().slice(q.length);       // was inzwischen dazukam
+    store.set(QKEY, JSON.stringify(rest.concat(now).slice(-60)));
+  } finally { flushing = false; }
 }
-function submit(){
-  if(!ENDPOINT || !S.log.length) return Promise.resolve(null);
-  const rec = {typ:"uebung-runde", v:1, uebung:UEBUNG, glueckszahl:gz,
-    thema: S.topic==="mix" ? "Alles gemischt" : TOPICS[S.topic].title,
-    datum:S.started.toISOString(), punkte:S.points, max:S.log.length,
-    aufgaben:S.log.map(l=>({nr:l.nr, thema:l.thema, frage:l.frage, antworten:l.antworten, loesung:l.loesung, punkte:l.p}))};
-  const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-30)));
-  return flush();
+function sendPending(){
+  if(!S || !S.pending.length) return;
+  if(ENDPOINT){
+    const items = S.pending.splice(0);
+    const thema = S.mode==="test" ? "Test-Training" : GOAL[S.goal].title;
+    const rec = {typ:"uebung-runde", v:2, uebung:UEBUNG, glueckszahl:gz, thema, datum:new Date().toISOString(),
+      punkte:items.filter(i=>i.punkte).length, max:items.length,
+      aufgaben:items.map(i=>({nr:i.nr, thema:i.thema, stufe:i.stufe, frage:i.frage, antworten:i.antworten, loesung:i.loesung, punkte:i.punkte}))};
+    const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-60)));
+    flush();
+  } else S.pending.length = 0;
 }
-
-function result(early){
-  pill.hidden = true;
-  const n = S.log.length, p = S.points;
-  const ratio = n ? p/n : 0;
-  const stars = !n ? "" : ratio>=.9?"⭐⭐⭐":ratio>=.6?"⭐⭐":ratio>=.3?"⭐":"";
-  const msg = !n ? "Keine Aufgabe gelöst." : ratio>=.9?"Hervorragend!":ratio>=.6?"Gut gemacht!":ratio>=.3?"Weiter üben lohnt sich!":"Schau dir «💡 So geht's» an und probier es nochmals.";
-  const t = S.topic==="mix" ? "Alles gemischt" : TOPICS[S.topic].title;
-  app.innerHTML = `<div class="card result">
-    <p class="sub" style="margin:0">${t} · Glückszahl ${esc(gz)}</p>
-    <div class="score">${String(p).replace(".5","½")} / ${n}</div>
-    <div class="stars">${stars||"🙂"}</div>
-    <p style="font-weight:700;margin:0">${msg}</p>
-    <span class="sent" id="sent">${ENDPOINT && n ? "Wird an die Lehrperson geschickt …" : ""}</span>
-    <ul class="list">${S.log.map(l=>`<li><b>${l.nr}.</b><span>${l.p===1?"✅":l.p>0?"☑️":"❌"} ${esc(l.thema)} – <b>${esc(l.loesung)}</b></span></li>`).join("")}</ul>
-    <div class="actions" style="justify-content:center">
-      <button class="btn" id="again">Nochmals</button>
-      <button class="btn ghost" id="menu">Anderes Thema</button>
-    </div>
-  </div>`;
-  document.getElementById("again").onclick=()=>start(S.topic);
-  document.getElementById("menu").onclick=home;
-  submit().then(ok=>{
-    const el = document.getElementById("sent"); if(!el || ok===null) return;
-    if(ok){ el.textContent = "✓ Bei der Lehrperson angekommen"; el.className="sent ok"; }
-    else el.textContent = "Konnte noch nicht gesendet werden – wird beim nächsten Mal automatisch nachgeschickt.";
-  });
-}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") sendPending(); });
+window.addEventListener("pagehide", sendPending);
 
 /* ---------- Lehrperson ---------- */
 let TD = null;
@@ -671,12 +813,12 @@ const pct = (p,m)=> m? Math.round(p/m*100) : 0;
 function teacherView(filter){
   pill.hidden = true;
   const R = (TD.runden||[]).slice().sort((a,b)=>String(b.zeit).localeCompare(String(a.zeit)));
-  const by = {};
-  R.forEach(r=>{ const g=by[r.glueckszahl]||(by[r.glueckszahl]={n:0,p:0,m:0,last:r.zeit}); g.n++; g.p+=+r.punkte; g.m+=+r.max; });
-  const kids = Object.entries(by).sort((a,b)=>(+a[0])-(+b[0]));
-  const th = {};
-  R.forEach(r=>(r.aufgaben||[]).forEach(a=>{ const s=th[a.thema]||(th[a.thema]={n:0,p:0}); s.n++; s.p+=+a.punkte; }));
-  const themen = Object.entries(th).sort((a,b)=>a[1].p/a[1].n-b[1].p/b[1].n);
+  const kids = {};
+  R.slice().reverse().forEach(r=>{ const k=kids[r.glueckszahl]||(kids[r.glueckszahl]={g:{},last:r.zeit,n:0}); k.last=r.zeit; k.n+=(r.aufgaben||[]).length;
+    (r.aufgaben||[]).forEach(a=>{ const x=k.g[a.thema]||(k.g[a.thema]={lv:0,res:[]}); x.lv=Math.max(x.lv,+a.stufe||1); x.res.push(+a.punkte); }); });
+  const cell = x=>{ if(!x) return `<td class="num" style="color:#a3adbf">–</td>`; const l=x.res.slice(-10); const p=Math.round(l.reduce((a,b)=>a+b,0)/l.length*100);
+    return `<td class="num"><span class="tag ${p>=80?"ok":p>=50?"half":"no"}">S${x.lv} · ${p}%</span></td>`; };
+  const list = Object.entries(kids).sort((a,b)=>(+a[0])-(+b[0]));
   const rows = R.filter(r=>!filter || r.glueckszahl===filter);
   app.innerHTML = `<div class="card">
     <div class="row" style="justify-content:space-between">
@@ -684,20 +826,13 @@ function teacherView(filter){
       <div class="row no-print"><a class="btn ghost small" href="${esc(TD.tabelle||"#")}" target="_blank" rel="noopener">Google-Tabelle</a>
       <button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tclose">Schliessen</button></div>
     </div>
-    <p class="sub" style="margin-top:6px">${R.length} Runden von ${kids.length} Glückszahlen.</p>
-    <div class="grid2">
-      <div><h2>Pro Glückszahl</h2>
-        <table class="t"><tr><th>Zahl</th><th class="num">Runden</th><th>richtig</th><th>zuletzt</th></tr>
-        ${kids.map(([k,g])=>`<tr class="klick" data-gz="${esc(k)}"><td><b>${esc(k)}</b></td><td class="num">${g.n}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar"><i style="width:${pct(g.p,g.m)}%"></i></div>${pct(g.p,g.m)}%</div></td><td>${dt(g.last)}</td></tr>`).join("") || `<tr><td colspan="4">Noch keine Runden.</td></tr>`}
-        </table></div>
-      <div><h2>Was macht Mühe?</h2>
-        <table class="t"><tr><th>Thema</th><th class="num">Aufgaben</th><th>richtig</th></tr>
-        ${themen.map(([k,s])=>`<tr><td>${esc(k)}</td><td class="num">${s.n}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar"><i style="width:${pct(s.p,s.n)}%"></i></div>${pct(s.p,s.n)}%</div></td></tr>`).join("")}
-        </table></div>
-    </div>
-    <h2 style="margin-top:22px">Runden ${filter?`von Glückszahl ${esc(filter)} <button class="linkish" id="tall">alle zeigen</button>`:""}</h2>
-    <table class="t"><tr><th>Zeit</th><th>Zahl</th><th>Thema</th><th class="num">Punkte</th><th></th></tr>
-    ${rows.map(r=>`<tr class="klick" data-i="${R.indexOf(r)}"><td>${dt(r.zeit)}</td><td><b>${esc(r.glueckszahl)}</b></td><td>${esc(r.thema)}</td><td class="num">${String(r.punkte).replace(".5","½")} / ${r.max}</td><td>›</td></tr>`).join("")}
+    <p class="sub" style="margin-top:6px">S = höchste Stufe · % = Anteil richtig in den letzten 10 Aufgaben dieses Lernziels</p>
+    <div style="overflow-x:auto"><table class="t"><tr><th>Zahl</th>${GOALS.map(g=>`<th class="num">${esc(g.code||"")} ${esc(g.title)}</th>`).join("")}<th class="num">Aufgaben</th><th>zuletzt</th></tr>
+      ${list.map(([k,v])=>`<tr class="klick" data-gz="${esc(k)}"><td><b>${esc(k)}</b></td>${GOALS.map(g=>cell(v.g[g.title])).join("")}<td class="num">${v.n}</td><td>${dt(v.last)}</td></tr>`).join("") || `<tr><td>Noch keine Daten.</td></tr>`}
+    </table></div>
+    <h2 style="margin-top:22px">Abgaben ${filter?`von Glückszahl ${esc(filter)} <button class="linkish" id="tall">alle zeigen</button>`:""}</h2>
+    <table class="t"><tr><th>Zeit</th><th>Zahl</th><th>Thema</th><th class="num">richtig</th><th></th></tr>
+    ${rows.map(r=>`<tr class="klick" data-i="${R.indexOf(r)}"><td>${dt(r.zeit)}</td><td><b>${esc(r.glueckszahl)}</b></td><td>${esc(r.thema)}</td><td class="num">${r.punkte} / ${r.max}</td><td>›</td></tr>`).join("")}
     </table>
     <div id="detail"></div>
   </div>`;
@@ -707,18 +842,18 @@ function teacherView(filter){
   app.querySelectorAll("tr[data-gz]").forEach(tr=>tr.onclick=()=>teacherView(tr.dataset.gz));
   app.querySelectorAll("tr[data-i]").forEach(tr=>tr.onclick=()=>{
     const r = R[+tr.dataset.i];
-    const d = document.getElementById("detail");
-    d.innerHTML = `<h2 style="margin-top:22px">Glückszahl ${esc(r.glueckszahl)} · ${esc(r.thema)} · ${dt(r.zeit)}</h2>
-      <table class="t"><tr><th>Nr.</th><th>Aufgabe</th><th>Antwort(en)</th><th>Lösung</th><th></th></tr>
-      ${(r.aufgaben||[]).map(a=>`<tr><td>${a.nr}</td><td>${esc(a.frage)}</td><td>${(a.antworten||[]).map(esc).join("<br>")}</td><td><b>${esc(a.loesung)}</b></td>
-        <td><span class="tag ${a.punkte===1?"ok":a.punkte>0?"half":"no"}">${a.punkte===1?"1":a.punkte>0?"½":"0"}</span></td></tr>`).join("")}
+    document.getElementById("detail").innerHTML = `<h2 style="margin-top:22px">Glückszahl ${esc(r.glueckszahl)} · ${esc(r.thema)} · ${dt(r.zeit)}</h2>
+      <table class="t"><tr><th>Nr.</th><th>Lernziel</th><th>Stufe</th><th>Aufgabe</th><th>Antwort</th><th>Lösung</th><th></th></tr>
+      ${(r.aufgaben||[]).map(a=>`<tr><td>${a.nr}</td><td>${esc(a.thema)}</td><td>${a.stufe||""}</td><td>${esc(a.frage)}</td><td>${(a.antworten||[]).map(esc).join("<br>")}</td><td><b>${esc(a.loesung)}</b></td>
+        <td><span class="tag ${a.punkte>=1?"ok":a.punkte>0?"half":"no"}">${a.punkte>=1?"✓":a.punkte>0?"½":"✗"}</span></td></tr>`).join("")}
       </table>`;
-    d.scrollIntoView({behavior:"smooth"});
+    document.getElementById("detail").scrollIntoView({behavior:"smooth"});
   });
 }
 
 home();
 flush();
+
 </script>
 </body>
 </html>
