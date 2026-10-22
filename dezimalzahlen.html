@@ -16,7 +16,7 @@ body{min-height:100vh;padding:18px 16px 48px}
 button{font:inherit;color:inherit}
 .wrap{max-width:860px;margin:0 auto}
 header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.logo{width:48px;height:48px;border-radius:14px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.05rem;letter-spacing:-.02em;flex:none}
+.logo{min-width:48px;height:48px;padding:0 8px;border-radius:14px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.05rem;letter-spacing:-.02em;flex:none}
 header h1{font-size:1.5rem;margin:0;line-height:1.15}
 header h1 small{display:block;font-size:.8rem;font-weight:600;color:var(--mute)}
 header .grow{flex:1}
@@ -24,6 +24,18 @@ header .grow{flex:1}
 .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 2px 8px rgba(27,36,51,.05)}
 .sub{color:var(--mute);margin:0 0 16px}
 h2{font-size:1.2rem;margin:0 0 6px}
+
+/* Brüche */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .08em;font-size:.82em;font-weight:inherit}
+.fr>span{display:block;padding:0 .14em;text-align:center}
+.fr>span:first-child{border-bottom:.09em solid currentColor;padding-bottom:.07em}
+.fr>span:last-child{padding-top:.07em}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:6px;vertical-align:middle}
+.fin i{display:block;width:100%;height:4px;border-radius:2px;background:var(--ink)}
+.fin input.ans{width:3.6em;padding:6px 8px}
+.eq{font-size:1.8rem;font-weight:800;color:#a3adbf;margin:0 4px}
+.fd{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.fd .lab{display:block;font-size:.8rem;color:var(--mute);font-weight:700;text-align:center;margin-bottom:4px}
 
 /* Start */
 .who{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:22px}
@@ -37,7 +49,6 @@ h2{font-size:1.2rem;margin:0 0 6px}
 .topic span{display:block;color:var(--mute);font-size:.85rem;line-height:1.3}
 .topic:active{transform:scale(.98)}
 .topic.mix{background:var(--accent-soft)}
-.topic:disabled{opacity:.45}
 .teacher{margin-top:22px;text-align:right}
 .linkish{background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;font-size:.85rem;padding:4px}
 
@@ -46,6 +57,7 @@ h2{font-size:1.2rem;margin:0 0 6px}
 .btn{font-weight:700;border:0;border-radius:14px;padding:14px 26px;background:var(--accent);color:#fff;cursor:pointer;min-height:54px;font-size:1.05rem}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
 .btn.small{padding:8px 14px;min-height:40px;font-size:.9rem}
+.btn:disabled{opacity:.4}
 .progress{display:flex;gap:6px;margin:0 0 16px}
 .progress i{flex:1;height:10px;border-radius:999px;background:var(--line)}
 .progress i.ok{background:#3fbf6f}.progress i.half{background:#f5c04a}.progress i.no{background:#ef7b6f}.progress i.now{background:var(--accent)}
@@ -65,10 +77,19 @@ input.ans.no{border-color:#ef7b6f;background:var(--bad-bg)}
 .seq .arr{color:#a3adbf;font-weight:400}
 .cmp{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:2.3rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 20px}
 .cmp .slot{color:#a3adbf;min-width:1.2em;text-align:center}
-.cmpbtns{display:flex;gap:12px}
-.cmpbtns button{font-size:2rem;font-weight:800;width:84px;height:72px;border-radius:16px;border:3px solid var(--line);background:#fff;cursor:pointer}
+.cmpbtns{display:flex;gap:12px;flex-wrap:wrap}
+.cmpbtns button{font-size:2rem;font-weight:800;min-width:84px;height:72px;padding:0 14px;border-radius:16px;border:3px solid var(--line);background:#fff;cursor:pointer;font-variant-numeric:tabular-nums}
+.cmpbtns.words button{font-size:1.25rem}
 .cmpbtns button.ok{border-color:#3fbf6f;background:var(--good-bg)}
 .cmpbtns button.no{border-color:#ef7b6f;background:var(--bad-bg)}
+.order .lbl{font-size:.85rem;font-weight:700;color:var(--mute);margin:0 0 6px}
+.slots{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:84px;padding:10px;border:3px dashed var(--line);border-radius:16px;margin-bottom:14px}
+.slots .lt{color:#a3adbf;font-weight:800;font-size:1.4rem}
+.slots .ph{color:#a3adbf;font-size:.95rem}
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:76px}
+.tok{font-size:1.7rem;font-weight:800;min-width:76px;height:68px;padding:0 14px;border-radius:14px;border:3px solid var(--line);background:#fff;cursor:pointer;font-variant-numeric:tabular-nums}
+.tok.ok{border-color:#3fbf6f;background:var(--good-bg)}
+.tok.no{border-color:#ef7b6f;background:var(--bad-bg)}
 .fb{margin-top:18px;border-radius:14px;padding:14px 18px;font-weight:600;display:none;font-size:1.05rem}
 .fb.show{display:block}
 .fb.good{background:var(--good-bg);color:var(--good)}
@@ -126,7 +147,8 @@ table.t tr.klick:hover td{background:#f6f8fd}
   .big,.cmp{font-size:1.8rem}
   .svt th,.svt td{min-width:38px;padding:6px 3px}
   .svt td{font-size:1.3rem}
-  .cmpbtns button{width:70px;height:62px}
+  .cmpbtns button{min-width:70px;height:62px}
+  .tok{font-size:1.4rem;min-width:64px;height:60px}
 }
 @media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;border:0;padding:0}}
 </style>
@@ -145,8 +167,9 @@ table.t tr.klick:hover td{background:#f6f8fd}
 /* Adresse des Google-Skripts, das die Runden speichert (leer = nichts senden). */
 const ENDPOINT = "";
 const UEBUNG = "Dezimalzahlen";
+const GZKEY = "uebung.gz";
 
-/* Alle Zahlen intern in Tausendsteln (ganze Zahlen) – so gibt es keine Rundungsfehler. */
+/* Alle Dezimalzahlen intern in Tausendsteln (ganze Zahlen) – so gibt es keine Rundungsfehler. */
 const T = 1000;
 const rnd = (a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick = a=>a[Math.floor(Math.random()*a.length)];
@@ -174,8 +197,17 @@ function parse(s){                      // Eingabe -> Tausendstel, null (keine Z
   if(f.replace(/0+$/,"").length>3) return NaN;
   return parseInt(w,10)*T + parseInt((f+"000").slice(0,3),10);
 }
+function parseInt0(s){ s=String(s||"").trim(); return /^\d+$/.test(s) ? parseInt(s,10) : null; }
 
-/* ---------- Stellenwerte ---------- */
+/* Brüche */
+const gcd = (a,b)=>{ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; };
+const red = (n,d)=>{ const g=gcd(n,d); return {n:n/g, d:d/g}; };
+const fr = (n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const frT = (n,d)=>`${n}/${d}`;
+const isTerm = d=>{ while(d%2===0) d/=2; while(d%5===0) d/=5; return d===1; };
+const milli = (n,d)=> n*T/d;   // nur bei abbrechenden Brüchen mit höchstens 3 Dezimalen ganzzahlig
+
+/* Stellenwerttafel */
 const PLACES = [
   {name:"Tausender",  k:"T", m:1000000},
   {name:"Hunderter",  k:"H", m:100000},
@@ -185,14 +217,38 @@ const PLACES = [
   {name:"Hundertstel",k:"h", m:10},
   {name:"Tausendstel",k:"t", m:1},
 ];
-function svt(digits, from=1){  // digits: Array passend zu PLACES ab Index from, "" = leer
+function svt(digits, from=1){
   const pl = PLACES.slice(from, from+digits.length);
   const th = pl.map(p=>`<th class="${p.m<1000?"dec":""} ${p.m===100?"dot":""}"><b>${p.k}</b>${p.name}</th>`).join("");
   const td = pl.map((p,i)=>`<td class="${p.m<1000?"dec":""} ${p.m===100?"dot":""}">${digits[i]}</td>`).join("");
   return `<div style="overflow-x:auto"><table class="svt"><tr>${th}</tr><tr>${td}</tr></table></div>`;
 }
 
-/* ---------- Themen ---------- */
+/* Zahlenstrahl: n Abschnitte, Beschriftungen {i:text}, Pfeile {i:label} */
+function numberLine(n, labels, arrows, sub=0){
+  const W=680,H=130,x0=34,x1=W-34,y=66;
+  const total = n*(sub||1);
+  const X=i=>x0+(x1-x0)*i/total;
+  let ticks="";
+  for(let i=0;i<=total;i++){
+    const major = sub ? i%sub===0 : true;
+    const big = i===0||i===total||(labels && labels[sub?i/sub:i]!==undefined && major);
+    const h = big?18:(major?12:7);
+    ticks+=`<line x1="${X(i)}" y1="${y-h}" x2="${X(i)}" y2="${y+h}" stroke="#1b2433" stroke-width="${big?3.5:major?2.2:1.4}" stroke-linecap="round"/>`;
+  }
+  let lab="";
+  for(const [i,t] of Object.entries(labels||{})) lab+=`<text x="${X(sub?i*sub:+i)}" y="${y+50}" text-anchor="middle" font-size="24" font-weight="800" fill="#1b2433" font-family="inherit">${t}</text>`;
+  let arr="";
+  for(const [i,t] of Object.entries(arrows||{})){
+    const x=X(+i);
+    arr+=`<path d="M ${x} ${y-22} l -13 -24 h 26 z" fill="#f59f00"/><rect x="${x-4}" y="${y-64}" width="8" height="20" rx="3" fill="#f59f00"/>`;
+    if(t) arr+=`<text x="${x}" y="${y-72}" text-anchor="middle" font-size="22" font-weight="800" fill="#c47f00" font-family="inherit">${t}</text>`;
+  }
+  return `<svg class="nl" viewBox="0 -20 ${W} ${H+20}" role="img" aria-label="Zahlenstrahl">
+    <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#1b2433" stroke-width="3.5" stroke-linecap="round"/>${ticks}${lab}${arr}</svg>`;
+}
+
+const START_NOTE = "Schreibe Dezimalzahlen mit Punkt oder Komma, zum Beispiel 3.45 oder 3,45.";
 const TOPICS = {
   stellen:{title:"Stellenwerte", ic:"🧮", c:"#7c4dff", info:"Stellenwerttafel lesen und schreiben", tb:"TB S. 20",
     help:()=>`<p>Nach dem Punkt kommen <b>Zehntel (z)</b>, <b>Hundertstel (h)</b> und <b>Tausendstel (t)</b>.</p>
@@ -355,11 +411,13 @@ const GEN = {
   },
 };
 
+
+
 /* ---------- Ablauf ---------- */
 const app = document.getElementById("app"), pill = document.getElementById("pill");
 const ROUND = 10;
 let S = null;
-let gz = (store.get("dz.gz")||"").replace(/\D/g,"");
+let gz = (store.get(GZKEY)||store.get("dz.gz")||"").replace(/\D/g,"");
 
 function home(){
   pill.hidden = true;
@@ -377,15 +435,15 @@ function home(){
       <button class="topic mix" data-k="mix" style="--c:#f5a400"><span class="ic">⭐</span><span><b>Alles gemischt</b><span>Aufgaben aus allen Themen</span></span></button>
       ${cards}
     </div>
-    <p class="sub" style="margin:18px 0 0">Schreibe Dezimalzahlen mit Punkt oder Komma, zum Beispiel 3.45 oder 3,45.</p>
+    <p class="sub" style="margin:18px 0 0">${START_NOTE}</p>
     <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
   </div>`;
   const inp = document.getElementById("gz");
-  const upd = ()=>{ gz = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==gz) inp.value=gz; store.set("dz.gz",gz); };
+  const upd = ()=>{ gz = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==gz) inp.value=gz; store.set(GZKEY,gz); };
   inp.addEventListener("input", upd);
   app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{
     upd();
-    if(!gz){ inp.focus(); inp.classList.add("no"); inp.placeholder="?"; document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return; }
+    if(!gz){ inp.focus(); inp.classList.add("no"); document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return; }
     start(b.dataset.k);
   });
   document.getElementById("teach").onclick = teacher;
@@ -418,23 +476,38 @@ function progressBar(){
   return `<div class="progress">${h}</div>`;
 }
 
+const inp = (id, cls="", mode="decimal")=>`<input class="ans ${cls}" id="${id}" inputmode="${mode}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?">`;
+const fracInput = (a,b)=>`<span class="fin">${inp(a,"small","numeric")}<i></i>${inp(b,"small","numeric")}</span>`;
+
 function draw(){
   const t = S.task, top = TOPICS[t.topic];
   pill.hidden = false; pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
-  let body = "";
+  let body = "", needsCheck = true;
   if(t.type==="input"){
-    body = t.html + `<input class="ans" id="a0" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?">`;
+    body = t.html + inp("a0");
   }else if(t.type==="two"){
-    body = t.html + `<div class="two"><input class="ans small" id="a0" inputmode="decimal" autocomplete="off" placeholder="?">
-      <span>&lt;</span><span class="x">${t.mid}</span><span>&lt;</span>
-      <input class="ans small" id="a1" inputmode="decimal" autocomplete="off" placeholder="?"></div>`;
+    body = t.html + `<div class="two">${inp("a0","small")}<span>&lt;</span><span class="x">${t.mid}</span><span>&lt;</span>${inp("a1","small")}</div>`;
   }else if(t.type==="seq"){
     body = t.html + `<div class="seq">${t.given.map(v=>`<span class="given">${fmt(v)}</span><span class="arr">→</span>`).join("")}
-      ${t.answers.map((_,j)=>`<input class="ans small" id="a${j}" inputmode="decimal" autocomplete="off" placeholder="?">${j<t.answers.length-1?'<span class="arr">→</span>':""}`).join("")}</div>`;
+      ${t.answers.map((_,j)=>inp("a"+j,"small")+(j<t.answers.length-1?'<span class="arr">→</span>':"")).join("")}</div>`;
+  }else if(t.type==="frac"){
+    body = t.html + `<div class="fd">${t.lead?`<span class="big" style="margin:0">${t.lead}</span><span class="eq">=</span>`:""}${fracInput("a0","a1")}</div>`;
+  }else if(t.type==="fracdec"){
+    body = t.html + `<div class="fd">${t.lead?`<span class="big" style="margin:0">${t.lead}</span><span class="eq">=</span>`:""}
+      <span><span class="lab">Bruch${t.reduced?" (gekürzt)":""}</span>${fracInput("a0","a1")}</span><span class="eq">=</span>
+      <span><span class="lab">Dezimalzahl</span>${inp("a2","small")}</span></div>`;
   }else if(t.type==="cmp"){
-    body = `<p class="q">Setze das richtige Zeichen ein.</p>
+    needsCheck = false;
+    body = `<p class="q">${t.q||"Setze das richtige Zeichen ein."}</p>
       <div class="cmp"><span>${t.a}</span><span class="slot" id="slot">?</span><span>${t.b}</span></div>
       <div class="cmpbtns">${["<","=",">"].map(c=>`<button data-c="${c}">${c==="<"?"&lt;":c===">"?"&gt;":"="}</button>`).join("")}</div>`;
+  }else if(t.type==="choice"){
+    needsCheck = false;
+    body = t.html + `<div class="cmpbtns ${t.words?"words":""}">${t.options.map((o,j)=>`<button data-c="${j}">${o.label}</button>`).join("")}</div>`;
+  }else if(t.type==="order"){
+    body = t.html + `<div class="order"><p class="lbl">Tippe die Zahlen der Reihe nach an – zuerst die ${t.desc?"grösste":"kleinste"}:</p>
+      <div class="slots" id="slots"><span class="ph">${t.desc?"grösste":"kleinste"} … ${t.desc?"kleinste":"grösste"}</span></div>
+      <div class="pool" id="pool">${t.items.map((it,j)=>`<button class="tok" data-j="${j}">${it.html}</button>`).join("")}</div></div>`;
   }
   app.innerHTML = `${progressBar()}
     <div class="card">
@@ -442,7 +515,8 @@ function draw(){
       ${body}
       <div class="fb" id="fb"></div>
       <div class="actions">
-        ${t.type!=="cmp"?`<button class="btn" id="check">Prüfen</button>`:""}
+        ${needsCheck?`<button class="btn" id="check">Prüfen</button>`:""}
+        ${t.type==="order"?`<button class="btn ghost" id="reset">↺ Neu ordnen</button>`:""}
         <button class="btn" id="nextBtn" hidden>Weiter →</button>
       </div>
       <details class="help"><summary>💡 So geht's</summary>${top.help()}</details>
@@ -457,8 +531,25 @@ function draw(){
   if(inputs[0]) inputs[0].focus({preventScroll:true});
   const c = document.getElementById("check"); if(c) c.onclick = ()=>check();
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.onclick=()=>check(b.dataset.c, b));
+  if(t.type==="order") setupOrder();
   document.getElementById("nextBtn").onclick = next2;
   document.getElementById("quit").onclick = ()=>{ if(!S.log.length && !S.tries) home(); else result(true); };
+}
+
+function setupOrder(){
+  const t = S.task, slots = document.getElementById("slots"), pool = document.getElementById("pool");
+  S.order = [];
+  const paint = ()=>{
+    slots.innerHTML = S.order.length ? S.order.map((j,k)=>`${k?'<span class="lt">'+(t.desc?"&gt;":"&lt;")+'</span>':""}<button class="tok" data-j="${j}">${t.items[j].html}</button>`).join("")
+      : `<span class="ph">${t.desc?"grösste":"kleinste"} … ${t.desc?"kleinste":"grösste"}</span>`;
+    pool.innerHTML = t.items.map((it,j)=> S.order.includes(j) ? "" : `<button class="tok" data-j="${j}">${it.html}</button>`).join("");
+    slots.querySelectorAll(".tok").forEach(b=>b.onclick=()=>{ if(S.done) return; S.order = S.order.filter(x=>x!==+b.dataset.j); paint(); });
+    pool.querySelectorAll(".tok").forEach(b=>b.onclick=()=>{ if(S.done) return; S.order.push(+b.dataset.j); paint(); });
+    const c = document.getElementById("check"); if(c) c.disabled = S.order.length!==t.items.length;
+  };
+  S.paintOrder = paint;
+  document.getElementById("reset").onclick = ()=>{ if(S.done) return; S.order=[]; paint(); document.getElementById("fb").className="fb"; };
+  paint();
 }
 
 function feedback(kind, text){
@@ -469,28 +560,60 @@ function feedback(kind, text){
 function check(choice, btn){
   if(S.done) return;
   const t = S.task;
-  let ok = false;
+  let ok = false, extra = "";
   const inputs = [...app.querySelectorAll("input.ans")];
-  if(t.type==="cmp"){
-    ok = choice===t.answer;
+  if(t.type==="cmp" || t.type==="choice"){
+    const want = t.type==="cmp" ? t.answer : String(t.answer);
+    ok = choice===want;
     app.querySelectorAll(".cmpbtns button").forEach(b=>b.classList.remove("no"));
     btn.classList.add(ok?"ok":"no");
-    document.getElementById("slot").textContent = choice;
-    S.inputs.push(choice);
+    if(t.type==="cmp") document.getElementById("slot").textContent = choice;
+    S.inputs.push(t.type==="cmp" ? choice : btn.textContent.trim());
     S.tries++;
+  }else if(t.type==="order"){
+    if(S.order.length!==t.items.length){ feedback("bad","Tippe zuerst alle Zahlen an."); return; }
+    const vals = S.order.map(j=>t.items[j].v);
+    ok = vals.every((v,k)=>k===0 || (t.desc ? vals[k-1]>v : vals[k-1]<v));
+    S.inputs.push(S.order.map(j=>t.items[j].txt).join(t.desc?" > ":" < "));
+    S.tries++;
+    const sorted = t.items.map((_,j)=>j).sort((a,b)=> t.desc ? t.items[b].v-t.items[a].v : t.items[a].v-t.items[b].v);
+    document.querySelectorAll("#slots .tok").forEach((b,k)=>b.classList.add(+b.dataset.j===sorted[k]?"ok":"no"));
   }else{
     if(inputs.some(el=>!el.value.trim())){ feedback("bad","Bitte fülle zuerst alles aus."); return; }
-    const vals = inputs.map(el=>parse(el.value));
-    if(vals.some(v=>v===null||Number.isNaN(v))){
-      inputs.forEach((el,j)=>el.classList.toggle("no", vals[j]===null||Number.isNaN(vals[j])));
-      feedback("bad", vals.some(Number.isNaN) ? "Höchstens drei Stellen nach dem Punkt." : "Das ist keine gültige Zahl. Schreibe zum Beispiel 4.25");
-      return;   // zählt nicht als Versuch
+    const res = [];
+    let invalid = "";
+    if(t.type==="frac" || t.type==="fracdec"){
+      const n = parseInt0(inputs[0].value), d = parseInt0(inputs[1].value);
+      if(n===null || d===null || d===0){ invalid = "Schreibe beim Bruch oben und unten eine ganze Zahl (unten nicht 0)."; inputs[0].classList.toggle("no",n===null); inputs[1].classList.toggle("no",d===null||d===0); }
+      else{
+        const want = t.type==="frac" ? t.answer : t.frac;
+        const same = n*want.d === d*want.n;
+        const isRed = gcd(n,d)===1;
+        const fok = same && (!t.reduced || isRed);
+        res.push(fok, fok);
+        if(same && t.reduced && !isRed) extra = "Der Wert stimmt, aber du kannst den Bruch noch kürzen.";
+      }
+      if(t.type==="fracdec" && !invalid){
+        const v = parse(inputs[2].value);
+        if(v===null || Number.isNaN(v)){ invalid = "Bei der Dezimalzahl: Schreibe zum Beispiel 0.75"; inputs[2].classList.add("no"); }
+        else res.push(v===t.dec);
+      }
+    }else{
+      const vals = inputs.map(el=>parse(el.value));
+      if(vals.some(v=>v===null||Number.isNaN(v))){
+        inputs.forEach((el,j)=>el.classList.toggle("no", vals[j]===null||Number.isNaN(vals[j])));
+        invalid = vals.some(Number.isNaN) ? "Höchstens drei Stellen nach dem Punkt." : "Das ist keine gültige Zahl. Schreibe zum Beispiel 4.25";
+      } else {
+        const want = t.type==="input" ? [t.answer] : t.answers;
+        vals.forEach((v,j)=>res.push(v===want[j]));
+      }
     }
-    const want = t.type==="input" ? [t.answer] : t.answers;
-    const res = vals.map((v,j)=>v===want[j]);
+    if(invalid){ feedback("bad", invalid); return; }   // zählt nicht als Versuch
     inputs.forEach((el,j)=>{ el.classList.toggle("ok",res[j]); el.classList.toggle("no",!res[j]); });
     ok = res.every(Boolean);
-    S.inputs.push(inputs.map(el=>el.value.trim()).join(" | "));
+    S.inputs.push(t.type==="frac" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()}`
+      : t.type==="fracdec" ? `${inputs[0].value.trim()}/${inputs[1].value.trim()} = ${inputs[2].value.trim()}`
+      : inputs.map(el=>el.value.trim()).join(" | "));
     S.tries++;
   }
   if(ok){
@@ -499,12 +622,14 @@ function check(choice, btn){
     feedback("good", S.tries===1? pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐","Perfekt! ⭐"]) : "Richtig im zweiten Versuch – ½ ⭐");
     finish(pts);
   }else if(S.tries<2){
-    feedback("bad", "Noch nicht ganz. 💡 "+t.hint+" Versuch es nochmals.");
+    feedback("bad", (extra? extra+" " : "Noch nicht ganz. ")+"💡 "+t.hint+" Versuch es nochmals.");
+    if(t.type==="order"){ setTimeout(()=>{ if(!S.done){ S.order=[]; S.paintOrder(); } }, 1400); }
     const firstWrong = inputs.find(el=>el.classList.contains("no"));
     if(firstWrong) firstWrong.select();
   }else{
-    feedback("sol", `Richtig wäre: <b>${t.show}</b>`);
+    feedback("sol", `Richtig wäre: <b>${t.showHtml||esc(t.show)}</b>`);
     if(t.type==="cmp") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===t.answer) b.classList.add("ok"); });
+    if(t.type==="choice") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===String(t.answer)) b.classList.add("ok"); });
     finish(0);
   }
 }
@@ -515,6 +640,7 @@ function finish(p){
   app.querySelectorAll("input.ans").forEach(el=>el.readOnly=true);
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.disabled=true);
   const c=document.getElementById("check"); if(c) c.hidden=true;
+  const r=document.getElementById("reset"); if(r) r.hidden=true;
   const n=document.getElementById("nextBtn"); n.hidden=false; n.focus({preventScroll:true});
   if(S.i===ROUND-1) n.textContent = "Zum Resultat →";
   pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
@@ -522,7 +648,7 @@ function finish(p){
 function next2(){ S.i++; next(); }
 
 /* ---------- Senden ---------- */
-const QKEY = "dz.queue";
+const QKEY = "uebung.queue";
 function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ return []; } }
 function sendOne(rec){
   return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)})
@@ -580,7 +706,7 @@ function teacher(){
   const code = prompt("Passwort der Lehrperson:");
   if(code===null) return;
   const btn = document.getElementById("teach"); if(btn){ btn.textContent="lädt …"; btn.disabled=true; }
-  const cb = "dzcb"+Date.now();
+  const cb = "uecb"+Date.now();
   const s = document.createElement("script");
   let fertig = false;
   const reset = ()=>{ if(btn){ btn.textContent="Lehrperson"; btn.disabled=false; } };
@@ -596,7 +722,7 @@ const dt = iso=>{ const d=new Date(iso); return isNaN(d)?"":d.toLocaleDateString
 const pct = (p,m)=> m? Math.round(p/m*100) : 0;
 function teacherView(filter){
   pill.hidden = true;
-  const R = (TD.runden||[]).slice().sort((a,b)=>b.zeit.localeCompare(a.zeit));
+  const R = (TD.runden||[]).slice().sort((a,b)=>String(b.zeit).localeCompare(String(a.zeit)));
   const by = {};
   R.forEach(r=>{ const g=by[r.glueckszahl]||(by[r.glueckszahl]={n:0,p:0,m:0,last:r.zeit}); g.n++; g.p+=+r.punkte; g.m+=+r.max; });
   const kids = Object.entries(by).sort((a,b)=>(+a[0])-(+b[0]));
@@ -623,7 +749,7 @@ function teacherView(filter){
     </div>
     <h2 style="margin-top:22px">Runden ${filter?`von Glückszahl ${esc(filter)} <button class="linkish" id="tall">alle zeigen</button>`:""}</h2>
     <table class="t"><tr><th>Zeit</th><th>Zahl</th><th>Thema</th><th class="num">Punkte</th><th></th></tr>
-    ${rows.map((r,i)=>`<tr class="klick" data-i="${R.indexOf(r)}"><td>${dt(r.zeit)}</td><td><b>${esc(r.glueckszahl)}</b></td><td>${esc(r.thema)}</td><td class="num">${String(r.punkte).replace(".5","½")} / ${r.max}</td><td>›</td></tr>`).join("")}
+    ${rows.map(r=>`<tr class="klick" data-i="${R.indexOf(r)}"><td>${dt(r.zeit)}</td><td><b>${esc(r.glueckszahl)}</b></td><td>${esc(r.thema)}</td><td class="num">${String(r.punkte).replace(".5","½")} / ${r.max}</td><td>›</td></tr>`).join("")}
     </table>
     <div id="detail"></div>
   </div>`;
