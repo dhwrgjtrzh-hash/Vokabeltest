@@ -6,100 +6,166 @@
 <title>Dezimalzahlen üben</title>
 <style>
 :root{
-  --bg:#f4f1ea; --card:#ffffff; --ink:#1f2a37; --mute:#6b7280; --line:#e5e1d8;
-  --accent:#2563eb; --accent-ink:#ffffff; --good:#15803d; --good-bg:#dcfce7; --bad:#b91c1c; --bad-bg:#fee2e2;
-  --warm:#f59e0b; --chip:#eef2ff;
+  --bg:#f3f6fb; --card:#ffffff; --ink:#1b2433; --mute:#64708a; --line:#dfe5ef;
+  --accent:#2f5bea; --accent-soft:#e8eeff; --good:#127a3c; --good-bg:#dcf5e4; --bad:#b42318; --bad-bg:#fde4e1;
+  --sol:#8a3c06; --sol-bg:#fff1e3; --star:#f5a400;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
-body{min-height:100vh;padding:16px 16px 40px}
-.wrap{max-width:820px;margin:0 auto}
-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-header h1{font-size:1.45rem;margin:0;flex:1}
-.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.sub{color:var(--mute);margin:0 0 18px}
-.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.topic{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px;font:inherit;color:inherit;cursor:pointer;min-height:96px}
-.topic b{font-size:1.05rem}
-.topic span{color:var(--mute);font-size:.88rem}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;padding:18px 16px 48px}
+button{font:inherit;color:inherit}
+.wrap{max-width:860px;margin:0 auto}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.logo{width:48px;height:48px;border-radius:14px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.05rem;letter-spacing:-.02em;flex:none}
+header h1{font-size:1.5rem;margin:0;line-height:1.15}
+header h1 small{display:block;font-size:.8rem;font-weight:600;color:var(--mute)}
+header .grow{flex:1}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 2px 8px rgba(27,36,51,.05)}
+.sub{color:var(--mute);margin:0 0 16px}
+h2{font-size:1.2rem;margin:0 0 6px}
+
+/* Start */
+.who{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:22px}
+.who label{font-weight:700}
+.who .ans{width:6.5em}
+.who .note{color:var(--mute);font-size:.88rem;flex-basis:100%;margin:0}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.topic{--c:#2f5bea;display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fff;border:2px solid var(--line);border-left:8px solid var(--c);border-radius:16px;padding:14px 14px;cursor:pointer;min-height:92px}
+.topic .ic{font-size:1.6rem;line-height:1}
+.topic b{display:block;font-size:1.05rem;margin-bottom:2px}
+.topic span{display:block;color:var(--mute);font-size:.85rem;line-height:1.3}
 .topic:active{transform:scale(.98)}
-.topic.mix{border-color:var(--accent);background:#eff6ff}
+.topic.mix{background:var(--accent-soft)}
+.topic:disabled{opacity:.45}
+.teacher{margin-top:22px;text-align:right}
+.linkish{background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;font-size:.85rem;padding:4px}
+
+/* Aufgaben */
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.btn{font:inherit;font-weight:700;border:0;border-radius:14px;padding:14px 22px;background:var(--accent);color:var(--accent-ink);cursor:pointer;min-height:52px}
+.btn{font-weight:700;border:0;border-radius:14px;padding:14px 26px;background:var(--accent);color:#fff;cursor:pointer;min-height:54px;font-size:1.05rem}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
-.btn:disabled{opacity:.45}
-.progress{height:10px;background:var(--line);border-radius:999px;overflow:hidden;margin:4px 0 18px}
-.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
-.qtype{display:inline-block;background:var(--chip);color:#3730a3;border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:600;margin-bottom:10px}
-.q{font-size:1.3rem;margin:0 0 16px}
-.q .num{font-weight:800;white-space:nowrap}
-.big{font-size:2rem;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums;margin:6px 0 18px}
-input.ans{font:inherit;font-size:1.5rem;font-weight:700;width:9.5em;max-width:100%;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums}
-input.ans.small{width:5.5em}
+.btn.small{padding:8px 14px;min-height:40px;font-size:.9rem}
+.progress{display:flex;gap:6px;margin:0 0 16px}
+.progress i{flex:1;height:10px;border-radius:999px;background:var(--line)}
+.progress i.ok{background:#3fbf6f}.progress i.half{background:#f5c04a}.progress i.no{background:#ef7b6f}.progress i.now{background:var(--accent)}
+.qtype{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:700;margin-bottom:12px;background:var(--accent-soft);color:#24439e}
+.q{font-size:1.3rem;margin:0 0 14px;font-weight:600}
+.big{font-size:2.3rem;font-weight:800;letter-spacing:.01em;font-variant-numeric:tabular-nums;margin:4px 0 20px}
+.big.words{font-size:1.4rem;line-height:1.5}
+input.ans{font:inherit;font-size:1.6rem;font-weight:800;width:9em;max-width:100%;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums;-webkit-appearance:none}
+input.ans.small{width:5.2em}
 input.ans:focus{outline:none;border-color:var(--accent)}
-input.ans.ok{border-color:var(--good);background:var(--good-bg)}
-input.ans.no{border-color:var(--bad);background:var(--bad-bg)}
-.seq{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:18px}
-.seq .given{padding:10px 6px}
-.seq .arr{color:#9ca3af;font-weight:400}
-.cmp{display:flex;flex-wrap:wrap;align-items:center;gap:14px;font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 18px}
-.cmpbtns{display:flex;gap:10px}
-.cmpbtns button{font:inherit;font-size:1.8rem;font-weight:800;width:72px;height:64px;border-radius:14px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
-.cmpbtns button.ok{border-color:var(--good);background:var(--good-bg)}
-.cmpbtns button.no{border-color:var(--bad);background:var(--bad-bg)}
-.fb{margin-top:16px;border-radius:12px;padding:12px 16px;font-weight:600;display:none}
+input.ans.ok{border-color:#3fbf6f;background:var(--good-bg)}
+input.ans.no{border-color:#ef7b6f;background:var(--bad-bg)}
+.two{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums}
+.two .x{color:var(--accent)}
+.seq{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:1.55rem;font-weight:800;font-variant-numeric:tabular-nums;margin-bottom:6px}
+.seq .given{padding:8px 4px}
+.seq .arr{color:#a3adbf;font-weight:400}
+.cmp{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:2.3rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 20px}
+.cmp .slot{color:#a3adbf;min-width:1.2em;text-align:center}
+.cmpbtns{display:flex;gap:12px}
+.cmpbtns button{font-size:2rem;font-weight:800;width:84px;height:72px;border-radius:16px;border:3px solid var(--line);background:#fff;cursor:pointer}
+.cmpbtns button.ok{border-color:#3fbf6f;background:var(--good-bg)}
+.cmpbtns button.no{border-color:#ef7b6f;background:var(--bad-bg)}
+.fb{margin-top:18px;border-radius:14px;padding:14px 18px;font-weight:600;display:none;font-size:1.05rem}
 .fb.show{display:block}
 .fb.good{background:var(--good-bg);color:var(--good)}
 .fb.bad{background:var(--bad-bg);color:var(--bad)}
-.fb.sol{background:#fff7ed;color:#9a3412}
-.actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
-svg.nl{width:100%;height:auto;display:block;margin:4px 0 14px;overflow:visible}
-.table{border-collapse:collapse;margin:4px 0 18px;font-variant-numeric:tabular-nums}
-.table th,.table td{border:2px solid var(--line);padding:8px 10px;text-align:center;min-width:52px}
-.table th{background:#f8fafc;font-size:.85rem;color:var(--mute)}
-.table td{font-size:1.4rem;font-weight:800}
-.table .comma{border-left:4px solid var(--ink)}
+.fb.sol{background:var(--sol-bg);color:var(--sol)}
+.actions{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+svg.nl{width:100%;height:auto;display:block;margin:8px 0 18px;overflow:visible}
+
+/* Stellenwerttafel */
+.svt{border-collapse:separate;border-spacing:0;margin:6px 0 20px;font-variant-numeric:tabular-nums;border:2px solid #b9c3d6;border-radius:12px;overflow:hidden}
+.svt th,.svt td{border-right:2px solid #dfe5ef;padding:8px 6px;text-align:center;min-width:56px}
+.svt th:last-child,.svt td:last-child{border-right:0}
+.svt th{background:#eef2fa;font-size:.8rem;color:#45506a;line-height:1.15;border-bottom:2px solid #b9c3d6}
+.svt th b{display:block;font-size:1.05rem;color:var(--ink)}
+.svt td{font-size:1.7rem;font-weight:800;height:56px;background:#fff}
+.svt .dot{border-left:5px solid var(--ink)}
+.svt .dec{background:#fbfcff}
+.svt th.dec{background:#e6f4ea}
+
+/* Hilfe */
+details.help{margin-top:22px;border:2px dashed #c9d3e6;border-radius:14px;padding:4px 16px;background:#fafcff}
+details.help summary{cursor:pointer;font-weight:700;padding:10px 0;list-style:none;color:#24439e}
+details.help summary::-webkit-details-marker{display:none}
+details.help p{margin:4px 0 12px}
+details.help .svt{margin:6px 0 12px}
+details.help .svt td{font-size:1.2rem;height:auto}
+
+/* Resultat */
 .result{text-align:center}
-.result .score{font-size:3.2rem;font-weight:800;margin:6px 0}
-.stars{font-size:2.4rem;letter-spacing:.1em;margin:4px 0 10px}
-.list{text-align:left;margin:18px auto 0;max-width:560px;padding:0;list-style:none}
-.list li{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:10px}
-.list li b{min-width:24px}
-.hint{color:var(--mute);font-size:.9rem;margin-top:10px}
-@media (max-width:520px){
-  body{font-size:16px;padding:12px}
-  .card{padding:16px}
-  .big,.cmp{font-size:1.6rem}
-  .table th,.table td{min-width:36px;padding:6px}
+.result .score{font-size:3.4rem;font-weight:800;margin:4px 0}
+.stars{font-size:2.6rem;letter-spacing:.12em;margin:2px 0 8px}
+.sent{display:inline-block;margin-top:6px;font-size:.9rem;color:var(--mute)}
+.sent.ok{color:var(--good)}
+.list{text-align:left;margin:18px auto 0;max-width:600px;padding:0;list-style:none}
+.list li{padding:9px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:baseline}
+.list li b{min-width:26px}
+
+/* Lehrperson */
+table.t{width:100%;border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums}
+table.t th,table.t td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.t th{color:var(--mute);font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em}
+table.t tr.klick{cursor:pointer}
+table.t tr.klick:hover td{background:#f6f8fd}
+.num{text-align:right!important}
+.tag{display:inline-block;border-radius:999px;padding:1px 9px;font-size:.8rem;font-weight:700}
+.tag.ok{background:var(--good-bg);color:var(--good)}.tag.half{background:#fff3cd;color:#8a6100}.tag.no{background:var(--bad-bg);color:var(--bad)}
+.bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:#3fbf6f}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+@media (min-width:900px){.grid2{grid-template-columns:1.2fr 1fr}}
+
+@media (max-width:560px){
+  body{font-size:17px;padding:12px}
+  .card{padding:16px;border-radius:18px}
+  .big,.cmp{font-size:1.8rem}
+  .svt th,.svt td{min-width:38px;padding:6px 3px}
+  .svt td{font-size:1.3rem}
+  .cmpbtns button{width:70px;height:62px}
 }
+@media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;border:0;padding:0}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>🔢 Dezimalzahlen üben</h1>
+    <div class="logo">0.1</div>
+    <h1 class="grow"><small>Mathematik 6 · Thema 5</small>Dezimalzahlen üben</h1>
     <div class="pill" id="pill" hidden></div>
   </header>
   <main id="app"></main>
 </div>
 
 <script>
+/* Adresse des Google-Skripts, das die Runden speichert (leer = nichts senden). */
+const ENDPOINT = "";
+const UEBUNG = "Dezimalzahlen";
+
 /* Alle Zahlen intern in Tausendsteln (ganze Zahlen) – so gibt es keine Rundungsfehler. */
 const T = 1000;
 const rnd = (a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick = a=>a[Math.floor(Math.random()*a.length)];
 const shuffle = a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store = {
+  get(k){ try{return localStorage.getItem(k)}catch(e){return null} },
+  set(k,v){ try{localStorage.setItem(k,v)}catch(e){} }
+};
 
-function fmt(m, minDec=0){            // m in Tausendsteln -> "12.05"
+function fmt(m, minDec=0){            // Tausendstel -> "12.05"
   const neg = m<0; m=Math.abs(m);
   const whole = Math.floor(m/T), frac = m%T;
   let f = String(frac).padStart(3,"0").replace(/0+$/,"");
   while(f.length<minDec) f+="0";
-  let w = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g,"’");
+  const w = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g,"’");
   return (neg?"−":"")+w+(f?"."+f:"");
 }
-function parse(s){                      // Eingabe -> Tausendstel oder null
+function parse(s){                      // Eingabe -> Tausendstel, null (keine Zahl) oder NaN (zu viele Stellen)
   if(s==null) return null;
   s = String(s).trim().replace(/[\s'’]/g,"").replace(",",".");
   if(s.startsWith(".")) s="0"+s;
@@ -109,84 +175,109 @@ function parse(s){                      // Eingabe -> Tausendstel oder null
   return parseInt(w,10)*T + parseInt((f+"000").slice(0,3),10);
 }
 
-/* ---------- Aufgabentypen ---------- */
+/* ---------- Stellenwerte ---------- */
 const PLACES = [
-  {name:"Tausender",  short:"T", m:1000000},
-  {name:"Hunderter",  short:"H", m:100000},
-  {name:"Zehner",     short:"Z", m:10000},
-  {name:"Einer",      short:"E", m:1000},
-  {name:"Zehntel",    short:"z", m:100},
-  {name:"Hundertstel",short:"h", m:10},
-  {name:"Tausendstel",short:"t", m:1},
+  {name:"Tausender",  k:"T", m:1000000},
+  {name:"Hunderter",  k:"H", m:100000},
+  {name:"Zehner",     k:"Z", m:10000},
+  {name:"Einer",      k:"E", m:1000},
+  {name:"Zehntel",    k:"z", m:100},
+  {name:"Hundertstel",k:"h", m:10},
+  {name:"Tausendstel",k:"t", m:1},
 ];
+function svt(digits, from=1){  // digits: Array passend zu PLACES ab Index from, "" = leer
+  const pl = PLACES.slice(from, from+digits.length);
+  const th = pl.map(p=>`<th class="${p.m<1000?"dec":""} ${p.m===100?"dot":""}"><b>${p.k}</b>${p.name}</th>`).join("");
+  const td = pl.map((p,i)=>`<td class="${p.m<1000?"dec":""} ${p.m===100?"dot":""}">${digits[i]}</td>`).join("");
+  return `<div style="overflow-x:auto"><table class="svt"><tr>${th}</tr><tr>${td}</tr></table></div>`;
+}
 
+/* ---------- Themen ---------- */
 const TOPICS = {
-  stellen:{title:"Stellenwerte",     info:"Stellenwerttafel lesen und schreiben", tb:"TB S. 20"},
-  strahl: {title:"Zahlenstrahl",     info:"Welche Zahl zeigt der Pfeil?", tb:"TB S. 20, 22"},
-  nachbar:{title:"Nachbarzahlen",    info:"Zwischen welchen Zehnteln, Hundertsteln … liegt die Zahl?", tb:"TB S. 21"},
-  schritt:{title:"In Schritten zählen", info:"Zahlenfolgen vorwärts und rückwärts", tb:"TB S. 21–23"},
-  vergl:  {title:"Grösser oder kleiner?", info:"Dezimalzahlen vergleichen", tb:"TB S. 23"},
-  malteil:{title:"· und : 10, 100, 1000", info:"Das Komma wandert", tb:"TB S. 21"},
-  mitte:  {title:"Die Mitte finden",  info:"Welche Zahl liegt genau in der Mitte?", tb:"TB S. 23"},
+  stellen:{title:"Stellenwerte", ic:"🧮", c:"#7c4dff", info:"Stellenwerttafel lesen und schreiben", tb:"TB S. 20",
+    help:()=>`<p>Nach dem Punkt kommen <b>Zehntel (z)</b>, <b>Hundertstel (h)</b> und <b>Tausendstel (t)</b>.</p>
+      ${svt(["3","4","7","1","8"],2)}
+      <p>34.718 = 3 Zehner + 4 Einer + 7 Zehntel + 1 Hundertstel + 8 Tausendstel.<br>Fehlt eine Stelle, schreibst du eine <b>0</b>: 2 Einer + 5 Hundertstel = 2.05</p>`},
+  strahl:{title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Welche Zahl zeigt der Pfeil?", tb:"TB S. 20, 22",
+    help:()=>`<p>1. Schau die beiden beschrifteten Zahlen an.<br>2. Zähle, wie viele Abschnitte dazwischen sind.<br>3. Abstand : Anzahl Abschnitte = Wert von <b>einem</b> Strich.</p>
+      <p>Beispiel: Von 8 bis 9 sind es 10 Abschnitte. Ein Strich ist also 1 : 10 = <b>0.1</b>. Drei Striche nach 8 → <b>8.3</b></p>`},
+  nachbar:{title:"Nachbarzahlen", ic:"🏘️", c:"#e0732b", info:"Zwischen welchen Zehnteln, Hundertsteln … liegt die Zahl?", tb:"TB S. 21",
+    help:()=>`<p><b>Ganze:</b> 4.37 liegt zwischen 4 und 5.<br><b>Zehntel</b> (1 Stelle nach dem Punkt): 4.37 liegt zwischen 4.3 und 4.4.<br><b>Hundertstel</b> (2 Stellen): 4.375 liegt zwischen 4.37 und 4.38.<br><b>Zehner:</b> 43.7 liegt zwischen 40 und 50.</p>`},
+  schritt:{title:"In Schritten zählen", ic:"👣", c:"#13a36b", info:"Zahlenfolgen vorwärts und rückwärts", tb:"TB S. 21–23",
+    help:()=>`<p>Rechne jedes Mal <b>+ Schritt</b> (oder <b>− Schritt</b> beim Rückwärtszählen).</p>
+      <p>Achtung beim Übergang: 0.75 + 0.25 = <b>1</b> · 2.9 + 0.2 = <b>3.1</b> · 1.05 − 0.1 = <b>0.95</b></p>`},
+  vergl:{title:"Grösser oder kleiner?", ic:"⚖️", c:"#d6336c", info:"Dezimalzahlen vergleichen", tb:"TB S. 23",
+    help:()=>`<p>1. Zuerst die <b>Ganzen</b> vergleichen: 31.4 &gt; 3.41<br>2. Sind sie gleich: Zehntel vergleichen, dann Hundertstel, dann Tausendstel.</p>
+      <p>Tipp: Hänge Nullen an, damit beide gleich viele Stellen haben: 0.8 = 0.80 &gt; 0.75 · 4.5 = 4.50</p>`},
+  malteil:{title:"· und : 10, 100, 1000", ic:"✖️", c:"#2f5bea", info:"Der Punkt wandert", tb:"TB S. 21",
+    help:()=>`<p><b>· 10 / · 100 / · 1000:</b> Der Punkt wandert 1 / 2 / 3 Stellen nach <b>rechts</b>.<br>0.75 · 10 = 7.5 · 50.5 · 1000 = 50’500</p>
+      <p><b>: 10 / : 100 / : 1000:</b> Der Punkt wandert 1 / 2 / 3 Stellen nach <b>links</b>.<br>450 : 10 = 45 · 34 : 1000 = 0.034 (mit Nullen auffüllen)</p>`},
+  mitte:{title:"Die Mitte finden", ic:"🎯", c:"#a05a00", info:"Welche Zahl liegt genau in der Mitte?", tb:"TB S. 23",
+    help:()=>`<p>1. Abstand berechnen: grössere Zahl − kleinere Zahl.<br>2. Abstand halbieren.<br>3. Die Hälfte zur kleineren Zahl dazuzählen.</p>
+      <p>Beispiel: 12 und 12.1 → Abstand 0.1 → Hälfte 0.05 → Mitte <b>12.05</b></p>`},
 };
 
+/* ---------- Aufgaben-Generatoren ---------- */
 const GEN = {
   stellen(){
-    const v = pick([0,1,2]);
-    if(v===0){ // Ziffern -> Zahl
+    const v = pick([0,1,2,3]);
+    if(v===0){ // Teile -> Zahl
       const used = shuffle(PLACES.slice(1)).slice(0,rnd(3,4)).sort((a,b)=>b.m-a.m);
       let val=0; const parts=[];
       used.forEach(p=>{const d=rnd(1,9); val+=d*p.m; parts.push(`${d} ${p.name}`)});
-      return {type:"input", label:"Stellenwerte",
-        html:`<p class="q">Schreibe als Dezimalzahl:</p><p class="big" style="font-size:1.35rem">${parts.join(" + ")}</p>`,
-        answer:val, show:fmt(val),
-        hint:"Fehlt eine Stelle dazwischen, schreibst du dort eine 0."};
+      return {type:"input", html:`<p class="q">Schreibe als Dezimalzahl.</p><p class="big words">${parts.join(" + ")}</p>`,
+        text:parts.join(" + "), answer:val, show:fmt(val), hint:"Fehlt eine Stelle dazwischen, schreibst du dort eine 0."};
     }
-    // Zahl in Tafel / Ziffer an Stelle
     const digits = [rnd(0,9),rnd(0,9),rnd(1,9),rnd(0,9),rnd(0,9),rnd(1,9)]; // H Z E z h t
-    if(digits[0]===0 && digits[1]===0) digits[1]=rnd(1,9);
+    if(!digits[0] && !digits[1]) digits[1]=rnd(1,9);
     const val = digits[0]*100000+digits[1]*10000+digits[2]*1000+digits[3]*100+digits[4]*10+digits[5];
-    const pl = PLACES.slice(1); // H..t
+    const pl = PLACES.slice(1);
     if(v===1){
       const i = rnd(0,5);
-      return {type:"input", label:"Stellenwerte",
-        html:`<p class="q">Welche Ziffer steht an der <b>${pl[i].name}</b>stelle?</p><p class="big">${fmt(val)}</p>`,
-        answer:digits[i]*T, show:String(digits[i]),
+      return {type:"input", html:`<p class="q">Welche Ziffer steht an der <b>${pl[i].name}</b>stelle?</p><p class="big">${fmt(val)}</p>`,
+        text:`Ziffer an der ${pl[i].name}stelle von ${fmt(val)}`, answer:digits[i]*T, show:String(digits[i]),
         hint:"Nach dem Punkt kommen: Zehntel, Hundertstel, Tausendstel."};
     }
-    const i = rnd(2,5);
-    return {type:"input", label:"Stellenwerte",
-      html:`<p class="q">Wie viel ist die Ziffer <b>${digits[i]}</b> wert? Sie steht an der ${pl[i].name}stelle.</p><p class="big">${fmt(val)}</p>`,
-      answer:digits[i]*pl[i].m, show:fmt(digits[i]*pl[i].m),
-      hint:`1 ${pl[i].name} = ${fmt(pl[i].m)}`};
+    if(v===2){
+      const i = rnd(2,5);
+      return {type:"input", html:`<p class="q">Wie viel ist die Ziffer <b>${digits[i]}</b> wert? Sie steht an der ${pl[i].name}stelle.</p><p class="big">${fmt(val)}</p>`,
+        text:`Wert der Ziffer ${digits[i]} (${pl[i].name}) in ${fmt(val)}`, answer:digits[i]*pl[i].m, show:fmt(digits[i]*pl[i].m),
+        hint:`1 ${pl[i].name} = ${fmt(pl[i].m)}`};
+    }
+    // Tafel -> Zahl (mit Lücken = 0)
+    const d2 = digits.slice(); if(Math.random()<.6) d2[rnd(3,4)] = 0;
+    const val2 = d2[0]*100000+d2[1]*10000+d2[2]*1000+d2[3]*100+d2[4]*10+d2[5];
+    const shown = d2.map((d,i)=> (d===0 && (i<2 && d2.slice(0,i+1).every(x=>!x))) ? "" : String(d));
+    return {type:"input", html:`<p class="q">Welche Zahl steht in der Stellenwerttafel?</p>${svt(shown,1)}`,
+      text:`Stellenwerttafel ${shown.map(x=>x||"·").join(" ")}`, answer:val2, show:fmt(val2),
+      hint:"Der dicke Strich ist der Punkt: links die Ganzen, rechts Zehntel, Hundertstel, Tausendstel."};
   },
 
   strahl(){
-    const step = pick([100,100,10,10,1,1000]);       // 0.1, 0.01, 0.001, 1
+    const step = pick([100,100,10,10,1,1000]);   // 0.1, 0.01, 0.001, 1
     const n = 10;
     const a = step===1000? rnd(0,9)*10*T : step===100? rnd(0,40)*T : step===10? rnd(0,400)*100 : rnd(0,4000)*10;
     const b = a+n*step;
     let k = rnd(1,9); if(k===5 && Math.random()<.6) k=pick([2,3,7,8]);
     const val = a+k*step;
-    const W=640,H=120,x0=30,x1=W-30,y=60;
+    const W=680,H=130,x0=34,x1=W-34,y=66;
     const X=i=>x0+(x1-x0)*i/n;
     let ticks="";
     for(let i=0;i<=n;i++){
       const big = i===0||i===n||i===5;
-      ticks+=`<line x1="${X(i)}" y1="${y-(big?16:10)}" x2="${X(i)}" y2="${y+(big?16:10)}" stroke="#1f2a37" stroke-width="${big?3:2}"/>`;
+      ticks+=`<line x1="${X(i)}" y1="${y-(big?18:11)}" x2="${X(i)}" y2="${y+(big?18:11)}" stroke="#1b2433" stroke-width="${big?3.5:2.2}" stroke-linecap="round"/>`;
     }
-    const lab=(i,t)=>`<text x="${X(i)}" y="${y+44}" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2a37">${t}</text>`;
+    const lab=(i,t)=>`<text x="${X(i)}" y="${y+50}" text-anchor="middle" font-size="24" font-weight="800" fill="#1b2433" font-family="inherit">${t}</text>`;
     const showMid = Math.random()<.4;
-    const svg=`<svg class="nl" viewBox="0 0 ${W} ${H}" role="img" aria-label="Zahlenstrahl">
-      <line x1="${x0-12}" y1="${y}" x2="${x1+12}" y2="${y}" stroke="#1f2a37" stroke-width="3"/>
+    const svg=`<svg class="nl" viewBox="0 0 ${W} ${H}" role="img" aria-label="Zahlenstrahl von ${fmt(a)} bis ${fmt(b)}">
+      <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#1b2433" stroke-width="3.5" stroke-linecap="round"/>
       ${ticks}${lab(0,fmt(a))}${showMid?lab(5,fmt(a+5*step)):""}${lab(n,fmt(b))}
-      <path d="M ${X(k)} ${y-20} l -11 -22 h 22 z" fill="#f59e0b"/>
-      <line x1="${X(k)}" y1="${y-40}" x2="${X(k)}" y2="${y-58}" stroke="#f59e0b" stroke-width="6"/>
+      <path d="M ${X(k)} ${y-22} l -13 -24 h 26 z" fill="#f59f00"/>
+      <rect x="${X(k)-4}" y="${y-64}" width="8" height="20" rx="3" fill="#f59f00"/>
     </svg>`;
-    return {type:"input", label:"Zahlenstrahl",
-      html:`<p class="q">Welche Zahl zeigt der Pfeil?</p>${svg}`,
-      answer:val, show:fmt(val),
-      hint:`Von ${fmt(a)} bis ${fmt(b)} sind es 10 Striche. Ein Strich ist also ${fmt(step)}.`};
+    return {type:"input", html:`<p class="q">Welche Zahl zeigt der Pfeil?</p>${svg}`,
+      text:`Zahlenstrahl ${fmt(a)} bis ${fmt(b)}, Pfeil beim ${k}. Strich`, answer:val, show:fmt(val),
+      hint:`Von ${fmt(a)} bis ${fmt(b)} sind es 10 Abschnitte. Ein Strich ist also ${fmt(step)}.`};
   },
 
   nachbar(){
@@ -200,24 +291,22 @@ const GEN = {
     const x = lv.x();
     const lo = Math.floor(x/lv.u)*lv.u, hi = lo+lv.u;
     const dd = lv.u===100?1:lv.u===10?2:0;
-    return {type:"two", label:"Nachbarzahlen",
-      html:`<p class="q">Zwischen welchen <b>${lv.name}</b> liegt die Zahl?</p><p class="big">${fmt(x)}</p>`,
-      answers:[lo,hi], show:`${fmt(lo,dd)} und ${fmt(hi,dd)}`,
-      mid:fmt(x),
+    return {type:"two", html:`<p class="q">Zwischen welchen <b>${lv.name}</b> liegt die Zahl?</p><p class="big">${fmt(x)}</p>`,
+      text:`${fmt(x)} zwischen welchen ${lv.name}?`, answers:[lo,hi], show:`${fmt(lo,dd)} und ${fmt(hi,dd)}`, mid:fmt(x),
       hint: lv.u===100? "Zehntel: nur eine Stelle nach dem Punkt, z. B. 4.3 und 4.4."
           : lv.u===10? "Hundertstel: zwei Stellen nach dem Punkt, z. B. 4.35 und 4.36."
-          : lv.u===1000? "Ganze: die Zahl ohne Stellen nach dem Punkt, z. B. 4 und 5."
+          : lv.u===1000? "Ganze: Zahlen ohne Stellen nach dem Punkt, z. B. 4 und 5."
           : lv.u===10000? "Zehner: 10, 20, 30, …" : "Hunderter: 100, 200, 300, …"};
   },
 
   schritt(){
     const step = pick([100,200,250,500,50,10,20,100]);
     const back = Math.random()<.35;
-    let start = rnd(back?20:0, 60)*step + pick([0,0,0,10,100]);
+    const start = rnd(back?20:0, 60)*step + pick([0,0,0,10,100]);
     const seq=[]; for(let i=0;i<5;i++) seq.push(start+(back?-1:1)*i*step);
     if(seq[4]<0) return GEN.schritt();
-    return {type:"seq", label:"In Schritten zählen",
-      html:`<p class="q">Zähle in <b>${fmt(step)}er-Schritten ${back?"rückwärts":"weiter"}</b>.</p>`,
+    return {type:"seq", html:`<p class="q">Zähle in <b>${fmt(step)}er-Schritten ${back?"rückwärts":"vorwärts"}</b>.</p>`,
+      text:`${fmt(step)}er-Schritte ${back?"rückwärts":"vorwärts"}: ${fmt(seq[0])}, ${fmt(seq[1])}, …`,
       given:seq.slice(0,2), answers:seq.slice(2), show:seq.slice(2).map(v=>fmt(v)).join(", "),
       hint:`Rechne jedes Mal ${back?"−":"+"} ${fmt(step)}.`};
   },
@@ -225,61 +314,43 @@ const GEN = {
   vergl(){
     const v = pick([0,1,2,3,4]);
     let a,b,sa,sb;
-    if(v===0){ // 15.7 vs 15.07
-      const w=rnd(1,99), d=rnd(1,9); a=w*T+d*100; b=w*T+d*10;
-      if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b);
-    }else if(v===1){ // 31.4 vs 3.41 (gleiche Ziffern)
-      const d1=rnd(1,9),d2=rnd(0,9),d3=rnd(1,9);
-      a=d1*10000+d2*1000+d3*100; b=d1*1000+d2*100+d3*10;
-      if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b);
-    }else if(v===2){ // 719.11 vs 719.099
-      const w=rnd(10,999), h=rnd(11,98);
-      a=w*T+h*10; b=a-rnd(1,9);
-      if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b);
-    }else if(v===3){ // gleich: 4.5 vs 4.50
-      const w=rnd(0,99), z=rnd(1,9); a=b=w*T+z*100;
-      sa=fmt(a); sb=fmt(b,Math.random()<.5?2:3);
-      if(Math.random()<.5) [sa,sb]=[sb,sa];
-    }else{ // 0.8 vs 0.75
-      const z=rnd(2,9); a=z*100; b=(z-1)*100+rnd(1,9)*10+rnd(0,9);
-      if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b);
-    }
+    if(v===0){ const w=rnd(1,99), d=rnd(1,9); a=w*T+d*100; b=w*T+d*10; if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b); }
+    else if(v===1){ const d1=rnd(1,9),d2=rnd(0,9),d3=rnd(1,9); a=d1*10000+d2*1000+d3*100; b=d1*1000+d2*100+d3*10; if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b); }
+    else if(v===2){ const w=rnd(10,999), h=rnd(11,98); a=w*T+h*10; b=a-rnd(1,9); if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b); }
+    else if(v===3){ const w=rnd(0,99), z=rnd(1,9); a=b=w*T+z*100; sa=fmt(a); sb=fmt(b,Math.random()<.5?2:3); if(Math.random()<.5) [sa,sb]=[sb,sa]; }
+    else { const z=rnd(2,9); a=z*100; b=(z-1)*100+rnd(1,9)*10+rnd(0,9); if(Math.random()<.5) [a,b]=[b,a]; sa=fmt(a); sb=fmt(b); }
     const ans = a>b?">":a<b?"<":"=";
-    return {type:"cmp", label:"Grösser oder kleiner?", a:sa, b:sb, answer:ans, show:`${sa} ${ans} ${sb}`,
+    return {type:"cmp", a:sa, b:sb, answer:ans, show:`${sa} ${ans} ${sb}`, text:`${sa} ? ${sb}`,
       hint:"Vergleiche Stelle für Stelle von links: zuerst die Ganzen, dann die Zehntel, dann die Hundertstel …"};
   },
 
   malteil(){
     const p = pick([10,100,1000]);
-    const mul = Math.random()<.5;
-    if(mul){
-      let x = pick([rnd(1,999), rnd(1,99)*10, rnd(1,9999)]);           // 0.001 – 9.999
+    const st = String(p).length-1;
+    if(Math.random()<.5){
+      let x = pick([rnd(1,999), rnd(1,99)*10, rnd(1,9999)]);
       if(p===10 && Math.random()<.5) x = rnd(1,9999)*10;
       const r = x*p;
-      return {type:"input", label:"· und : 10, 100, 1000",
-        html:`<p class="q">Rechne.</p><p class="big">${fmt(x)} · ${fmt(p*T)} =</p>`,
-        answer:r, show:fmt(r),
-        hint:`Mal ${p}: jede Ziffer wird ${p}-mal so viel wert, der Punkt rutscht ${String(p).length-1} Stelle${p>10?"n":""} nach rechts.`};
+      return {type:"input", html:`<p class="q">Rechne.</p><p class="big">${fmt(x)} · ${fmt(p*T)} =</p>`,
+        text:`${fmt(x)} · ${fmt(p*T)}`, answer:r, show:fmt(r),
+        hint:`Mal ${fmt(p*T)}: Der Punkt wandert ${st} Stelle${st>1?"n":""} nach rechts.`};
     }
     const r = pick([rnd(1,999), rnd(1,99)*10, rnd(1,9)*100, rnd(1,500)*1000]);
     const x = r*p;
-    return {type:"input", label:"· und : 10, 100, 1000",
-      html:`<p class="q">Rechne.</p><p class="big">${fmt(x)} : ${fmt(p*T)} =</p>`,
-      answer:r, show:fmt(r),
-      hint:`Durch ${p}: der Punkt rutscht ${String(p).length-1} Stelle${p>10?"n":""} nach links.`};
+    return {type:"input", html:`<p class="q">Rechne.</p><p class="big">${fmt(x)} : ${fmt(p*T)} =</p>`,
+      text:`${fmt(x)} : ${fmt(p*T)}`, answer:r, show:fmt(r),
+      hint:`Durch ${fmt(p*T)}: Der Punkt wandert ${st} Stelle${st>1?"n":""} nach links. Fehlende Stellen mit 0 auffüllen.`};
   },
 
   mitte(){
     const v = pick([0,1,2]);
     let a,b;
-    if(v===0){ a=rnd(1,50)*T; b=a+pick([1000,1000,500,100]); }          // 20 und 20.5
+    if(v===0){ a=rnd(1,50)*T; b=a+pick([1000,1000,500,100]); }
     else if(v===1){ a=rnd(1,50)*T+rnd(0,9)*100; b=a+pick([200,400,600,100]); }
-    else { a=rnd(1,30)*T; b=a+pick([110,10,30,50,250]); }           // 12 und 12.11
+    else { a=rnd(1,30)*T; b=a+pick([110,10,30,50,250]); }
     const m=(a+b)/2;
-    if(!Number.isInteger(m)) return GEN.mitte();
-    return {type:"input", label:"Die Mitte finden",
-      html:`<p class="q">Welche Zahl liegt genau in der Mitte?</p><p class="big">${fmt(a)} &nbsp;…&nbsp; ? &nbsp;…&nbsp; ${fmt(b)}</p>`,
-      answer:m, show:fmt(m),
+    return {type:"input", html:`<p class="q">Welche Zahl liegt genau in der Mitte?</p><p class="big">${fmt(a)} <span style="color:#a3adbf">…</span> ? <span style="color:#a3adbf">…</span> ${fmt(b)}</p>`,
+      text:`Mitte zwischen ${fmt(a)} und ${fmt(b)}`, answer:m, show:fmt(m),
       hint:`Der Abstand ist ${fmt(b-a)}. Die Hälfte davon ist ${fmt((b-a)/2)}.`};
   },
 };
@@ -288,20 +359,37 @@ const GEN = {
 const app = document.getElementById("app"), pill = document.getElementById("pill");
 const ROUND = 10;
 let S = null;
+let gz = (store.get("dz.gz")||"").replace(/\D/g,"");
 
 function home(){
   pill.hidden = true;
   const cards = Object.entries(TOPICS).map(([k,t])=>
-    `<button class="topic" data-k="${k}"><b>${t.title}</b><span>${t.info}</span><span>${t.tb}</span></button>`).join("");
+    `<button class="topic" data-k="${k}" style="--c:${t.c}"><span class="ic">${t.ic}</span><span><b>${t.title}</b><span>${t.info}</span><span>${t.tb}</span></span></button>`).join("");
   app.innerHTML = `<div class="card">
-    <p class="sub">Wähle ein Thema. Eine Runde hat ${ROUND} Aufgaben. Du hast pro Aufgabe zwei Versuche.</p>
+    <div class="who">
+      <label for="gz">Deine Glückszahl</label>
+      <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" value="${esc(gz)}" placeholder="?">
+      <p class="note">Schreib hier deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl.</p>
+    </div>
+    <h2>Wähle ein Thema</h2>
+    <p class="sub">Eine Runde hat ${ROUND} Aufgaben. Pro Aufgabe hast du zwei Versuche.</p>
     <div class="topics">
-      <button class="topic mix" data-k="mix"><b>⭐ Alles gemischt</b><span>Aufgaben aus allen Themen</span></button>
+      <button class="topic mix" data-k="mix" style="--c:#f5a400"><span class="ic">⭐</span><span><b>Alles gemischt</b><span>Aufgaben aus allen Themen</span></span></button>
       ${cards}
     </div>
-    <p class="hint">Schreibe Dezimalzahlen mit Punkt oder Komma, zum Beispiel 3.45 oder 3,45.</p>
+    <p class="sub" style="margin:18px 0 0">Schreibe Dezimalzahlen mit Punkt oder Komma, zum Beispiel 3.45 oder 3,45.</p>
+    <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
   </div>`;
-  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>start(b.dataset.k));
+  const inp = document.getElementById("gz");
+  const upd = ()=>{ gz = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==gz) inp.value=gz; store.set("dz.gz",gz); };
+  inp.addEventListener("input", upd);
+  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{
+    upd();
+    if(!gz){ inp.focus(); inp.classList.add("no"); inp.placeholder="?"; document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return; }
+    start(b.dataset.k);
+  });
+  document.getElementById("teach").onclick = teacher;
+  if(!gz) inp.focus({preventScroll:true});
 }
 
 function start(k){
@@ -309,47 +397,57 @@ function start(k){
   const list = [];
   for(let i=0;i<ROUND;i++) list.push(k==="mix" ? keys[i%keys.length] : k);
   if(k==="mix") shuffle(list);
-  S = {topic:k, list, i:0, points:0, log:[]};
+  S = {topic:k, list, i:0, points:0, log:[], started:new Date()};
   next();
 }
 
 function next(){
   if(S.i>=ROUND) return result();
   S.task = GEN[S.list[S.i]]();
-  S.tries = 0; S.done = false;
+  S.task.topic = S.list[S.i];
+  S.tries = 0; S.done = false; S.inputs = [];
   draw();
 }
 
+function progressBar(){
+  let h = "";
+  for(let i=0;i<ROUND;i++){
+    const l = S.log[i];
+    h += `<i class="${l? (l.p===1?"ok":l.p>0?"half":"no") : i===S.i?"now":""}"></i>`;
+  }
+  return `<div class="progress">${h}</div>`;
+}
+
 function draw(){
-  const t = S.task;
-  pill.hidden = false; pill.textContent = `Aufgabe ${S.i+1}/${ROUND} · ${S.points} ⭐`;
+  const t = S.task, top = TOPICS[t.topic];
+  pill.hidden = false; pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
   let body = "";
   if(t.type==="input"){
     body = t.html + `<input class="ans" id="a0" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?">`;
   }else if(t.type==="two"){
-    body = t.html + `<div class="row" style="font-size:1.3rem;font-weight:700">
-      <input class="ans small" id="a0" inputmode="decimal" autocomplete="off" placeholder="?">
-      <span>&lt; ${t.mid} &lt;</span>
+    body = t.html + `<div class="two"><input class="ans small" id="a0" inputmode="decimal" autocomplete="off" placeholder="?">
+      <span>&lt;</span><span class="x">${t.mid}</span><span>&lt;</span>
       <input class="ans small" id="a1" inputmode="decimal" autocomplete="off" placeholder="?"></div>`;
   }else if(t.type==="seq"){
     body = t.html + `<div class="seq">${t.given.map(v=>`<span class="given">${fmt(v)}</span><span class="arr">→</span>`).join("")}
       ${t.answers.map((_,j)=>`<input class="ans small" id="a${j}" inputmode="decimal" autocomplete="off" placeholder="?">${j<t.answers.length-1?'<span class="arr">→</span>':""}`).join("")}</div>`;
   }else if(t.type==="cmp"){
     body = `<p class="q">Setze das richtige Zeichen ein.</p>
-      <div class="cmp"><span>${t.a}</span><span style="color:#9ca3af">?</span><span>${t.b}</span></div>
-      <div class="cmpbtns">${["<","=",">"].map(c=>`<button data-c="${c}">${c}</button>`).join("")}</div>`;
+      <div class="cmp"><span>${t.a}</span><span class="slot" id="slot">?</span><span>${t.b}</span></div>
+      <div class="cmpbtns">${["<","=",">"].map(c=>`<button data-c="${c}">${c==="<"?"&lt;":c===">"?"&gt;":"="}</button>`).join("")}</div>`;
   }
-  app.innerHTML = `<div class="progress"><i style="width:${S.i/ROUND*100}%"></i></div>
+  app.innerHTML = `${progressBar()}
     <div class="card">
-      <span class="qtype">${t.label}</span>
+      <span class="qtype" style="background:${top.c}1a;color:${top.c}">${top.ic} ${top.title} · Aufgabe ${S.i+1} von ${ROUND}</span>
       ${body}
       <div class="fb" id="fb"></div>
       <div class="actions">
         ${t.type!=="cmp"?`<button class="btn" id="check">Prüfen</button>`:""}
-        <button class="btn ghost" id="nextBtn" hidden>Weiter →</button>
+        <button class="btn" id="nextBtn" hidden>Weiter →</button>
       </div>
+      <details class="help"><summary>💡 So geht's</summary>${top.help()}</details>
     </div>
-    <div class="actions"><button class="btn ghost" id="quit">✕ Runde beenden</button></div>`;
+    <div class="actions no-print"><button class="btn ghost small" id="quit">✕ Runde beenden</button></div>`;
   const inputs = [...app.querySelectorAll("input.ans")];
   inputs.forEach((el,j)=>el.addEventListener("keydown",e=>{
     if(e.key==="Enter"){ e.preventDefault();
@@ -357,10 +455,10 @@ function draw(){
       if(j<inputs.length-1 && !inputs[j+1].value) inputs[j+1].focus(); else check(); }
   }));
   if(inputs[0]) inputs[0].focus({preventScroll:true});
-  const c = document.getElementById("check"); if(c) c.onclick = check;
+  const c = document.getElementById("check"); if(c) c.onclick = ()=>check();
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.onclick=()=>check(b.dataset.c, b));
   document.getElementById("nextBtn").onclick = next2;
-  document.getElementById("quit").onclick = ()=>{ if(S.i===0 && S.tries===0) home(); else result(); };
+  document.getElementById("quit").onclick = ()=>{ if(!S.log.length && !S.tries) home(); else result(true); };
 }
 
 function feedback(kind, text){
@@ -371,65 +469,96 @@ function feedback(kind, text){
 function check(choice, btn){
   if(S.done) return;
   const t = S.task;
-  let ok = false, empty=false;
+  let ok = false;
   const inputs = [...app.querySelectorAll("input.ans")];
   if(t.type==="cmp"){
     ok = choice===t.answer;
     app.querySelectorAll(".cmpbtns button").forEach(b=>b.classList.remove("no"));
     btn.classList.add(ok?"ok":"no");
+    document.getElementById("slot").textContent = choice;
+    S.inputs.push(choice);
+    S.tries++;
   }else{
+    if(inputs.some(el=>!el.value.trim())){ feedback("bad","Bitte fülle zuerst alles aus."); return; }
     const vals = inputs.map(el=>parse(el.value));
-    empty = inputs.some(el=>!el.value.trim());
-    if(empty){ feedback("bad","Bitte fülle zuerst alles aus."); return; }
+    if(vals.some(v=>v===null||Number.isNaN(v))){
+      inputs.forEach((el,j)=>el.classList.toggle("no", vals[j]===null||Number.isNaN(vals[j])));
+      feedback("bad", vals.some(Number.isNaN) ? "Höchstens drei Stellen nach dem Punkt." : "Das ist keine gültige Zahl. Schreibe zum Beispiel 4.25");
+      return;   // zählt nicht als Versuch
+    }
     const want = t.type==="input" ? [t.answer] : t.answers;
     const res = vals.map((v,j)=>v===want[j]);
     inputs.forEach((el,j)=>{ el.classList.toggle("ok",res[j]); el.classList.toggle("no",!res[j]); });
     ok = res.every(Boolean);
-    if(!ok && vals.some(v=>v===null||Number.isNaN(v))){
-      S.tries++; if(S.tries<2){ feedback("bad","Das ist keine gültige Zahl. Schreibe z. B. 4.25"); return; }
-    }else S.tries++;
+    S.inputs.push(inputs.map(el=>el.value.trim()).join(" | "));
+    S.tries++;
   }
-  if(t.type==="cmp") S.tries++;
   if(ok){
     const pts = S.tries===1?1:0.5;
     S.points += pts;
-    feedback("good", S.tries===1? pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐"]) : "Richtig im zweiten Versuch – ½ ⭐");
-    finish(true);
+    feedback("good", S.tries===1? pick(["Super! ⭐","Richtig! ⭐","Genau! ⭐","Stark! ⭐","Perfekt! ⭐"]) : "Richtig im zweiten Versuch – ½ ⭐");
+    finish(pts);
   }else if(S.tries<2){
-    feedback("bad", "Noch nicht ganz. 💡 "+t.hint+" Versuche es nochmals.");
+    feedback("bad", "Noch nicht ganz. 💡 "+t.hint+" Versuch es nochmals.");
     const firstWrong = inputs.find(el=>el.classList.contains("no"));
-    if(firstWrong){ firstWrong.select(); }
+    if(firstWrong) firstWrong.select();
   }else{
     feedback("sol", `Richtig wäre: <b>${t.show}</b>`);
     if(t.type==="cmp") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===t.answer) b.classList.add("ok"); });
-    finish(false);
+    finish(0);
   }
 }
 
-function finish(ok){
+function finish(p){
   S.done = true;
-  S.log.push({label:S.task.label, ok, tries:S.tries, show:S.task.show});
+  S.log.push({nr:S.i+1, thema:TOPICS[S.task.topic].title, frage:S.task.text, antworten:S.inputs.slice(), loesung:S.task.show, p});
   app.querySelectorAll("input.ans").forEach(el=>el.readOnly=true);
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.disabled=true);
   const c=document.getElementById("check"); if(c) c.hidden=true;
-  const n=document.getElementById("nextBtn"); n.hidden=false; n.className="btn"; n.focus({preventScroll:true});
-  pill.textContent = `Aufgabe ${S.i+1}/${ROUND} · ${S.points} ⭐`;
+  const n=document.getElementById("nextBtn"); n.hidden=false; n.focus({preventScroll:true});
+  if(S.i===ROUND-1) n.textContent = "Zum Resultat →";
+  pill.textContent = `Nr. ${gz} · ${S.points} ⭐`;
 }
 function next2(){ S.i++; next(); }
 
-function result(){
+/* ---------- Senden ---------- */
+const QKEY = "dz.queue";
+function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ return []; } }
+function sendOne(rec){
+  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)})
+    .then(r=>r.text()).then(t=>{ if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt"); });
+}
+async function flush(){
+  if(!ENDPOINT) return true;
+  let q = queue(), rest = [];
+  for(const rec of q){ try{ await sendOne(rec); }catch(e){ rest.push(rec); } }
+  store.set(QKEY, JSON.stringify(rest));
+  return rest.length===0;
+}
+function submit(){
+  if(!ENDPOINT || !S.log.length) return Promise.resolve(null);
+  const rec = {typ:"uebung-runde", v:1, uebung:UEBUNG, glueckszahl:gz,
+    thema: S.topic==="mix" ? "Alles gemischt" : TOPICS[S.topic].title,
+    datum:S.started.toISOString(), punkte:S.points, max:S.log.length,
+    aufgaben:S.log.map(l=>({nr:l.nr, thema:l.thema, frage:l.frage, antworten:l.antworten, loesung:l.loesung, punkte:l.p}))};
+  const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-30)));
+  return flush();
+}
+
+function result(early){
   pill.hidden = true;
-  const n = S.log.length || 1, p = S.points;
-  const ratio = p/ROUND;
-  const stars = ratio>=.9?"⭐⭐⭐":ratio>=.6?"⭐⭐":ratio>=.3?"⭐":"";
-  const msg = ratio>=.9?"Hervorragend!":ratio>=.6?"Gut gemacht!":ratio>=.3?"Weiter üben lohnt sich!":"Schau dir die Tipps nochmals an und probier es wieder.";
+  const n = S.log.length, p = S.points;
+  const ratio = n ? p/n : 0;
+  const stars = !n ? "" : ratio>=.9?"⭐⭐⭐":ratio>=.6?"⭐⭐":ratio>=.3?"⭐":"";
+  const msg = !n ? "Keine Aufgabe gelöst." : ratio>=.9?"Hervorragend!":ratio>=.6?"Gut gemacht!":ratio>=.3?"Weiter üben lohnt sich!":"Schau dir «💡 So geht's» an und probier es nochmals.";
   const t = S.topic==="mix" ? "Alles gemischt" : TOPICS[S.topic].title;
   app.innerHTML = `<div class="card result">
-    <p class="sub" style="margin:0">${t}</p>
-    <div class="score">${p} / ${ROUND}</div>
+    <p class="sub" style="margin:0">${t} · Glückszahl ${esc(gz)}</p>
+    <div class="score">${String(p).replace(".5","½")} / ${n}</div>
     <div class="stars">${stars||"🙂"}</div>
-    <p style="font-weight:700">${msg}</p>
-    <ul class="list">${S.log.map((l,i)=>`<li><b>${i+1}.</b><span>${l.ok?(l.tries===1?"✅":"☑️"):"❌"} ${l.label} – <b>${l.show}</b></span></li>`).join("")}</ul>
+    <p style="font-weight:700;margin:0">${msg}</p>
+    <span class="sent" id="sent">${ENDPOINT && n ? "Wird an die Lehrperson geschickt …" : ""}</span>
+    <ul class="list">${S.log.map(l=>`<li><b>${l.nr}.</b><span>${l.p===1?"✅":l.p>0?"☑️":"❌"} ${esc(l.thema)} – <b>${esc(l.loesung)}</b></span></li>`).join("")}</ul>
     <div class="actions" style="justify-content:center">
       <button class="btn" id="again">Nochmals</button>
       <button class="btn ghost" id="menu">Anderes Thema</button>
@@ -437,9 +566,85 @@ function result(){
   </div>`;
   document.getElementById("again").onclick=()=>start(S.topic);
   document.getElementById("menu").onclick=home;
+  submit().then(ok=>{
+    const el = document.getElementById("sent"); if(!el || ok===null) return;
+    if(ok){ el.textContent = "✓ Bei der Lehrperson angekommen"; el.className="sent ok"; }
+    else el.textContent = "Konnte noch nicht gesendet werden – wird beim nächsten Mal automatisch nachgeschickt.";
+  });
+}
+
+/* ---------- Lehrperson ---------- */
+let TD = null;
+function teacher(){
+  if(!ENDPOINT){ alert("Die Auswertung ist noch nicht eingerichtet."); return; }
+  const code = prompt("Passwort der Lehrperson:");
+  if(code===null) return;
+  const btn = document.getElementById("teach"); if(btn){ btn.textContent="lädt …"; btn.disabled=true; }
+  const cb = "dzcb"+Date.now();
+  const s = document.createElement("script");
+  let fertig = false;
+  const reset = ()=>{ if(btn){ btn.textContent="Lehrperson"; btn.disabled=false; } };
+  window[cb] = d=>{ fertig=true; delete window[cb]; s.remove(); reset();
+    if(!d || !d.ok){ alert((d&&d.fehler)||"Keine Antwort."); return; }
+    TD = d; teacherView(); };
+  s.onerror = ()=>{ if(!fertig){ reset(); alert("Die Tabelle ist nicht erreichbar."); } };
+  s.src = ENDPOINT+"?uebung="+encodeURIComponent(UEBUNG)+"&code="+encodeURIComponent(code.trim())+"&callback="+cb;
+  document.head.appendChild(s);
+  setTimeout(()=>{ if(!fertig){ reset(); } }, 20000);
+}
+const dt = iso=>{ const d=new Date(iso); return isNaN(d)?"":d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"}); };
+const pct = (p,m)=> m? Math.round(p/m*100) : 0;
+function teacherView(filter){
+  pill.hidden = true;
+  const R = (TD.runden||[]).slice().sort((a,b)=>b.zeit.localeCompare(a.zeit));
+  const by = {};
+  R.forEach(r=>{ const g=by[r.glueckszahl]||(by[r.glueckszahl]={n:0,p:0,m:0,last:r.zeit}); g.n++; g.p+=+r.punkte; g.m+=+r.max; });
+  const kids = Object.entries(by).sort((a,b)=>(+a[0])-(+b[0]));
+  const th = {};
+  R.forEach(r=>(r.aufgaben||[]).forEach(a=>{ const s=th[a.thema]||(th[a.thema]={n:0,p:0}); s.n++; s.p+=+a.punkte; }));
+  const themen = Object.entries(th).sort((a,b)=>a[1].p/a[1].n-b[1].p/b[1].n);
+  const rows = R.filter(r=>!filter || r.glueckszahl===filter);
+  app.innerHTML = `<div class="card">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Resultate · ${esc(UEBUNG)}</h2>
+      <div class="row no-print"><a class="btn ghost small" href="${esc(TD.tabelle||"#")}" target="_blank" rel="noopener">Google-Tabelle</a>
+      <button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tclose">Schliessen</button></div>
+    </div>
+    <p class="sub" style="margin-top:6px">${R.length} Runden von ${kids.length} Glückszahlen.</p>
+    <div class="grid2">
+      <div><h2>Pro Glückszahl</h2>
+        <table class="t"><tr><th>Zahl</th><th class="num">Runden</th><th>richtig</th><th>zuletzt</th></tr>
+        ${kids.map(([k,g])=>`<tr class="klick" data-gz="${esc(k)}"><td><b>${esc(k)}</b></td><td class="num">${g.n}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar"><i style="width:${pct(g.p,g.m)}%"></i></div>${pct(g.p,g.m)}%</div></td><td>${dt(g.last)}</td></tr>`).join("") || `<tr><td colspan="4">Noch keine Runden.</td></tr>`}
+        </table></div>
+      <div><h2>Was macht Mühe?</h2>
+        <table class="t"><tr><th>Thema</th><th class="num">Aufgaben</th><th>richtig</th></tr>
+        ${themen.map(([k,s])=>`<tr><td>${esc(k)}</td><td class="num">${s.n}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar"><i style="width:${pct(s.p,s.n)}%"></i></div>${pct(s.p,s.n)}%</div></td></tr>`).join("")}
+        </table></div>
+    </div>
+    <h2 style="margin-top:22px">Runden ${filter?`von Glückszahl ${esc(filter)} <button class="linkish" id="tall">alle zeigen</button>`:""}</h2>
+    <table class="t"><tr><th>Zeit</th><th>Zahl</th><th>Thema</th><th class="num">Punkte</th><th></th></tr>
+    ${rows.map((r,i)=>`<tr class="klick" data-i="${R.indexOf(r)}"><td>${dt(r.zeit)}</td><td><b>${esc(r.glueckszahl)}</b></td><td>${esc(r.thema)}</td><td class="num">${String(r.punkte).replace(".5","½")} / ${r.max}</td><td>›</td></tr>`).join("")}
+    </table>
+    <div id="detail"></div>
+  </div>`;
+  document.getElementById("tclose").onclick = ()=>{ TD=null; home(); };
+  document.getElementById("tprint").onclick = ()=>print();
+  const all = document.getElementById("tall"); if(all) all.onclick=()=>teacherView();
+  app.querySelectorAll("tr[data-gz]").forEach(tr=>tr.onclick=()=>teacherView(tr.dataset.gz));
+  app.querySelectorAll("tr[data-i]").forEach(tr=>tr.onclick=()=>{
+    const r = R[+tr.dataset.i];
+    const d = document.getElementById("detail");
+    d.innerHTML = `<h2 style="margin-top:22px">Glückszahl ${esc(r.glueckszahl)} · ${esc(r.thema)} · ${dt(r.zeit)}</h2>
+      <table class="t"><tr><th>Nr.</th><th>Aufgabe</th><th>Antwort(en)</th><th>Lösung</th><th></th></tr>
+      ${(r.aufgaben||[]).map(a=>`<tr><td>${a.nr}</td><td>${esc(a.frage)}</td><td>${(a.antworten||[]).map(esc).join("<br>")}</td><td><b>${esc(a.loesung)}</b></td>
+        <td><span class="tag ${a.punkte===1?"ok":a.punkte>0?"half":"no"}">${a.punkte===1?"1":a.punkte>0?"½":"0"}</span></td></tr>`).join("")}
+      </table>`;
+    d.scrollIntoView({behavior:"smooth"});
+  });
 }
 
 home();
+flush();
 </script>
 </body>
 </html>
