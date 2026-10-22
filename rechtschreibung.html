@@ -194,6 +194,8 @@ table.t tr.klick:hover td{background:#f6f8fd}
   .prow .bar,.cbar .bar{grid-column:1/3;grid-row:2}
   .bsp{grid-column:1/3}
 }
+body.eingebettet{padding:10px 12px 30px}
+body.eingebettet header{display:none}
 @media print{
   body{background:#fff;padding:0;font-size:12pt}
   header,.no-print,.teacher{display:none!important}
@@ -217,7 +219,7 @@ table.t tr.klick:hover td{background:#f6f8fd}
 </div>
 <script>
 /* Adresse des Google-Skripts, das die Antworten speichert (leer = nichts senden). */
-const ENDPOINT = "";
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbyk0lFil4xRSsFLkPV_RuamQ-XPSU9Hn76HxHjInfYCJyDaVxjsW1S7gQHBP1rYV5dT/exec";
 const UEBUNG = "Rechtschreibung";
 /* ===== Wortschatz (Schweizer Rechtschreibung, kein ß) =====
    Zeile: Wort|Satz, in dem das Wort vorkommt (wird vorgelesen)
@@ -1274,7 +1276,6 @@ function home(){
     </div>
     ${!TTS?`<div class="warn">Auf diesem Gerät gibt es keine Sprachausgabe. Die Wörter werden darum kurz angezeigt und dann versteckt.</div>`:""}
     ${inhalt}
-    <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
   </div>`;
   const inp = $("gz");
   const upd = () => { const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value=v; const neu = v!==gz; gz=v; store.set("rs.gz",gz); return neu; };
@@ -1288,7 +1289,6 @@ function home(){
   on("regel", regelWahl);
   on("ton", ()=>sag("Hallo! Wenn du mich gut hörst, funktioniert der Ton."));
   on("ton2", ()=>sag("Hallo! Wenn du mich gut hörst, funktioniert der Ton."));
-  on("teach", lehrperson);
   if(!gz) inp.focus({preventScroll:true});
 }
 function meinStand(){
@@ -1607,25 +1607,32 @@ const datumKurz = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toL
 const pc = (ok,n) => n ? Math.round(ok/n*100) : null;
 const farbe = p => p===null ? "" : p>=90 ? "ok" : p>=75 ? "half" : "no";
 
+/* Die Auswertung läuft nur eingebettet in der Deutsch-Station: rechtschreibung.html#lehrer=SCHLUESSEL */
+const LEHRER_KEY = (()=>{ const m = location.hash.match(/(?:^#|&)lehrer=([a-f0-9]{32,})/); return m ? m[1] : ""; })();
+if(LEHRER_KEY){ try{ history.replaceState(null, "", location.pathname + location.search); }catch(e){} }
+function lehrerMeldung(titel, text){
+  $("wrap").classList.add("wide");
+  app.innerHTML = `<div class="card"><h2>${esc(titel)}</h2><p>${text}</p><div class="actions"><button class="btn" id="tre">Nochmals versuchen</button></div></div>`;
+  $("tre").onclick = lehrperson;
+}
 function lehrperson(){
-  ladeNamen();
-  if(!ENDPOINT){
-    if(confirm("Die Google-Tabelle ist noch nicht verbunden.\n\nMöchtest du die Lehreransicht mit Beispieldaten anschauen?")){ TD = beispielDaten(); klasse(); }
-    return;
-  }
-  const code = prompt("Passwort der Lehrperson:");
-  if(code===null) return;
-  const btn = $("teach"); if(btn){ btn.textContent = "lädt …"; btn.disabled = true; }
-  const cb = "rscb"+Date.now(), s = document.createElement("script");
-  let fertig = false;
-  const reset = () => { if(btn){ btn.textContent = "Lehrperson"; btn.disabled = false; } };
-  window[cb] = d => { fertig = true; delete window[cb]; s.remove(); reset();
-    if(!d || !d.ok){ alert((d && d.fehler) || "Keine Antwort von der Tabelle."); return; }
-    TD = d; klasse(); };
-  s.onerror = () => { if(!fertig){ reset(); alert("Die Tabelle ist nicht erreichbar."); } };
-  s.src = ENDPOINT+"?uebung="+encodeURIComponent(UEBUNG)+"&code="+encodeURIComponent(code.trim())+"&callback="+cb;
-  document.head.appendChild(s);
-  setTimeout(()=>{ if(!fertig) reset(); }, 30000);
+  ladeNamen(); pill.hidden = true; if(TTS) speechSynthesis.cancel();
+  if(!ENDPOINT){ TD = beispielDaten(); klasse(); return; }
+  $("wrap").classList.add("wide");
+  app.innerHTML = `<div class="card"><p class="sub" style="margin:0">Auswertung wird geladen …</p></div>`;
+  fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body: JSON.stringify({typ:"lehrer-daten", uebung:UEBUNG, schluessel:LEHRER_KEY, einrichten:true})})
+    .then(r=>r.text()).then(t=>{
+      let d = null; try{ d = JSON.parse(t); }catch(e){}
+      if(!d) throw new Error("Antwort unlesbar");
+      if(!d.ok){
+        if(d.grund==="falsch") return lehrerMeldung("Diese Station ist nicht freigeschaltet",
+          "Die Google-Tabelle ist schon mit einer anderen Station verbunden (z. B. auf einem anderen Computer). Zum Neu-Einrichten: Google-Tabelle → Erweiterungen → Apps Script → Zahnrad (Projekteinstellungen) → Skripteigenschaften → «SCHLUESSEL» löschen. Danach hier «Nochmals versuchen».");
+        return lehrerMeldung("Auswertung nicht verfügbar", esc(d.fehler||"Unbekannter Fehler"));
+      }
+      TD = d; klasse();
+    })
+    .catch(()=>lehrerMeldung("Keine Verbindung", "Die Google-Tabelle ist gerade nicht erreichbar. Prüfe die Internetverbindung."));
 }
 
 /* Anteil richtig wie bei den Kindern: Wort = 1 Aufgabe, Satz = 1 Aufgabe (Anteil richtiger Wörter) */
@@ -1705,7 +1712,7 @@ function klasse(){
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Rechtschreibung · Klassenübersicht</h2>
       <div class="row no-print">${TD.tabelle?`<a class="btn ghost small" href="${esc(TD.tabelle)}" target="_blank" rel="noopener">Google-Tabelle</a>`:""}
-        <button class="btn ghost small" id="namen">Namen</button><button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tclose">Schliessen</button></div>
+        <button class="btn ghost small" id="namen">Namen</button><button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tload">↻ Aktualisieren</button></div>
     </div>
     ${TD.demo?`<div class="warn">Beispieldaten – so sieht die Auswertung aus, sobald die Kinder üben. Die Namen sind erfunden.</div>`:""}
     <p class="sub" style="margin-top:8px">Prozent = Anteil richtig in den letzten 400 geschriebenen Wörtern. Bereiche: Anteil der Stellen, an denen die Regel richtig angewendet wurde. Grün ab 90%, gelb ab 75%. Zeile antippen für das Profil.</p>
@@ -1714,7 +1721,7 @@ function klasse(){
       ${zeilen || `<tr><td colspan="17">Noch keine Daten.</td></tr>`}</table></div>
     ${klassenBereiche(liste)}
   </div>`;
-  $("tclose").onclick = ()=>{ TD = null; K = null; home(); };
+  $("tload").onclick = lehrperson;
   $("tprint").onclick = ()=>print();
   $("namen").onclick = ()=>namenEditor(liste);
   app.querySelectorAll("tr[data-g]").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
@@ -1896,8 +1903,7 @@ const NAMEN_DEMO = {};
 function nimmDemo(pool, n, rnd){ const a = pool.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a.slice(0,n); }
 
 /* Start */
-home();
-flush();
+if(LEHRER_KEY){ document.body.classList.add("eingebettet"); lehrperson(); } else { home(); flush(); }
 </script>
 </body>
 </html>
