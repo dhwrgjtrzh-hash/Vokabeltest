@@ -115,6 +115,8 @@ textarea.ans{resize:none;font-size:1.4rem;line-height:1.4}
 .hearbtn{font-size:1.2rem;padding:16px 30px}
 .hear small{font-weight:600;opacity:.7}
 .hint{color:var(--mute);font-size:.9rem;margin:0 0 8px}
+.luecke{font-size:1.35rem;line-height:1.7;margin:4px 0 10px;background:#f6f8fd;border-radius:14px;padding:10px 14px}
+.luecke .gap{display:inline-block;border-bottom:3px solid var(--accent);min-width:3em;margin:0 2px}
 .flash{font-size:2rem;font-weight:800;padding:14px 0;transition:opacity .3s}
 .flash.hidden{opacity:0}
 
@@ -933,7 +935,7 @@ const isUpper = c => c !== c.toLowerCase() && c === c.toUpperCase();
 
 /* Normalisieren: Leerzeichen, ß → ss, typografische Zeichen */
 function norm(s){
-  return String(s||"").replace(/ß/g,"ss").replace(/ẞ/g,"SS").replace(/[‘’`´]/g,"'").replace(/\s+/g," ").trim();
+  return String(s||"").normalize("NFC").replace(/ß/g,"ss").replace(/ẞ/g,"SS").replace(/[‘’`´]/g,"'").replace(/\s+/g," ").trim();
 }
 const stripPunct = t => t.replace(/^[«»"„“”'(\[]+|[«»"„“”'.,;:!?)\]]+$/g,"");
 
@@ -1080,7 +1082,7 @@ function pruefeSatz(ziel, antwort){
   const T = satzTokens(ziel), A = satzTokens(antwort);
   const n = T.length, m = A.length;
   const cost = (x,y)=>{ const a=x.replace(/^\^/,"").toLowerCase(), b=y.toLowerCase(); if(a===b) return x.replace(/^\^/,"")===y?0:0.05;
-    const d = ausrichten(a,b).dist / Math.max(a.length,b.length); return d*1.7; };
+    const d = ausrichten(a,b).dist / Math.max(a.length,b.length); return d > 0.5 ? 2.5 : d*1.7; };   // ganz andere Wörter nicht paaren
   const D = []; for(let i=0;i<=n;i++){ D.push(new Array(m+1).fill(0)); D[i][0]=i; } for(let j=0;j<=m;j++) D[0][j]=j;
   for(let i=1;i<=n;i++) for(let j=1;j<=m;j++) D[i][j] = Math.min(D[i-1][j-1]+cost(T[i-1],A[j-1]), D[i-1][j]+1, D[i][j-1]+1);
   const paare = []; let i=n, j=m;
@@ -1089,9 +1091,15 @@ function pruefeSatz(ziel, antwort){
     else if(i>0 && Math.abs(D[i][j]-(D[i-1][j]+1))<1e-9){ paare.unshift({z:T[i-1], a:""}); i--; }
     else { paare.unshift({z:null, a:A[j-1]}); j--; }
   }
-  let erstes = true;
+  // Wort richtig geschrieben, aber an einer anderen Stelle im Satz: zählt als richtig geschrieben
+  for(const p of paare){
+    if(p.z===null || p.a) continue;
+    const k = paare.findIndex(q => q.z===null && q.a === p.z.replace(/^\^/,""));
+    if(k >= 0){ p.a = paare[k].a; paare.splice(k,1); }
+  }
+  let idx = 0;
   return paare.map(p => { if(p.z===null) return {z:null, a:p.a, ok:false, extra:true};
-    const r = {z:p.z, a:p.a, erstes, ...pruefeWort(p.z, p.a, true)}; erstes = false; return r; });
+    const r = {z:p.z, a:p.a, idx, erstes: idx===0, ...pruefeWort(p.z, p.a, true)}; idx++; return r; });
 }
 
 /* Wortmodus: Begleiter vor einem Nomen erlauben («der Hund») */
@@ -1230,7 +1238,7 @@ function nimm(pool, n){
 }
 function kisteItems(n, ausser){
   return Object.entries(P.kiste).filter(([k,v])=>!ausser || v.t < ausser).sort((a,b)=>a[1].t-b[1].t).slice(0,n)
-    .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims}));
+    .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims, pos:v.pos}));
 }
 function starteEtappe(){
   const st = P.stufe || 1;
@@ -1408,6 +1416,22 @@ function regelIntro(c){
   $("zur").onclick = regelWahl;
 }
 
+/* Wörter aus Sätzen (Fehlerkiste) werden im Satz mit einer Lücke geübt – so sieht man, ob gross oder klein */
+function lueckenPos(it){
+  const toks = sprechText(it.x).split(" ");
+  if(Number.isInteger(it.pos) && it.pos < toks.length && stripPunct(toks[it.pos]) === rein(it.w)) return it.pos;
+  let k = toks.findIndex(t => stripPunct(t) === rein(it.w));
+  if(k < 0) k = toks.findIndex(t => stripPunct(t).toLowerCase() === rein(it.w).toLowerCase());
+  return k;
+}
+function lueckenSatz(it){
+  const toks = sprechText(it.x).split(" "), k = lueckenPos(it);
+  if(k < 0) return null;
+  return toks.map((t,i) => { if(i !== k) return esc(t); const w = stripPunct(t), j = t.indexOf(w);
+    return esc(t.slice(0,j)) + `<span class="gap">${"&nbsp;".repeat(Math.max(6, Math.round(w.length*1.6)))}</span>` + esc(t.slice(j+w.length)); }).join(" ");
+}
+const istLuecke = it => it.typ==="W" && it.ims && it.x && lueckenPos(it) >= 0;
+
 /* ===== Ansicht: Aufgabe ===== */
 let teilIdx = 0;
 function teile(text){
@@ -1436,7 +1460,8 @@ function zeigeAufgabe(vorlesenJetzt){
       <button class="btn ghost" id="h2">🐢 Langsam</button>
       ${istSatz?`<button class="btn ghost" id="h3">Stück für Stück <small id="teilnr"></small></button>`:""}
     </div>` : `<div class="flash" id="flash">${esc(sprechText(it.w))}</div>`}
-    <p class="hint">${istSatz?"Schreib den ganzen Satz auf. Achte auf Gross- und Kleinschreibung.":"Schreib das Wort auf. Nomen schreibst du gross."}</p>
+    ${istLuecke(it) ? `<p class="luecke">${lueckenSatz(it)}</p><p class="hint">Schreib das Wort, das in die Lücke gehört. Achte darauf, wo es im Satz steht.</p>`
+      : `<p class="hint">${istSatz?"Schreib den ganzen Satz auf. Achte auf Gross- und Kleinschreibung.":"Schreib das Wort auf. Nomen schreibst du gross."}</p>`}
     ${istSatz ? `<textarea class="ans wide" id="inp" rows="2" ${TA} placeholder="Satz hier schreiben …"></textarea>`
               : `<input class="ans wide" id="inp" ${TA} placeholder="Wort hier schreiben …">`}
     <div class="actions"><button class="btn" id="chk">Prüfen</button>${sb?`<span class="sub" style="margin:0">Standortbestimmung: Es gibt keine Hilfe – du siehst dein Resultat am Schluss.</span>`:""}</div>
@@ -1472,7 +1497,7 @@ function protokolliere(it, eintraege){
       const r = e.res; zaehle(r, P.stat); P.worte++;
       const key = e.w;
       const nurSatzanfang = e.erstes && fehlerBereiche(r).every(c=>c==="GK");
-      if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, n:0, t:Date.now()}; }
+      if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, pos: Number.isInteger(e.idx) ? e.idx : undefined, n:0, t:Date.now()}; }
       else if(P.kiste[key] && (it.q==="K" || P.kiste[key].t < S.start)){ P.kiste[key].n++; P.kiste[key].t = Date.now(); if(P.kiste[key].n >= KISTE_RAUS) delete P.kiste[key]; }
     }
   }
@@ -1488,16 +1513,17 @@ function pruefen(){
   inp.readOnly = true; $("chk").hidden = true;
   let ok, falsche = [], logEintrag;
   if(it.typ==="W"){
-    const a = wortEingabe(rein(it.w), roh);
+    const luecke = istLuecke(it), lpos = luecke ? lueckenPos(it) : -1;
+    const a = luecke ? norm(roh).replace(/[.!?,;:]+$/,"") : wortEingabe(rein(it.w), roh);
     const res = pruefeWort(it.w, a, !!it.ims);
     ok = res.ok;
-    const e = [{w:it.w, a, ok, res, ims:!!it.ims}];
+    const e = [{w:it.w, a, ok, res, ims:!!it.ims, idx: luecke ? lpos : it.pos, erstes: lpos===0}];
     protokolliere(it, e);
     logEintrag = {ok, teil:false};
-    if(!ok) falsche = [{z:it.w, a, res}];
+    if(!ok) falsche = [{z:it.w, a, res, erstes: lpos===0, luecke}];
   } else {
     const paare = pruefeSatz(it.w, roh);
-    const e = paare.filter(p=>!p.extra).map(p=>({w:p.z, a:p.a, ok:p.ok, res:p, erstes:p.erstes}));
+    const e = paare.filter(p=>!p.extra).map(p=>({w:p.z, a:p.a, ok:p.ok, res:p, erstes:p.erstes, idx:p.idx}));
     paare.filter(p=>p.extra).forEach(p=>e.push({w:"", a:p.a, ok:false, res:null}));
     e.antwort = norm(roh);
     protokolliere(it, e);
@@ -1526,8 +1552,19 @@ function lob(){ const L = ["Genau so!","Super geschrieben.","Stimmt alles.","Per
 function zeigeMarkiert(text, set, cls){
   return [...text].map((ch,k)=> set && set.has(k) ? `<mark class="${cls}">${esc(ch)}</mark>` : esc(ch)).join("");
 }
-function regelBoxen(bereiche, satzanfang){
-  return bereiche.map(c=>`<div class="rule" style="--c:${CATS[c].farbe}"><h3>${esc(c==="GK"&&satzanfang?"Satzanfang":CATS[c].name)}</h3><p>${esc(c==="GK"&&satzanfang?CATS.GK.satzanfang:CATS[c].tipp)}</p></div>`).join("");
+/* Gross/klein: Erklärung passend zum Fall (Satzanfang, Nomen, kein Nomen) */
+function gkTipp(ziel, antwort, satzanfang){
+  const zielGross = /^[A-ZÄÖÜ]/.test(ziel), antwortGross = /^[A-ZÄÖÜ]/.test(antwort||"");
+  if(zielGross && satzanfang) return ["Satzanfang", CATS.GK.satzanfang];
+  if(zielGross && !antwortGross) return ["Nomen schreibt man gross", `«${ziel}» ist ein Nomen. Probe: Du kannst «der», «die», «das» oder «ein» davorsetzen. Nomen schreibt man immer gross.`];
+  if(!zielGross && antwortGross) return ["Kein Nomen – darum klein", `«${ziel}» ist kein Nomen. Probe: «der», «die» oder «das» passt nicht davor. Gross schreibt man nur Nomen und das erste Wort im Satz.`];
+  return ["Gross- und Kleinschreibung", "Schau jeden Buchstaben an: Nur der erste Buchstabe eines Nomens oder am Satzanfang ist gross, alle anderen sind klein."];
+}
+function regelBoxen(bereiche, ziel, antwort, satzanfang){
+  return bereiche.map(c=>{
+    const [titel, text] = c==="GK" ? gkTipp(ziel, antwort, satzanfang) : [CATS[c].name, CATS[c].tipp];
+    return `<div class="rule" style="--c:${CATS[c].farbe}"><h3>${esc(titel)}</h3><p>${esc(text)}</p></div>`;
+  }).join("");
 }
 
 /* Pflicht-Korrektur: jedes falsche Wort einprägen, abdecken, richtig schreiben */
@@ -1563,7 +1600,7 @@ function korrektur(it, falsche){
         ${hinweis||""}
         ${f.a ? `<p class="lab">Du hast geschrieben:</p><p class="wort falsch">${zeigeMarkiert(f.a, res.markA, "x")}</p>` : `<p class="lab">Dieses Wort fehlt:</p>`}
         <p class="lab">Richtig ist:${nr}</p><p class="wort richtig">${zeigeMarkiert(ziel, res.markT, "y")}</p>
-        ${regelBoxen(bereiche, f.erstes && !/^[a-zäöü]/.test(ziel) && f.a && /^[a-zäöü]/.test(f.a))}
+        ${regelBoxen(bereiche, ziel, f.a, !!f.erstes)}
         <p class="sub" style="margin:12px 0 8px">Präg dir das Wort gut ein. Dann deckst du es zu und schreibst es aus dem Kopf.</p>
         <div class="actions"><button class="btn" id="gemerkt">Ich habe es mir gemerkt</button>${HOEREN?`<button class="btn ghost" id="hoer">🔊</button>`:""}</div>
       </div>`;
