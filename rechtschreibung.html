@@ -168,6 +168,10 @@ table.t th,table.t td{padding:7px 6px;border-bottom:1px solid var(--line);text-a
 table.t th{color:var(--mute);font-weight:700;font-size:.72rem;letter-spacing:.02em;line-height:1.2}
 table.t th.vert{min-width:62px;max-width:76px;white-space:normal;font-size:.66rem;hyphens:auto;-webkit-hyphens:auto}
 table.t tr.klick{cursor:pointer}
+table.t th.sortbar{cursor:pointer;user-select:none;-webkit-user-select:none}
+table.t th.sortbar:hover{color:var(--ink)}
+table.t th.sortbar.an{color:var(--accent)}
+table.t th .pfeil{font-size:.7rem}
 table.t tr.klick:hover td{background:#f6f8fd}
 .num{text-align:right!important;white-space:nowrap}
 .tag{display:inline-block;border-radius:999px;padding:1px 8px;font-size:.8rem;font-weight:700}
@@ -1819,9 +1823,36 @@ function catZelle(x){
   return `<td class="num"><span class="tag ${farbe(p)}" title="${x.n-x.f} von ${x.n} richtig">${p}%</span></td>`;
 }
 
-function klasse(){
-  K = auswerten(); pill.hidden = true; $("wrap").classList.add("wide"); stille();
-  const liste = Object.values(K).sort((a,b)=>(+a.g)-(+b.g));
+/* Sortieren der Klassenübersicht: Spaltenkopf antippen (nochmals = umgekehrt) */
+const catPct = x => (!x || x.n < 5) ? null : pc(x.n-x.f, x.n);
+const SPALTEN = {
+  kind:    {wert: k => NAMEN[k.g] ? NAMEN[k.g].toLowerCase() : "~" + String(+k.g).padStart(6,"0"), start:"auf"},
+  stufe:   {wert: k => k.stand && k.stand.stufe ? k.stand.stufe*10 + Math.min(k.stand.etappe||0, ETAPPEN_PRO_STUFE) : null, start:"ab"},
+  woerter: {wert: k => k.n, start:"ab"},
+  richtig: {wert: k => k.quoteAkt, start:"auf"},
+  sb:      {wert: k => k.sbLetzte ? k.sbLetzte.q : null, start:"auf"},
+  zuletzt: {wert: k => k.last ? String(k.last) : null, start:"ab"}
+};
+CAT_ORDER.forEach(c => SPALTEN["cat_"+c] = {wert: k => catPct(k.cat[c]), start:"auf"});
+let SORT = (()=>{ try{ const s = JSON.parse(store.get("rs.sort")||"null"); if(s && SPALTEN[s.key]) return s; }catch(e){} return {key:"kind", dir:"auf"}; })();
+function sortiere(liste){
+  const sp = SPALTEN[SORT.key], f = SORT.dir==="auf" ? 1 : -1;
+  return liste.slice().sort((a,b)=>{
+    const x = sp.wert(a), y = sp.wert(b);
+    if(x===null && y===null) return (+a.g)-(+b.g);
+    if(x===null) return 1; if(y===null) return -1;          // ohne Daten immer unten
+    const v = typeof x==="string" ? x.localeCompare(y,"de") : x - y;
+    return v ? v*f : (+a.g)-(+b.g);
+  });
+}
+function kopf(key, text, cls, title){
+  const an = SORT.key===key, pfeil = an ? (SORT.dir==="auf" ? " ▲" : " ▼") : "";
+  return `<th class="${cls||""} sortbar${an?" an":""}" data-sort="${key}" ${title?`title="${esc(title)}"`:""} aria-sort="${an?(SORT.dir==="auf"?"ascending":"descending"):"none"}">${text}<span class="pfeil">${pfeil}</span></th>`;
+}
+function klasse(neu){
+  if(neu !== false) K = auswerten();
+  pill.hidden = true; $("wrap").classList.add("wide"); stille();
+  const liste = sortiere(Object.values(K));
   const zeilen = liste.map(k=>{ const st = k.stand || {};
     return `<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}</td>
       <td class="num">${st.stufe?`${st.stufe} · ${Math.min(st.etappe||0,ETAPPEN_PRO_STUFE)}/${ETAPPEN_PRO_STUFE}`:"–"}</td>
@@ -1837,9 +1868,9 @@ function klasse(){
         <button class="btn ghost small" id="namen">Namen</button><button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tload">↻ Aktualisieren</button></div>
     </div>
     ${TD.demo?`<div class="warn">Beispieldaten – so sieht die Auswertung aus, sobald die Kinder üben. Die Namen sind erfunden.</div>`:""}
-    <p class="sub" style="margin-top:8px">Prozent = Anteil richtig in den letzten 400 geschriebenen Wörtern. Bereiche: Anteil der Stellen, an denen die Regel richtig angewendet wurde. Grün ab 90%, gelb ab 75%. Zeile antippen für das Profil.</p>
-    <div class="tscroll"><table class="t"><tr><th>Kind</th><th class="num">Stufe · Etappe</th><th class="num">Wörter</th><th class="num">Richtig</th><th class="num">Standort&shy;bestimmung</th>
-      ${CAT_ORDER.map(c=>`<th class="num vert" title="${esc(CATS[c].name)}">${esc(CATS[c].kurz)}</th>`).join("")}<th>Zuletzt</th></tr>
+    <p class="sub" style="margin-top:8px">Prozent = Anteil richtig in den letzten 400 geschriebenen Wörtern. Bereiche: Anteil der Stellen, an denen die Regel richtig angewendet wurde. Grün ab 90%, gelb ab 75%. Spaltenkopf antippen zum Sortieren, Zeile antippen für das Profil.</p>
+    <div class="tscroll"><table class="t"><tr>${kopf("kind","Kind")}${kopf("stufe","Stufe · Etappe","num")}${kopf("woerter","Wörter","num")}${kopf("richtig","Richtig","num")}${kopf("sb","Standort&shy;bestimmung","num")}
+      ${CAT_ORDER.map(c=>kopf("cat_"+c, esc(CATS[c].kurz).replace("Nominalisierung","Nomina&shy;lisierung"), "num vert", CATS[c].name)).join("")}${kopf("zuletzt","Zuletzt")}</tr>
       ${zeilen || `<tr><td colspan="17">Noch keine Daten.</td></tr>`}</table></div>
     ${klassenBereiche(liste)}
   </div>`;
@@ -1847,7 +1878,15 @@ function klasse(){
   $("tprint").onclick = ()=>print();
   $("namen").onclick = ()=>namenEditor(liste);
   app.querySelectorAll("tr[data-g]").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
-  window.scrollTo(0,0);
+  app.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{
+    const key = th.dataset.sort;
+    SORT = SORT.key===key ? {key, dir: SORT.dir==="auf" ? "ab" : "auf"} : {key, dir: SPALTEN[key].start};
+    store.set("rs.sort", JSON.stringify(SORT));
+    const x = window.scrollX, y = window.scrollY, sx = app.querySelector(".tscroll").scrollLeft;
+    klasse(false);
+    window.scrollTo(x, y); app.querySelector(".tscroll").scrollLeft = sx;
+  });
+  if(neu !== false) window.scrollTo(0,0);
 }
 function klassenBereiche(liste){
   const sum = {};
