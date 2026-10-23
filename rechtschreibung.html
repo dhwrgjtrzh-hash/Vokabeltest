@@ -169,6 +169,7 @@ table.t th{color:var(--mute);font-weight:700;font-size:.72rem;letter-spacing:.02
 table.t th.vert{min-width:62px;max-width:76px;white-space:normal;font-size:.66rem;hyphens:auto;-webkit-hyphens:auto}
 table.t tr.klick{cursor:pointer}
 table.t th.sortbar{cursor:pointer;user-select:none;-webkit-user-select:none}
+.doppelt{display:inline-block;background:#fff3cd;color:#8a6100;border-radius:999px;padding:0 8px;font-size:.75rem;font-weight:700;white-space:nowrap}
 table.t th.sortbar:hover{color:var(--ink)}
 table.t th.sortbar.an{color:var(--accent)}
 table.t th .pfeil{font-size:.7rem}
@@ -1221,6 +1222,7 @@ function spiele(texte, langsam){
 function vorladen(texte){ texte.forEach(t=>{ const p = audioPfad(t); if(p) try{ fetch(p).catch(()=>{}); }catch(e){} }); }
 
 /* ===== Fortschritt (auf diesem Gerät) ===== */
+const GERAET = (()=>{ let g = store.get("rs.geraet"); if(!g){ g = uid(); store.set("rs.geraet", g); } return g; })();
 let gz = (store.get("rs.gz")||"").replace(/\D/g,"");
 let P = null;
 const pkey = () => "rs.p."+gz;
@@ -1377,13 +1379,26 @@ function zahlenfeld(){
   document.addEventListener("keydown", padTasten);
   zeichne();
 }
+/* Glückszahl gewechselt (z. B. vertippt): Fortschritt dieses Tablets auf die neue Zahl übertragen */
+function fortschrittMitnehmen(alt, neu){
+  const lies = k => { try{ return JSON.parse(store.get(k)||"null"); }catch(e){ return null; } };
+  const pAlt = lies("rs.p."+alt), pNeu = lies("rs.p."+neu);
+  const hat = p => p && ((p.sb && p.sb.length) || p.worte > 0);
+  if(!hat(pAlt) || hat(pNeu)) return;
+  if(!confirm(`Möchtest du deinen bisherigen Fortschritt (Stufe ${pAlt.stufe||1}, ${pAlt.worte} Wörter) zur Glückszahl ${neu} mitnehmen?`)) return;
+  store.set("rs.p."+neu, store.get("rs.p."+alt)); store.del("rs.p."+alt);
+  const s = store.get("rs.s."+alt); if(s){ store.set("rs.s."+neu, s); store.del("rs.s."+alt); }
+  const q = queue(); let geaendert = false;
+  q.forEach(r => { if(String(r.glueckszahl) === String(alt)){ r.glueckszahl = neu; geaendert = true; } });
+  if(geaendert) store.set(QKEY, JSON.stringify(q));
+}
 function bestaetigen(z){
   app.innerHTML = `<div class="card pad-card">
     <h2>Ist das deine Glückszahl?</h2>
     <div class="gzanz gross">${[...z].map(d=>`<span>${d}</span>`).join("")}</div>
     <div class="actions" style="justify-content:center"><button class="btn" id="gzja">✓ Ja, das stimmt</button><button class="btn ghost" id="gznein">Nein, nochmals</button></div>
   </div>`;
-  $("gzja").onclick = () => { gz = String(+z); store.set("rs.gz", gz); home(); };
+  $("gzja").onclick = () => { const neu = String(+z); if(gz && gz !== neu) fortschrittMitnehmen(gz, neu); gz = neu; store.set("rs.gz", gz); home(); };
   $("gznein").onclick = zahlenfeld;
 }
 
@@ -1692,7 +1707,7 @@ function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ retu
 function makeRec(items, fertig){
   const ok = items.filter(i=>i.ok).length;
   const zs = new Set(items.filter(i=>i.z).map(i=>i.z));
-  return {typ:"uebung-runde", v:3, id:uid(), sid:S.sid, uebung:UEBUNG, glueckszahl:gz, thema:S.thema, art:S.art, form:S.form||"", cat:S.cat||"",
+  return {typ:"uebung-runde", v:3, id:uid(), sid:S.sid, uebung:UEBUNG, glueckszahl:gz, geraet:GERAET, thema:S.thema, art:S.art, form:S.form||"", cat:S.cat||"",
     datum:new Date().toISOString(), punkte:ok, max:items.length, fertig:!!fertig,
     stand:{stufe:P.stufe, etappe:P.etappe, total:P.total, kiste:kisteN(), sb:P.sb.length},
     saetze:(S.saetze||[]).filter(x=>zs.has(x.z)), aufgaben:items};
@@ -1777,7 +1792,8 @@ function auswerten(){
   const runden = (TD.runden||[]).slice().sort((a,b)=>String(a.datum||a.zeit).localeCompare(String(b.datum||b.zeit)));
   runden.forEach((r,ri)=>{
     const g = String(r.glueckszahl||"?");
-    const k = K[g] || (K[g] = {g, items:[], stand:null, last:null, sb:{}, tage:new Set(), saetze:[]});
+    const k = K[g] || (K[g] = {g, items:[], stand:null, last:null, sb:{}, tage:new Set(), saetze:[], geraete:new Set()});
+    if(r.geraet) k.geraete.add(r.geraet);
     const d = r.datum || r.zeit;
     if(r.stand) k.stand = r.stand;
     k.last = d; k.tage.add(String(d).slice(0,10));
@@ -1849,12 +1865,14 @@ function kopf(key, text, cls, title){
   const an = SORT.key===key, pfeil = an ? (SORT.dir==="auf" ? " ▲" : " ▼") : "";
   return `<th class="${cls||""} sortbar${an?" an":""}" data-sort="${key}" ${title?`title="${esc(title)}"`:""} aria-sort="${an?(SORT.dir==="auf"?"ascending":"descending"):"none"}">${text}<span class="pfeil">${pfeil}</span></th>`;
 }
+const mehrereTablets = k => k.geraete && k.geraete.size > 1
+  ? ` <span class="doppelt" title="Diese Glückszahl wurde auf ${k.geraete.size} verschiedenen Tablets benutzt – vielleicht hat sich ein Kind vertippt.">⚠️ ${k.geraete.size} Tablets</span>` : "";
 function klasse(neu){
   if(neu !== false) K = auswerten();
   pill.hidden = true; $("wrap").classList.add("wide"); stille();
   const liste = sortiere(Object.values(K));
   const zeilen = liste.map(k=>{ const st = k.stand || {};
-    return `<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}</td>
+    return `<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}${mehrereTablets(k)}</td>
       <td class="num">${st.stufe?`${st.stufe} · ${Math.min(st.etappe||0,ETAPPEN_PRO_STUFE)}/${ETAPPEN_PRO_STUFE}`:"–"}</td>
       <td class="num">${k.n}</td>
       <td class="num">${k.quoteAkt===null?"–":`<span class="tag ${farbe(k.quoteAkt)}">${k.quoteAkt}%</span>`}</td>
@@ -1970,7 +1988,7 @@ function profil(g){
     <div class="row no-print" style="justify-content:space-between"><button class="btn ghost small" id="zur">← Klasse</button>
       <div class="row"><button class="btn ghost small" id="tprint">Drucken</button></div></div>
     <p class="sub" style="margin:14px 0 0">Rechtschreibprofil · Stand ${datumKurz(new Date().toISOString())}</p>
-    <h2 class="ptitle">${esc(nameVon(g))}${NAMEN[g]?` <span class="muted">· Glückszahl ${esc(g)}</span>`:""}</h2>
+    <h2 class="ptitle">${esc(nameVon(g))}${NAMEN[g]?` <span class="muted">· Glückszahl ${esc(g)}</span>`:""}${mehrereTablets(k)}</h2>
     <div class="kpis">
       <div><b>${!k.sbLetzte ? "–" : k.sbLetzte.niveau ? "Stufe "+k.sbLetzte.niveau : "unter Stufe 1"}</b><span>sicher bis (Standortbestimmung)</span></div>
       <div><b>${st.stufe ? "Stufe "+st.stufe : "–"}</b><span>übt zurzeit${st.stufe?` · Etappe ${Math.min((st.etappe||0)+1,ETAPPEN_PRO_STUFE)}`:""}</span></div>
