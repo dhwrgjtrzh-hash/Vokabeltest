@@ -230,6 +230,7 @@ body.eingebettet header{display:none}
   </header>
   <main id="app"></main>
 </div>
+<script src="audio/rs/liste.js"></script>
 <script>
 /* Adresse des Google-Skripts, das die Antworten speichert (leer = nichts senden). */
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbyk0lFil4xRSsFLkPV_RuamQ-XPSU9Hn76HxHjInfYCJyDaVxjsW1S7gQHBP1rYV5dT/exec";
@@ -1158,17 +1159,54 @@ function waehleStimme(){
   VOICE = vs.find(v=>/^de[-_]CH/i.test(v.lang)) || vs.find(v=>/^de[-_]DE/i.test(v.lang) && v.localService) || vs.find(v=>/^de/i.test(v.lang)) || null;
 }
 if(TTS){ waehleStimme(); speechSynthesis.onvoiceschanged = waehleStimme; }
+/* Nur für die Sprachausgabe: Schweizer «ss» nach langem Vokal/Doppellaut als «ß» vorlesen lassen */
+function fuerStimme(t){
+  return String(t).replace(/\^/g,"")
+    .replace(/(ei|ai|au|äu|eu|ie)ss/gi, "$1ß")
+    .replace(/\b(gro|Gro|stra|Stra|fu|Fu|sü|Sü|spa|Spa|gru|Gru)ss/g, "$1ß");
+}
 function sag(text, tempo){
   if(!TTS) return;
   try{
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(fuerStimme(text));
     u.lang = VOICE ? VOICE.lang : "de-DE"; if(VOICE) u.voice = VOICE;
     u.rate = tempo || 0.85;
     speechSynthesis.speak(u);
   }catch(e){}
 }
 const sprechText = t => t.replace(/\^/g,"");
+
+/* ===== Aufnahmen (natürliche Stimme, vorab aufgenommen) – Rückfall auf die Gerätestimme ===== */
+const AUDIO_DIR = "audio/rs/";
+const AUDIO_DA = new Set((typeof AUDIO_LISTE === "string" ? AUDIO_LISTE : "").split(" ").filter(Boolean));
+const audioKey = t => String(t).replace(/\^/g,"").replace(/\s+/g," ").trim().toLowerCase();
+const fnv = s => { let h=0x811c9dc5; for(const ch of s){ h^=ch.codePointAt(0); h=Math.imul(h,0x01000193)>>>0; } return h.toString(16).padStart(8,"0"); };
+const audioPfad = t => { const h = fnv(audioKey(t)); return AUDIO_DA.has(h) ? AUDIO_DIR + h + ".mp3" : null; };
+const HOEREN = TTS || AUDIO_DA.size > 0;
+const PLAYER = new Audio(); PLAYER.preload = "auto";
+let spielId = 0;
+function stille(){ spielId++; try{ PLAYER.pause(); }catch(e){} if(TTS) try{ speechSynthesis.cancel(); }catch(e){} }
+/* texte: Liste von Stücken, die nacheinander gespielt werden (z. B. Wort, Satz, Wort) */
+function spiele(texte, langsam){
+  const pfade = texte.map(audioPfad);
+  const ersatz = () => sag(texte.map(sprechText).join(" … "), langsam ? 0.6 : 0.85);
+  stille();
+  if(!pfade.length || pfade.some(p=>!p)) return ersatz();
+  const id = spielId, rate = langsam ? 0.75 : 1;
+  let i = 0;
+  const weiter = () => {
+    if(id !== spielId || i >= pfade.length) return;
+    PLAYER.src = pfade[i++];
+    PLAYER.defaultPlaybackRate = rate; PLAYER.playbackRate = rate;
+    PLAYER.preservesPitch = true; PLAYER.webkitPreservesPitch = true;
+    const p = PLAYER.play(); if(p && p.catch) p.catch(()=>{ if(id===spielId){ spielId++; ersatz(); } });
+  };
+  PLAYER.onended = () => { if(id === spielId && i < pfade.length) setTimeout(weiter, 450); };
+  PLAYER.onerror = () => { if(id === spielId){ spielId++; ersatz(); } };
+  weiter();
+}
+function vorladen(texte){ texte.forEach(t=>{ const p = audioPfad(t); if(p) try{ fetch(p).catch(()=>{}); }catch(e){} }); }
 
 /* ===== Fortschritt (auf diesem Gerät) ===== */
 let gz = (store.get("rs.gz")||"").replace(/\D/g,"");
@@ -1242,7 +1280,7 @@ function starteSB(){
 const app = $("app"), pill = $("pill");
 function home(){
   $("wrap").classList.remove("wide");
-  if(TTS) speechSynthesis.cancel();
+  stille();
   pill.hidden = true; pill.textContent = "Nr. "+gz;
   if(!gz) return zahlenfeld();
   ladeP();
@@ -1287,7 +1325,7 @@ function home(){
       <button class="btn ghost small" id="ton2">🔊 Ton testen</button>
       <button class="linkish" id="gzneu">Andere Glückszahl</button>
     </div>
-    ${!TTS?`<div class="warn">Auf diesem Gerät gibt es keine Sprachausgabe. Die Wörter werden darum kurz angezeigt und dann versteckt.</div>`:""}
+    ${!HOEREN?`<div class="warn">Auf diesem Gerät gibt es keine Sprachausgabe. Die Wörter werden darum kurz angezeigt und dann versteckt.</div>`:""}
     ${inhalt}
   </div>`;
   const on = (id,f) => { const b=$(id); if(b) b.onclick=f; };
@@ -1296,8 +1334,8 @@ function home(){
   on("etappe", starteEtappe);
   on("kiste", starteKiste);
   on("regel", regelWahl);
-  on("ton", ()=>sag("Hallo! Wenn du mich gut hörst, funktioniert der Ton."));
-  on("ton2", ()=>sag("Hallo! Wenn du mich gut hörst, funktioniert der Ton."));
+  on("ton", ()=>spiele(["Hallo! Wenn du mich gut hörst, funktioniert der Ton."]));
+  on("ton2", ()=>spiele(["Hallo! Wenn du mich gut hörst, funktioniert der Ton."]));
   on("gzneu", ()=>{ if(confirm("Möchtest du wirklich eine andere Glückszahl eingeben?")) zahlenfeld(); });
 }
 /* ===== Glückszahl nur mit Zahlenknöpfen (keine Tastatur, keine Buchstaben) ===== */
@@ -1379,8 +1417,8 @@ function teile(text){
   return out;
 }
 function vorlesen(it, langsam){
-  if(it.typ==="W"){ const w = rein(it.w); sag(it.x ? `${w}. … ${sprechText(it.x)} … ${w}.` : `${w}.`, langsam?0.6:0.85); }
-  else sag(sprechText(it.w), langsam?0.6:0.82);
+  if(it.typ==="W"){ const w = rein(it.w); spiele(it.x ? [w, it.x, w] : [w], langsam); }
+  else spiele([it.w], langsam);
 }
 function zeigeAufgabe(vorlesenJetzt){
   if(!S) return home();
@@ -1393,7 +1431,7 @@ function zeigeAufgabe(vorlesenJetzt){
   app.innerHTML = `<div class="card task">
     <div class="sesshead"><span class="qtype">${istSatz?"💬 Satz":"✏️ Wort"} ${S.i+1} von ${n}</span><span class="grow sub" style="margin:0">${esc(S.thema)}</span><button class="btn ghost small" id="pause">Pause</button></div>
     <div class="progress">${prog}</div>
-    ${TTS ? `<div class="hear">
+    ${HOEREN ? `<div class="hear">
       <button class="btn hearbtn" id="h1">🔊 ${istSatz?"Satz anhören":"Anhören"}</button>
       <button class="btn ghost" id="h2">🐢 Langsam</button>
       ${istSatz?`<button class="btn ghost" id="h3">Stück für Stück <small id="teilnr"></small></button>`:""}
@@ -1405,12 +1443,13 @@ function zeigeAufgabe(vorlesenJetzt){
     <div id="fb"></div>
   </div>`;
   const inp = $("inp");
-  if(TTS){
+  if(HOEREN){
     $("h1").onclick = ()=>{ vorlesen(it,false); inp.focus({preventScroll:true}); };
     $("h2").onclick = ()=>{ vorlesen(it,true); inp.focus({preventScroll:true}); };
     if(istSatz){ const T = teile(it.w); const lab = $("teilnr"); lab.textContent = `1/${T.length}`;
-      $("h3").onclick = ()=>{ sag(T[teilIdx], 0.7); teilIdx = (teilIdx+1) % T.length; lab.textContent = `${teilIdx+1}/${T.length}`; inp.focus({preventScroll:true}); }; }
+      $("h3").onclick = ()=>{ spiele([T[teilIdx]], true); teilIdx = (teilIdx+1) % T.length; lab.textContent = `${teilIdx+1}/${T.length}`; inp.focus({preventScroll:true}); }; }
     if(vorlesenJetzt) vorlesen(it,false);
+    const nx = S.items[S.i+1]; if(nx) vorladen(nx.typ==="W" ? [rein(nx.w), nx.x||""] : [nx.w]);
   } else {
     setTimeout(()=>{ const f=$("flash"); if(f) f.classList.add("hidden"); }, istSatz ? 6000 : 2500);
   }
@@ -1445,7 +1484,7 @@ function pruefen(){
   const it = S.items[S.i], inp = $("inp");
   const roh = inp.value;
   if(!norm(roh)){ inp.focus(); inp.classList.add("shake"); setTimeout(()=>inp.classList.remove("shake"),400); return; }
-  if(TTS) speechSynthesis.cancel();
+  stille();
   inp.readOnly = true; $("chk").hidden = true;
   let ok, falsche = [], logEintrag;
   if(it.typ==="W"){
@@ -1526,10 +1565,10 @@ function korrektur(it, falsche){
         <p class="lab">Richtig ist:${nr}</p><p class="wort richtig">${zeigeMarkiert(ziel, res.markT, "y")}</p>
         ${regelBoxen(bereiche, f.erstes && !/^[a-zäöü]/.test(ziel) && f.a && /^[a-zäöü]/.test(f.a))}
         <p class="sub" style="margin:12px 0 8px">Präg dir das Wort gut ein. Dann deckst du es zu und schreibst es aus dem Kopf.</p>
-        <div class="actions"><button class="btn" id="gemerkt">Ich habe es mir gemerkt</button>${TTS?`<button class="btn ghost" id="hoer">🔊</button>`:""}</div>
+        <div class="actions"><button class="btn" id="gemerkt">Ich habe es mir gemerkt</button>${HOEREN?`<button class="btn ghost" id="hoer">🔊</button>`:""}</div>
       </div>`;
       $("gemerkt").onclick = schreiben; $("gemerkt").focus({preventScroll:true});
-      const h = $("hoer"); if(h) h.onclick = ()=>sag(ziel, 0.75);
+      const h = $("hoer"); if(h) h.onclick = ()=>spiele([ziel], true);
       fb.scrollIntoView({behavior:"smooth", block:"start"});
     };
     const schreiben = () => {
@@ -1662,7 +1701,7 @@ function lehrerMeldung(titel, text){
   $("tre").onclick = lehrperson;
 }
 function lehrperson(){
-  ladeNamen(); pill.hidden = true; if(TTS) speechSynthesis.cancel();
+  ladeNamen(); pill.hidden = true; stille();
   if(!ENDPOINT){ TD = beispielDaten(); klasse(); return; }
   $("wrap").classList.add("wide");
   app.innerHTML = `<div class="card"><p class="sub" style="margin:0">Auswertung wird geladen …</p></div>`;
@@ -1744,7 +1783,7 @@ function catZelle(x){
 }
 
 function klasse(){
-  K = auswerten(); pill.hidden = true; $("wrap").classList.add("wide"); if(TTS) speechSynthesis.cancel();
+  K = auswerten(); pill.hidden = true; $("wrap").classList.add("wide"); stille();
   const liste = Object.values(K).sort((a,b)=>(+a.g)-(+b.g));
   const zeilen = liste.map(k=>{ const st = k.stand || {};
     return `<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}</td>
