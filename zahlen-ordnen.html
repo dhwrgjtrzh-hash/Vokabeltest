@@ -190,6 +190,19 @@ svg.nl .hit{cursor:pointer}
 .lzkgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
 .lzkgrid .topic{min-height:0;padding:10px 12px;align-items:center}
 .lzkgrid .topic b{margin:0}
+
+.topic.goal{min-height:0;padding:12px 14px;align-items:center;gap:12px}
+.topic.goal .ic{font-size:1.7rem}
+.topic.goal .gbody{display:flex;flex-direction:column;gap:2px;min-width:0}
+.topic.goal b{font-size:1.05rem;line-height:1.25;margin:0}
+.topic.goal .lv{margin-top:4px}
+.topics{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.topic.goal .gbody > b{color:var(--ink)}
+.topic.goal .lv{display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
+.topic.goal .lv .st{display:flex;gap:3px;flex:none}
+.topic.goal .lv .st i{width:16px;height:7px}
+.topic.goal .lv b{display:inline;white-space:nowrap;font-size:.78rem;color:var(--mute)}
+.topics{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
 </style>
 </head>
 <body>
@@ -464,11 +477,13 @@ function levelBar(id){
 function home(){
   pill.hidden = true;
   if(gz) loadP();
-  const cards = GOALS.map(g=>{
+  const card = g=>{
     const s = gz ? gs(g.id) : null;
-    return `<button class="topic goal ${s&&s.done?"mastered":""}" data-k="${g.id}" style="--c:${g.c}"><span class="ic">${g.ic}</span>
-      <span><span class="tag2 ${g.erw?"erw":""}">${g.code?g.code+" · ":""}${g.erw?"erweitert":"Grundanforderung"}</span><b>${g.title}</b><span>${g.info}</span><span>${g.tb}</span>${s?levelBar(g.id):""}</span></button>`;
-  }).join("");
+    return `<button class="topic goal ${s&&s.done?"mastered":""}" data-k="${g.id}" style="--c:${g.c}" title="${esc(g.info+" · "+g.tb)}"><span class="ic">${g.ic}</span>
+      <span class="gbody"><b>${g.title}</b>${s?levelBar(g.id):""}</span></button>`;
+  };
+  const cards = GOALS.filter(g=>!g.erw).map(card).join("");
+  const extra = GOALS.filter(g=>g.erw).map(card).join("");
   const last = gz && P.last && GOAL[P.last] ? P.last : null;
   const nextGoal = gz ? (GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done)) : null;
   const resumeId = last && !gs(last).done ? last : nextGoal && nextGoal.id;
@@ -483,8 +498,9 @@ function home(){
       <button class="btn ghost" id="testmode">📝 Test-Training<small>${TEST_N} gemischte Aufgaben wie in der Lernzielkontrolle</small></button>
     </div>` : ""}
     <h2>Lernziele</h2>
-    <p class="sub">Jedes Lernziel hat 3 Stufen. Eine Stufe ist geschafft, wenn du ${STREAK} Aufgaben hintereinander richtig löst (oder insgesamt ${NEED} Punkte hast). Kannst du es schon, springst du direkt weiter. Ist eine Antwort falsch, siehst du, wie es geht – und bekommst eine ähnliche Aufgabe.</p>
+    <p class="sub">3 Stufen pro Lernziel · ${STREAK} richtig hintereinander = nächste Stufe</p>
     <div class="topics">${cards}</div>
+    ${extra?`<h2 style="margin-top:22px">Für Profis ⭐</h2><div class="topics">${extra}</div>`:""}
     <p class="sub" style="margin:18px 0 0">${START_NOTE}</p>
     <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
   </div>`;
