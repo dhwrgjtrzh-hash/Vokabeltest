@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fall-Detektiv – die vier Fälle</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%232F6FDB%22/%3E%3Ccircle cx=%2228%22 cy=%2228%22 r=%2213%22 fill=%22none%22 stroke=%22white%22 stroke-width=%226%22/%3E%3Cpath d=%22M38 38l12 12%22 stroke=%22white%22 stroke-width=%227%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF0F4; --paper:#FFFFFF; --ink:#1B2740; --soft:#5B6782; --line:#D3DCE5;
+  --nom:#2F6FDB; --akk:#D9651A; --dat:#1C9466; --gen:#8A4FD1;
+  --nom-bg:#E4EDFC; --akk-bg:#FCEBDD; --dat-bg:#DDF3EA; --gen-bg:#EFE5FB;
+  --ok:#1C9466; --bad:#C8382F; --mark:#FFE58A; --btn:#1B2740; --btn-ink:#fff;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121826; --paper:#1C2436; --ink:#EEF2F8; --soft:#A3AEC6; --line:#2E3950;
+    --nom:#6FA0F5; --akk:#F29A55; --dat:#4CC996; --gen:#B38CF0;
+    --nom-bg:#1D2D4D; --akk-bg:#3D2A1C; --dat-bg:#17362B; --gen-bg:#2E2445;
+    --ok:#4CC996; --bad:#F07068; --mark:#6B5A12; --btn:#EEF2F8; --btn-ink:#121826;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121826; --paper:#1C2436; --ink:#EEF2F8; --soft:#A3AEC6; --line:#2E3950;
+  --nom:#6FA0F5; --akk:#F29A55; --dat:#4CC996; --gen:#B38CF0;
+  --nom-bg:#1D2D4D; --akk-bg:#3D2A1C; --dat-bg:#17362B; --gen-bg:#2E2445;
+  --ok:#4CC996; --bad:#F07068; --mark:#6B5A12; --btn:#EEF2F8; --btn-ink:#121826;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:18px;line-height:1.5}
+#app{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,h3{font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;line-height:1.1;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--nom);outline-offset:2px}
+.nom{color:var(--nom);font-weight:700}.akk{color:var(--akk);font-weight:700}.dat{color:var(--dat);font-weight:700}.gen{color:var(--gen);font-weight:700}
+
+/* Startseite */
+.hero{padding:12px 0 20px}
+.hero h1{font-size:clamp(46px,13vw,72px);font-weight:800;letter-spacing:-1px}
+.hero h1 .f{display:inline-block}
+.hero h1 .f span:nth-child(1){color:var(--nom)}.hero h1 .f span:nth-child(2){color:var(--akk)}.hero h1 .f span:nth-child(3){color:var(--dat)}.hero h1 .f span:nth-child(4){color:var(--gen)}
+.hero p{color:var(--soft);margin:6px 0 0;max-width:34em}
+.qs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 26px}
+.qs div{border-radius:12px;padding:10px 12px;font-size:15px;line-height:1.3}
+.qs b{display:block;font-family:"Baloo 2",sans-serif;font-size:19px}
+.q-nom{background:var(--nom-bg)}.q-nom b{color:var(--nom)}
+.q-akk{background:var(--akk-bg)}.q-akk b{color:var(--akk)}
+.q-dat{background:var(--dat-bg)}.q-dat b{color:var(--dat)}
+.q-gen{background:var(--gen-bg)}.q-gen b{color:var(--gen)}
+.list{display:flex;flex-direction:column;gap:10px}
+.file{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--paper);border:0;border-radius:14px;padding:14px 16px;border-left:8px solid var(--c,var(--ink))}
+.file .n{font-family:"Baloo 2",sans-serif;font-size:28px;font-weight:800;color:var(--c);min-width:28px;text-align:center}
+.file .t{flex:1}
+.file h3{font-size:21px}
+.file small{display:block;color:var(--soft);font-size:15px}
+.file .s{font-size:18px;white-space:nowrap;letter-spacing:1px}
+.file.locked{opacity:.55}
+.file.next{box-shadow:0 0 0 3px var(--c)}
+.foot{margin-top:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.link{background:none;border:0;color:var(--soft);text-decoration:underline;font-size:15px;padding:4px 0}
+
+/* Leiste */
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.icon{background:var(--paper);border:0;border-radius:12px;min-width:44px;height:44px;font-size:18px;padding:0 12px}
+.prog{flex:1;height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--c,var(--nom));transition:width .3s}
+
+/* Karten */
+.card{background:var(--paper);border-radius:18px;padding:22px 20px;border-top:8px solid var(--c,var(--ink))}
+.card h2{font-size:28px;margin-bottom:12px;color:var(--c,var(--ink))}
+.card p{margin:0 0 12px}
+.card .ex{background:var(--bg);border-radius:10px;padding:10px 14px;margin:10px 0}
+.card ol{padding-left:22px;margin:0 0 12px}
+.dots{display:flex;gap:6px;justify-content:center;margin:16px 0}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--c)}
+.main{display:block;width:100%;border:0;border-radius:14px;padding:15px;font-weight:700;font-size:19px;background:var(--btn);color:var(--btn-ink);margin-top:14px}
+.sec{display:block;width:100%;border:2px solid var(--line);background:transparent;border-radius:14px;padding:13px;font-weight:700;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:16px}
+td,th{padding:7px 6px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:14px;color:var(--soft);font-weight:400}
+
+/* Aufgaben */
+.task{font-size:15px;color:var(--soft);margin-bottom:8px}
+.sent{font-size:24px;line-height:1.6;margin:4px 0 18px}
+.blank{display:inline-block;min-width:74px;border-bottom:3px solid var(--ink);text-align:center;margin:0 4px}
+.blank.filled{border-color:var(--ok);color:var(--ok);font-weight:700}
+.markd{background:var(--mark);border-radius:6px;padding:0 5px;font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opt{flex:1 1 30%;min-width:90px;border:2px solid var(--line);background:var(--paper);border-radius:14px;padding:13px 10px;font-weight:700;font-size:20px}
+.opt.long{flex-basis:100%;font-size:18px;text-align:left}
+.opt.case{flex:1 1 45%;font-size:18px;line-height:1.2}
+.opt.case small{display:block;font-weight:400;font-size:14px;opacity:.8}
+.opt.c-nom{border-color:var(--nom);color:var(--nom)}.opt.c-akk{border-color:var(--akk);color:var(--akk)}
+.opt.c-dat{border-color:var(--dat);color:var(--dat)}.opt.c-gen{border-color:var(--gen);color:var(--gen)}
+.opt.right{background:var(--ok);border-color:var(--ok);color:var(--btn-ink)}
+.opt.wrong{border-color:var(--bad);color:var(--bad);text-decoration:line-through;opacity:.7}
+.opt:disabled{cursor:default}
+.taps{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 18px}
+.tp{border:2px dashed var(--line);background:var(--paper);border-radius:12px;padding:8px 12px;font-size:22px}
+.tp.right{background:var(--ok);border:2px solid var(--ok);color:var(--btn-ink)}
+.tp.wrong{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.help{margin-top:14px;border:0;background:none;color:var(--soft);text-decoration:underline;font-size:16px;padding:4px 0}
+.fb{margin-top:16px;border-radius:14px;padding:14px 16px;font-size:17px}
+.fb b{font-family:"Baloo 2",sans-serif;font-size:21px;display:block}
+.fb.ok{background:var(--dat-bg)}.fb.ok b{color:var(--ok)}
+.fb.no{background:var(--akk-bg)}.fb.no b{color:var(--bad)}
+.fb.tip{background:var(--bg)}
+.pop{animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(.96);opacity:.4}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.prog i{transition:none}}
+
+.codebox{background:var(--gen-bg);border-radius:14px;padding:12px 16px;margin:0 0 16px;text-align:left}
+.codebox span{display:block;font-size:14px;color:var(--soft)}
+.codebox b{display:block;font-family:"Baloo 2",sans-serif;font-size:28px;letter-spacing:2px;color:var(--gen)}
+.codebox small{display:block;font-size:14px;color:var(--soft)}
+.codebox.big{text-align:center;margin:16px 0}.codebox.big b{font-size:34px}
+.tline{margin:6px 0;font-size:19px}
+.tq{margin:6px 0;padding-left:22px;font-size:19px}
+.tblank{display:inline-block;width:46px;border-bottom:2px solid currentColor;margin:0 3px}
+.trule{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);font-size:15px;color:var(--soft)}
+/* Glückszahl */
+.who{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px}
+.gzchip{background:var(--paper);border-radius:999px;padding:6px 14px;font-size:16px}
+.gzanz{display:flex;justify-content:center;gap:8px;margin:14px 0 18px;min-height:64px}
+.gzanz span{width:52px;height:64px;border-radius:12px;background:var(--bg);display:grid;place-items:center;font-family:"Baloo 2",sans-serif;font-size:36px;font-weight:800}
+.gzanz span.leer{color:var(--soft)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:320px;margin:0 auto}
+.pad button{height:64px;border-radius:14px;border:2px solid var(--line);background:var(--paper);font-size:26px;font-weight:700}
+.pad .ok{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+.pad .ok:disabled{opacity:.4}
+/* Vorprüfung */
+.vpcard{background:var(--paper);border-radius:16px;padding:16px 18px;margin:0 0 18px;border-left:8px solid var(--akk)}
+.vpcard h3{font-size:22px;margin-bottom:4px}
+.vpcard p{margin:0;color:var(--soft);font-size:16px}
+.vpcard.done{border-left-color:var(--ok)}
+.opt.sel,.tp.sel{background:var(--nom-bg);border-color:var(--nom);border-style:solid;color:var(--ink)}
+.sent2{font-size:15px;color:var(--soft);margin-top:10px}
+.sent2.ok{color:var(--ok)}
+/* Ergebnis */
+.res{text-align:center}
+.res .big{font-size:52px;letter-spacing:6px;margin:6px 0}
+
+/* Overlay */
+.ov{position:fixed;inset:0;background:rgba(10,15,25,.55);display:flex;align-items:flex-end;justify-content:center;z-index:10;padding:env(safe-area-inset-top,0px) 0 0}
+.sheet{background:var(--paper);width:100%;max-width:640px;max-height:88%;overflow:auto;border-radius:20px 20px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px))}
+.sheet h2{font-size:26px;margin-bottom:10px}
+.tw{overflow-x:auto}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="ov"></div>
+<script>
+const CASES=[
+ {k:"nom",n:"Wer-Fall",l:"Nominativ",q:"Wer oder was?"},
+ {k:"akk",n:"Wen-Fall",l:"Akkusativ",q:"Wen oder was?"},
+ {k:"dat",n:"Wem-Fall",l:"Dativ",q:"Wem?"},
+ {k:"gen",n:"Wes-Fall",l:"Genitiv",q:"Wessen?"}
+];
+function art(noun,a,ex){return {t:"choice",task:"Welcher Begleiter passt?",s:"___ "+noun,o:["der","die","das"],a:a,tip:"Sag das Wort laut mit allen drei Begleitern. Welcher klingt richtig?",ex:ex}}
+
+const CH=[
+{id:"k1",title:"Nomen und Begleiter",sub:"Die Grundlage für alles",c:"var(--ink)",
+ intro:[
+  {h:"Was sind Nomen?",b:"<p>Nomen sind Namen für Menschen, Tiere, Pflanzen, Dinge und Gefühle.</p><div class='ex'>Hund, Lehrerin, Baum, Velo, Freude</div><p>Nomen schreibst du immer <b>gross</b>.</p>"},
+  {h:"Der Begleiter",b:"<p>Vor dem Nomen steht oft ein Begleiter (Artikel). Er zeigt das Geschlecht:</p><div class='ex'><b>der</b> Hund (männlich)<br><b>die</b> Katze (weiblich)<br><b>das</b> Haus (sächlich)</div><p>In der Mehrzahl heisst es immer <b>die</b>: die Hunde.</p><p>Tipp: Lerne jedes Nomen mit seinem Begleiter.</p>"},
+  {h:"Warum ist das wichtig?",b:"<p>In den nächsten Kapiteln verändert sich der Begleiter:</p><div class='ex'><span class='nom'>der Hund</span> → <span class='akk'>den Hund</span> → <span class='dat'>dem Hund</span> → <span class='gen'>des Hundes</span></div><p>Das sind die <b>vier Fälle</b>. Wenn du weisst, ob ein Nomen der, die oder das hat, findest du später immer die richtige Form.</p>"}
+ ],
+ items:[
+  {t:"tap",task:"Tippe auf das Nomen.",p:["Der","Hund","bellt","laut."],a:1,tip:"Nomen schreibt man gross. Und vor dem Nomen steht oft der Begleiter.",ex:"«Hund» ist das Nomen. «Der» ist sein Begleiter."},
+  {t:"tap",task:"Tippe auf das Nomen.",p:["Am","Abend","lesen","wir."],a:1,tip:"Achtung: Das erste Wort im Satz ist immer gross – auch wenn es kein Nomen ist!",ex:"«Abend» ist das Nomen. «Am» ist nur gross, weil es am Satzanfang steht."},
+  {t:"tap",task:"Tippe auf das Nomen.",p:["Heute","ist","das","Wetter","schön."],a:3,tip:"Suche das Wort, vor das du der, die oder das setzen kannst.",ex:"das Wetter – «Wetter» ist das Nomen."},
+  art("Hund",0,"der Hund"),
+  art("Katze",1,"die Katze"),
+  art("Haus",2,"das Haus"),
+  art("Mädchen",2,"das Mädchen. Merke: Wörter auf -chen und -lein haben immer «das»."),
+  art("Velo",2,"das Velo"),
+  art("Lehrerin",1,"die Lehrerin. Merke: Wörter auf -in haben immer «die»."),
+  art("Löffel",0,"der Löffel"),
+  art("Zeitung",1,"die Zeitung. Merke: Wörter auf -ung, -heit und -keit haben immer «die»."),
+  {t:"choice",task:"Welcher Begleiter passt?",s:"___ Bäume",o:["der","die","das"],a:1,tip:"Ist es ein Baum oder sind es mehrere?",ex:"Mehrzahl hat immer «die»: die Bäume."}
+ ]},
+
+{id:"k2",title:"Der Wer-Fall",sub:"Nominativ – Wer oder was?",c:"var(--nom)",
+ intro:[
+  {h:"Wer tut etwas?",b:"<p>In fast jedem Satz gibt es jemanden, der etwas tut. Du findest ihn mit der Frage <b class='nom'>Wer oder was + Verb?</b></p><div class='ex'><span class='nom'>Der Hund</span> bellt.<br>Wer oder was bellt? → <span class='nom'>der Hund</span></div><p>Dieses Satzglied steht im <b class='nom'>Wer-Fall</b> (Nominativ).</p>"},
+  {h:"Die Detektiv-Frage",b:"<ol><li>Suche das Verb: <i>bellt</i></li><li>Stelle die Frage: <i>Wer oder was bellt?</i></li><li>Die Antwort ist der Wer-Fall.</li></ol><p>Im Wer-Fall heissen die Begleiter <b class='nom'>der – die – das</b>, in der Mehrzahl <b class='nom'>die</b>. Das ist die Grundform, so wie im Wörterbuch.</p>"},
+  {h:"Nicht immer vorne!",b:"<div class='ex'>Am Morgen bellt <span class='nom'>der Hund</span>.</div><p>Auch hier: Wer oder was bellt? → der Hund.</p><p>Der Wer-Fall kann am Anfang, in der Mitte oder am Ende stehen. Lass dich nicht täuschen – <b>frag immer!</b></p>"}
+ ],
+ items:[
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Der Bäcker","backt","frisches Brot."],a:0,tip:"Frag: Wer oder was backt?",ex:"Wer oder was backt? → der Bäcker."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Die Kinder","spielen","im Pausenhof."],a:0,tip:"Frag: Wer oder was spielt?",ex:"Wer oder was spielt? → die Kinder."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Am Morgen","bellt","der Hund."],a:2,tip:"Frag: Wer oder was bellt?",ex:"Wer oder was bellt? → der Hund. Er steht hier am Schluss."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Das Velo","steht","vor dem Haus."],a:0,tip:"Frag: Wer oder was steht?",ex:"Wer oder was steht vor dem Haus? → das Velo."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Im Zoo","füttert","die Tierpflegerin","die Elefanten."],a:2,tip:"Frag: Wer oder was füttert? Wer macht hier etwas?",ex:"Wer oder was füttert? → die Tierpflegerin. Die Elefanten werden gefüttert – sie tun nichts."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Der Ball","rollt","über die Strasse."],a:0,tip:"Frag: Wer oder was rollt?",ex:"Wer oder was rollt? → der Ball."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Morgen","besucht","uns","meine Grossmutter."],a:3,tip:"Frag: Wer oder was besucht uns?",ex:"Wer oder was besucht uns? → meine Grossmutter."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Laut","singt","der Chor","ein Lied."],a:2,tip:"Frag: Wer oder was singt?",ex:"Wer oder was singt? → der Chor. «Ein Lied» wird gesungen."},
+  {t:"tap",task:"Tippe auf den Wer-Fall.",p:["Nach der Schule","kochen","meine Eltern","Spaghetti."],a:2,tip:"Frag: Wer oder was kocht?",ex:"Wer oder was kocht? → meine Eltern."}
+ ]},
+
+{id:"k3",title:"Der Wen-Fall",sub:"Akkusativ – Wen oder was?",c:"var(--akk)",
+ intro:[
+  {h:"Wen oder was?",b:"<p>Viele Verben brauchen noch eine Ergänzung: Der Hund sucht … was? Den Knochen!</p><p>Du fragst: <b class='akk'>Wen oder was + Verb + Wer-Fall?</b></p><div class='ex'><span class='nom'>Der Hund</span> sucht <span class='akk'>den Knochen</span>.<br>Wen oder was sucht der Hund? → <span class='akk'>den Knochen</span></div><p>Das ist der <b class='akk'>Wen-Fall</b> (Akkusativ).</p>"},
+  {h:"Was verändert sich?",b:"<p>Nur bei <b>männlichen</b> Nomen ändert sich der Begleiter:</p><div class='ex'><span class='nom'>der</span> → <span class='akk'>den</span> &nbsp; / &nbsp; <span class='nom'>ein</span> → <span class='akk'>einen</span><br>Ich sehe <span class='akk'>den</span> Ball. Ich habe <span class='akk'>einen</span> Hund.</div><p>Bei <b>die</b> und <b>das</b> bleibt alles gleich:</p><div class='ex'>Ich sehe <span class='akk'>die</span> Katze. Ich sehe <span class='akk'>das</span> Haus.</div>"},
+  {h:"Detektiv-Trick",b:"<p>Unsicher? Frag zuerst nach dem Wer-Fall. Dann ist der Rest leichter.</p><div class='ex'><span class='akk'>Den Lehrer</span> fragt <span class='nom'>der Schüler</span>.<br>Wer fragt? → der Schüler.<br>Wen fragt der Schüler? → den Lehrer.</div><p>Der Wen-Fall kann also sogar vorne stehen!</p>"}
+ ],
+ items:[
+  {t:"tap",task:"Tippe auf den Wen-Fall.",p:["Der Hund","sucht","den Knochen."],a:2,tip:"Frag: Wen oder was sucht der Hund?",ex:"Wen oder was sucht der Hund? → den Knochen."},
+  {t:"tap",task:"Tippe auf den Wen-Fall.",p:["Lina","liest","ein spannendes Buch."],a:2,tip:"Frag: Wen oder was liest Lina?",ex:"Wen oder was liest Lina? → ein spannendes Buch."},
+  {t:"tap",task:"Tippe auf den Wen-Fall.",p:["Die Katze","fängt","eine Maus."],a:2,tip:"Frag: Wen oder was fängt die Katze?",ex:"Wen oder was fängt die Katze? → eine Maus."},
+  {t:"tap",task:"Tippe auf den Wen-Fall.",p:["Wir","besuchen","am Samstag","den Zoo."],a:3,tip:"Frag: Wen oder was besuchen wir?",ex:"Wen oder was besuchen wir? → den Zoo. «Am Samstag» sagt nur, wann."},
+  {t:"tap",task:"Tippe auf den Wen-Fall.",p:["Den Lehrer","fragt","der Schüler."],a:0,tip:"Suche zuerst den Wer-Fall: Wer fragt? Dann: Wen fragt er?",ex:"Wer fragt? → der Schüler. Wen fragt der Schüler? → den Lehrer."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich sehe ___ Hund.",o:["der","den","dem"],a:1,tip:"Frag: Wen oder was sehe ich? Hund ist männlich.",ex:"Wen sehe ich? → den Hund. der wird zu den."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Mia kauft ___ Apfel.",o:["der","den","dem"],a:1,tip:"Frag: Wen oder was kauft Mia?",ex:"Wen oder was kauft Mia? → den Apfel."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Wir brauchen ___ Schere.",o:["die","den","der"],a:0,tip:"Es heisst «die Schere». Ändert sich «die» im Wen-Fall?",ex:"Bei «die» bleibt im Wen-Fall alles gleich: die Schere."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Tom öffnet ___ Fenster.",o:["der","den","das"],a:2,tip:"Es heisst «das Fenster». Ändert sich «das» im Wen-Fall?",ex:"Bei «das» bleibt im Wen-Fall alles gleich: das Fenster."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"___ Lehrer erklärt die Aufgabe.",o:["Der","Den","Dem"],a:0,tip:"Frag: Wer erklärt? Oder: Wen erklärt man?",ex:"Wer erklärt? → der Lehrer. Das ist der Wer-Fall – darum bleibt es «der»."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich wünsche mir ___ Hund.",o:["ein","einen","einem"],a:1,tip:"Frag: Wen oder was wünsche ich mir?",ex:"Wen wünsche ich mir? → einen Hund. ein wird zu einen."}
+ ]},
+
+{id:"k4",title:"Der Wem-Fall",sub:"Dativ – Wem?",c:"var(--dat)",
+ intro:[
+  {h:"Wem?",b:"<p>Manche Verben fragen nach jemandem, dem etwas gegeben wird oder dem geholfen wird.</p><p>Die Frage heisst <b class='dat'>Wem + Verb + Wer-Fall?</b> – ohne «was»!</p><div class='ex'><span class='nom'>Die Mutter</span> hilft <span class='dat'>dem Kind</span>.<br>Wem hilft die Mutter? → <span class='dat'>dem Kind</span></div><p>Das ist der <b class='dat'>Wem-Fall</b> (Dativ).</p>"},
+  {h:"Die Begleiter",b:"<div class='tw'><table><tr><th>Wer-Fall</th><th>Wem-Fall</th></tr><tr><td>der Hund</td><td class='dat'>dem Hund</td></tr><tr><td>die Katze</td><td class='dat'>der Katze</td></tr><tr><td>das Pferd</td><td class='dat'>dem Pferd</td></tr><tr><td>die Kinder</td><td class='dat'>den Kindern</td></tr></table></div><p style='margin-top:12px'>In der Mehrzahl kommt oft ein <b>n</b> ans Nomen: den Kinder<b>n</b>.</p><p>Typische Wem-Verben: helfen, danken, gehören, gefallen, antworten, gratulieren.</p>"},
+  {h:"Geben und schenken",b:"<p>Bei geben, schenken, zeigen, erzählen gibt es oft zwei Ergänzungen:</p><div class='ex'><span class='nom'>Der Opa</span> schenkt <span class='dat'>dem Kind</span> <span class='akk'>ein Buch</span>.</div><p>Wem schenkt er? → <span class='dat'>dem Kind</span> (Person bekommt etwas)<br>Wen oder was schenkt er? → <span class='akk'>ein Buch</span> (die Sache)</p>"}
+ ],
+ items:[
+  {t:"tap",task:"Tippe auf den Wem-Fall.",p:["Die Mutter","hilft","dem Kind."],a:2,tip:"Frag: Wem hilft die Mutter?",ex:"Wem hilft die Mutter? → dem Kind."},
+  {t:"tap",task:"Tippe auf den Wem-Fall.",p:["Das Buch","gehört","der Lehrerin."],a:2,tip:"Frag: Wem gehört das Buch?",ex:"Wem gehört das Buch? → der Lehrerin."},
+  {t:"tap",task:"Tippe auf den Wem-Fall.",p:["Wir","danken","dem Hauswart."],a:2,tip:"Frag: Wem danken wir?",ex:"Wem danken wir? → dem Hauswart."},
+  {t:"tap",task:"Tippe auf den Wem-Fall.",p:["Der Opa","schenkt","seiner Enkelin","ein Velo."],a:2,tip:"Wer bekommt etwas? Frag: Wem schenkt der Opa ein Velo?",ex:"Wem schenkt der Opa ein Velo? → seiner Enkelin. «Ein Velo» ist der Wen-Fall."},
+  {t:"tap",task:"Tippe auf den Wem-Fall.",p:["Dem Kind","gefällt","das Spiel."],a:0,tip:"Frag: Wem gefällt das Spiel?",ex:"Wem gefällt das Spiel? → dem Kind. Der Wem-Fall steht hier vorne."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Jacke gehört ___ Mädchen.",o:["das","dem","den"],a:1,tip:"Frag: Wem gehört die Jacke? Es heisst «das Mädchen».",ex:"Wem? → dem Mädchen. das wird zu dem."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Lea gibt ___ Katze Futter.",o:["die","der","den"],a:1,tip:"Frag: Wem gibt Lea Futter? Es heisst «die Katze».",ex:"Wem? → der Katze. die wird im Wem-Fall zu der."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich helfe ___ Freund.",o:["der","den","dem"],a:2,tip:"Frag: Wem helfe ich? Es heisst «der Freund».",ex:"Wem helfe ich? → dem Freund."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Er dankt ___ Ärztin.",o:["die","der","dem"],a:1,tip:"Frag: Wem dankt er? Es heisst «die Ärztin».",ex:"Wem? → der Ärztin."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Wir schenken ___ Kindern Bonbons.",o:["die","der","den"],a:2,tip:"Mehrzahl! Frag: Wem schenken wir Bonbons?",ex:"Wem? → den Kindern. Mehrzahl im Wem-Fall: den + n."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Der Ball gehört ___ Bruder.",o:["der","den","dem"],a:2,tip:"Frag: Wem gehört der Ball? Es heisst «der Bruder».",ex:"Wem gehört der Ball? → dem Bruder."}
+ ]},
+
+{id:"k5",title:"Der Wes-Fall",sub:"Genitiv – Wessen?",c:"var(--gen)",
+ intro:[
+  {h:"Wessen?",b:"<p>Der Wes-Fall zeigt meistens, <b>wem etwas gehört</b>. Die Frage heisst <b class='gen'>Wessen?</b></p><div class='ex'>das Velo <span class='gen'>des Lehrers</span><br>Wessen Velo? → <span class='gen'>des Lehrers</span></div><p>Das ist der <b class='gen'>Wes-Fall</b> (Genitiv).</p>"},
+  {h:"Die Begleiter",b:"<div class='tw'><table><tr><th>Wer-Fall</th><th>Wes-Fall</th></tr><tr><td>der Hund</td><td class='gen'>des Hundes</td></tr><tr><td>die Katze</td><td class='gen'>der Katze</td></tr><tr><td>das Pferd</td><td class='gen'>des Pferdes</td></tr><tr><td>die Kinder</td><td class='gen'>der Kinder</td></tr></table></div><p style='margin-top:12px'>Bei <b>des</b> bekommt das Nomen ein <b>s</b> oder <b>es</b>.</p><p>Bei Namen hängst du einfach ein s an: Lenas Velo.</p>"},
+  {h:"Vorsicht, Falle!",b:"<p>«der» kann in drei Fällen vorkommen:</p><div class='ex'><span class='nom'>Der Hund</span> bellt. (Wer?)<br>Ich helfe <span class='dat'>der Frau</span>. (Wem?)<br>Das Auto <span class='gen'>der Frau</span>. (Wessen?)</div><p>Schau also nicht nur auf den Begleiter – <b>frag immer!</b></p>"}
+ ],
+ items:[
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Das ist das Velo ___ Lehrers.",o:["der","dem","des"],a:2,tip:"Frag: Wessen Velo? Achte auf das s bei «Lehrers».",ex:"Wessen Velo? → des Lehrers."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Farbe ___ Blume ist rot.",o:["die","der","des"],a:1,tip:"Frag: Wessen Farbe? Es heisst «die Blume».",ex:"Wessen Farbe? → der Blume. die wird im Wes-Fall zu der."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Das Dach ___ Hauses ist kaputt.",o:["das","dem","des"],a:2,tip:"Frag: Wessen Dach?",ex:"Wessen Dach? → des Hauses."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Stimme ___ Sängerin ist schön.",o:["die","der","den"],a:1,tip:"Frag: Wessen Stimme? Es heisst «die Sängerin».",ex:"Wessen Stimme? → der Sängerin."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Der Schwanz ___ Hundes wedelt.",o:["der","des","dem"],a:1,tip:"Frag: Wessen Schwanz?",ex:"Wessen Schwanz? → des Hundes."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Spielsachen ___ Kinder liegen herum.",o:["die","den","der"],a:2,tip:"Mehrzahl! Frag: Wessen Spielsachen?",ex:"Wessen Spielsachen? → der Kinder. Mehrzahl im Wes-Fall: der."},
+  {t:"tap",task:"Tippe auf den Wes-Fall.",p:["Das Velo","des Lehrers","steht","im Hof."],a:1,tip:"Frag: Wessen Velo steht im Hof?",ex:"Wessen Velo? → des Lehrers."},
+  {t:"tap",task:"Tippe auf den Wes-Fall.",p:["Der Hund","der Nachbarin","bellt","laut."],a:1,tip:"Frag: Wessen Hund bellt?",ex:"Wessen Hund? → der Nachbarin."},
+  {t:"tap",task:"Tippe auf den Wes-Fall.",p:["Wir","bewundern","die Farbe","des Autos."],a:3,tip:"Frag: Wessen Farbe?",ex:"Wessen Farbe? → des Autos. «die Farbe» ist der Wen-Fall."}
+ ]},
+
+{id:"k6",title:"Fälle bestimmen",sub:"Alle vier Fälle gemischt",c:"var(--ink)",
+ intro:[
+  {h:"Alle vier Fälle",b:"<div class='tw'><table><tr><th>Fall</th><th>Frage</th><th>Beispiel</th></tr><tr><td class='nom'>Nominativ<br><small>Wer-Fall</small></td><td>Wer oder was?</td><td>der Hund</td></tr><tr><td class='akk'>Akkusativ<br><small>Wen-Fall</small></td><td>Wen oder was?</td><td>den Hund</td></tr><tr><td class='dat'>Dativ<br><small>Wem-Fall</small></td><td>Wem?</td><td>dem Hund</td></tr><tr><td class='gen'>Genitiv<br><small>Wes-Fall</small></td><td>Wessen?</td><td>des Hundes</td></tr></table></div>"},
+  {h:"So löst du jede Aufgabe",b:"<ol><li>Suche das Verb.</li><li>Finde den Wer-Fall: <i>Wer oder was + Verb?</i></li><li>Stelle für das gelb markierte Satzglied die anderen Fragen: <i>Wen oder was? – Wem? – Wessen?</i></li><li>Die Frage, die passt, verrät den Fall.</li></ol><div class='ex'>Ich gebe <span class='markd'>dem Hund</span> einen Knochen.<br>Wem gebe ich einen Knochen? → dem Hund → <span class='dat'>Dativ (Wem-Fall)</span></div>"}
+ ],
+ items:[
+  {t:"case",s:"[Der Hund] bellt.",a:0,ex:"Wer oder was bellt? → der Hund."},
+  {t:"case",s:"Ich rufe [den Hund].",a:1,ex:"Wen oder was rufe ich? → den Hund."},
+  {t:"case",s:"Ich gebe [dem Hund] einen Knochen.",a:2,ex:"Wem gebe ich einen Knochen? → dem Hund."},
+  {t:"case",s:"Der Napf [des Hundes] ist leer.",a:3,ex:"Wessen Napf? → des Hundes."},
+  {t:"case",s:"[Die Lehrerin] lobt die Schülerin.",a:0,ex:"Wer oder was lobt? → die Lehrerin."},
+  {t:"case",s:"Die Lehrerin lobt [die Schülerin].",a:1,ex:"Wen oder was lobt die Lehrerin? → die Schülerin. Beide heissen «die» – nur die Frage hilft!"},
+  {t:"case",s:"Wir helfen [der Lehrerin].",a:2,ex:"Wem helfen wir? → der Lehrerin."},
+  {t:"case",s:"Das Heft [der Lehrerin] ist rot.",a:3,ex:"Wessen Heft? → der Lehrerin."},
+  {t:"case",s:"Das Kind isst [einen Apfel].",a:1,ex:"Wen oder was isst das Kind? → einen Apfel."},
+  {t:"case",s:"Die Oma erzählt [den Kindern] eine Geschichte.",a:2,ex:"Wem erzählt die Oma eine Geschichte? → den Kindern."},
+  {t:"case",s:"Die Oma erzählt den Kindern [eine Geschichte].",a:1,ex:"Wen oder was erzählt die Oma? → eine Geschichte."},
+  {t:"case",s:"Am Abend kommt [mein Bruder] nach Hause.",a:0,ex:"Wer oder was kommt nach Hause? → mein Bruder."}
+ ]},
+
+{id:"k7",title:"Kleine Wörter, grosse Wirkung",sub:"Präpositionen bestimmen den Fall",c:"var(--dat)",
+ intro:[
+  {h:"Präpositionen",b:"<p>Wörter wie <b>mit, für, auf</b> heissen Präpositionen (Verhältniswörter). Sie stehen vor einem Nomen und <b>bestimmen den Fall</b>.</p><p>Hier musst du nicht fragen – du musst sie kennen!</p>"},
+  {h:"Immer Dativ (Wem-Fall)",b:"<div class='ex'><b class='dat'>mit, nach, von, seit, aus, zu, bei</b></div><p>Merkspruch: «Mit, nach, von, seit, aus, zu, bei – da ist der Wem-Fall immer dabei.»</p><div class='ex'>mit <span class='dat'>dem</span> Velo, bei <span class='dat'>der</span> Oma, aus <span class='dat'>dem</span> Haus</div>"},
+  {h:"Immer Akkusativ (Wen-Fall)",b:"<div class='ex'><b class='akk'>für, um, durch, ohne, gegen</b></div><p>Merkwort: <b>FUDOG</b> (die Anfangsbuchstaben).</p><div class='ex'>für <span class='akk'>den</span> Vater, durch <span class='akk'>den</span> Wald, ohne <span class='akk'>die</span> Jacke</div>"},
+  {h:"Wo oder wohin?",b:"<p><b>in, an, auf, über, unter, vor, hinter, neben, zwischen</b> können beides. Frag:</p><div class='ex'><b class='dat'>Wo?</b> → Dativ (Wem-Fall)<br>Die Katze liegt auf <span class='dat'>dem</span> Sofa.</div><div class='ex'><b class='akk'>Wohin?</b> → Akkusativ (Wen-Fall)<br>Die Katze springt auf <span class='akk'>das</span> Sofa.</div>"}
+ ],
+ items:[
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich fahre mit ___ Velo zur Schule.",o:["das","dem","den"],a:1,tip:"«mit» – welcher Fall kommt nach mit?",ex:"mit → immer Dativ: mit dem Velo."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Das Geschenk ist für ___ Vater.",o:["der","den","dem"],a:1,tip:"Denk an FUDOG.",ex:"für → immer Akkusativ: für den Vater."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Wir wandern durch ___ Wald.",o:["der","den","dem"],a:1,tip:"Denk an FUDOG.",ex:"durch → immer Akkusativ: durch den Wald."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Nach ___ Schule spielen wir Fussball.",o:["die","der","den"],a:1,tip:"«nach» – denk an den Merkspruch mit bei.",ex:"nach → immer Dativ: nach der Schule."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ohne ___ Jacke ist es zu kalt.",o:["die","der","den"],a:0,tip:"Denk an FUDOG. Es heisst «die Jacke».",ex:"ohne → immer Akkusativ: ohne die Jacke."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Lena wohnt bei ___ Grossmutter.",o:["die","der","den"],a:1,tip:"«bei» – welcher Fall?",ex:"bei → immer Dativ: bei der Grossmutter."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Er kommt aus ___ Haus.",o:["das","dem","des"],a:1,tip:"«aus» – welcher Fall?",ex:"aus → immer Dativ: aus dem Haus."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Katze liegt auf ___ Sofa.",o:["das","dem"],a:1,tip:"Frag: Wo liegt die Katze? Oder: Wohin?",ex:"Wo liegt sie? → Dativ: auf dem Sofa."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Katze springt auf ___ Sofa.",o:["das","dem"],a:0,tip:"Frag: Wo springt sie? Oder: Wohin?",ex:"Wohin springt sie? → Akkusativ: auf das Sofa."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Das Bild hängt an ___ Wand.",o:["die","der"],a:1,tip:"Wo oder wohin?",ex:"Wo hängt das Bild? → Dativ: an der Wand."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich hänge das Bild an ___ Wand.",o:["die","der"],a:0,tip:"Wo oder wohin?",ex:"Wohin hänge ich das Bild? → Akkusativ: an die Wand."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Wir gehen in ___ Turnhalle.",o:["die","der"],a:0,tip:"Wo oder wohin?",ex:"Wohin gehen wir? → Akkusativ: in die Turnhalle."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Wir turnen in ___ Turnhalle.",o:["die","der"],a:1,tip:"Wo oder wohin?",ex:"Wo turnen wir? → Dativ: in der Turnhalle."}
+ ]},
+
+{id:"k8",title:"Pronomen",sub:"ich – mich – mir",c:"var(--akk)",
+ intro:[
+  {h:"Auch Pronomen haben Fälle",b:"<p>Statt «der Hund» kannst du «er» sagen. Auch Pronomen verändern sich:</p><div class='ex'><span class='nom'>Er</span> bellt.<br>Ich rufe <span class='akk'>ihn</span>.<br>Ich gebe <span class='dat'>ihm</span> Futter.</div>"},
+  {h:"Die Tabelle",b:"<div class='tw'><table><tr><th class='nom'>Nominativ<br>Wer?</th><th class='akk'>Akkusativ<br>Wen?</th><th class='dat'>Dativ<br>Wem?</th></tr><tr><td>ich</td><td>mich</td><td>mir</td></tr><tr><td>du</td><td>dich</td><td>dir</td></tr><tr><td>er</td><td>ihn</td><td>ihm</td></tr><tr><td>sie</td><td>sie</td><td>ihr</td></tr><tr><td>es</td><td>es</td><td>ihm</td></tr><tr><td>wir</td><td>uns</td><td>uns</td></tr><tr><td>ihr</td><td>euch</td><td>euch</td></tr><tr><td>sie (Mz.)</td><td>sie</td><td>ihnen</td></tr></table></div>"},
+  {h:"Der Nomen-Trick",b:"<p>Unsicher bei <b>mich</b> oder <b>mir</b>? Setze «der Mann» ein:</p><div class='ex'>Kannst du <span class='dat'>dem</span> Mann helfen? → dem = <span class='dat'>mir</span><br>Siehst du <span class='akk'>den</span> Mann? → den = <span class='akk'>mich</span></div><p>Bei <b>er</b> hilft der letzte Buchstabe: ih<b>m</b> wie <span class='dat'>de<b>m</b></span>, ih<b>n</b> wie <span class='akk'>de<b>n</b></span>.</p>"}
+ ],
+ items:[
+  {t:"choice",task:"Setze das Pronomen richtig ein. (ich)",s:"Kannst du ___ helfen?",o:["mich","mir"],a:1,tip:"Frag: Wem hilfst du? Oder mach den Trick: Kannst du dem Mann helfen?",ex:"helfen → Wem? → mir."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (ich)",s:"Siehst du ___?",o:["mich","mir"],a:0,tip:"Frag: Wen siehst du?",ex:"Wen siehst du? → mich."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (du)",s:"Ich rufe ___ morgen an.",o:["dich","dir"],a:0,tip:"Frag: Wen rufe ich an?",ex:"Wen rufe ich an? → dich."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (er)",s:"Ich gebe ___ das Buch.",o:["ihn","ihm"],a:1,tip:"Frag: Wem gebe ich das Buch?",ex:"Wem gebe ich das Buch? → ihm."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (er)",s:"Wir besuchen ___ am Sonntag.",o:["ihn","ihm"],a:0,tip:"Frag: Wen besuchen wir?",ex:"Wen besuchen wir? → ihn."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (sie, eine Person)",s:"Das Velo gehört ___.",o:["sie","ihr"],a:1,tip:"Frag: Wem gehört das Velo?",ex:"Wem gehört das Velo? → ihr."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (wir)",s:"Der Lehrer lobt ___.",o:["wir","uns"],a:1,tip:"Frag: Wen lobt der Lehrer?",ex:"Wen lobt der Lehrer? → uns."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (ihr)",s:"Ich danke ___ für die Hilfe.",o:["ihr","euch"],a:1,tip:"Frag: Wem danke ich? Schau in der Tabelle bei «ihr» in der Wem-Spalte.",ex:"ihr → euch (Wen- und Wem-Fall sind gleich)."},
+  {t:"choice",task:"Setze das Pronomen richtig ein. (sie, mehrere)",s:"Wir helfen ___.",o:["sie","ihnen"],a:1,tip:"Frag: Wem helfen wir?",ex:"Wem helfen wir? → ihnen."}
+ ]},
+
+{id:"k9",title:"Meisterprüfung",sub:"Knifflige Aufgaben zu allem",c:"var(--gen)",
+ intro:[
+  {h:"Die grosse Meisterprüfung",b:"<p>Jetzt kommt alles zusammen – auch Aufgaben mit <b>zwei Lücken</b> und <b>Fehlersuche</b>.</p><p>Nimm dir Zeit. Stell deine Detektiv-Fragen. Den Spickzettel brauchst du hoffentlich nur selten.</p>"}
+ ],
+ items:[
+  {t:"choice",task:"Setze beide Begleiter ein.",s:"Der Vater gibt ___ Sohn ___ Schlüssel.",o:["dem – den","den – dem","der – den"],a:0,long:1,tip:"Wem gibt der Vater etwas? Und wen oder was gibt er?",ex:"Wem? → dem Sohn. Wen oder was? → den Schlüssel."},
+  {t:"choice",task:"Setze beide Begleiter ein.",s:"Die Lehrerin erklärt ___ Kindern ___ Aufgabe.",o:["die – den","den – die","der – die"],a:1,long:1,tip:"Wem erklärt sie? Wen oder was erklärt sie?",ex:"Wem? → den Kindern. Wen oder was? → die Aufgabe."},
+  {t:"choice",task:"Ist der Satz richtig?",s:"«Ich helfe den Opa.»",o:["Ja, richtig","Nein: dem Opa","Nein: der Opa"],a:1,long:1,tip:"Frag: Wem oder wen helfe ich?",ex:"helfen → Wem? → Ich helfe dem Opa."},
+  {t:"choice",task:"Welcher Satz ist richtig?",s:"",o:["Ich fahre mit den Bus.","Ich fahre mit dem Bus.","Ich fahre mit der Bus."],a:1,long:1,tip:"Nach «mit» steht immer derselbe Fall.",ex:"mit → Dativ: mit dem Bus."},
+  {t:"choice",task:"Wie heisst es im Wes-Fall?",s:"das Velo von meinem Bruder",o:["das Velo meinem Bruder","das Velo meines Bruders","das Velo meinen Bruder"],a:1,long:1,tip:"Frag: Wessen Velo? Achte auf das s am Schluss.",ex:"Wessen Velo? → meines Bruders."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich lege das Heft auf ___ Tisch.",o:["den","dem"],a:0,tip:"Wo oder wohin?",ex:"Wohin lege ich das Heft? → Akkusativ: auf den Tisch."},
+  {t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Das Heft liegt auf ___ Tisch.",o:["den","dem"],a:1,tip:"Wo oder wohin?",ex:"Wo liegt das Heft? → Dativ: auf dem Tisch."},
+  {t:"case",s:"Dem Mädchen gefällt [der Film].",a:0,ex:"Wer oder was gefällt dem Mädchen? → der Film. Er steht hinten, ist aber der Wer-Fall!"},
+  {t:"case",s:"[Den Hund] füttert meine Schwester.",a:1,ex:"Wer füttert? → meine Schwester. Wen füttert sie? → den Hund."},
+  {t:"case",s:"Wegen [des Regens] bleiben wir drinnen.",a:3,ex:"Nach «wegen» steht der Wes-Fall: wegen des Regens. Merke dir das für später!"},
+  {t:"choice",task:"Setze richtig ein. (meine)",s:"Ich schreibe ___ Freundin einen Brief.",o:["meine","meiner","meinen"],a:1,tip:"Frag: Wem schreibe ich?",ex:"Wem schreibe ich? → meiner Freundin (wie: der Freundin)."},
+  {t:"choice",task:"Setze richtig ein. (mein)",s:"Das ist das Zimmer ___ Eltern.",o:["meine","meinen","meiner"],a:2,tip:"Frag: Wessen Zimmer? Mehrzahl!",ex:"Wessen Zimmer? → meiner Eltern (wie: der Eltern)."},
+  {t:"choice",task:"Setze richtig ein. (ein)",s:"Er hat ___ Bruder und zwei Schwestern.",o:["ein","einen","einem"],a:1,tip:"Frag: Wen oder was hat er?",ex:"Wen hat er? → einen Bruder."}
+ ]}
+];
+
+const WORDS=["LUPE","SPUR","HUT","AKTE","MANTEL","ALIBI","TATORT","BEWEIS","MEISTER"];
+const KEY="fall-detektiv-v1";
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbyk0lFil4xRSsFLkPV_RuamQ-XPSU9Hn76HxHjInfYCJyDaVxjsW1S7gQHBP1rYV5dT/exec";
+const UEBUNG = "Fälle";
+const VORSCHAU = /[?&]vorschau=/.test(location.search);
+const store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+function uid(){ try{ const a=new Uint8Array(12); crypto.getRandomValues(a); return Array.from(a,x=>x.toString(16).padStart(2,"0")).join(""); }catch(e){ return Date.now().toString(36)+Math.random().toString(36).slice(2); } }
+const GERAET = (()=>{ let g = store.get("rs.geraet"); if(!g){ g = uid(); store.set("rs.geraet", g); } return g; })();
+/* Glückszahl: dieselbe wie im Rechtschreibtraining (gleiche Adresse, gleiches Tablet) */
+let gz = VORSCHAU ? "0" : (store.get("rs.gz")||"").replace(/\D/g,"");
+let P = null;
+const pkey = () => "fa.p." + (VORSCHAU ? "vorschau" : gz);
+function ladeP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P = null; } if(!P) P = {done:{},run:null,vp:null}; }
+function save(){ if(gz) store.set(pkey(), JSON.stringify(P)); }
+ladeP();
+
+const QKEY = "fa.queue";
+function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ return []; } }
+function sende(rec){
+  if(VORSCHAU || !gz) return;
+  Object.assign(rec, {typ:"uebung-runde", v:1, id:uid(), uebung:UEBUNG, glueckszahl:gz, geraet:GERAET, datum:new Date().toISOString()});
+  const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-60)));
+  flush();
+}
+let flushing = false;
+async function flush(){
+  if(flushing || VORSCHAU) return;
+  flushing = true; let alleOk = true;
+  try{
+    const q = queue(), rest = [];
+    for(const rec of q){
+      try{
+        const t = await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec),keepalive:true}).then(r=>r.text());
+        if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt");
+      }catch(e){ rest.push(rec); alleOk = false; }
+    }
+    store.set(QKEY, JSON.stringify(rest.concat(queue().slice(q.length)).slice(-60)));
+  } finally { flushing = false; }
+  const el = document.getElementById("sent"); if(el){ el.textContent = alleOk ? "✓ An die Lehrperson geschickt." : "Noch nicht geschickt – das passiert automatisch beim nächsten Öffnen."; el.className = "sent2"+(alleOk?" ok":""); }
+}
+function saveRun(){P.run={ch:S.ch,queue:S.queue,pos:S.pos,first:S.first,total:S.total,log:S.log||[]};save()}
+
+const app=document.getElementById("app"), ov=document.getElementById("ov");
+let S={};
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function unlocked(i){return true}
+function askWord(i){
+  overlay(`<h2>Kapitel ${i+1} ist noch zu</h2><p>Gib das Schlüsselwort ein. Du bekommst es, wenn du Kapitel ${i} ohne Fehler löst.</p>
+  <input id="ci" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Schlüsselwort" style="width:100%;font:inherit;font-size:24px;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);letter-spacing:2px" onkeydown="if(event.key==='Enter')tryWord(${i})">
+  <div id="cm" style="min-height:28px;margin-top:8px;color:var(--bad)"></div>
+  <button class="main" onclick="tryWord(${i})">Öffnen</button>`);
+  setTimeout(()=>document.getElementById("ci")?.focus(),50);
+}
+function tryWord(i){
+  const v=document.getElementById("ci").value.trim().toUpperCase();
+  const k=WORDS.indexOf(v);
+  if(k<0||k+1<i){document.getElementById("cm").textContent="Das ist nicht das richtige Schlüsselwort.";return}
+  P.open=Math.max(P.open||0,k+1);save();closeOv();home();
+}
+function stars(n){return "★".repeat(n)+"☆".repeat(3-n)}
+function toTop(){window.scrollTo(0,0)}
+
+function home(){
+  S={};
+  if(!gz) return zahlenfeld();
+  ladeP();
+  let next=CH.findIndex((c,i)=>unlocked(i)&&P.done[c.id]==null);
+  const vp=P.vp;
+  const vpHtml = vp&&vp.fertig
+    ? `<div class="vpcard done"><h3>✓ Vorprüfung gemacht</h3><p>Du hattest ${vp.punkte} von ${vp.max} Punkten. Übe jetzt mit den Kapiteln weiter.</p>${VORSCHAU?`<button class="sec" onclick="P.vp=null;save();home()">Vorschau: Vorprüfung zurücksetzen</button>`:""}</div>`
+    : `<div class="vpcard"><h3>📝 Vorprüfung</h3><p>${VP.length} Aufgaben zu allen Kapiteln, von leicht bis schwierig. Ohne Tipps und ohne Spickzettel – zeig, was du kannst. Du kannst sie nur einmal machen.</p>
+       <button class="main" onclick="vpStart()">${vp&&vp.pos>0?`Vorprüfung weitermachen (Aufgabe ${vp.pos+1} von ${VP.length})`:"Vorprüfung starten"}</button></div>`;
+  app.innerHTML=`
+  <div class="hero">
+    <h1><span class="f"><span>F</span><span>a</span><span>l</span><span>l</span></span>-Detektiv</h1>
+    <p>Jeder Fall hat seine Frage. Wer die richtige Frage stellt, löst ihn.</p>
+  </div>
+  <div class="who"><span class="gzchip">Glückszahl <b>${esc(VORSCHAU?"Vorschau":gz)}</b></span>${VORSCHAU?"":`<button class="link" onclick="if(confirm('Möchtest du wirklich eine andere Glückszahl eingeben?'))zahlenfeld()">Andere Glückszahl</button>`}</div>
+  ${vpHtml}
+  <div class="qs">
+    <div class="q-nom"><b>Nominativ</b>Wer-Fall<br>Wer oder was?</div>
+    <div class="q-akk"><b>Akkusativ</b>Wen-Fall<br>Wen oder was?</div>
+    <div class="q-dat"><b>Dativ</b>Wem-Fall<br>Wem?</div>
+    <div class="q-gen"><b>Genitiv</b>Wes-Fall<br>Wessen?</div>
+  </div>
+  ${P.run&&CH[P.run.ch]?`<button class="main" style="margin:0 0 16px" onclick="resume()">Weitermachen: Kapitel ${P.run.ch+1} – Aufgabe ${P.run.pos+1} von ${P.run.queue.length}</button>`:""}
+  <div class="list">${CH.map((c,i)=>{
+    const u=unlocked(i),d=P.done[c.id];
+    return `<button class="file ${u?"":"locked"} ${i===next?"next":""}" style="--c:${c.c}" onclick="${u?`intro(${i})`:`askWord(${i})`}">
+      <span class="n">${u?i+1:"🔒"}</span>
+      <span class="t"><h3>${c.title}</h3><small>${c.sub}</small></span>
+      <span class="s" aria-label="${d!=null?d+" von 3 Sternen":""}">${d!=null?stars(d):""}</span>
+    </button>`}).join("")}</div>
+  <div class="foot">
+    <button class="link" onclick="sheet()">Spickzettel</button>
+  </div>`;
+  toTop();
+}
+
+/* ===== Glückszahl mit Zahlenknöpfen ===== */
+let padTasten=null;
+function zahlenfeld(){
+  let z="";
+  app.innerHTML=`<div class="card"><h2 style="color:var(--ink)">Tippe deine Glückszahl</h2>
+    <p>Nimm dieselbe Glückszahl wie im Rechtschreibtraining.</p>
+    <div class="gzanz" id="gzanz" aria-live="polite"></div>
+    <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-n="${n}">${n}</button>`).join("")}
+      <button id="gzdel" aria-label="Löschen">⌫</button><button data-n="0">0</button><button class="ok" id="gzok">OK</button></div></div>`;
+  const zeichne=()=>{document.getElementById("gzanz").innerHTML=z?[...z].map(d=>`<span>${d}</span>`).join(""):`<span class="leer">?</span>`;document.getElementById("gzok").disabled=!z;};
+  const tipp=n=>{if(z.length<4){z+=n;zeichne();}};
+  const weg=()=>{z=z.slice(0,-1);zeichne();};
+  const fertig=()=>{if(z)bestaetigen(z);};
+  app.querySelectorAll(".pad [data-n]").forEach(b=>b.onclick=()=>tipp(b.dataset.n));
+  document.getElementById("gzdel").onclick=weg;document.getElementById("gzok").onclick=fertig;
+  if(padTasten)document.removeEventListener("keydown",padTasten);
+  padTasten=e=>{if(!document.getElementById("gzanz")){document.removeEventListener("keydown",padTasten);padTasten=null;return;}
+    if(/^[0-9]$/.test(e.key))tipp(e.key);else if(e.key==="Backspace")weg();else if(e.key==="Enter")fertig();};
+  document.addEventListener("keydown",padTasten);
+  zeichne();toTop();
+}
+function bestaetigen(z){
+  app.innerHTML=`<div class="card" style="text-align:center"><h2 style="color:var(--ink)">Ist das deine Glückszahl?</h2>
+    <div class="gzanz">${[...z].map(d=>`<span>${d}</span>`).join("")}</div>
+    <button class="main" id="gzja">Ja, das stimmt</button><button class="sec" id="gznein">Nein, nochmals</button></div>`;
+  document.getElementById("gzja").onclick=()=>{gz=String(+z);store.set("rs.gz",gz);home();};
+  document.getElementById("gznein").onclick=zahlenfeld;
+}
+
+function intro(i,k=0){
+  const c=CH[i];S={ch:i};
+  const card=c.intro[k],last=k===c.intro.length-1;
+  app.innerHTML=`
+  <div class="bar" style="--c:${c.c}">
+    <button class="icon" onclick="home()" aria-label="Zur Übersicht">←</button>
+    <strong style="flex:1">Kapitel ${i+1}: ${c.title}</strong>
+  </div>
+  <div class="card pop" style="--c:${c.c}"><h2>${card.h}</h2>${card.b}</div>
+  <div class="dots" style="--c:${c.c}">${c.intro.map((_,j)=>`<i class="${j<=k?"on":""}"></i>`).join("")}</div>
+  ${last?`<button class="main" onclick="start(${i})">Aufgaben starten</button>`:`<button class="main" onclick="intro(${i},${k+1})">Weiter</button>`}
+  ${k>0?`<button class="sec" onclick="intro(${i},${k-1})">Zurück</button>`:""}`;
+  toTop();
+}
+
+function start(i){
+  const c=CH[i];
+  S={ch:i,queue:shuffle(c.items.map((_,j)=>({j,re:0}))),pos:0,first:0,total:c.items.length,log:[]};
+  saveRun();show();
+}
+function resume(){
+  const r=P.run;if(!r)return;
+  S={ch:r.ch,queue:r.queue,pos:r.pos,first:r.first,total:r.total,log:r.log||[]};
+  S.pos>=S.queue.length?result():show();
+}
+
+function show(){
+  const c=CH[S.ch],q=S.queue[S.pos],it=c.items[q.j];
+  S.tries=0;S.done=false;S.help=false;
+  let body="";
+  if(it.t==="choice"){
+    const parts=it.s.split("___");
+    const sent=parts.map((p,k)=>esc(p)+(k<parts.length-1?`<span class="blank" data-b="${k}">&nbsp;</span>`:"")).join("");
+    body=`<div class="task">${esc(it.task)}</div>${it.s?`<div class="sent">${sent}</div>`:""}
+    <div class="opts">${it.o.map((o,k)=>`<button class="opt ${it.long?"long":""}" data-k="${k}" onclick="pick(${k})">${esc(o)}</button>`).join("")}</div>`;
+  }else if(it.t==="tap"){
+    body=`<div class="task">${esc(it.task)}</div>
+    <div class="taps">${it.p.map((w,k)=>`<button class="tp" data-k="${k}" onclick="pick(${k})">${esc(w)}</button>`).join("")}</div>`;
+  }else{
+    const sent=esc(it.s).replace(/\[(.+?)\]/,'<span class="markd">$1</span>');
+    body=`<div class="task">In welchem Fall steht das gelb markierte Satzglied?</div>
+    <div class="sent">${sent}</div>
+    <div class="opts">${CASES.map((cs,k)=>`<button class="opt case c-${cs.k}" data-k="${k}" onclick="pick(${k})">${cs.l}<small>${cs.n} – ${cs.q}</small></button>`).join("")}</div>`;
+  }
+  app.innerHTML=`
+  <div class="bar" style="--c:${c.c}">
+    <button class="icon" onclick="home()" aria-label="Zur Übersicht – dein Stand bleibt gespeichert">←</button>
+    <div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${S.queue.length}" aria-valuenow="${S.pos}"><i style="width:${S.pos/S.queue.length*100}%"></i></div>
+    <button class="icon" onclick="explain()" aria-label="Erklärung nochmals ansehen">📖</button>
+    <button class="icon" onclick="sheet()" aria-label="Spickzettel">🗂</button>
+  </div>
+  <div class="card pop" style="--c:${c.c}">
+    ${q.re?`<div class="task" style="color:var(--akk)">Diese Aufgabe kommt nochmals – jetzt klappt es!</div>`:""}
+    ${body}
+    <div id="fb"></div>
+    <button class="help" id="hb" onclick="hint()">Ich brauche einen Tipp</button>
+  </div>`;
+  toTop();
+}
+
+const RULE=["Nominativ (Wer-Fall): der – die – das – die (Mehrzahl). Das ist die Grundform.",
+ "Akkusativ (Wen-Fall): der → den, ein → einen. Bei die und das bleibt alles gleich.",
+ "Dativ (Wem-Fall): der → dem, die → der, das → dem, Mehrzahl → den …n.",
+ "Genitiv (Wes-Fall): der → des …s, die → der, das → des …s, Mehrzahl → der."];
+const PRULE=["","Akkusativ (Wen-Fall): mich, dich, ihn, sie, es, uns, euch, sie","Dativ (Wem-Fall): mir, dir, ihm, ihr, ihm, uns, euch, ihnen"];
+const TIPS={
+// Kapitel 2
+"Der Bäcker backt frisches Brot.":{qa:[["Wer oder was backt frisches Brot?"]],c:0},
+"Die Kinder spielen im Pausenhof.":{qa:[["Wer oder was spielt im Pausenhof?"]],c:0},
+"Am Morgen bellt der Hund.":{qa:[["Wer oder was bellt am Morgen?"]],c:0},
+"Das Velo steht vor dem Haus.":{qa:[["Wer oder was steht vor dem Haus?"]],c:0},
+"Im Zoo füttert die Tierpflegerin die Elefanten.":{qa:[["Wer oder was füttert im Zoo die Elefanten?"]],c:0},
+"Der Ball rollt über die Strasse.":{qa:[["Wer oder was rollt über die Strasse?"]],c:0},
+"Morgen besucht uns meine Grossmutter.":{qa:[["Wer oder was besucht uns morgen?"]],c:0},
+"Laut singt der Chor ein Lied.":{qa:[["Wer oder was singt laut ein Lied?"]],c:0},
+"Nach der Schule kochen meine Eltern Spaghetti.":{qa:[["Wer oder was kocht nach der Schule Spaghetti?"]],c:0},
+// Kapitel 3
+"Der Hund sucht den Knochen.":{qa:[["Wen oder was sucht der Hund?"]],c:1},
+"Lina liest ein spannendes Buch.":{qa:[["Wen oder was liest Lina?"]],c:1},
+"Die Katze fängt eine Maus.":{qa:[["Wen oder was fängt die Katze?"]],c:1},
+"Wir besuchen am Samstag den Zoo.":{qa:[["Wen oder was besuchen wir am Samstag?"]],c:1},
+"Den Lehrer fragt der Schüler.":{qa:[["Wer oder was fragt?"],["Wen oder was fragt der Schüler?"]],c:1},
+"Ich sehe ___ Hund.":{qa:[["Wen oder was sehe ich?","___ Hund"]],c:1},
+"Mia kauft ___ Apfel.":{qa:[["Wen oder was kauft Mia?","___ Apfel"]],c:1},
+"Wir brauchen ___ Schere.":{qa:[["Wen oder was brauchen wir?","___ Schere"]],c:1},
+"Tom öffnet ___ Fenster.":{qa:[["Wen oder was öffnet Tom?","___ Fenster"]],c:1},
+"___ Lehrer erklärt die Aufgabe.":{qa:[["Wer oder was erklärt die Aufgabe?","___ Lehrer"]],c:0},
+"Ich wünsche mir ___ Hund.":{qa:[["Wen oder was wünsche ich mir?","___ Hund"]],c:1},
+// Kapitel 4
+"Die Mutter hilft dem Kind.":{qa:[["Wem hilft die Mutter?"]],c:2},
+"Das Buch gehört der Lehrerin.":{qa:[["Wem gehört das Buch?"]],c:2},
+"Wir danken dem Hauswart.":{qa:[["Wem danken wir?"]],c:2},
+"Der Opa schenkt seiner Enkelin ein Velo.":{qa:[["Wem schenkt der Opa ein Velo?"]],c:2},
+"Dem Kind gefällt das Spiel.":{qa:[["Wem gefällt das Spiel?"]],c:2},
+"Die Jacke gehört ___ Mädchen.":{qa:[["Wem gehört die Jacke?","___ Mädchen"]],c:2},
+"Lea gibt ___ Katze Futter.":{qa:[["Wem gibt Lea Futter?","___ Katze"]],c:2},
+"Ich helfe ___ Freund.":{qa:[["Wem helfe ich?","___ Freund"]],c:2},
+"Er dankt ___ Ärztin.":{qa:[["Wem dankt er?","___ Ärztin"]],c:2},
+"Wir schenken ___ Kindern Bonbons.":{qa:[["Wem schenken wir Bonbons?","___ Kindern"]],c:2},
+"Der Ball gehört ___ Bruder.":{qa:[["Wem gehört der Ball?","___ Bruder"]],c:2},
+// Kapitel 5
+"Das ist das Velo ___ Lehrers.":{qa:[["Wessen Velo ist das?","___ Lehrers"]],c:3},
+"Die Farbe ___ Blume ist rot.":{qa:[["Wessen Farbe ist rot?","___ Blume"]],c:3},
+"Das Dach ___ Hauses ist kaputt.":{qa:[["Wessen Dach ist kaputt?","___ Hauses"]],c:3},
+"Die Stimme ___ Sängerin ist schön.":{qa:[["Wessen Stimme ist schön?","___ Sängerin"]],c:3},
+"Der Schwanz ___ Hundes wedelt.":{qa:[["Wessen Schwanz wedelt?","___ Hundes"]],c:3},
+"Die Spielsachen ___ Kinder liegen herum.":{qa:[["Wessen Spielsachen liegen herum?","___ Kinder"]],c:3},
+"Das Velo des Lehrers steht im Hof.":{qa:[["Wessen Velo steht im Hof?"]],c:3},
+"Der Hund der Nachbarin bellt laut.":{qa:[["Wessen Hund bellt laut?"]],c:3},
+"Wir bewundern die Farbe des Autos.":{qa:[["Wessen Farbe bewundern wir?"]],c:3},
+// Kapitel 6 und 9: Fälle bestimmen (cq = Fragen zur Auswahl, r = richtige Frage)
+"[Der Hund] bellt.":{cq:["Wer oder was bellt?","Wem bellt etwas?"],r:0},
+"Ich rufe [den Hund].":{cq:["Wer oder was ruft den Hund?","Wen oder was rufe ich?"],r:1},
+"Ich gebe [dem Hund] einen Knochen.":{cq:["Wen oder was gebe ich?","Wem gebe ich einen Knochen?"],r:1},
+"Der Napf [des Hundes] ist leer.":{cq:["Wer oder was ist leer?","Wessen Napf ist leer?"],r:1},
+"[Die Lehrerin] lobt die Schülerin.":{cq:["Wer oder was lobt die Schülerin?","Wen oder was lobt die Lehrerin?"],r:0},
+"Die Lehrerin lobt [die Schülerin].":{cq:["Wer oder was lobt die Schülerin?","Wen oder was lobt die Lehrerin?"],r:1},
+"Wir helfen [der Lehrerin].":{cq:["Wer oder was hilft der Lehrerin?","Wem helfen wir?"],r:1},
+"Das Heft [der Lehrerin] ist rot.":{cq:["Wer oder was ist rot?","Wessen Heft ist rot?"],r:1},
+"Das Kind isst [einen Apfel].":{cq:["Wer oder was isst einen Apfel?","Wen oder was isst das Kind?"],r:1},
+"Die Oma erzählt [den Kindern] eine Geschichte.":{cq:["Wem erzählt die Oma eine Geschichte?","Wen oder was erzählt die Oma den Kindern?"],r:0},
+"Die Oma erzählt den Kindern [eine Geschichte].":{cq:["Wem erzählt die Oma eine Geschichte?","Wen oder was erzählt die Oma den Kindern?"],r:1},
+"Am Abend kommt [mein Bruder] nach Hause.":{cq:["Wer oder was kommt am Abend nach Hause?"],r:0},
+"Dem Mädchen gefällt [der Film].":{cq:["Wem gefällt der Film?","Wer oder was gefällt dem Mädchen?"],r:1},
+"[Den Hund] füttert meine Schwester.":{cq:["Wer oder was füttert den Hund?","Wen oder was füttert meine Schwester?"],r:1},
+"Wegen [des Regens] bleiben wir drinnen.":{txt:"Nach «wegen» steht ein besonderer Fall. Es ist die Frage, die nach Besitz fragt: Wessen?",cq:["Wessen wegen bleiben wir drinnen?"],r:0},
+// Kapitel 7
+"Ich fahre mit ___ Velo zur Schule.":{txt:"Nach «mit» steht immer derselbe Fall. Denk an den Merkspruch: «Mit, nach, von, seit, aus, zu, bei …»",qa:[["","mit ___ Velo"]],c:2},
+"Das Geschenk ist für ___ Vater.":{txt:"Nach «für» steht immer derselbe Fall. Denk an FUDOG.",qa:[["","für ___ Vater"]],c:1},
+"Wir wandern durch ___ Wald.":{txt:"Nach «durch» steht immer derselbe Fall. Denk an FUDOG.",qa:[["","durch ___ Wald"]],c:1},
+"Nach ___ Schule spielen wir Fussball.":{txt:"Nach «nach» steht immer derselbe Fall. Denk an den Merkspruch: «Mit, nach, von, seit, aus, zu, bei …»",qa:[["","nach ___ Schule"]],c:2},
+"Ohne ___ Jacke ist es zu kalt.":{txt:"Nach «ohne» steht immer derselbe Fall. Denk an FUDOG.",qa:[["","ohne ___ Jacke"]],c:1},
+"Lena wohnt bei ___ Grossmutter.":{txt:"Nach «bei» steht immer derselbe Fall. Denk an den Merkspruch: «Mit, nach, von, seit, aus, zu, bei …»",qa:[["","bei ___ Grossmutter"]],c:2},
+"Er kommt aus ___ Haus.":{txt:"Nach «aus» steht immer derselbe Fall. Denk an den Merkspruch: «Mit, nach, von, seit, aus, zu, bei …»",qa:[["","aus ___ Haus"]],c:2},
+"Die Katze liegt auf ___ Sofa.":{wo:["Wo liegt die Katze?","Wohin liegt die Katze?"],c:2},
+"Die Katze springt auf ___ Sofa.":{wo:["Wo springt die Katze?","Wohin springt die Katze?"],c:1},
+"Das Bild hängt an ___ Wand.":{wo:["Wo hängt das Bild?","Wohin hängt das Bild?"],c:2},
+"Ich hänge das Bild an ___ Wand.":{wo:["Wo hänge ich das Bild?","Wohin hänge ich das Bild?"],c:1},
+"Wir gehen in ___ Turnhalle.":{wo:["Wo gehen wir?","Wohin gehen wir?"],c:1},
+"Wir turnen in ___ Turnhalle.":{wo:["Wo turnen wir?","Wohin turnen wir?"],c:2},
+// Kapitel 8
+"Kannst du ___ helfen?":{qa:[["Wem kannst du helfen?","___ (ich)"]],c:2,pr:1},
+"Siehst du ___?":{qa:[["Wen oder was siehst du?","___ (ich)"]],c:1,pr:1},
+"Ich rufe ___ morgen an.":{qa:[["Wen rufe ich morgen an?","___ (du)"]],c:1,pr:1},
+"Ich gebe ___ das Buch.":{qa:[["Wem gebe ich das Buch?","___ (er)"]],c:2,pr:1},
+"Wir besuchen ___ am Sonntag.":{qa:[["Wen besuchen wir am Sonntag?","___ (er)"]],c:1,pr:1},
+"Das Velo gehört ___.":{qa:[["Wem gehört das Velo?","___ (sie)"]],c:2,pr:1},
+"Der Lehrer lobt ___.":{qa:[["Wen lobt der Lehrer?","___ (wir)"]],c:1,pr:1},
+"Ich danke ___ für die Hilfe.":{qa:[["Wem danke ich für die Hilfe?","___ (ihr)"]],c:2,pr:1},
+"Wir helfen ___.":{qa:[["Wem helfen wir?","___ (sie, mehrere)"]],c:2,pr:1},
+// Kapitel 9
+"Der Vater gibt ___ Sohn ___ Schlüssel.":{qa:[["Wem gibt der Vater etwas?","___ Sohn"],["Wen oder was gibt der Vater?","___ Schlüssel"]],cs:[2,1]},
+"Die Lehrerin erklärt ___ Kindern ___ Aufgabe.":{qa:[["Wem erklärt die Lehrerin etwas?","___ Kindern"],["Wen oder was erklärt die Lehrerin?","___ Aufgabe"]],cs:[2,1]},
+"«Ich helfe den Opa.»":{qa:[["Wem helfe ich?","___ Opa"]],c:2},
+"Ich fahre mit den Bus.|Ich fahre mit dem Bus.|Ich fahre mit der Bus.":{txt:"Nach «mit» steht immer derselbe Fall. Denk an den Merkspruch: «Mit, nach, von, seit, aus, zu, bei …»",c:2},
+"das Velo von meinem Bruder":{qa:[["Wessen Velo ist das?","___ Bruders"]],c:3,x:"mein → meines …s (wie der → des …s)"},
+"Ich lege das Heft auf ___ Tisch.":{wo:["Wo lege ich das Heft hin?","Wohin lege ich das Heft?"],c:1},
+"Das Heft liegt auf ___ Tisch.":{wo:["Wo liegt das Heft?","Wohin liegt das Heft?"],c:2},
+"Ich schreibe ___ Freundin einen Brief.":{qa:[["Wem schreibe ich einen Brief?","___ Freundin"]],c:2,x:"meine → meiner (wie die → der)"},
+"Das ist das Zimmer ___ Eltern.":{qa:[["Wessen Zimmer ist das?","___ Eltern"]],c:3,x:"Mehrzahl: meine → meiner (wie die → der)"},
+"Er hat ___ Bruder und zwei Schwestern.":{qa:[["Wen oder was hat er?","___ Bruder"]],c:1,x:"ein → einen"}
+};
+function tkey(it){return it.t==="tap"?it.p.join(" "):(it.s||it.o.join("|"))}
+function qcls(q){return /^Wessen/.test(q)?"gen":/^Wem/.test(q)?"dat":/^Wen/.test(q)?"akk":/^Wer/.test(q)?"nom":""}
+function ansH(a){return esc(a).replace(/___/g,'<span class="tblank"></span>')}
+function tipHTML(it,stage){
+  const T=TIPS[tkey(it)];
+  if(!T)return esc(it.tip||"");
+  let h="";
+  if(T.cq){
+    const m=(it.s.match(/\[(.+?)\]/)||[,""])[1];
+    if(T.txt)h+=esc(T.txt)+"<br>";
+    if(stage<2){
+      h+=`Stell die Frage${T.cq.length>1?"n":""} und hör genau hin:<ul class="tq">${T.cq.map(q=>`<li>${esc(q)}</li>`).join("")}</ul>Welche Frage hat «<span class="markd">${esc(m)}</span>» als Antwort?`;
+    }else{
+      const q=T.cq[T.r];
+      h+=`Die passende Frage ist:<div class="tline"><b class="${qcls(q)}">${esc(q)}</b> → <span class="markd">${esc(m)}</span></div>`;
+    }
+    return h;
+  }
+  if(T.txt)h+=esc(T.txt);
+  if(T.wo)h+=`Frag beide Fragen und hör genau hin:<ul class="tq"><li><b>${esc(T.wo[0])}</b></li><li><b>${esc(T.wo[1])}</b></li></ul>Welche Frage klingt richtig?`;
+  if(T.qa)h+=T.qa.map(([q,a])=>q?`<div class="tline">Frag: <b class="${qcls(q)}">${esc(q)}</b>${a?` → ${ansH(a)}`:""}</div>`:(a?`<div class="tline">${ansH(a)}</div>`:"")).join("");
+  if(stage>=2){
+    const cs=T.cs||[T.c];
+    const rules=cs.map(c=>T.pr?PRULE[c]:(T.wo?(c===2?"Wo? → ":"Wohin? → "):"")+RULE[c]);
+    if(T.x)rules.push(T.x);
+    h+=`<div class="trule">${rules.map(r=>esc(r)).join("<br>")}</div>`;
+  }
+  return h;
+}
+function hint(){
+  const it=CH[S.ch].items[S.queue[S.pos].j];
+  if(S.done)return;
+  S.help=true;
+  document.getElementById("fb").innerHTML=`<div class="fb tip pop"><b>Tipp</b>${tipHTML(it,1)}</div>`;
+  document.getElementById("hb").style.display="none";
+}
+
+function antwortText(it,k){
+  if(it.t==="choice")return it.o[k];
+  if(it.t==="tap")return it.p[k];
+  return CASES[k].l;
+}
+const PRAISE=["Richtig!","Super!","Genau!","Stark!","Perfekt!","Gut gefragt!"];
+function pick(k){
+  if(S.done)return;
+  const q=S.queue[S.pos],it=CH[S.ch].items[q.j];
+  const btns=[...app.querySelectorAll("[data-k]")];
+  const btn=btns.find(b=>+b.dataset.k===k);
+  const fb=document.getElementById("fb"),hb=document.getElementById("hb");
+  if(S.tries===0&&!q.re&&S.log)S.log.push({id:CH[S.ch].id+"-"+q.j,ok:k===it.a,a:antwortText(it,k),tipp:!!S.help});
+  if(k===it.a){
+    S.done=true;
+    if(S.tries===0&&!q.re)S.first++;
+    saveRun();
+    btn.classList.add("right");
+    btns.forEach(b=>b.disabled=true);
+    if(it.t==="choice"&&it.s.includes("___")){
+      const fills=it.o[k].split(" – ");
+      app.querySelectorAll(".blank").forEach((b,i)=>{b.textContent=fills[i]||fills[0];b.classList.add("filled")});
+    }
+    hb.style.display="none";
+    fb.innerHTML=`<div class="fb ok pop"><b>${PRAISE[Math.floor(Math.random()*PRAISE.length)]}</b>${esc(it.ex)}</div><button class="main" onclick="nextQ()">Weiter</button>`;
+    fb.querySelector(".main").focus();
+  }else{
+    S.tries++;
+    btn.classList.add("wrong");btn.disabled=true;
+    if(S.tries===1){
+      fb.innerHTML=`<div class="fb no pop"><b>Noch nicht ganz.</b>${tipHTML(it,2)}<div style="margin-top:8px">Versuch es nochmals!</div></div>`;
+      hb.style.display="none";
+    }else{
+      S.done=true;
+      const rb=btns.find(b=>+b.dataset.k===it.a);rb.classList.add("right");
+      btns.forEach(b=>b.disabled=true);
+      if(it.t==="choice"&&it.s.includes("___")){
+        const fills=it.o[it.a].split(" – ");
+        app.querySelectorAll(".blank").forEach((b,i)=>{b.textContent=fills[i]||fills[0];b.classList.add("filled")});
+      }
+      if(q.re<2)S.queue.push({j:q.j,re:q.re+1});
+      saveRun();
+      fb.innerHTML=`<div class="fb no pop"><b>So geht es:</b>${esc(it.ex)}<br><small>Diese Aufgabe kommt später nochmals.</small></div><button class="main" onclick="nextQ()">Weiter</button>`;
+      fb.querySelector(".main").focus();
+    }
+  }
+}
+function nextQ(){S.pos++;saveRun();S.pos>=S.queue.length?result():show()}
+
+function result(){
+  const c=CH[S.ch],r=S.first/S.total;
+  const st=r>=.9?3:r>=.7?2:1;
+  const prev=P.done[c.id];
+  P.done[c.id]=Math.max(prev||0,st);P.run=null;
+  if(S.first===S.total)P.open=Math.max(P.open||0,S.ch+1);
+  save();
+  sende({art:"kapitel",kap:S.ch+1,thema:c.title,punkte:S.first,max:S.total,aufgaben:S.log||[]});
+  const msg=st===3?"Hervorragend! Du hast den Fall gelöst.":st===2?"Gut gemacht! Mit etwas Übung schaffst du drei Sterne.":"Geschafft! Wiederhole das Kapitel, dann sitzt es noch besser.";
+  const nx=S.ch+1<CH.length?S.ch+1:null;
+  app.innerHTML=`
+  <div class="card res pop" style="--c:${c.c}">
+    <h2>Kapitel ${S.ch+1} geschafft</h2>
+    <div class="big" style="color:var(--c)" aria-label="${st} von 3 Sternen">${stars(st)}</div>
+    <p>Beim ersten Versuch richtig: <b>${S.first} von ${S.total}</b></p>
+    <p>${msg}</p>
+    ${S.first===S.total?`<div class="codebox big"><span>Alles beim ersten Versuch richtig! Dein Schlüsselwort:</span><b>${WORDS[S.ch]}</b><small>Zeig es deiner Lehrperson oder schreib es in dein Heft.</small></div>`:`<div class="codebox big"><small>Für das Schlüsselwort musst du alle Aufgaben beim ersten Versuch richtig lösen. Du hattest ${S.total-S.first} Fehler. Probier es nochmals!</small></div>`}
+    ${nx!=null&&unlocked(nx)?`<button class="main" onclick="intro(${nx})">Weiter zu Kapitel ${nx+1}</button>`:nx!=null?"":`<p><b>Du hast alle Kapitel geschafft – du bist ein echter Fall-Detektiv!</b></p>`}
+    <p class="sent2" id="sent">${VORSCHAU?"Vorschau – es wird nichts geschickt.":"Wird an die Lehrperson geschickt …"}</p>
+    <button class="sec" onclick="start(${S.ch})">Kapitel nochmals üben</button>
+    <button class="sec" onclick="home()">Zur Übersicht</button>
+  </div>`;
+  toTop();
+}
+
+function closeOv(){ov.innerHTML=""}
+function overlay(html){
+  ov.innerHTML=`<div class="ov" onclick="if(event.target===this)closeOv()"><div class="sheet pop" role="dialog" aria-modal="true">${html}<button class="main" onclick="closeOv()">Schliessen</button></div></div>`;
+}
+function askQuit(){
+  ov.innerHTML=`<div class="ov" onclick="if(event.target===this)closeOv()"><div class="sheet pop" role="dialog" aria-modal="true"><h2>Kapitel abbrechen?</h2><p>Dein Fortschritt in diesem Kapitel geht verloren.</p><button class="main" onclick="closeOv()">Weiter üben</button><button class="sec" onclick="closeOv();home()">Abbrechen</button></div></div>`;
+}
+function explain(){
+  const c=CH[S.ch];
+  overlay(c.intro.map(x=>`<h2 style="color:${c.c}">${x.h}</h2>${x.b}`).join("<hr style='border:0;border-top:1px solid var(--line);margin:18px 0'>"));
+}
+function sheet(){
+  overlay(`<h2>Spickzettel</h2>
+  <div class="tw"><table>
+   <tr><th></th><th>männlich</th><th>weiblich</th><th>sächlich</th><th>Mehrzahl</th></tr>
+   <tr><td class="nom">Nominativ<br><small>Wer-Fall: Wer oder was?</small></td><td>der</td><td>die</td><td>das</td><td>die</td></tr>
+   <tr><td class="akk">Akkusativ<br><small>Wen-Fall: Wen oder was?</small></td><td class="akk">den</td><td>die</td><td>das</td><td>die</td></tr>
+   <tr><td class="dat">Dativ<br><small>Wem-Fall: Wem?</small></td><td class="dat">dem</td><td class="dat">der</td><td class="dat">dem</td><td class="dat">den …n</td></tr>
+   <tr><td class="gen">Genitiv<br><small>Wes-Fall: Wessen?</small></td><td class="gen">des …s</td><td class="gen">der</td><td class="gen">des …s</td><td class="gen">der</td></tr>
+  </table></div>
+  <p style="margin-top:14px"><b class="dat">Immer Dativ (Wem-Fall):</b> mit, nach, von, seit, aus, zu, bei<br>
+  <b class="akk">Immer Akkusativ (Wen-Fall):</b> für, um, durch, ohne, gegen (FUDOG)<br>
+  <b>Wo?</b> → <span class="dat">Dativ</span> &nbsp; <b>Wohin?</b> → <span class="akk">Akkusativ</span></p>`);
+}
+
+/* ===================== Vorprüfung ===================== */
+const BER={N:"Nominativ",A:"Akkusativ",D:"Dativ",G:"Genitiv",P:"Präpositionen",PR:"Pronomen"};
+const BER_K={N:"Nom.",A:"Akk.",D:"Dat.",G:"Gen.",P:"Präp.",PR:"Pron."};
+const BER_C={N:"var(--nom)",A:"var(--akk)",D:"var(--dat)",G:"var(--gen)",P:"var(--ink)",PR:"var(--ink)"};
+const VP=[
+ // Teil 1: Satzglied finden
+ {id:"v01",b:["N"],t:"tap",task:"Tippe auf den Wer-Fall (Nominativ).",p:["Die Lehrerin","erzählt","eine Geschichte."],a:0},
+ {id:"v02",b:["A"],t:"tap",task:"Tippe auf den Wen-Fall (Akkusativ).",p:["Mein Bruder","repariert","das Velo."],a:2},
+ {id:"v03",b:["D"],t:"tap",task:"Tippe auf den Wem-Fall (Dativ).",p:["Der Hund","gehört","meiner Tante."],a:2},
+ {id:"v04",b:["G"],t:"tap",task:"Tippe auf den Wes-Fall (Genitiv).",p:["Das Dach","der Scheune","ist rot."],a:1},
+ {id:"v05",b:["N"],t:"tap",task:"Tippe auf den Wer-Fall (Nominativ).",p:["Am Sonntag","spielt","der Trainer","mit uns."],a:2},
+ // Teil 2: Begleiter einsetzen
+ {id:"v06",b:["A"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich kaufe ___ Rucksack.",o:["der","den","dem"],a:1},
+ {id:"v07",b:["A"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Wir besuchen ___ Museum.",o:["das","dem","des"],a:0},
+ {id:"v08",b:["D"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Das Buch gehört ___ Schülerin.",o:["die","der","den"],a:1},
+ {id:"v09",b:["D"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Lukas hilft ___ Grossvater.",o:["den","dem","des"],a:1},
+ {id:"v10",b:["G"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Farbe ___ Autos ist blau.",o:["das","dem","des"],a:2},
+ {id:"v11",b:["G"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Tür ___ Schule klemmt.",o:["die","der","den"],a:1},
+ // Teil 3: Fall bestimmen
+ {id:"v12",b:["N"],t:"case",s:"[Die Katze] schläft auf dem Sofa.",a:0},
+ {id:"v13",b:["A"],t:"case",s:"Der Koch würzt [die Suppe].",a:1},
+ {id:"v14",b:["D"],t:"case",s:"Der Lehrer antwortet [dem Mädchen].",a:2},
+ {id:"v15",b:["G"],t:"case",s:"Die Jacke [meiner Schwester] ist neu.",a:3},
+ {id:"v16",b:["A"],t:"case",s:"[Den Ball] wirft der Torwart weit.",a:1},
+ {id:"v17",b:["N"],t:"case",s:"Den Kindern gefällt [der Ausflug].",a:0},
+ // Teil 4: Präpositionen
+ {id:"v18",b:["P"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich gehe mit ___ Hund spazieren.",o:["den","dem","der"],a:1},
+ {id:"v19",b:["P"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Wir laufen durch ___ Park.",o:["den","dem","des"],a:0},
+ {id:"v20",b:["P"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Die Tasche liegt unter ___ Tisch.",o:["den","dem"],a:1},
+ {id:"v21",b:["P"],t:"choice",task:"Setze den richtigen Begleiter ein.",s:"Ich stelle die Tasche unter ___ Tisch.",o:["den","dem"],a:0},
+ // Teil 5: Pronomen
+ {id:"v22",b:["PR"],t:"choice",task:"Setze das Pronomen richtig ein. (ich)",s:"Kannst du ___ das Salz geben?",o:["mich","mir"],a:1},
+ {id:"v23",b:["PR"],t:"choice",task:"Setze das Pronomen richtig ein. (er)",s:"Die Lehrerin ruft ___ auf.",o:["ihn","ihm"],a:0},
+ {id:"v24",b:["PR"],t:"choice",task:"Setze das Pronomen richtig ein. (sie, mehrere)",s:"Wir gratulieren ___ zum Geburtstag.",o:["sie","ihnen"],a:1},
+ // Teil 6: knifflig
+ {id:"v25",b:["D","A"],t:"choice",task:"Setze beide Begleiter ein.",s:"Die Oma schenkt ___ Enkel ___ Buch.",o:["den – ein","dem – ein","dem – einem"],a:1,long:1},
+ {id:"v26",b:["D"],t:"choice",task:"Welcher Satz ist richtig?",s:"",o:["Ich danke den Lehrer.","Ich danke dem Lehrer.","Ich danke der Lehrer."],a:1,long:1}
+];
+function vpLoesung(it){ return antwortText(it,it.a); }
+function vpSatz(it){
+  if(it.t==="tap")return it.p.join(" ");
+  if(it.t==="case")return it.s.replace(/[\[\]]/g,"");
+  return it.s||it.task;
+}
+let VPS=null;
+function vpStart(){
+  if(P.vp&&P.vp.fertig)return home();
+  if(!P.vp)P.vp={pos:0,antw:[],start:new Date().toISOString()};
+  save(); vpShow();
+}
+function vpShow(){
+  const it=VP[P.vp.pos]; VPS={sel:null};
+  let body="";
+  if(it.t==="choice"){
+    const parts=it.s.split("___");
+    const sent=parts.map((x,k)=>esc(x)+(k<parts.length-1?`<span class="blank">&nbsp;</span>`:"")).join("");
+    body=`<div class="task">${esc(it.task)}</div>${it.s?`<div class="sent">${sent}</div>`:""}
+    <div class="opts">${it.o.map((o,k)=>`<button class="opt ${it.long?"long":""}" data-k="${k}" onclick="vpPick(${k})">${esc(o)}</button>`).join("")}</div>`;
+  }else if(it.t==="tap"){
+    body=`<div class="task">${esc(it.task)}</div><div class="taps">${it.p.map((w,k)=>`<button class="tp" data-k="${k}" onclick="vpPick(${k})">${esc(w)}</button>`).join("")}</div>`;
+  }else{
+    const sent=esc(it.s).replace(/\[(.+?)\]/,'<span class="markd">$1</span>');
+    body=`<div class="task">In welchem Fall steht das gelb markierte Satzglied?</div><div class="sent">${sent}</div>
+    <div class="opts">${CASES.map((cs,k)=>`<button class="opt case c-${cs.k}" data-k="${k}" onclick="vpPick(${k})">${cs.l}<small>${cs.n} – ${cs.q}</small></button>`).join("")}</div>`;
+  }
+  app.innerHTML=`
+  <div class="bar" style="--c:var(--akk)">
+    <button class="icon" onclick="home()" aria-label="Zur Übersicht – die Vorprüfung bleibt gespeichert">←</button>
+    <div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${VP.length}" aria-valuenow="${P.vp.pos}"><i style="width:${P.vp.pos/VP.length*100}%"></i></div>
+    <strong style="font-size:15px;white-space:nowrap">${P.vp.pos+1} / ${VP.length}</strong>
+  </div>
+  <div class="card pop" style="--c:var(--akk)">
+    <div class="task" style="color:var(--akk);font-weight:700">Vorprüfung – ohne Tipps</div>
+    ${body}
+    <button class="main" id="vpw" onclick="vpWeiter()" disabled style="opacity:.4">${P.vp.pos+1<VP.length?"Weiter":"Fertig – abgeben"}</button>
+  </div>`;
+  toTop();
+}
+function vpPick(k){
+  VPS.sel=k;
+  app.querySelectorAll("[data-k]").forEach(b=>b.classList.toggle("sel",+b.dataset.k===k));
+  const w=document.getElementById("vpw");w.disabled=false;w.style.opacity=1;
+}
+function vpWeiter(){
+  if(VPS.sel==null)return;
+  const it=VP[P.vp.pos];
+  P.vp.antw.push({id:it.id,b:it.b,ok:VPS.sel===it.a,a:antwortText(it,VPS.sel),l:vpLoesung(it),s:vpSatz(it)});
+  P.vp.pos++;
+  if(P.vp.pos>=VP.length)return vpEnde();
+  save(); vpShow();
+}
+function vpEnde(){
+  const A=P.vp.antw, pkt=A.filter(x=>x.ok).length;
+  P.vp.fertig=true;P.vp.punkte=pkt;P.vp.max=VP.length;save();
+  sende({art:"vorpruefung",thema:"Vorprüfung",punkte:pkt,max:VP.length,start:P.vp.start,aufgaben:A});
+  const ber=Object.keys(BER).map(k=>{const x=A.filter(a=>a.b.includes(k));const r=x.filter(a=>a.ok).length;return {k,r,n:x.length};});
+  const ueben=ber.filter(x=>x.n&&x.r/x.n<0.75);
+  app.innerHTML=`<div class="card res pop" style="--c:var(--akk)">
+    <h2>Vorprüfung abgegeben</h2>
+    <div class="big" style="font-size:44px;letter-spacing:0;color:var(--c)">${pkt} / ${VP.length}</div>
+    <p>${pkt>=VP.length*0.9?"Sehr stark! Du kennst dich mit den Fällen schon gut aus.":pkt>=VP.length*0.7?"Gut gemacht! Ein paar Dinge kannst du noch üben.":"Geschafft! Mit den Kapiteln kannst du jetzt gezielt üben."}</p>
+    ${ueben.length?`<p style="text-align:left"><b>Das solltest du noch üben:</b><br>${ueben.map(x=>`${BER[x.k]} (${x.r} von ${x.n} richtig)`).join("<br>")}</p>`:""}
+    <p class="sent2" id="sent">${VORSCHAU?"Vorschau – es wird nichts geschickt.":"Wird an die Lehrperson geschickt …"}</p>
+    <button class="main" onclick="home()">Zur Übersicht</button>
+  </div>`;
+  toTop();
+}
+
+/* ===================== Auswertung für die Lehrperson (nur in der Deutsch-Station) ===================== */
+const LEHRER_KEY=(()=>{const m=location.hash.match(/(?:^#|&)lehrer=([a-f0-9]{32,})/);return m?m[1]:"";})();
+if(LEHRER_KEY){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}}
+let NAMEN={};
+const nameVon=g=>NAMEN[g]?NAMEN[g]:"Nr. "+g;
+const pct=(r,n)=>n?Math.round(r/n*100):null;
+const ampel=p=>p==null?"":p>=90?"var(--ok)":p>=70?"#C99A06":"var(--bad)";
+const datumK=iso=>{const d=new Date(iso);return isNaN(d)?"":d.toLocaleDateString("de-CH",{day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});};
+let LD=null;
+function lehrerCSS(){
+  if(document.getElementById("lcss"))return;
+  const st=document.createElement("style");st.id="lcss";
+  st.textContent=`#app.lehrer{max-width:1180px}
+  .lt{width:100%;border-collapse:collapse;font-size:15px;background:var(--paper);border-radius:14px;overflow:hidden}
+  .lt th,.lt td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+  .lt th{background:var(--bg);font-size:13px;color:var(--soft)}
+  .lt td.l,.lt th.l{text-align:left}
+  .lt tr.klick{cursor:pointer}.lt tr.klick:hover td{background:var(--bg)}
+  .lt tr.sum td{font-weight:700;background:var(--bg)}
+  .pz{font-weight:700}
+  .kd{display:inline-block;width:14px;height:14px;border-radius:4px;margin:0 1px;background:var(--line);vertical-align:middle}
+  .lhead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  .lhead h2{font-size:28px;flex:1}
+  .lbtn{border:2px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 12px;font-size:15px;font-weight:700}
+  .lnote{font-size:14px;color:var(--soft);margin:10px 0 0}
+  .falsch{color:var(--bad);font-weight:700}.richtig{color:var(--ok);font-weight:700}
+  .tw2{overflow-x:auto}
+  @media print{.lbtn{display:none}body{background:#fff}}`;
+  document.head.appendChild(st);
+}
+function lehrerMeldung(t,x){app.innerHTML=`<div class="card"><h2>${esc(t)}</h2><p>${x}</p><button class="main" onclick="lehrperson()">Nochmals versuchen</button></div>`;}
+function lehrperson(){
+  lehrerCSS();app.classList.add("lehrer");
+  try{NAMEN=JSON.parse(store.get("rs.namen")||"{}")||{};}catch(e){NAMEN={};}
+  app.innerHTML=`<div class="card"><p style="margin:0">Auswertung wird geladen …</p></div>`;
+  fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({typ:"lehrer-daten",uebung:UEBUNG,schluessel:LEHRER_KEY,einrichten:true})})
+   .then(r=>r.text()).then(t=>{
+     let d=null;try{d=JSON.parse(t);}catch(e){}
+     if(!d)throw new Error("unlesbar");
+     if(!d.ok){
+       if(d.grund==="falsch")return lehrerMeldung("Diese Station ist nicht freigeschaltet","Die Google-Tabelle ist mit einer anderen Station verbunden. Zum Neu-Einrichten in Apps Script unter Projekteinstellungen → Skripteigenschaften «SCHLUESSEL» löschen.");
+       return lehrerMeldung("Auswertung nicht verfügbar",esc(d.fehler||"Unbekannter Fehler"));
+     }
+     LD=d;klasse();
+   }).catch(()=>lehrerMeldung("Keine Verbindung","Die Google-Tabelle ist gerade nicht erreichbar. Prüfe die Internetverbindung."));
+}
+function kinder(){
+  const K={};
+  for(const r of (LD.runden||[])){
+    const g=String(r.glueckszahl||"?");const k=K[g]||(K[g]={g,vp:null,vpN:0,kap:{},zuletzt:"",geraete:new Set()});
+    if(r.geraet)k.geraete.add(r.geraet);
+    const z=r.datum||r.zeit;if(z>k.zuletzt)k.zuletzt=z;
+    if(r.art==="vorpruefung"){k.vpN++;if(!k.vp||(r.datum||r.zeit)<(k.vp.datum||k.vp.zeit))k.vp=r;}
+    else if(r.art==="kapitel"){const p=pct(+r.punkte,+r.max);const x=k.kap[r.kap]||(k.kap[r.kap]={best:0,n:0});x.n++;x.best=Math.max(x.best,p);}
+  }
+  return Object.values(K).sort((a,b)=>(NAMEN[a.g]||"~"+String(+a.g).padStart(6,"0")).localeCompare(NAMEN[b.g]||"~"+String(+b.g).padStart(6,"0")));
+}
+function berQuote(r,k){const x=(r.aufgaben||[]).filter(a=>(a.b||[]).includes(k));return x.length?{r:x.filter(a=>a.ok).length,n:x.length}:null;}
+function klasse(){
+  const L=kinder();
+  const mitVp=L.filter(k=>k.vp);
+  const zelle=q=>{if(!q)return `<td>–</td>`;const p=pct(q.r,q.n);return `<td><span class="pz" style="color:${ampel(p)}">${q.r}/${q.n}</span></td>`;};
+  const rows=L.map(k=>{
+    const vp=k.vp;const p=vp?pct(+vp.punkte,+vp.max):null;
+    const kd=CH.map((c,i)=>{const x=k.kap[i+1];return `<span class="kd" title="Kapitel ${i+1}: ${x?`bestes Ergebnis ${x.best}% beim ersten Versuch, ${x.n}× geübt`:"noch nicht geübt"}" style="${x?`background:${ampel(x.best)}`:""}"></span>`;}).join("");
+    return `<tr class="klick" data-g="${esc(k.g)}"><td class="l"><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span style="color:var(--soft)">${esc(k.g)}</span>`:""}${k.geraete.size>1?` <span title="Diese Glückszahl wurde auf mehreren Tablets benutzt">⚠️</span>`:""}</td>
+      <td>${vp?`<span class="pz" style="color:${ampel(p)}">${vp.punkte}/${vp.max}</span> <span style="color:var(--soft)">${p}%</span>`:"–"}</td>
+      ${Object.keys(BER).map(b=>zelle(vp&&berQuote(vp,b))).join("")}
+      <td class="l">${kd}</td><td style="color:var(--soft)">${datumK(k.zuletzt)}</td></tr>`;
+  }).join("");
+  const sum=Object.keys(BER).map(b=>{let r=0,n=0;mitVp.forEach(k=>{const q=berQuote(k.vp,b);if(q){r+=q.r;n+=q.n;}});const p=pct(r,n);return `<td>${p==null?"–":`<span style="color:${ampel(p)}">${p}%</span>`}</td>`;}).join("");
+  const schnitt=mitVp.length?Math.round(mitVp.reduce((a,k)=>a+pct(+k.vp.punkte,+k.vp.max),0)/mitVp.length):null;
+  app.innerHTML=`<div class="lhead"><h2>Fälle – Auswertung</h2>
+    <button class="lbtn" onclick="lehrperson()">↻ Aktualisieren</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
+    ${L.length?`<div class="tw2"><table class="lt">
+      <tr><th class="l">Kind</th><th>Vorprüfung</th>${Object.keys(BER).map(b=>`<th title="${BER[b]}">${BER_K[b]}</th>`).join("")}<th class="l">Kapitel 1–9 geübt</th><th>Zuletzt</th></tr>
+      ${rows}
+      <tr class="sum"><td class="l">Klasse (${mitVp.length} mit Vorprüfung)</td><td>${schnitt==null?"–":schnitt+"%"}</td>${sum}<td></td><td></td></tr>
+    </table></div>
+    <p class="lnote">Farben: grün ab 90 %, gelb ab 70 %, rot darunter. Die Kästchen bei «Kapitel» zeigen das beste Ergebnis beim ersten Versuch. Ein Kind anklicken für die Antworten der Vorprüfung. Namen trägst du im Rechtschreibtraining unter «Namen» ein – sie gelten auch hier.</p>`
+    :`<div class="card"><p style="margin:0">Noch keine Ergebnisse. Sobald ein Kind ein Kapitel oder die Vorprüfung abschliesst, erscheint es hier.</p></div>`}`;
+  app.querySelectorAll("tr.klick").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
+  window.scrollTo(0,0);
+}
+function profil(g){
+  const k=kinder().find(x=>x.g===g);if(!k)return klasse();
+  const vp=k.vp;
+  const auf=vp?(vp.aufgaben||[]):[];
+  app.innerHTML=`<div class="lhead"><h2>${esc(nameVon(g))}${NAMEN[g]?` <span style="font-size:18px;color:var(--soft)">Glückszahl ${esc(g)}</span>`:""}</h2>
+    <button class="lbtn" onclick="klasse()">← Klasse</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
+    ${vp?`<div class="card" style="margin-bottom:14px"><h2 style="color:var(--ink);font-size:22px">Vorprüfung: ${vp.punkte} von ${vp.max} (${pct(+vp.punkte,+vp.max)}%)</h2>
+      <p style="margin:0;color:var(--soft);font-size:15px">Abgegeben ${datumK(vp.datum||vp.zeit)}${k.vpN>1?` · ${k.vpN} Abgaben, gezeigt ist die erste`:""}</p>
+      <p style="margin:10px 0 0">${Object.keys(BER).map(b=>{const q=berQuote(vp,b);return q?`<b style="color:${BER_C[b]}">${BER[b]}</b> ${q.r}/${q.n}`:"";}).filter(Boolean).join(" &nbsp;·&nbsp; ")}</p></div>
+      <div class="tw2"><table class="lt"><tr><th>Nr.</th><th class="l">Aufgabe</th><th>Bereich</th><th>Antwort</th><th>Richtig wäre</th></tr>
+      ${auf.map((a,i)=>`<tr><td>${i+1}</td><td class="l" style="white-space:normal">${esc(a.s||"")}</td><td>${(a.b||[]).map(b=>BER_K[b]).join(", ")}</td><td class="${a.ok?"richtig":"falsch"}">${a.ok?"✓ ":"✗ "}${esc(a.a||"")}</td><td>${a.ok?"":esc(a.l||"")}</td></tr>`).join("")}
+      </table></div>`
+    :`<div class="card"><p style="margin:0">Dieses Kind hat die Vorprüfung noch nicht gemacht.</p></div>`}
+    <h2 style="font-size:22px;margin:20px 0 10px">Geübte Kapitel</h2>
+    <div class="tw2"><table class="lt"><tr><th class="l">Kapitel</th><th>Bestes Ergebnis (1. Versuch)</th><th>Wie oft geübt</th></tr>
+    ${CH.map((c,i)=>{const x=k.kap[i+1];return `<tr><td class="l">${i+1}. ${esc(c.title)}</td><td>${x?`<span class="pz" style="color:${ampel(x.best)}">${x.best}%</span>`:"–"}</td><td>${x?x.n:"–"}</td></tr>`;}).join("")}
+    </table></div>`;
+  window.scrollTo(0,0);
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeOv()});
+if(LEHRER_KEY)lehrperson();else{home();flush();}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&!LEHRER_KEY)flush();});
+</script>
+</body>
+</html>
