@@ -522,6 +522,7 @@ const GOALS = [
 /* ===== Lernpfad ===== */
 const app = document.getElementById("app"), pill = document.getElementById("pill");
 const NEED = 5;              // so viele Punkte braucht es pro Stufe
+const STREAK = 3;            // oder so viele richtige Antworten hintereinander
 const LEVELS = 3;
 const TEST_N = GOALS.length >= 8 ? GOALS.length : 10;
 const GOAL = Object.fromEntries(GOALS.map(g=>[g.id,g]));
@@ -566,7 +567,7 @@ function home(){
       <button class="btn ghost" id="testmode">📝 Test-Training<small>${TEST_N} gemischte Aufgaben wie in der Lernzielkontrolle</small></button>
     </div>` : ""}
     <h2>Lernziele</h2>
-    <p class="sub">Jedes Lernziel hat 3 Stufen. Für jede Stufe brauchst du ${NEED} richtige Antworten. Ist eine Antwort falsch, siehst du, wie es geht – und bekommst gleich eine ähnliche Aufgabe.</p>
+    <p class="sub">Jedes Lernziel hat 3 Stufen. Eine Stufe ist geschafft, wenn du ${STREAK} Aufgaben hintereinander richtig löst (oder insgesamt ${NEED} Punkte hast). Kannst du es schon, springst du direkt weiter. Ist eine Antwort falsch, siehst du, wie es geht – und bekommst eine ähnliche Aufgabe.</p>
     <div class="topics">${cards}</div>
     <p class="sub" style="margin:18px 0 0">${START_NOTE}</p>
     <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
@@ -603,9 +604,15 @@ function curLevel(id){ const s=gs(id); return S.mode==="test" ? Math.max(2, Math
 function next(){
   if(S.mode==="test" && S.qi>=S.queue.length && !S.twin) return testResult();
   const id = curGoal();
-  const lv = curLevel(id);
-  let t; for(let k=0;k<20;k++){ t = GOAL[id].gen(lv); if(t) break; }
-  t.goal = id; t.lv = lv;
+  let lv = curLevel(id);
+  const st = gs(id);
+  const probe = S.mode==="goal" && st.lv===1 && st.pr===0 && !st.done && !st.probed;   // Einstufung: gleich mit Stufe 2 beginnen
+  if(probe) lv = 2;
+  const sig = t=>t.type+"|"+String(t.q||"")+String(t.a||"")+" "+String(t.b||"")+String(t.html||"").replace(/<[^>]*>/g,"").replace(/[0-9.,’'\/]+/g,"#").slice(0,60);
+  let t;
+  for(let k=0;k<30;k++){ const c = GOAL[id].gen(lv); if(!c) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  S.lastSig = sig(t);
+  t.goal = id; t.lv = lv; t.probe = probe;
   S.task = t; S.done = false; S.answer = null; S.nr++;
   draw();
 }
@@ -624,7 +631,7 @@ function head(){
   let dots=""; for(let i=0;i<NEED;i++) dots+=`<i class="${i<s.pr?"on":""}"></i>`;
   return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span><span class="grow"></span>
     <button class="btn ghost small" id="quit">⟵ Übersicht</button></div>
-    <div class="sesshead"><b>${s.done?"Alle Stufen geschafft – du übst weiter auf Stufe 3":LVNAME[s.lv]}</b><span class="grow"></span><span class="dots">${dots}<span>${s.pr}/${NEED}</span></span></div>`;
+    <div class="sesshead"><b>${s.done?"Alle Stufen geschafft – du übst weiter auf Stufe 3":LVNAME[s.lv]}</b><span class="grow"></span><span class="dots">${dots}<span>${s.pr}/${NEED}${(s.streak||0)>0?` · 🔥 ${s.streak} in Folge`:""}</span></span></div>`;
 }
 
 function draw(){
@@ -794,14 +801,21 @@ function finish(ok, given, extra){
   s.n++; if(ok) s.ok++;
   let toast = "";
   if(S.mode==="goal"){
-    if(ok){
+    if(t.probe){
+      s.probed = true;
+      if(ok){ s.lv = 2; s.pr = 1; s.streak = 1; toast = `🚀 Stark! Das kannst du schon – Stufe 1 überspringst du.`; }
+    } else if(ok){
+      s.streak = (s.streak||0) + 1;
       s.pr = Math.min(NEED, s.pr+1);
-      if(s.pr>=NEED){
-        if(s.lv<LEVELS){ s.lv++; s.pr=0; toast = `🎉 Stufe ${s.lv-1} geschafft! Jetzt geht es weiter mit <b>Stufe ${s.lv}</b>.`; }
-        else if(!s.done){ s.done=true; s.pr=NEED; toast = `🏆 Super! Du hast alle 3 Stufen von «${g.title}» geschafft.`; }
+      if(s.pr>=NEED || s.streak>=STREAK){
+        const fast = s.pr<NEED;
+        if(s.lv<LEVELS){ s.lv++; s.pr=0; s.streak=0; toast = `🎉 Stufe ${s.lv-1} geschafft${fast?` – ${STREAK} richtig hintereinander`:""}! Jetzt kommt <b>Stufe ${s.lv}</b>.`; }
+        else if(!s.done){ s.done=true; s.pr=NEED; S.goalDone = true;
+          const nx = nextGoal(g.id);
+          toast = `🏆 Super! Du hast «${g.title}» geschafft.${nx?`<br>Weiter geht es mit <b>${GOAL[nx].title}</b>.`:"<br>Du hast alle Lernziele geschafft – probier jetzt das Test-Training!"}`; }
         else s.pr = NEED;
       }
-    } else if(!s.done) s.pr = Math.max(0, s.pr-1);
+    } else { s.streak = 0; if(!s.done) s.pr = Math.max(0, s.pr-1); }
   } else {
     if(!ok && !S.twin) S.twinNext = t.goal;
     if(S.twin) S.twin = null; else S.qi++;
@@ -824,7 +838,20 @@ function finish(ok, given, extra){
   if(S.mode==="test" && S.qi>=S.queue.length && !S.twin) n.textContent = "Zum Resultat →";
   if(S.pending.length>=10 || toast) sendPending();
 }
-function go(){ next(); }
+function nextGoal(from){
+  const i = GOALS.findIndex(x=>x.id===from);
+  const order = GOALS.slice(i+1).concat(GOALS.slice(0,i));
+  const g = order.find(x=>!gs(x.id).done && !x.erw) || order.find(x=>!gs(x.id).done);
+  return g ? g.id : null;
+}
+function go(){
+  if(S.mode==="goal" && S.goalDone){
+    S.goalDone = false;
+    const nx = nextGoal(S.goal);
+    if(nx){ sendPending(); S.goal = nx; P.last = nx; saveP(); } else { sendPending(); S=null; return home(); }
+  }
+  next();
+}
 function leave(){ sendPending(); S=null; home(); }
 
 function testResult(){
