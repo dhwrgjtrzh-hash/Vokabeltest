@@ -911,6 +911,10 @@ function lehrerCSS(){
   .lt td.l,.lt th.l{text-align:left}
   .lt tr.klick{cursor:pointer}.lt tr.klick:hover td{background:var(--bg)}
   .lt tr.sum td{font-weight:700;background:var(--bg)}
+  .lt th.sortbar{cursor:pointer;user-select:none}.lt th.sortbar:hover{color:var(--ink)}
+  .lt th.an{color:var(--ink);font-weight:700}
+  .lt th .pfeil{opacity:.45;font-size:11px}.lt th.an .pfeil{opacity:1}
+  @media print{.lt th .pfeil{display:none}}
   .pz{font-weight:700}
   .kd{display:inline-block;width:14px;height:14px;border-radius:4px;margin:0 1px;background:var(--line);vertical-align:middle}
   .lhead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
@@ -951,8 +955,35 @@ function kinder(){
 }
 function berQuote(r,k){const x=(r.aufgaben||[]).filter(a=>kapVon(a)===k);return x.length?{r:x.filter(a=>a.ok).length,n:x.length}:null;}
 const KAPS=[1,2,3,4,5,6,7,8,9];
+/* Sortieren: Spalte anklicken, nochmals klicken dreht die Richtung */
+let SORT=(()=>{try{return JSON.parse(store.get("fa.sort")||"null")||{k:"kind",auf:true};}catch(e){return {k:"kind",auf:true};}})();
+function sortWert(k,key){
+  if(key==="kind")return NAMEN[k.g]?"1"+NAMEN[k.g].toLowerCase():"2"+String(+k.g).padStart(6,"0");
+  if(key==="vp")return k.vp?pct(+k.vp.punkte,+k.vp.max):null;
+  if(key==="geuebt"){const x=Object.values(k.kap);return x.length?x.length*1000+x.reduce((a,b)=>a+b.best,0)/x.length:null;}
+  if(key==="zuletzt")return k.zuletzt||null;
+  const m=/^k(\d)$/.exec(key);if(m){const q=k.vp&&berQuote(k.vp,+m[1]);return q?pct(q.r,q.n):null;}
+  return null;
+}
+function sortiere(L){
+  return L.slice().sort((a,b)=>{
+    const x=sortWert(a,SORT.k),y=sortWert(b,SORT.k);
+    if(x==null&&y==null)return sortWert(a,"kind").localeCompare(sortWert(b,"kind"));
+    if(x==null)return 1; if(y==null)return -1;
+    const c=typeof x==="string"?x.localeCompare(y):x-y;
+    return (SORT.auf?c:-c)||sortWert(a,"kind").localeCompare(sortWert(b,"kind"));
+  });
+}
+function sortKlick(key){
+  if(SORT.k===key)SORT.auf=!SORT.auf;else SORT={k:key,auf:key==="kind"};
+  store.set("fa.sort",JSON.stringify(SORT));klasse();
+}
+function kopf(key,text,cls,title){
+  const an=SORT.k===key;
+  return `<th class="${cls||""} sortbar${an?" an":""}" onclick="sortKlick('${key}')" title="${esc(title||"Nach dieser Spalte sortieren")}" aria-sort="${an?(SORT.auf?"ascending":"descending"):"none"}">${text}<span class="pfeil">${an?(SORT.auf?" ▲":" ▼"):" ↕"}</span></th>`;
+}
 function klasse(){
-  const L=kinder();
+  const L=sortiere(kinder());
   const mitVp=L.filter(k=>k.vp);
   const zelle=q=>{if(!q)return `<td>–</td>`;const p=pct(q.r,q.n);return `<td><span class="pz" style="color:${ampel(p)}">${q.r}/${q.n}</span></td>`;};
   const rows=L.map(k=>{
@@ -968,11 +999,11 @@ function klasse(){
   app.innerHTML=`<div class="lhead"><h2>Fälle – Auswertung</h2>
     <button class="lbtn" onclick="lehrperson()">↻ Aktualisieren</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
     ${L.length?`<div class="tw2"><table class="lt">
-      <tr><th class="l">Kind</th><th>Vorprüfung total</th>${KAPS.map(b=>`<th title="Vorprüfung, Kapitel ${b}: ${esc(CH[b-1].title)}">K${b}</th>`).join("")}<th class="l">Selbst geübt K1–K9</th><th>Zuletzt</th></tr>
+      <tr>${kopf("kind","Kind","l","Nach Name bzw. Glückszahl sortieren")}${kopf("vp","Vorprüfung total","","Nach Punkten der Vorprüfung sortieren")}${KAPS.map(b=>kopf("k"+b,"K"+b,"",`Nach Vorprüfung Kapitel ${b} sortieren: ${CH[b-1].title}`)).join("")}${kopf("geuebt","Selbst geübt K1–K9","l","Nach Anzahl geübter Kapitel sortieren")}${kopf("zuletzt","Zuletzt","","Nach letzter Aktivität sortieren")}</tr>
       ${rows}
       <tr class="sum"><td class="l">Klasse (${mitVp.length} mit Vorprüfung)</td><td>${schnitt==null?"–":schnitt+"%"}</td>${sum}<td></td><td></td></tr>
     </table></div>
-    <p class="lnote">K1–K9: Punkte der Vorprüfung pro Kapitel. Farben: grün ab 90 %, gelb ab 70 %, rot darunter. Die Kästchen bei «Selbst geübt» zeigen das beste Ergebnis beim ersten Versuch, wenn ein Kind ein Kapitel geübt hat. Ein Kind anklicken für die Antworten der Vorprüfung. Namen trägst du im Rechtschreibtraining unter «Namen» ein – sie gelten auch hier.</p>`
+    <p class="lnote">K1–K9: Punkte der Vorprüfung pro Kapitel. Farben: grün ab 90 %, gelb ab 70 %, rot darunter. Die Kästchen bei «Selbst geübt» zeigen das beste Ergebnis beim ersten Versuch, wenn ein Kind ein Kapitel geübt hat. Auf eine Spaltenüberschrift klicken sortiert die Tabelle, nochmals klicken dreht die Reihenfolge. Ein Kind anklicken für die Antworten der Vorprüfung. Namen trägst du im Rechtschreibtraining unter «Namen» ein – sie gelten auch hier.</p>`
     :`<div class="card"><p style="margin:0">Noch keine Ergebnisse. Sobald ein Kind ein Kapitel oder die Vorprüfung abschliesst, erscheint es hier.</p></div>`}`;
   app.querySelectorAll("tr.klick").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
   window.scrollTo(0,0);
