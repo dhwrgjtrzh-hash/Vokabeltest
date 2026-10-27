@@ -982,16 +982,40 @@ function klasse(){
   const sum=KAPS.map(b=>{let r=0,n=0;mitVp.forEach(k=>{const q=berQuote(k.vp,b);if(q){r+=q.r;n+=q.n;}});const p=pct(r,n);return `<td>${p==null?"–":`<span style="color:${ampel(p)}">${p}%</span>`}</td>`;}).join("");
   const schnitt=mitVp.length?Math.round(mitVp.reduce((a,k)=>a+pct(+k.vp.punkte,+k.vp.max),0)/mitVp.length):null;
   app.innerHTML=`<div class="lhead"><h2>Fälle – Auswertung</h2>
-    <button class="lbtn" onclick="lehrperson()">↻ Aktualisieren</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
+    <button class="lbtn" onclick="namenEditor()">Namen</button><button class="lbtn" onclick="lehrperson()">↻ Aktualisieren</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
     ${L.length?`<div class="tw2"><table class="lt">
       <tr>${kopf("kind","Kind","l","Nach Name bzw. Glückszahl sortieren")}${kopf("vp","Vorprüfung total","","Nach Punkten der Vorprüfung sortieren")}${KAPS.map(b=>kopf("k"+b,"K"+b,"",`Nach Vorprüfung Kapitel ${b} sortieren: ${CH[b-1].title}`)).join("")}${kopf("geuebt","Selbst geübt K1–K9","l","Nach Anzahl geübter Kapitel sortieren")}${kopf("zuletzt","Zuletzt","","Nach letzter Aktivität sortieren")}</tr>
       ${rows}
       <tr class="sum"><td class="l">Klasse (${mitVp.length} mit Vorprüfung)</td><td>${schnitt==null?"–":schnitt+"%"}</td>${sum}<td></td><td></td></tr>
     </table></div>
-    <p class="lnote">K1–K9: Punkte der Vorprüfung pro Kapitel. Farben: grün ab 90 %, gelb ab 70 %, rot darunter. Die Kästchen bei «Selbst geübt» zeigen das beste Ergebnis beim ersten Versuch, wenn ein Kind ein Kapitel geübt hat. Auf eine Spaltenüberschrift klicken sortiert die Tabelle, nochmals klicken dreht die Reihenfolge. Ein Kind anklicken für die Antworten der Vorprüfung. Namen trägst du im Rechtschreibtraining unter «Namen» ein – sie gelten auch hier.</p>`
+    <p class="lnote">K1–K9: Punkte der Vorprüfung pro Kapitel. Farben: grün ab 90 %, gelb ab 70 %, rot darunter. Die Kästchen bei «Selbst geübt» zeigen das beste Ergebnis beim ersten Versuch, wenn ein Kind ein Kapitel geübt hat. Auf eine Spaltenüberschrift klicken sortiert die Tabelle, nochmals klicken dreht die Reihenfolge. Ein Kind anklicken für die Antworten der Vorprüfung. Namen trägst du unter «Namen» ein oder löschst sie dort. Sie gelten auch im Rechtschreibtraining.</p>`
     :`<div class="card"><p style="margin:0">Noch keine Ergebnisse. Sobald ein Kind ein Kapitel oder die Vorprüfung abschliesst, erscheint es hier.</p></div>`}`;
   app.querySelectorAll("tr.klick").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
   window.scrollTo(0,0);
+}
+/* Namen zu den Glückszahlen: eintragen, ändern, löschen (gemeinsam mit dem Rechtschreibtraining) */
+function namenEditor(){
+  const gs=new Set(kinder().map(k=>k.g));Object.keys(NAMEN).forEach(g=>gs.add(g));
+  const liste=[...gs].sort((a,b)=>(+a)-(+b));
+  app.innerHTML=`<div class="lhead"><h2>Namen zu den Glückszahlen</h2><button class="lbtn" onclick="klasse()">← Zurück</button></div>
+    <div class="card">
+      <p style="margin:0 0 14px;color:var(--soft);font-size:15px">Die Namen bleiben nur auf diesem Computer und gelten auch im Rechtschreibtraining. In der Google-Tabelle stehen nur die Glückszahlen. Feld leeren oder 🗑 drücken löscht den Namen.</p>
+      ${liste.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">${liste.map(g=>`<label style="display:flex;align-items:center;gap:8px">
+        <b style="min-width:2.6em;text-align:right">${esc(g)}</b>
+        <input data-g="${esc(g)}" value="${esc(NAMEN[g]||"")}" placeholder="Name" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)">
+        <button class="lbtn" title="Namen löschen" aria-label="Namen zu Glückszahl ${esc(g)} löschen" onclick="this.previousElementSibling.value=''">🗑</button>
+        ${kinder().some(k=>k.g===g)?"":`<span style="font-size:12px;color:var(--soft)" title="Zu dieser Glückszahl gibt es bei den Fällen noch keine Ergebnisse">–</span>`}</label>`).join("")}</div>`
+      :`<p style="margin:0">Noch keine Glückszahlen vorhanden.</p>`}
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+        <button class="main" style="width:auto;padding:12px 22px;margin:0" onclick="namenSpeichern()">Speichern</button>
+        ${liste.length?`<button class="lbtn" onclick="if(confirm('Wirklich alle Namen löschen? Das gilt auch für das Rechtschreibtraining.')){document.querySelectorAll('input[data-g]').forEach(i=>i.value='');namenSpeichern();}">Alle Namen löschen</button>`:""}
+      </div>
+    </div>`;
+  window.scrollTo(0,0);
+}
+function namenSpeichern(){
+  app.querySelectorAll("input[data-g]").forEach(i=>{const v=i.value.trim();if(v)NAMEN[i.dataset.g]=v;else delete NAMEN[i.dataset.g];});
+  store.set("rs.namen",JSON.stringify(NAMEN));klasse();
 }
 function profil(g){
   const k=kinder().find(x=>x.g===g);if(!k)return klasse();
