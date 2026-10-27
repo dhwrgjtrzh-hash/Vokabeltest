@@ -896,6 +896,8 @@ function lehrerCSS(){
   .lt td.l,.lt th.l{text-align:left}
   .lt tr.klick{cursor:pointer}.lt tr.klick:hover td{background:var(--bg)}
   .lt tr.sum td{font-weight:700;background:var(--bg)}
+  .lbtn.mini{padding:2px 7px;font-size:13px;border-width:1px}
+  @media print{.lbtn.mini{display:none}}
   .lt th.sortbar{cursor:pointer;user-select:none}.lt th.sortbar:hover{color:var(--ink)}
   .lt th.an{color:var(--ink);font-weight:700}
   .lt th .pfeil{opacity:.45;font-size:11px}.lt th.an .pfeil{opacity:1}
@@ -927,9 +929,30 @@ function lehrperson(){
      LD=d;klasse();
    }).catch(()=>lehrerMeldung("Keine Verbindung","Die Google-Tabelle ist gerade nicht erreichbar. Prüfe die Internetverbindung."));
 }
+/* Gelöschte Ergebnisse: werden in dieser Station ausgeblendet (die Google-Tabelle bleibt unverändert) */
+let GEL=(()=>{try{return new Set(JSON.parse(store.get("fa.geloescht")||"[]"));}catch(e){return new Set();}})();
+function gelSpeichern(){store.set("fa.geloescht",JSON.stringify([...GEL]));}
+function loescheIds(ids,frage){
+  ids=ids.filter(Boolean);if(!ids.length)return false;
+  if(!confirm(frage))return false;
+  ids.forEach(id=>GEL.add(String(id)));gelSpeichern();return true;
+}
+function loescheVp(g){
+  const k=kinder().find(x=>x.g===g);if(!k||!k.vp)return;
+  if(loescheIds([k.vp.id],`Vorprüfung von ${nameVon(g)} löschen?`))profil(g);
+}
+function loescheKind(g){
+  const ids=(LD.runden||[]).filter(r=>String(r.glueckszahl)===g&&!GEL.has(String(r.id))).map(r=>r.id);
+  if(loescheIds(ids,`Alle Ergebnisse von ${nameVon(g)} löschen (Vorprüfung und geübte Kapitel)?`))klasse();
+}
+function wiederherstellen(){
+  if(!confirm("Alle gelöschten Ergebnisse wieder anzeigen?"))return;
+  GEL=new Set();gelSpeichern();klasse();
+}
 function kinder(){
   const K={};
   for(const r of (LD.runden||[])){
+    if(GEL.has(String(r.id)))continue;
     const g=String(r.glueckszahl||"?");const k=K[g]||(K[g]={g,vp:null,vpN:0,kap:{},zuletzt:"",geraete:new Set()});
     if(r.geraet)k.geraete.add(r.geraet);
     const z=r.datum||r.zeit;if(z>k.zuletzt)k.zuletzt=z;
@@ -977,18 +1000,19 @@ function klasse(){
     return `<tr class="klick" data-g="${esc(k.g)}"><td class="l"><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span style="color:var(--soft)">${esc(k.g)}</span>`:""}${k.geraete.size>1?` <span title="Diese Glückszahl wurde auf mehreren Tablets benutzt">⚠️</span>`:""}</td>
       <td>${vp?`<span class="pz" style="color:${ampel(p)}">${vp.punkte}/${vp.max}</span> <span style="color:var(--soft)">${p}%</span>`:"–"}</td>
       ${KAPS.map(b=>zelle(vp&&berQuote(vp,b))).join("")}
-      <td class="l">${kd}</td><td style="color:var(--soft)">${datumK(k.zuletzt)}</td></tr>`;
+      <td class="l">${kd}</td><td style="color:var(--soft)">${datumK(k.zuletzt)}</td>
+      <td><button class="lbtn mini" title="Ergebnisse dieses Kindes löschen" aria-label="Ergebnisse von ${esc(nameVon(k.g))} löschen" onclick="event.stopPropagation();loescheKind('${esc(k.g)}')">🗑</button></td></tr>`;
   }).join("");
   const sum=KAPS.map(b=>{let r=0,n=0;mitVp.forEach(k=>{const q=berQuote(k.vp,b);if(q){r+=q.r;n+=q.n;}});const p=pct(r,n);return `<td>${p==null?"–":`<span style="color:${ampel(p)}">${p}%</span>`}</td>`;}).join("");
   const schnitt=mitVp.length?Math.round(mitVp.reduce((a,k)=>a+pct(+k.vp.punkte,+k.vp.max),0)/mitVp.length):null;
   app.innerHTML=`<div class="lhead"><h2>Fälle – Auswertung</h2>
     <button class="lbtn" onclick="namenEditor()">Namen</button><button class="lbtn" onclick="lehrperson()">↻ Aktualisieren</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
     ${L.length?`<div class="tw2"><table class="lt">
-      <tr>${kopf("kind","Kind","l","Nach Name bzw. Glückszahl sortieren")}${kopf("vp","Vorprüfung total","","Nach Punkten der Vorprüfung sortieren")}${KAPS.map(b=>kopf("k"+b,"K"+b,"",`Nach Vorprüfung Kapitel ${b} sortieren: ${CH[b-1].title}`)).join("")}${kopf("geuebt","Selbst geübt K1–K9","l","Nach Anzahl geübter Kapitel sortieren")}${kopf("zuletzt","Zuletzt","","Nach letzter Aktivität sortieren")}</tr>
+      <tr>${kopf("kind","Kind","l","Nach Name bzw. Glückszahl sortieren")}${kopf("vp","Vorprüfung total","","Nach Punkten der Vorprüfung sortieren")}${KAPS.map(b=>kopf("k"+b,"K"+b,"",`Nach Vorprüfung Kapitel ${b} sortieren: ${CH[b-1].title}`)).join("")}${kopf("geuebt","Selbst geübt K1–K9","l","Nach Anzahl geübter Kapitel sortieren")}${kopf("zuletzt","Zuletzt","","Nach letzter Aktivität sortieren")}<th></th></tr>
       ${rows}
-      <tr class="sum"><td class="l">Klasse (${mitVp.length} mit Vorprüfung)</td><td>${schnitt==null?"–":schnitt+"%"}</td>${sum}<td></td><td></td></tr>
+      <tr class="sum"><td class="l">Klasse (${mitVp.length} mit Vorprüfung)</td><td>${schnitt==null?"–":schnitt+"%"}</td>${sum}<td></td><td></td><td></td></tr>
     </table></div>
-    <p class="lnote">K1–K9: Punkte der Vorprüfung pro Kapitel. Farben: grün ab 90 %, gelb ab 70 %, rot darunter. Die Kästchen bei «Selbst geübt» zeigen das beste Ergebnis beim ersten Versuch, wenn ein Kind ein Kapitel geübt hat. Auf eine Spaltenüberschrift klicken sortiert die Tabelle, nochmals klicken dreht die Reihenfolge. Ein Kind anklicken für die Antworten der Vorprüfung. Namen trägst du unter «Namen» ein oder löschst sie dort. Sie gelten auch im Rechtschreibtraining.</p>`
+    <p class="lnote">K1–K9: Punkte der Vorprüfung pro Kapitel. Farben: grün ab 90 %, gelb ab 70 %, rot darunter. Die Kästchen bei «Selbst geübt» zeigen das beste Ergebnis beim ersten Versuch, wenn ein Kind ein Kapitel geübt hat. Auf eine Spaltenüberschrift klicken sortiert die Tabelle, nochmals klicken dreht die Reihenfolge. 🗑 löscht die Ergebnisse eines Kindes (z. B. Testeinträge), bei einem Kind kannst du auch nur die Vorprüfung löschen. ${GEL.size?`<a href="#" onclick="wiederherstellen();return false">Gelöschte wieder anzeigen (${GEL.size})</a>. `:""}Ein Kind anklicken für die Antworten der Vorprüfung. Namen trägst du unter «Namen» ein oder löschst sie dort. Sie gelten auch im Rechtschreibtraining.</p>`
     :`<div class="card"><p style="margin:0">Noch keine Ergebnisse. Sobald ein Kind ein Kapitel oder die Vorprüfung abschliesst, erscheint es hier.</p></div>`}`;
   app.querySelectorAll("tr.klick").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
   window.scrollTo(0,0);
@@ -1022,7 +1046,7 @@ function profil(g){
   const vp=k.vp;
   const auf=vp?(vp.aufgaben||[]):[];
   app.innerHTML=`<div class="lhead"><h2>${esc(nameVon(g))}${NAMEN[g]?` <span style="font-size:18px;color:var(--soft)">Glückszahl ${esc(g)}</span>`:""}</h2>
-    <button class="lbtn" onclick="klasse()">← Klasse</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
+    <button class="lbtn" onclick="klasse()">← Klasse</button>${vp?`<button class="lbtn" onclick="loescheVp('${esc(g)}')">🗑 Vorprüfung löschen</button>`:""}<button class="lbtn" onclick="loescheKind('${esc(g)}')">🗑 Alle Ergebnisse löschen</button><button class="lbtn" onclick="window.print()">Drucken</button></div>
     ${vp?`<div class="card" style="margin-bottom:14px"><h2 style="color:var(--ink);font-size:22px">Vorprüfung: ${vp.punkte} von ${vp.max} (${pct(+vp.punkte,+vp.max)}%)</h2>
       <p style="margin:0;color:var(--soft);font-size:15px">Abgegeben ${datumK(vp.datum||vp.zeit)}${k.vpN>1?` · ${k.vpN} Abgaben, gezeigt ist die erste`:""}</p>
       <div class="tw2"><table class="lt"><tr><th>Nr.</th><th class="l">Aufgabe</th><th>Kapitel</th><th>Antwort</th><th>Richtig wäre</th></tr>
