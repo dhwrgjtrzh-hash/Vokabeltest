@@ -69,6 +69,10 @@ function daten_(uebung) {
   return { ok: true, tabelle: SpreadsheetApp.getActiveSpreadsheet().getUrl(), runden: runden };
 }
 
+function befehle_() {
+  try { return JSON.parse(PropertiesService.getScriptProperties().getProperty("BEFEHLE") || "{}") || {}; } catch (x) { return {}; }
+}
+
 const MELDUNG = {
   falsch: "Der Schlüssel dieser Station passt nicht zur Tabelle.",
   fehlt: "Die Auswertung ist noch nicht eingerichtet."
@@ -82,7 +86,43 @@ function doPost(e) {
   if (d.typ === "lehrer-daten") {
     const z = zugang_(d.schluessel, d.einrichten === true);
     if (z !== "ok") return json_({ ok: false, grund: z, fehler: MELDUNG[z] });
-    return json_(daten_(String(d.uebung || "")));
+    const antwort = daten_(String(d.uebung || ""));
+    antwort.befehle = befehle_();
+    return json_(antwort);
+  }
+
+  /* Auftrag der Lehrperson an das Tablet eines Kindes (z. B. Standortbestimmung zurücksetzen) */
+  if (d.typ === "lehrer-befehl") {
+    const z = zugang_(d.schluessel, false);
+    if (z !== "ok") return json_({ ok: false, grund: z, fehler: MELDUNG[z] });
+    const g = String(d.glueckszahl || "").replace(/\D/g, "");
+    if (!g || ["sb-reset", "abbrechen"].indexOf(d.befehl) < 0) return json_({ ok: false, fehler: "Ungültiger Auftrag" });
+    const b = befehle_();
+    if (d.befehl === "abbrechen") delete b[g];
+    else b[g] = { befehl: d.befehl, id: Utilities.getUuid().slice(0, 8), zeit: new Date().toISOString() };
+    PropertiesService.getScriptProperties().setProperty("BEFEHLE", JSON.stringify(b));
+    return json_({ ok: true, befehle: b });
+  }
+
+  /* Das Tablet fragt nach einem offenen Auftrag für seine Glückszahl */
+  if (d.typ === "befehl-abfragen") {
+    const g = String(d.glueckszahl || "").replace(/\D/g, "");
+    return json_({ ok: true, befehl: befehle_()[g] || null });
+  }
+
+  /* Das Tablet meldet: Auftrag ausgeführt */
+  if (d.typ === "befehl-erledigt") {
+    const g = String(d.glueckszahl || "").replace(/\D/g, "");
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000);
+    try {
+      const b = befehle_();
+      if (b[g] && b[g].id === d.id) {
+        delete b[g];
+        PropertiesService.getScriptProperties().setProperty("BEFEHLE", JSON.stringify(b));
+      }
+    } finally { lock.releaseLock(); }
+    return json_({ ok: true });
   }
 
   /* Abgaben der Kinder */

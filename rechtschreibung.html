@@ -169,6 +169,10 @@ table.t th{color:var(--mute);font-weight:700;font-size:.72rem;letter-spacing:.02
 table.t th.vert{min-width:62px;max-width:76px;white-space:normal;font-size:.66rem;hyphens:auto;-webkit-hyphens:auto}
 table.t tr.klick{cursor:pointer}
 table.t th.sortbar{cursor:pointer;user-select:none;-webkit-user-select:none}
+.zeit{display:inline-block;border-radius:999px;padding:1px 8px;font-size:.8rem;font-weight:700;cursor:help}
+.zeit.viel{background:var(--good-bg);color:var(--good)}.zeit.mittel{background:#fff3cd;color:#8a6100}.zeit.wenig{background:#eef2fa;color:#45506a}
+table.zt small.uhr{display:block;font-size:.68rem;color:var(--mute);margin-top:2px;white-space:nowrap}
+.verwaltung{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;font-size:.88rem}
 .doppelt{display:inline-block;background:#fff3cd;color:#8a6100;border-radius:999px;padding:0 8px;font-size:.75rem;font-weight:700;white-space:nowrap}
 table.t th.sortbar:hover{color:var(--ink)}
 table.t th.sortbar.an{color:var(--accent)}
@@ -1300,6 +1304,7 @@ function home(){
   ladeP();
   const offen = gz ? ladeS() : null;
   let inhalt = "";
+  const hinweis = befehlHinweis; befehlHinweis = "";
   if(!gz){
     inhalt = `<p class="sub">Hier übst du Rechtschreibung. Du hörst Wörter und Sätze und schreibst sie auf. Ist etwas falsch, siehst du, was nicht stimmt – und schreibst es richtig.</p>`;
   } else if(offen){
@@ -1351,7 +1356,34 @@ function home(){
   on("ton", ()=>spiele(["Hallo! Wenn du mich gut hörst, funktioniert der Ton."]));
   on("ton2", ()=>spiele(["Hallo! Wenn du mich gut hörst, funktioniert der Ton."]));
   on("gzneu", ()=>{ if(confirm("Möchtest du wirklich eine andere Glückszahl eingeben?")) zahlenfeld(); });
+  if(hinweis){ app.querySelector(".who").insertAdjacentHTML("afterend", `<div class="warn">${esc(hinweis)}</div>`); }
+  pruefeBefehle();
 }
+/* ===== Aufträge der Lehrperson (z. B. Standortbestimmung zurücksetzen) ===== */
+let befehlGeprueft = 0, befehlHinweis = "";
+function befehlErledigt(nr, id){
+  fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({typ:"befehl-erledigt", glueckszahl:nr, id})}).catch(()=>{});
+}
+function pruefeBefehle(){
+  if(!ENDPOINT || !gz || Date.now() - befehlGeprueft < 60000) return;
+  befehlGeprueft = Date.now();
+  const nr = gz;
+  fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({typ:"befehl-abfragen", glueckszahl:nr})})
+    .then(r=>r.json()).then(d=>{
+      if(!d || !d.ok || !d.befehl || nr !== gz) return;
+      if(S || !$("gzneu")){ befehlGeprueft = 0; return; }        // nur auf der Startseite ausführen, nie mitten in einer Übung
+      ladeP();
+      if(P.befehl === d.befehl.id) return befehlErledigt(nr, d.befehl.id);
+      if(d.befehl.befehl === "sb-reset"){
+        P.sb = []; P.stufe = 0; P.etappe = 0; P.seit = 0; P.befehl = d.befehl.id;
+        speichereP(); loescheS();
+        befehlHinweis = "Deine Lehrperson hat die Standortbestimmung zurückgesetzt. Mach sie bitte nochmals – so gut du kannst.";
+        befehlErledigt(nr, d.befehl.id);
+        home();
+      }
+    }).catch(()=>{ befehlGeprueft = 0; });
+}
+
 /* ===== Glückszahl nur mit Zahlenknöpfen (keine Tastatur, keine Buchstaben) ===== */
 let padTasten = null;
 function zahlenfeld(){
@@ -1507,7 +1539,7 @@ function protokolliere(it, eintraege){
   // eintraege: [{w, a, ok, ims}] – je Wort (bei Sätzen jedes Wort einzeln)
   const z = it.typ==="S" ? ++S.z : 0;
   for(const e of eintraege){
-    const rec = {w:e.w, a:e.a, ok:e.ok?1:0, s:it.s, k:it.typ, q:it.q};
+    const rec = {w:e.w, a:e.a, ok:e.ok?1:0, s:it.s, k:it.typ, q:it.q, t:Date.now()};
     if(z) rec.z = z;
     if(e.ims && it.typ==="W") rec.ims = 1;
     S.pending.push(rec);
@@ -1708,7 +1740,7 @@ function makeRec(items, fertig){
   const ok = items.filter(i=>i.ok).length;
   const zs = new Set(items.filter(i=>i.z).map(i=>i.z));
   return {typ:"uebung-runde", v:3, id:uid(), sid:S.sid, uebung:UEBUNG, glueckszahl:gz, geraet:GERAET, thema:S.thema, art:S.art, form:S.form||"", cat:S.cat||"",
-    datum:new Date().toISOString(), punkte:ok, max:items.length, fertig:!!fertig,
+    datum:new Date().toISOString(), start:S.start, punkte:ok, max:items.length, fertig:!!fertig,
     stand:{stufe:P.stufe, etappe:P.etappe, total:P.total, kiste:kisteN(), sb:P.sb.length},
     saetze:(S.saetze||[]).filter(x=>zs.has(x.z)), aufgaben:items};
 }
@@ -1798,6 +1830,7 @@ function auswerten(){
     if(r.stand) k.stand = r.stand;
     k.last = d; k.tage.add(String(d).slice(0,10));
     const satzText = {}; (r.saetze||[]).forEach(s=>{ satzText[s.z] = s; k.saetze.push({...s, datum:d, thema:r.thema}); });
+    zeitpunkte(k, r, d);
     for(const a of (r.aufgaben||[])){
       const it = {...a, datum:d, art:r.art, rid:ri};
       if(a.w){ it.res = pruefeWort(a.w, a.a||"", a.k==="S" || !!a.ims); it.ok = it.res.ok; it.fb = it.ok ? [] : fehlerBereiche(it.res); }
@@ -1829,8 +1862,95 @@ function auswerten(){
       return {...sb, q, st, niveau, cat, vollst: sb.items.length >= 50};
     });
     k.sbLetzte = k.sbList[k.sbList.length-1] || null;
+    k.bloecke = bloecke(k.punkte || []);
+    const jetzt = Date.now(), WOCHE = 7*24*3600e3;
+    k.zeitTotal = k.bloecke.reduce((s,b)=>s+b.aktiv, 0);
+    k.zeit7 = k.bloecke.filter(b=>jetzt - b.bis < WOCHE).reduce((s,b)=>s+b.aktiv, 0);
+    k.zeitGeschaetzt = k.bloecke.some(b=>b.alt);
   }
   return K;
+}
+
+/* ===== Übungszeit =====
+   Neue Daten: jede Antwort hat einen Zeitstempel (t). Ältere Daten: nur die Sendezeit pro Paket (geschätzt).
+   Aktive Zeit: Pausen über 2 Minuten zählen nicht; nach 15 Minuten ohne Aktivität beginnt ein neuer Übungsblock. */
+const PAUSE_MAX = 120e3, BLOCK_LUECKE = 15*60e3, ERSTE_AUFGABE = 15e3;
+function zeitpunkte(k, r, d){
+  const P = k.punkte || (k.punkte = []);
+  const auf = (r.aufgaben||[]).filter(a=>!a.extra && a.w);
+  if(!auf.length) return;
+  const thema = r.thema || "", start = +r.start || null;
+  if(auf.every(a=>a.t)){
+    const saetze = {};
+    for(const a of auf){
+      if(a.k==="S"){ const s = saetze[a.z] || (saetze[a.z] = {zeit:0, n:1, ok:1, thema, start}); s.zeit = Math.max(s.zeit, +a.t); if(!a.ok) s.ok = 0; }
+      else P.push({zeit:+a.t, n:1, ok:a.ok?1:0, thema, start});
+    }
+    Object.values(saetze).forEach(s=>P.push(s));
+  } else {
+    const zs = new Set(auf.filter(a=>a.k==="S").map(a=>a.z)), n = auf.filter(a=>a.k!=="S").length + zs.size;
+    const ok = auf.filter(a=>a.k!=="S" && a.ok).length + [...zs].filter(z=>auf.filter(a=>a.k==="S" && a.z===z).every(a=>a.ok)).length;
+    const zeit = Date.parse(d); if(isNaN(zeit)) return;
+    P.push({zeit, n, ok, thema, alt:true});
+  }
+}
+function bloecke(punkte){
+  const ps = punkte.slice().sort((a,b)=>a.zeit-b.zeit), out = [];
+  let b = null;
+  for(const p of ps){
+    if(!b || p.zeit - b.bis > BLOCK_LUECKE){
+      let erst = p.alt ? p.n*ERSTE_AUFGABE : (p.start && p.zeit - p.start > 0 && p.zeit - p.start <= PAUSE_MAX ? p.zeit - p.start : ERSTE_AUFGABE);
+      b = {von: p.zeit - erst, bis: p.zeit, aktiv: erst, n: p.n, ok: p.ok, themen: new Set([p.thema]), alt: !!p.alt};
+      out.push(b);
+    } else {
+      const luecke = p.zeit - b.bis;
+      b.aktiv += Math.min(luecke, p.alt ? p.n*PAUSE_MAX : PAUSE_MAX);
+      b.bis = p.zeit; b.n += p.n; b.ok += p.ok; b.themen.add(p.thema); if(p.alt) b.alt = true;
+    }
+  }
+  return out;
+}
+const fmtDauer = ms => { const m = Math.round(ms/60e3); if(ms > 0 && m < 1) return "< 1 Min"; if(m < 60) return m + " Min"; return Math.floor(m/60) + " h " + String(m%60).padStart(2,"0"); };
+const fmtUhr = ms => new Date(ms).toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});
+const tagKey = ms => { const d = new Date(ms); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+const tagLabel = key => { const d = new Date(key+"T12:00:00"); return d.toLocaleDateString("de-CH",{weekday:"short", day:"2-digit", month:"2-digit"}); };
+const themaKurz = t => String(t).replace(/^Stufe (\d) · /,"S$1 ").replace("Standortbestimmung","Standortbest.").replace("Regeltraining: ","Regel: ");
+
+/* Übersicht: wer hat wann wie lange geübt */
+function zeitenAnsicht(){
+  stille(); $("wrap").classList.add("wide");
+  const liste = sortiere(Object.values(K));
+  const tage = [...new Set(liste.flatMap(k=>k.bloecke.map(b=>tagKey(b.von))))].sort().slice(-10);
+  const zelle = (k, tag) => {
+    const bs = k.bloecke.filter(b=>tagKey(b.von)===tag);
+    if(!bs.length) return `<td class="num muted">–</td>`;
+    const ms = bs.reduce((s,b)=>s+b.aktiv,0), alt = bs.some(b=>b.alt);
+    const tip = bs.map(b=>`${fmtUhr(b.von)}–${fmtUhr(b.bis)}: ${fmtDauer(b.aktiv)}, ${b.n} Aufgaben (${[...b.themen].map(themaKurz).join(", ")})`).join("\n");
+    return `<td class="num"><span class="zeit ${ms>=20*60e3?"viel":ms>=8*60e3?"mittel":"wenig"}" title="${esc(tip)}">${alt?"≈ ":""}${fmtDauer(ms)}</span><small class="uhr">${bs.map(b=>fmtUhr(b.von)).join(" · ")}</small></td>`;
+  };
+  const summe = (k) => k.bloecke.filter(b=>tage.includes(tagKey(b.von))).reduce((s,b)=>s+b.aktiv,0);
+  app.innerHTML = `<div class="card wide-card">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">⏱ Übungszeiten</h2>
+      <div class="row no-print"><button class="btn ghost small" id="zurk">← Klasse</button><button class="btn ghost small" id="tprint">Drucken</button></div>
+    </div>
+    <p class="sub" style="margin-top:8px">Aktive Übungszeit pro Tag (Pausen über 2 Minuten zählen nicht). Darunter: Beginn der Übungsblöcke. Mit der Maus auf eine Zeit zeigen für Details. ≈ = geschätzt (ältere Daten vom 22.–27.10. ohne genaue Zeitstempel).</p>
+    ${tage.length ? `<div class="tscroll"><table class="t zt"><tr><th>Kind</th>${tage.map(t=>`<th class="num">${esc(tagLabel(t))}</th>`).join("")}<th class="num">Total</th></tr>
+      ${liste.map(k=>`<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}</td>${tage.map(t=>zelle(k,t)).join("")}<td class="num"><b>${fmtDauer(summe(k))}</b></td></tr>`).join("")}
+    </table></div>` : `<p class="muted">Noch keine Übungszeiten.</p>`}
+  </div>`;
+  $("zurk").onclick = ()=>klasse(false);
+  $("tprint").onclick = ()=>print();
+  app.querySelectorAll("tr[data-g]").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
+  window.scrollTo(0,0);
+}
+function zeitenProfil(k){
+  if(!k.bloecke.length) return "";
+  const tage = new Set(k.bloecke.map(b=>tagKey(b.von))).size;
+  const zeilen = k.bloecke.slice().reverse().slice(0,20).map(b=>`<tr><td>${esc(tagLabel(tagKey(b.von)))}</td><td>${fmtUhr(b.von)}–${fmtUhr(b.bis)}</td><td class="num"><b>${b.alt?"≈ ":""}${fmtDauer(b.aktiv)}</b></td><td class="num">${b.n}</td><td class="num">${b.n?Math.round(b.ok/b.n*100)+"%":"–"}</td><td>${[...b.themen].map(t=>esc(themaKurz(t))).join(", ")}</td></tr>`).join("");
+  return `<h3>Übungszeiten</h3>
+    <p class="muted" style="margin-top:-4px">Total ${k.zeitGeschaetzt?"≈ ":""}<b>${fmtDauer(k.zeitTotal)}</b> an ${tage} ${tage===1?"Tag":"Tagen"} · letzte 7 Tage <b>${fmtDauer(k.zeit7)}</b> · Pausen über 2 Minuten zählen nicht${k.zeitGeschaetzt?" · ≈ geschätzt (ältere Daten)":""}</p>
+    <table class="t"><tr><th>Tag</th><th>Zeit</th><th class="num">Aktiv</th><th class="num">Aufgaben</th><th class="num">Richtig</th><th>Geübt</th></tr>${zeilen}</table>`;
 }
 
 function catZelle(x){
@@ -1847,7 +1967,9 @@ const SPALTEN = {
   woerter: {wert: k => k.n, start:"ab"},
   richtig: {wert: k => k.quoteAkt, start:"auf"},
   sb:      {wert: k => k.sbLetzte ? k.sbLetzte.q : null, start:"auf"},
-  zuletzt: {wert: k => k.last ? String(k.last) : null, start:"ab"}
+  zuletzt: {wert: k => k.last ? String(k.last) : null, start:"ab"},
+  zeit7:   {wert: k => k.zeit7 || 0, start:"ab"},
+  zeitTot: {wert: k => k.zeitTotal || 0, start:"ab"}
 };
 CAT_ORDER.forEach(c => SPALTEN["cat_"+c] = {wert: k => catPct(k.cat[c]), start:"auf"});
 let SORT = (()=>{ try{ const s = JSON.parse(store.get("rs.sort")||"null"); if(s && SPALTEN[s.key]) return s; }catch(e){} return {key:"kind", dir:"auf"}; })();
@@ -1865,6 +1987,23 @@ function kopf(key, text, cls, title){
   const an = SORT.key===key, pfeil = an ? (SORT.dir==="auf" ? " ▲" : " ▼") : "";
   return `<th class="${cls||""} sortbar${an?" an":""}" data-sort="${key}" ${title?`title="${esc(title)}"`:""} aria-sort="${an?(SORT.dir==="auf"?"ascending":"descending"):"none"}">${text}<span class="pfeil">${pfeil}</span></th>`;
 }
+/* Verwaltung im Profil: Standortbestimmung zurücksetzen */
+function verwaltung(g){
+  const b = (TD.befehle||{})[g];
+  return `<div class="verwaltung no-print">${b
+    ? `<span>↺ <b>Zurücksetzen angefordert</b> (${datumKurz(b.zeit)}) – wird ausgeführt, sobald das Kind das Training öffnet.</span> <button class="btn ghost small" id="sbabbr">Abbrechen</button>`
+    : `<button class="btn ghost small" id="sbreset">↺ Standortbestimmung zurücksetzen</button> <span class="muted">Das Kind macht sie beim nächsten Öffnen neu; die Stufe wird neu bestimmt.</span>`}</div>`;
+}
+function befehlSenden(g, befehl){
+  if(!ENDPOINT){ TD.befehle = TD.befehle || {}; if(befehl==="abbrechen") delete TD.befehle[g]; else TD.befehle[g] = {befehl, id:"demo", zeit:new Date().toISOString()}; return profil(g); }
+  const box = app.querySelector(".verwaltung"); if(box) box.innerHTML = `<span class="muted">Wird gespeichert …</span>`;
+  fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({typ:"lehrer-befehl", schluessel:LEHRER_KEY, glueckszahl:g, befehl})})
+    .then(r=>r.json()).then(d=>{
+      if(!d || !d.ok) throw new Error((d && d.fehler) || "abgelehnt");
+      TD.befehle = d.befehle || {}; profil(g);
+    })
+    .catch(e=>{ if(box) box.innerHTML = `<span style="color:var(--bad)">Konnte nicht gespeichert werden (${esc(e.message)}). Bitte nochmals versuchen.</span>`; setTimeout(()=>profil(g), 4000); });
+}
 const mehrereTablets = k => k.geraete && k.geraete.size > 1
   ? ` <span class="doppelt" title="Diese Glückszahl wurde auf ${k.geraete.size} verschiedenen Tablets benutzt – vielleicht hat sich ein Kind vertippt.">⚠️ ${k.geraete.size} Tablets</span>` : "";
 function klasse(neu){
@@ -1872,9 +2011,10 @@ function klasse(neu){
   pill.hidden = true; $("wrap").classList.add("wide"); stille();
   const liste = sortiere(Object.values(K));
   const zeilen = liste.map(k=>{ const st = k.stand || {};
-    return `<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}${mehrereTablets(k)}</td>
+    return `<tr class="klick" data-g="${esc(k.g)}"><td><b>${esc(nameVon(k.g))}</b>${NAMEN[k.g]?` <span class="muted">${esc(k.g)}</span>`:""}${mehrereTablets(k)}${(TD.befehle||{})[k.g] ? ` <span class="doppelt" title="Die Standortbestimmung wird zurückgesetzt, sobald das Kind das Training öffnet.">↺ SB neu</span>` : ""}</td>
       <td class="num">${st.stufe?`${st.stufe} · ${Math.min(st.etappe||0,ETAPPEN_PRO_STUFE)}/${ETAPPEN_PRO_STUFE}`:"–"}</td>
       <td class="num">${k.n}</td>
+      <td class="num">${k.zeit7?fmtDauer(k.zeit7):"–"}</td><td class="num">${k.zeitTotal?(k.zeitGeschaetzt?"≈ ":"")+fmtDauer(k.zeitTotal):"–"}</td>
       <td class="num">${k.quoteAkt===null?"–":`<span class="tag ${farbe(k.quoteAkt)}">${k.quoteAkt}%</span>`}</td>
       <td class="num">${k.sbLetzte?`${k.sbLetzte.q}% <span class="muted">${k.sbLetzte.niveau?"bis S"+k.sbLetzte.niveau:"&lt; S1"}</span>`:"–"}</td>
       ${CAT_ORDER.map(c=>catZelle(k.cat[c])).join("")}
@@ -1883,18 +2023,19 @@ function klasse(neu){
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Rechtschreibung · Klassenübersicht</h2>
       <div class="row no-print">${TD.tabelle?`<a class="btn ghost small" href="${esc(TD.tabelle)}" target="_blank" rel="noopener">Google-Tabelle</a>`:""}
-        <button class="btn ghost small" id="namen">Namen</button><button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tload">↻ Aktualisieren</button></div>
+        <button class="btn ghost small" id="zeiten">⏱ Übungszeiten</button><button class="btn ghost small" id="namen">Namen</button><button class="btn ghost small" id="tprint">Drucken</button><button class="btn ghost small" id="tload">↻ Aktualisieren</button></div>
     </div>
     ${TD.demo?`<div class="warn">Beispieldaten – so sieht die Auswertung aus, sobald die Kinder üben. Die Namen sind erfunden.</div>`:""}
     <p class="sub" style="margin-top:8px">Prozent = Anteil richtig in den letzten 400 geschriebenen Wörtern. Bereiche: Anteil der Stellen, an denen die Regel richtig angewendet wurde. Grün ab 90%, gelb ab 75%. Spaltenkopf antippen zum Sortieren, Zeile antippen für das Profil.</p>
-    <div class="tscroll"><table class="t"><tr>${kopf("kind","Kind")}${kopf("stufe","Stufe · Etappe","num")}${kopf("woerter","Wörter","num")}${kopf("richtig","Richtig","num")}${kopf("sb","Standort&shy;bestimmung","num")}
+    <div class="tscroll"><table class="t"><tr>${kopf("kind","Kind")}${kopf("stufe","Stufe · Etappe","num")}${kopf("woerter","Wörter","num")}${kopf("zeit7","Zeit 7&nbsp;Tage","num","Aktive Übungszeit der letzten 7 Tage")}${kopf("zeitTot","Zeit total","num","Aktive Übungszeit insgesamt (≈ = teilweise geschätzt)")}${kopf("richtig","Richtig","num")}${kopf("sb","Standort&shy;bestimmung","num")}
       ${CAT_ORDER.map(c=>kopf("cat_"+c, esc(CATS[c].kurz).replace("Nominalisierung","Nomina&shy;lisierung"), "num vert", CATS[c].name)).join("")}${kopf("zuletzt","Zuletzt")}</tr>
-      ${zeilen || `<tr><td colspan="17">Noch keine Daten.</td></tr>`}</table></div>
+      ${zeilen || `<tr><td colspan="19">Noch keine Daten.</td></tr>`}</table></div>
     ${klassenBereiche(liste)}
   </div>`;
   $("tload").onclick = lehrperson;
   $("tprint").onclick = ()=>print();
   $("namen").onclick = ()=>namenEditor(liste);
+  $("zeiten").onclick = zeitenAnsicht;
   app.querySelectorAll("tr[data-g]").forEach(tr=>tr.onclick=()=>profil(tr.dataset.g));
   app.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{
     const key = th.dataset.sort;
@@ -1997,11 +2138,13 @@ function profil(g){
       <div><b>${k.tage.size}</b><span>Übungstage</span></div>
       <div><b>${st.kiste??"–"}</b><span>Wörter in der Fehlerkiste</span></div>
     </div>
+    ${verwaltung(g)}
     <div class="assess"><h3>Einschätzung</h3>${einschaetzung(k)}</div>
     <h3>Rechtschreibbereiche</h3>
     <p class="muted" style="margin-top:-4px">Wie oft die Regel an den passenden Stellen richtig angewendet wurde (letzte 400 Wörter), mit Beispielen aus den Fehlern.</p>
     <div class="pbars">${bereiche || `<p class="muted">Noch keine Daten.</p>`}</div>
     ${sbTab}
+    ${zeitenProfil(k)}
     ${verlaufSVG(k)}
     ${k.offen.length?`<h3>Noch nicht sicher</h3><p class="muted" style="margin-top:-4px">Wörter, die beim letzten Versuch falsch waren.</p><p class="chips">${k.offen.map(w=>`<span>${esc(w)}</span>`).join("")}</p>`:""}
     ${saetze?`<h3>Letzte Sätze</h3><ul class="satzliste">${saetze}</ul>`:""}
@@ -2009,6 +2152,8 @@ function profil(g){
   </div>`;
   $("zur").onclick = klasse;
   $("tprint").onclick = ()=>print();
+  const rs = $("sbreset"); if(rs) rs.onclick = ()=>{ if(confirm(`Standortbestimmung von ${nameVon(g)} zurücksetzen?\n\nBeim nächsten Öffnen macht das Kind die Standortbestimmung neu, und die Stufe wird neu bestimmt. Fehlerkiste und bisherige Resultate bleiben erhalten.`)) befehlSenden(g, "sb-reset"); };
+  const ab = $("sbabbr"); if(ab) ab.onclick = ()=>befehlSenden(g, "abbrechen");
   window.scrollTo(0,0);
 }
 
@@ -2075,6 +2220,8 @@ function beispielDaten(){
     runden[runden.length-1].stand = {...runden[runden.length-2].stand, sb:2};
     NAMEN_DEMO[kd.g] = kd.name;
   });
+  runden.forEach(r=>{ const t0 = Date.parse(r.datum); r.start = t0; let i = 0, z0 = null;
+    r.aufgaben.forEach(a=>{ if(a.k==="S"){ if(a.z!==z0){ i++; z0 = a.z; } } else i++; a.t = t0 + i*(14000 + Math.floor(rnd()*12000)); }); });
   if(!Object.keys(NAMEN).length) Object.assign(NAMEN, NAMEN_DEMO);
   return {ok:true, demo:true, runden};
 }
