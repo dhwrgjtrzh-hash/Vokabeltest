@@ -345,7 +345,6 @@ const CH=[
  ]}
 ];
 
-const WORDS=["LUPE","SPUR","HUT","AKTE","MANTEL","ALIBI","TATORT","BEWEIS","MEISTER"];
 const KEY="fall-detektiv-v1";
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbyk0lFil4xRSsFLkPV_RuamQ-XPSU9Hn76HxHjInfYCJyDaVxjsW1S7gQHBP1rYV5dT/exec";
 const UEBUNG = "Fälle";
@@ -396,19 +395,6 @@ let S={};
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function unlocked(i){return true}
-function askWord(i){
-  overlay(`<h2>Kapitel ${i+1} ist noch zu</h2><p>Gib das Schlüsselwort ein. Du bekommst es, wenn du Kapitel ${i} ohne Fehler löst.</p>
-  <input id="ci" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Schlüsselwort" style="width:100%;font:inherit;font-size:24px;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);letter-spacing:2px" onkeydown="if(event.key==='Enter')tryWord(${i})">
-  <div id="cm" style="min-height:28px;margin-top:8px;color:var(--bad)"></div>
-  <button class="main" onclick="tryWord(${i})">Öffnen</button>`);
-  setTimeout(()=>document.getElementById("ci")?.focus(),50);
-}
-function tryWord(i){
-  const v=document.getElementById("ci").value.trim().toUpperCase();
-  const k=WORDS.indexOf(v);
-  if(k<0||k+1<i){document.getElementById("cm").textContent="Das ist nicht das richtige Schlüsselwort.";return}
-  P.open=Math.max(P.open||0,k+1);save();closeOv();home();
-}
 function stars(n){return "★".repeat(n)+"☆".repeat(3-n)}
 function toTop(){window.scrollTo(0,0)}
 
@@ -438,7 +424,7 @@ function home(){
   ${P.run&&CH[P.run.ch]?`<button class="main" style="margin:0 0 16px" onclick="resume()">Weitermachen: Kapitel ${P.run.ch+1} – Aufgabe ${P.run.pos+1} von ${P.run.queue.length}</button>`:""}
   <div class="list">${CH.map((c,i)=>{
     const u=unlocked(i),d=P.done[c.id];
-    return `<button class="file ${u?"":"locked"} ${i===next?"next":""}" style="--c:${c.c}" onclick="${u?`intro(${i})`:`askWord(${i})`}">
+    return `<button class="file ${u?"":"locked"} ${i===next?"next":""}" style="--c:${c.c}" onclick="intro(${i})">
       <span class="n">${u?i+1:"🔒"}</span>
       <span class="t"><h3>${c.title}</h3><small>${c.sub}</small></span>
       <span class="s" aria-label="${d!=null?d+" von 3 Sternen":""}">${d!=null?stars(d):""}</span>
@@ -742,8 +728,7 @@ function result(){
     <div class="big" style="color:var(--c)" aria-label="${st} von 3 Sternen">${stars(st)}</div>
     <p>Beim ersten Versuch richtig: <b>${S.first} von ${S.total}</b></p>
     <p>${msg}</p>
-    ${S.first===S.total?`<div class="codebox big"><span>Alles beim ersten Versuch richtig! Dein Schlüsselwort:</span><b>${WORDS[S.ch]}</b><small>Zeig es deiner Lehrperson oder schreib es in dein Heft.</small></div>`:`<div class="codebox big"><small>Für das Schlüsselwort musst du alle Aufgaben beim ersten Versuch richtig lösen. Du hattest ${S.total-S.first} Fehler. Probier es nochmals!</small></div>`}
-    ${nx!=null&&unlocked(nx)?`<button class="main" onclick="intro(${nx})">Weiter zu Kapitel ${nx+1}</button>`:nx!=null?"":`<p><b>Du hast alle Kapitel geschafft – du bist ein echter Fall-Detektiv!</b></p>`}
+    ${nx!=null?`<button class="main" onclick="intro(${nx})">Weiter zu Kapitel ${nx+1}</button>`:nx!=null?"":`<p><b>Du hast alle Kapitel geschafft – du bist ein echter Fall-Detektiv!</b></p>`}
     <p class="sent2" id="sent">${VORSCHAU?"Vorschau – es wird nichts geschickt.":"Wird an die Lehrperson geschickt …"}</p>
     <button class="sec" onclick="start(${S.ch})">Kapitel nochmals üben</button>
     <button class="sec" onclick="home()">Zur Übersicht</button>
