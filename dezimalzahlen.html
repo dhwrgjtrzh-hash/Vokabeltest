@@ -566,7 +566,7 @@ const LEVELS = 3;
 const TEST_N = GOALS.length >= 8 ? GOALS.length : 10;
 const GOAL = Object.fromEntries(GOALS.map(g=>[g.id,g]));
 const LVNAME = ["","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
-let gz = (store.get("uebung.gz")||store.get("dz.gz")||"").replace(/\D/g,"");
+let gz = (store.get("uebung.gz")||store.get("dz.gz")||store.get("rs.gz")||"").replace(/\D/g,"");
 let P = null, S = null;
 
 function pkey(){ return "uebung.p."+UEBUNG+"."+gz; }
@@ -600,9 +600,9 @@ function home(){
   const los = ()=>{
     const v = inp.value.replace(/\D/g,"").slice(0,4);
     if(!v){ inp.classList.add("no"); inp.focus(); return; }
-    gz = v; store.set("uebung.gz", gz); loadP(); startAuto();
+    gz = String(+v); store.set("uebung.gz", gz); if(!store.get("rs.gz")) store.set("rs.gz", gz); loadP(); startAuto();
   };
-  inp.addEventListener("input", ()=>{ inp.classList.remove("no"); });
+  inp.addEventListener("input", ()=>{ const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value = v; inp.classList.remove("no"); });
   inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); los(); } });
   document.getElementById("los").onclick = los;
   inp.focus({preventScroll:true});

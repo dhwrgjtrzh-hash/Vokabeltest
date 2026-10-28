@@ -233,6 +233,12 @@ body.eingebettet header{display:none}
 
 .back{display:inline-flex;align-items:center;text-decoration:none;color:#0f8a6b;font-weight:700;font-size:.95rem;padding:8px 12px 8px 8px;border:2px solid #dfe5ef;border-radius:999px;background:#fff;white-space:nowrap;flex:none}
 @media (max-width:560px){ header .logo{display:none} .back{font-size:.85rem;padding:6px 10px 6px 6px} }
+
+.pad-card{text-align:left;max-width:none}
+.gzrow{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:12px;margin-top:8px}
+.gzfeld{font:inherit;font-size:1.6rem;font-weight:800;width:5.2em;max-width:100%;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums;-webkit-appearance:none}
+.gzfeld:focus{outline:none;border-color:var(--accent)}
+.gzfeld.no{border-color:#ef7b6f;background:#fde4e1}
 </style>
 </head>
 <body>
@@ -1231,7 +1237,7 @@ function vorladen(texte){ texte.forEach(t=>{ const p = audioPfad(t); if(p) try{ 
 
 /* ===== Fortschritt (auf diesem Gerät) ===== */
 const GERAET = (()=>{ let g = store.get("rs.geraet"); if(!g){ g = uid(); store.set("rs.geraet", g); } return g; })();
-let gz = (store.get("rs.gz")||"").replace(/\D/g,"");
+let gz = (store.get("rs.gz")||store.get("uebung.gz")||"").replace(/\D/g,"");
 let P = null;
 const pkey = () => "rs.p."+gz;
 function neuerStand(){ return {v:1, stufe:0, etappe:0, total:0, versuche:0, seit:0, sb:[], gesehen:{}, kiste:{}, stat:{}, worte:0}; }
@@ -1388,32 +1394,24 @@ function pruefeBefehle(){
     }).catch(()=>{ befehlGeprueft = 0; });
 }
 
-/* ===== Glückszahl nur mit Zahlenknöpfen (keine Tastatur, keine Buchstaben) ===== */
+/* ===== Glückszahl: ein Feld, nur Ziffern (wie in allen Trainern) ===== */
 let padTasten = null;
 function zahlenfeld(){
   pill.hidden = true;
-  let z = "";
-  const zeichne = () => {
-    $("gzanz").innerHTML = (z ? [...z].map(d=>`<span>${d}</span>`).join("") : `<span class="leer">?</span>`);
-    $("gzok").disabled = !z;
-  };
+  if(padTasten){ document.removeEventListener("keydown", padTasten); padTasten = null; }
   app.innerHTML = `<div class="card pad-card">
-    <h2>Tippe deine Glückszahl</h2>
-    <p class="sub">Drücke auf die Zahlen. Nimm immer dieselbe Glückszahl – dann machst du dort weiter, wo du aufgehört hast.</p>
-    <div class="gzanz" id="gzanz" aria-live="polite"></div>
-    <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-n="${n}">${n}</button>`).join("")}
-      <button class="del" id="gzdel" aria-label="Löschen">⌫</button><button data-n="0">0</button><button class="ok" id="gzok">OK</button></div>
+    <h2>Deine Glückszahl</h2>
+    <p class="sub">Schreib deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl, dann machst du dort weiter, wo du aufgehört hast.</p>
+    <div class="gzrow"><input class="gzfeld" id="gzfeld" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="?" aria-label="Deine Glückszahl"><button class="btn" id="gzok">Los geht's →</button></div>
   </div>`;
-  const tipp = n => { if(z.length < 4){ z += n; zeichne(); } };
-  const weg = () => { z = z.slice(0,-1); zeichne(); };
-  const fertig = () => { if(!z) return; bestaetigen(z); };
-  app.querySelectorAll(".pad [data-n]").forEach(b=>b.onclick=()=>tipp(b.dataset.n));
-  $("gzdel").onclick = weg; $("gzok").onclick = fertig;
-  if(padTasten) document.removeEventListener("keydown", padTasten);
-  padTasten = e => { if(!$("gzanz")) { document.removeEventListener("keydown", padTasten); padTasten = null; return; }
-    if(/^[0-9]$/.test(e.key)) tipp(e.key); else if(e.key==="Backspace") weg(); else if(e.key==="Enter") fertig(); };
-  document.addEventListener("keydown", padTasten);
-  zeichne();
+  const f = $("gzfeld");
+  const los = () => { const z = f.value.replace(/\D/g,"").slice(0,4); if(!z){ f.classList.add("no"); f.focus(); return; }
+    const neu = String(+z); if(gz && gz !== neu) fortschrittMitnehmen(gz, neu); gz = neu; store.set("rs.gz", gz);
+    if(!store.get("uebung.gz")) store.set("uebung.gz", gz); home(); };
+  f.addEventListener("input", ()=>{ const v = f.value.replace(/\D/g,"").slice(0,4); if(f.value!==v) f.value = v; f.classList.remove("no"); });
+  f.addEventListener("keydown", e => { if(e.key==="Enter"){ e.preventDefault(); los(); } });
+  $("gzok").onclick = los;
+  f.focus({preventScroll:true});
 }
 /* Glückszahl gewechselt (z. B. vertippt): Fortschritt dieses Tablets auf die neue Zahl übertragen */
 function fortschrittMitnehmen(alt, neu){
