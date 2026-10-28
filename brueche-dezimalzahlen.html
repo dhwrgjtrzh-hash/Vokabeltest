@@ -479,7 +479,7 @@ let P = null, S = null;
 
 function pkey(){ return "uebung.p."+UEBUNG+"."+gz; }
 function loadP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P=null; } if(!P||!P.goals) P={goals:{}, last:null}; }
-function saveP(){ store.set(pkey(), JSON.stringify(P)); }
+function saveP(){ P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt); STAND.merken(UEBUNG, gz, txt, P.t); }
 function gs(id){ return P.goals[id] || (P.goals[id]={lv:1, pr:0, done:false, n:0, ok:0}); }
 
 function levelBar(id){
@@ -494,7 +494,7 @@ function levelBar(id){
 
 function home(){
   pill.hidden = true;
-  if(gz){ loadP(); return startAuto(); }
+  if(gz){ if(STAND.brauche(UEBUNG, gz)) app.innerHTML = `<div class="card"><p class="sub" style="margin:0">Einen Moment …</p></div>`; return STAND.holen(UEBUNG, gz, pkey(), ()=>{ loadP(); startAuto(); }); }
   app.innerHTML = `<div class="card start">
     <h2>Deine Glückszahl</h2>
     <p class="sub">Schreib deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl, dann machst du dort weiter, wo du aufgehört hast.</p>
@@ -508,7 +508,7 @@ function home(){
   const los = ()=>{
     const v = inp.value.replace(/\D/g,"").slice(0,4);
     if(!v){ inp.classList.add("no"); inp.focus(); return; }
-    gz = String(+v); store.set("uebung.gz", gz); if(!store.get("rs.gz")) store.set("rs.gz", gz); loadP(); startAuto();
+    gz = String(+v); store.set("uebung.gz", gz); if(!store.get("rs.gz")) store.set("rs.gz", gz); STAND.holen(UEBUNG, gz, pkey(), ()=>{ loadP(); startAuto(); });
   };
   inp.addEventListener("input", ()=>{ const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value = v; inp.classList.remove("no"); });
   inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); los(); } });
@@ -523,7 +523,7 @@ function startAuto(){
   const open = GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done);
   startGoal(last || (open ? open.id : pick(GOALS).id));
 }
-function otherNumber(){ sendPending(); S = null; gz = ""; store.set("uebung.gz", ""); home(); }
+function otherNumber(){ sendPending(); STAND.jetzt(true); S = null; gz = ""; store.set("uebung.gz", ""); home(); }
 
 function startGoal(id){
   P.last = id; saveP();
@@ -922,6 +922,32 @@ function teacherView(filter){
     document.getElementById("detail").scrollIntoView({behavior:"smooth"});
   });
 }
+
+/* ===== Lernstand auf allen Geräten: wird über die Glückszahl in der Google-Tabelle gespeichert ===== */
+const STAND = (()=>{
+  const geholt = {}; let timer = null, offen = null;
+  const post = (body, keep) => fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body), keepalive:!!keep}).then(r=>r.json());
+  function senden(uebung, g, text, t, keep){ if(!ENDPOINT || !g || !text) return; post({typ:"stand-speichern", uebung, glueckszahl:g, t, stand:text}, keep).catch(()=>{}); }
+  function brauche(uebung, g){ return !!(ENDPOINT && g && !geholt[uebung+"|"+g]); }
+  function holen(uebung, g, key, fertig){
+    if(!brauche(uebung, g)){ fertig(); return; }
+    geholt[uebung+"|"+g] = true;
+    let erledigt = false; const weiter = ()=>{ if(!erledigt){ erledigt = true; fertig(); } };
+    setTimeout(weiter, 4000);
+    post({typ:"stand-laden", uebung, glueckszahl:g}).then(d=>{
+      if(erledigt) return;
+      let text = store.get(key), lokal = null; try{ lokal = JSON.parse(text||"null"); }catch(e){}
+      const tl = (lokal && lokal.t) || 0, tr = (d && d.ok && d.stand) ? (Number(d.t)||0) : -1;
+      if(tr > tl) store.set(key, d.stand);
+      else if(lokal && tl >= tr && !(d && d.stand === text)) senden(uebung, g, text, tl || Date.now());
+    }).catch(()=>{}).finally(weiter);
+  }
+  function merken(uebung, g, text, t){ if(!ENDPOINT || !g) return; offen = {uebung, g, text, t}; clearTimeout(timer); timer = setTimeout(()=>jetzt(false), 5000); }
+  function jetzt(keep){ clearTimeout(timer); if(offen){ const o = offen; offen = null; senden(o.uebung, o.g, o.text, o.t, keep); } }
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") jetzt(true); });
+  window.addEventListener("pagehide", ()=>jetzt(true));
+  return {brauche, holen, merken, jetzt};
+})();
 
 pill.onclick = otherNumber;
 recoverPending();

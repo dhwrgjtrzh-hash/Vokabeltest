@@ -82,6 +82,11 @@ function doPost(e) {
   let d;
   try { d = JSON.parse(e.postData.contents); } catch (x) { return json_({ ok: false, fehler: "Ungültige Anfrage" }); }
 
+  /* Lernstand speichern und laden (pro Glückszahl) */
+  if (d.typ === "stand-laden" || d.typ === "stand-speichern") {
+    try { return json_(stand_(d, SpreadsheetApp.getActiveSpreadsheet())); } catch (x) { return json_({ ok: false, fehler: String(x) }); }
+  }
+
   /* Auswertung für die Deutsch-Station */
   if (d.typ === "lehrer-daten") {
     const z = zugang_(d.schluessel, d.einrichten === true);
@@ -153,4 +158,37 @@ function doPost(e) {
 /* Einfacher Funktionstest: Die Web-App-Adresse im Browser öffnen zeigt «bereit». */
 function doGet() {
   return json_({ ok: true, bereit: true, eingerichtet: !!PropertiesService.getScriptProperties().getProperty("SCHLUESSEL") });
+}
+
+
+/* Lernstand der Kinder (pro Übung und Glückszahl), damit sie auf jedem Gerät dort weitermachen, wo sie aufgehört haben. Kein Name, nur die Glückszahl. */
+function stand_(d, ss) {
+  const g = String(d.glueckszahl || "").replace(/\D/g, "").slice(0, 4);
+  const u = String(d.uebung || "").slice(0, 60);
+  if (!g || !u) return { ok: false, fehler: "Glückszahl oder Übung fehlt" };
+  let sh = ss.getSheetByName("Lernstand");
+  if (!sh) { sh = ss.insertSheet("Lernstand"); sh.appendRow(["Übung", "Glückszahl", "Zeit", "Stand"]); sh.setFrozenRows(1); }
+  const finde = function () {
+    const n = sh.getLastRow() - 1;
+    const w = n > 0 ? sh.getRange(2, 1, n, 2).getValues() : [];
+    for (let i = 0; i < w.length; i++) if (String(w[i][0]) === u && String(w[i][1]).replace(/^'/, "") === g) return i + 2;
+    return -1;
+  };
+  if (d.typ === "stand-laden") {
+    const z = finde();
+    if (z < 0) return { ok: true, stand: null };
+    const r = sh.getRange(z, 3, 1, 2).getValues()[0];
+    return { ok: true, t: Number(r[0]) || 0, stand: String(r[1] || "") };
+  }
+  const text = String(d.stand || "");
+  if (!text || text.length > 45000) return { ok: false, fehler: "Stand fehlt oder ist zu gross" };
+  const t = Number(d.t) || Date.now();
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const z = finde();
+    if (z < 0) sh.appendRow([u, "'" + g, t, text]);
+    else if (t >= (Number(sh.getRange(z, 3).getValue()) || 0)) sh.getRange(z, 3, 1, 2).setValues([[t, text]]);
+  } finally { lock.releaseLock(); }
+  return { ok: true };
 }

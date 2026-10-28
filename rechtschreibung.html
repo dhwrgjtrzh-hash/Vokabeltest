@@ -1242,7 +1242,33 @@ let P = null;
 const pkey = () => "rs.p."+gz;
 function neuerStand(){ return {v:1, stufe:0, etappe:0, total:0, versuche:0, seit:0, sb:[], gesehen:{}, kiste:{}, stat:{}, worte:0}; }
 function ladeP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P = null; } if(!P || P.v!==1) P = neuerStand(); }
-function speichereP(){ if(gz) store.set(pkey(), JSON.stringify(P)); }
+function speichereP(){ if(!gz) return; P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt); STAND.merken("Rechtschreibung", gz, txt, P.t); }
+
+/* ===== Lernstand auf allen Geräten: wird über die Glückszahl in der Google-Tabelle gespeichert ===== */
+const STAND = (()=>{
+  const geholt = {}; let timer = null, offen = null;
+  const post = (body, keep) => fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body), keepalive:!!keep}).then(r=>r.json());
+  function senden(uebung, g, text, t, keep){ if(!ENDPOINT || !g || !text) return; post({typ:"stand-speichern", uebung, glueckszahl:g, t, stand:text}, keep).catch(()=>{}); }
+  function brauche(uebung, g){ return !!(ENDPOINT && g && !geholt[uebung+"|"+g]); }
+  function holen(uebung, g, key, fertig){
+    if(!brauche(uebung, g)){ fertig(); return; }
+    geholt[uebung+"|"+g] = true;
+    let erledigt = false; const weiter = ()=>{ if(!erledigt){ erledigt = true; fertig(); } };
+    setTimeout(weiter, 4000);
+    post({typ:"stand-laden", uebung, glueckszahl:g}).then(d=>{
+      if(erledigt) return;
+      let text = store.get(key), lokal = null; try{ lokal = JSON.parse(text||"null"); }catch(e){}
+      const tl = (lokal && lokal.t) || 0, tr = (d && d.ok && d.stand) ? (Number(d.t)||0) : -1;
+      if(tr > tl) store.set(key, d.stand);
+      else if(lokal && tl >= tr && !(d && d.stand === text)) senden(uebung, g, text, tl || Date.now());
+    }).catch(()=>{}).finally(weiter);
+  }
+  function merken(uebung, g, text, t){ if(!ENDPOINT || !g) return; offen = {uebung, g, text, t}; clearTimeout(timer); timer = setTimeout(()=>jetzt(false), 5000); }
+  function jetzt(keep){ clearTimeout(timer); if(offen){ const o = offen; offen = null; senden(o.uebung, o.g, o.text, o.t, keep); } }
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") jetzt(true); });
+  window.addEventListener("pagehide", ()=>jetzt(true));
+  return {brauche, holen, merken, jetzt};
+})();
 const kisteN = () => Object.keys(P.kiste).length;
 
 /* ===== Übungsrunde ===== */
@@ -1307,6 +1333,7 @@ function starteSB(){
 /* ===== Ansicht: Start ===== */
 const app = $("app"), pill = $("pill");
 function home(){
+  if(gz && STAND.brauche("Rechtschreibung", gz)) return STAND.holen("Rechtschreibung", gz, pkey(), home);
   $("wrap").classList.remove("wide");
   stille();
   pill.hidden = true; pill.textContent = "Nr. "+gz;
