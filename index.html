@@ -20,6 +20,7 @@
   --deutsch:#c2255c; --deutsch-soft:#fbe6ee;
   --englisch:#0b8a78; --englisch-soft:#dcf4ef;
   --nmg:#b8690a; --nmg-soft:#fbefdc;
+  --franz:#5b46c9; --franz-soft:#ecebfa;
   --display:"Fredoka", "Trebuchet MS", system-ui, sans-serif;
   --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   --shadow:0 1px 2px rgba(24,35,61,.06), 0 6px 18px rgba(24,35,61,.07);
@@ -30,6 +31,7 @@
   --deutsch:#f0709b; --deutsch-soft:#3e1d2b;
   --englisch:#4dd3bd; --englisch-soft:#13372f;
   --nmg:#f0a94a; --nmg-soft:#3b2a12;
+  --franz:#a596ff; --franz-soft:#262343;
   --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
   color-scheme:dark;
 }}
@@ -39,6 +41,7 @@
   --deutsch:#f0709b; --deutsch-soft:#3e1d2b;
   --englisch:#4dd3bd; --englisch-soft:#13372f;
   --nmg:#f0a94a; --nmg-soft:#3b2a12;
+  --franz:#a596ff; --franz-soft:#262343;
   --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
   color-scheme:dark;
 }
@@ -71,6 +74,8 @@ h1{font-family:var(--display); font-weight:600; font-size:clamp(28px, 6vw, 38px)
 [data-fach="deutsch"]{--c:var(--deutsch); --soft:var(--deutsch-soft)}
 [data-fach="englisch"]{--c:var(--englisch); --soft:var(--englisch-soft)}
 [data-fach="nmg"]{--c:var(--nmg); --soft:var(--nmg-soft)}
+[data-fach="franzoesisch"]{--c:var(--franz); --soft:var(--franz-soft)}
+.faecher .fach:last-child:nth-child(odd){grid-column:1/-1}
 
 /* Fachansicht */
 .ansicht{display:flex; flex-direction:column; gap:18px}
@@ -135,6 +140,7 @@ const ICONS = {
   mathe:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M9 5v8M5 9h8M19 9h8M5 21h8M5 26h8M20 20l6 6M26 20l-6 6"/></svg>',
   deutsch:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 26 11 6h2l6 20M8 19h8"/><path d="M21 26l2-6 6-6-2-2-6 6-2 6z" stroke-width="2.4"/></svg>',
   englisch:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h14v10H10l-4 4v-4H4z"/><path d="M22 12h6v10h-2v4l-4-4h-6v-2"/></svg>',
+  franzoesisch:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h22v15H14l-6 5v-5H5z"/><path d="M12 11h6M12 11v6M12 14h4"/><path d="M21 9l-1.5 2"/></svg>',
   nmg:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><circle cx="16" cy="16" r="11"/><path d="M5 16h22M16 5c3.5 3 5 7 5 11s-1.5 8-5 11c-3.5-3-5-7-5-11s1.5-8 5-11z"/></svg>',
   pfeil:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>',
   zurueck:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10H5M9 5l-5 5 5 5"/></svg>'
@@ -158,6 +164,11 @@ const FAECHER = [
     tipp:'Übe die Wörter so lange, bis du sie <b>ohne Fehler</b> schreiben kannst.',
     trainer:[
       { name:'Tierwörter Unit 2', text:'Vokabeltrainer zu Young World, Unit 2.', zeichen:'ABC', url:BASIS+'tierwoerter.html', chips:['Vokabeln'] }
+    ]},
+  { id:'franzoesisch', name:'Französisch',
+    tipp:'Übe in <b>beide Richtungen</b>: zuerst mit Auswählen, dann mit Schreiben.',
+    trainer:[
+      { name:'Vocabulaire Unité 1', text:'Orte, Fragewörter und Präpositionen aus Unité 1.', zeichen:'é', url:BASIS+'franzoesisch.html', chips:['Vokabeln'] }
     ]},
   { id:'nmg', name:'NMG',
     tipp:'Den Römer-Trainer kannst du <b>so oft du willst</b> wiederholen.',

@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vocabulaire Unité 1</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Eine Spalte: Kopf mit «Lernportal», Startkarte mit Wortgruppe, Richtung und Übungsart; darunter die Übung. */
+:root{
+  --bg:#f3f2fb; --card:#ffffff; --ink:#1d1a33; --mute:#615c7d; --line:#dedbf0; --soft:#ecebfa;
+  --fr:#5b46c9; --fr-ink:#ffffff; --good:#137a43; --good-bg:#dcf4e6; --bad:#b4232e; --bad-bg:#fbe2e3;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root{
+  --bg:#111020; --card:#1c1a30; --ink:#ecebf7; --mute:#a7a3c2; --line:#302d4a; --soft:#262343;
+  --fr:#a596ff; --fr-ink:#14102e; --good:#6ad895; --good-bg:#14331f; --bad:#ff9a9f; --bad-bg:#3b1c22; color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;-webkit-text-size-adjust:100%}
+button,input{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.wrap{max-width:680px;margin:0 auto;padding-block:16px 48px;padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;gap:12px}
+.back{display:inline-flex;align-items:center;text-decoration:none;color:var(--fr);font-weight:700;font-size:15px;padding:7px 12px 7px 9px;border:2px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(24px,6vw,32px);line-height:1.05;margin:0}
+h1 small{display:block;font-family:var(--body);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px}
+.label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0 0 8px}
+.group + .group{margin-top:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-weight:700;font-size:15px;cursor:pointer}
+.chip small{font-weight:400;color:var(--mute);margin-left:4px}
+.chip[aria-pressed="true"]{background:var(--fr);border-color:var(--fr);color:var(--fr-ink)}
+.chip[aria-pressed="true"] small{color:inherit;opacity:.8}
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:700;font-size:17px;background:var(--fr);color:var(--fr-ink);cursor:pointer;min-height:52px}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.wide{width:100%;margin-top:20px}
+.btn:disabled{opacity:.45}
+details.list{background:var(--card);border:2px solid var(--line);border-radius:16px}
+details.list summary{padding:12px 16px;font-weight:700;cursor:pointer}
+.tbl{overflow-x:auto;padding:0 10px 10px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td{padding:7px 6px;border-top:1px solid var(--line);vertical-align:top}
+td.fr{font-weight:700}
+td.ok{text-align:right;color:var(--good);white-space:nowrap}
+.head{display:flex;align-items:center;gap:10px}
+.bar{flex:1;height:10px;background:var(--soft);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--fr);transition:width .3s}
+.count{font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;min-width:42px;text-align:right}
+.prompt{text-align:center;padding:24px 16px}
+.prompt .dir{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.prompt .word{font-family:var(--display);font-weight:600;font-size:clamp(28px,8vw,40px);line-height:1.15;margin-top:6px;overflow-wrap:anywhere}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:460px){.opts{grid-template-columns:1fr}}
+.opt{border:2px solid var(--line);background:var(--card);border-radius:16px;padding:14px 12px;font-weight:700;font-size:18px;min-height:60px;cursor:pointer;text-align:center}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--good);background:var(--good-bg);color:var(--good)}
+.opt.no{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.type{display:flex;gap:10px;flex-wrap:wrap}
+.type input{flex:1 1 220px;min-width:0;font-size:22px;font-weight:700;padding:12px 14px;border:3px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink)}
+.type input:focus{outline:none;border-color:var(--fr)}
+.type input.ok{border-color:var(--good);background:var(--good-bg)}
+.type input.no{border-color:var(--bad);background:var(--bad-bg)}
+.accents{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.accents button{min-width:42px;height:42px;border-radius:10px;border:2px solid var(--line);background:var(--soft);font-weight:700;font-size:19px;cursor:pointer}
+.fb{min-height:26px;text-align:center;font-weight:700;margin-top:14px}
+.fb.ok{color:var(--good)}.fb.no{color:var(--bad)}
+.fb .hint{display:block;font-weight:400;font-size:15px;color:var(--mute)}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.result{text-align:center}
+.result .score{font-family:var(--display);font-weight:600;font-size:48px;line-height:1;color:var(--fr)}
+.result h2{font-family:var(--display);font-weight:600;font-size:26px;margin:8px 0 4px}
+.result p{color:var(--mute);margin:0}
+.again{margin-top:16px;text-align:left}
+:where(button,input,a,summary):focus-visible{outline:3px solid var(--fr);outline-offset:2px}
+.shake{animation:shake .35s}
+@keyframes shake{25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="./#franzoesisch">‹ Lernportal</a>
+    <h1><small>Französisch · Unité 1</small>Vocabulaire</h1>
+  </header>
+
+  <!-- Start -->
+  <section id="start">
+    <div class="card">
+      <div class="group"><p class="label">Welche Wörter?</p><div class="chips" id="sets"></div></div>
+      <div class="group"><p class="label">Richtung</p><div class="chips" id="dirs"></div></div>
+      <div class="group"><p class="label">So übst du</p><div class="chips" id="modes"></div></div>
+      <button class="btn wide" id="go" type="button">Los geht's →</button>
+    </div>
+    <details class="list" style="margin-top:16px">
+      <summary>Alle Wörter ansehen</summary>
+      <div class="tbl"><table id="liste"></table></div>
+    </details>
+  </section>
+
+  <!-- Übung -->
+  <section id="play" hidden>
+    <div class="head"><button class="btn ghost" id="stop" type="button" style="min-height:40px;padding:6px 14px;font-size:15px">✕ Beenden</button><div class="bar"><i id="fill"></i></div><span class="count" id="count"></span></div>
+    <div class="card prompt" style="margin-top:16px"><div class="dir" id="dir"></div><div class="word" id="word"></div></div>
+    <div id="answer" style="margin-top:16px"></div>
+    <div class="fb" id="fb"></div>
+    <div class="actions" id="next" hidden><button class="btn" id="weiter" type="button">Weiter →</button></div>
+  </section>
+
+  <!-- Resultat -->
+  <section id="done" hidden>
+    <div class="card result" id="res"></div>
+  </section>
+</div>
+
+<script>
+/* Wörter aus «Unité 1» (Vocabulaire und Vocabulaire plus) */
+const WORDS = [
+  ["lz1","faire les devoirs (m pl)","die Hausaufgaben machen"],
+  ["lz1","à la maison","zu Hause"],
+  ["lz1","à l'école","in der Schule"],
+  ["lz1","sur une île","auf einer Insel"],
+  ["lz1","dans le métro","in der Métro, in der U-Bahn"],
+  ["lz1","dehors","draussen"],
+  ["lz1","dans l'eau","im Wasser"],
+  ["lz1","sur la tablette (numérique)","auf dem Tabletcomputer"],
+  ["fragen","Comment?","Wie?"],
+  ["fragen","Où?","Wo?"],
+  ["fragen","Quand?","Wann?"],
+  ["fragen","Quoi?","Was?"],
+  ["fragen","Qu'est-ce que tu fais?","Was machst du?"],
+  ["fragen","Qui?","Wer?"],
+  ["fragen","Pourquoi?","Warum?"],
+  ["fragen","Quel / Quelle?","Welcher? / Welche?"],
+  ["lz2","sur","auf"],
+  ["lz2","sous","unter"],
+  ["lz2","dans","in"],
+  ["lz2","au milieu de","in der Mitte von"],
+  ["lz2","à","in, bei, zu, an"],
+  ["lz2","devant","vor"],
+  ["lz2","derrière","hinter"],
+  ["lz2","entre … et","zwischen … und"],
+  ["plus","sous un cocotier","unter einer Kokospalme"],
+  ["plus","le lieu","der Ort"],
+  ["plus","dans le couloir","auf dem Gang, im Flur"],
+  ["plus","sur le sable","auf dem Sand"],
+  ["plus","dans le village","im Dorf"],
+  ["plus","à 19 heures","um 19 Uhr"],
+].map(([g,fr,de],id)=>({id,g,fr,de}));
+
+const SETS = [
+  {id:"alle", name:"Alle", f:()=>true},
+  {id:"lz1", name:"Lernziel 1", f:w=>w.g==="lz1"},
+  {id:"fragen", name:"Fragewörter", f:w=>w.g==="fragen"},
+  {id:"lz2", name:"Lernziel 2", f:w=>w.g==="lz2"},
+  {id:"plus", name:"Vocabulaire plus", f:w=>w.g==="plus"},
+];
+const DIRS = [{id:"df", name:"Deutsch → Französisch"},{id:"fd", name:"Französisch → Deutsch"}];
+const MODES = [{id:"wahl", name:"Auswählen"},{id:"schreiben", name:"Schreiben"}];
+const ROUND = 10;
+
+/* Speichern (nur auf diesem Gerät) */
+const KEY = "fr.u1.v1";
+let st = {set:"alle", dir:"df", mode:"wahl", k:{}};
+try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s) st = Object.assign(st, s); }catch(e){}
+const save = ()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} };
+const known = w=>st.k[w.id+st.dir]||0;
+
+const $ = id=>document.getElementById(id);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle = a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const pool = ()=>WORDS.filter(SETS.find(s=>s.id===st.set).f);
+const show = id=>{ ["start","play","done"].forEach(x=>$(x).hidden = x!==id); window.scrollTo(0,0); };
+
+/* Antworten vergleichen: Gross/klein, Satzzeichen und Angaben in Klammern zählen nicht */
+const base = s=>String(s).toLowerCase().replace(/\([^)]*\)/g," ").replace(/[’`´]/g,"'").replace(/…|\.\.\./g," ").replace(/[?!.,;:]/g," ").replace(/\s+/g," ").trim();
+const noAcc = s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/œ/g,"oe");
+const umlaut = s=>s.replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss");
+function variants(target){
+  const t = String(target);
+  const parts = t.split(/,|\s\/\s|\//).map(x=>x.trim()).filter(Boolean);
+  return [t, ...parts].map(base).filter(Boolean);
+}
+function check(given, target, french){
+  const g = base(given); if(!g) return null;
+  const v = variants(target);
+  const squash = s=>s.replace(/ /g,"");
+  if(v.some(x=>x===g || squash(x)===squash(g))) return "ok";
+  if(french && v.some(x=>noAcc(x)===noAcc(g))) return "akzent";
+  if(!french && v.some(x=>umlaut(x)===umlaut(g) || squash(umlaut(x))===squash(umlaut(g)))) return "ok";
+  return "falsch";
+}
+
+/* Startseite */
+function chips(el, list, key, count){
+  el.innerHTML = list.map(o=>`<button class="chip" type="button" data-v="${o.id}" aria-pressed="${st[key]===o.id}">${esc(o.name)}${count?`<small>${WORDS.filter(o.f).length}</small>`:""}</button>`).join("");
+  el.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ st[key]=b.dataset.v; save(); start(); });
+}
+function start(){
+  chips($("sets"), SETS, "set", true);
+  chips($("dirs"), DIRS, "dir");
+  chips($("modes"), MODES, "mode");
+  $("liste").innerHTML = pool().map(w=>`<tr><td class="fr">${esc(w.fr)}</td><td>${esc(w.de)}</td><td class="ok">${(st.k[w.id+"df"]||0)+(st.k[w.id+"fd"]||0) ? "✓" : ""}</td></tr>`).join("");
+  show("start");
+}
+
+/* Übung */
+let R = null;
+function begin(){
+  const words = shuffle(pool()).sort((a,b)=>known(a)-known(b)).slice(0, ROUND);
+  R = {queue:shuffle(words), total:words.length, done:0, right:0, wrong:[], again:new Set()};
+  show("play"); ask();
+}
+function ask(){
+  $("fill").style.width = Math.round(R.done/R.total*100)+"%";
+  $("count").textContent = `${R.done}/${R.total}`;
+  if(!R.queue.length) return finish();
+  const w = R.cur = R.queue.shift();
+  const df = st.dir==="df";
+  $("dir").textContent = df ? "Wie heisst das auf Französisch?" : "Was heisst das auf Deutsch?";
+  $("word").textContent = df ? w.de : w.fr;
+  $("fb").className = "fb"; $("fb").innerHTML = ""; $("next").hidden = true;
+  const target = df ? w.fr : w.de;
+  if(st.mode==="wahl"){
+    const others = shuffle(WORDS.filter(x=>x.id!==w.id && x.g===w.g)).concat(shuffle(WORDS.filter(x=>x.g!==w.g)));
+    const opts = shuffle([w, ...others.slice(0,3)]);
+    $("answer").innerHTML = `<div class="opts">${opts.map(o=>`<button class="opt" type="button" data-id="${o.id}">${esc(df?o.fr:o.de)}</button>`).join("")}</div>`;
+    $("answer").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      $("answer").querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(+x.dataset.id===w.id) x.classList.add("ok"); });
+      const ok = +b.dataset.id===w.id;
+      if(!ok) b.classList.add("no","shake");
+      result(ok, target, "");
+    });
+  } else {
+    $("answer").innerHTML = `<form class="type" id="f"><input id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${df?"auf Französisch …":"auf Deutsch …"}" aria-label="Antwort"><button class="btn" type="submit">Prüfen</button></form>
+      ${df?`<div class="accents">${"à â ç é è ê ë î ï ô ù û œ '".split(" ").map(c=>`<button type="button" data-c="${c}">${c}</button>`).join("")}</div>`:""}`;
+    const inp = $("in");
+    $("answer").querySelectorAll(".accents button").forEach(b=>b.onclick=()=>{
+      const s = inp.selectionStart ?? inp.value.length, e = inp.selectionEnd ?? inp.value.length;
+      inp.value = inp.value.slice(0,s)+b.dataset.c+inp.value.slice(e); inp.focus(); inp.setSelectionRange(s+1,s+1);
+    });
+    let tries = 0;
+    $("f").onsubmit = e=>{
+      e.preventDefault();
+      const r = check(inp.value, target, df); if(r===null) return;
+      if(r==="falsch" && tries===0){
+        tries++; inp.classList.add("no"); $("f").classList.add("shake");
+        $("fb").className="fb no"; $("fb").innerHTML = `Noch nicht. Versuch es nochmals.<span class="hint">Tipp: Es beginnt mit «${esc(String(target).trim().slice(0,1))}».</span>`;
+        setTimeout(()=>{ $("f").classList.remove("shake"); inp.classList.remove("no"); inp.select(); }, 400);
+        return;
+      }
+      inp.readOnly = true; $("f").querySelector("button").disabled = true;
+      inp.classList.add(r==="falsch"?"no":"ok");
+      result(r!=="falsch" && tries===0, target, r==="akzent" ? "Achte auf die Akzente." : "", r!=="falsch");
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}), 50);
+  }
+}
+function result(firstTry, target, hint, solved){
+  const w = R.cur;
+  if(firstTry && !R.again.has(w.id)){ R.right++; st.k[w.id+st.dir] = (st.k[w.id+st.dir]||0)+1; save(); }
+  if(!firstTry){
+    if(!R.wrong.includes(w)) R.wrong.push(w);
+    if(!R.again.has(w.id)){ R.again.add(w.id); R.queue.push(w); R.total++; }
+  }
+  R.done++;
+  const fb = $("fb");
+  if(firstTry){ fb.className="fb ok"; fb.innerHTML = `Richtig!${hint?`<span class="hint">${esc(hint)} Richtig geschrieben: ${esc(target)}</span>`:""}`; }
+  else if(solved){ fb.className="fb ok"; fb.innerHTML = `Jetzt stimmt es.<span class="hint">Das Wort kommt später nochmals.</span>`; }
+  else { fb.className="fb no"; fb.innerHTML = `Richtig ist: ${esc(target)}<span class="hint">Das Wort kommt später nochmals.</span>`; }
+  if(firstTry && st.mode==="wahl"){ setTimeout(ask, 900); return; }
+  $("next").hidden = false; $("weiter").focus({preventScroll:true});
+}
+$("weiter").onclick = ask;
+$("go").onclick = begin;
+$("stop").onclick = start;
+
+function finish(){
+  const n = R.total - R.again.size, p = R.right;
+  const msg = p===n ? "Super, alles auf Anhieb!" : p>=n*0.7 ? "Gut gemacht!" : "Weiter üben – das wird!";
+  $("res").innerHTML = `<div class="score">${p} / ${n}</div><h2>${msg}</h2><p>auf Anhieb gewusst</p>
+    ${R.wrong.length?`<details class="list again" open><summary>Diese Wörter nochmals anschauen (${R.wrong.length})</summary><div class="tbl"><table>${R.wrong.map(w=>`<tr><td class="fr">${esc(w.fr)}</td><td>${esc(w.de)}</td></tr>`).join("")}</table></div></details>`:""}
+    <div class="actions"><button class="btn" id="nochmal" type="button">Nochmals</button><button class="btn ghost" id="uebersicht" type="button">Übersicht</button></div>`;
+  $("nochmal").onclick = begin; $("uebersicht").onclick = start;
+  show("done");
+}
+start();
+</script>
+</body>
+</html>
