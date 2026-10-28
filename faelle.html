@@ -154,6 +154,12 @@ th{font-size:14px;color:var(--soft);font-weight:400}
 
 .lp-back{display:inline-flex;align-items:center;margin:12px 0 0 max(14px, env(safe-area-inset-left));text-decoration:none;color:#2F6FDB;font-weight:700;font-size:.95rem;padding:7px 12px 7px 8px;border:2px solid #d5dee6;border-radius:999px;background:#fff}
 .lp-back[hidden]{display:none}
+
+.gzrow{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:12px}
+.gzfeld{font:inherit;font-size:28px;font-weight:800;width:5.2em;max-width:100%;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);text-align:center;-webkit-appearance:none}
+.gzfeld:focus{outline:none;border-color:var(--btn)}
+.gzfeld.no{border-color:#e5484d}
+.gzlos{border:0;border-radius:14px;padding:15px 22px;font-weight:700;font-size:19px;background:var(--btn);color:var(--btn-ink)}
 </style>
 </head>
 <body>
@@ -362,7 +368,7 @@ const store = {
 function uid(){ try{ const a=new Uint8Array(12); crypto.getRandomValues(a); return Array.from(a,x=>x.toString(16).padStart(2,"0")).join(""); }catch(e){ return Date.now().toString(36)+Math.random().toString(36).slice(2); } }
 const GERAET = (()=>{ let g = store.get("rs.geraet"); if(!g){ g = uid(); store.set("rs.geraet", g); } return g; })();
 /* Glückszahl: dieselbe wie im Rechtschreibtraining (gleiche Adresse, gleiches Tablet) */
-let gz = VORSCHAU ? "0" : (store.get("rs.gz")||"").replace(/\D/g,"");
+let gz = VORSCHAU ? "0" : (store.get("rs.gz")||store.get("uebung.gz")||"").replace(/\D/g,"");
 let P = null;
 const pkey = () => "fa.p." + (VORSCHAU ? "vorschau" : gz);
 function ladeP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P = null; } if(!P) P = {done:{},run:null,vp:null}; }
@@ -440,26 +446,20 @@ function home(){
   toTop();
 }
 
-/* ===== Glückszahl mit Zahlenknöpfen ===== */
+/* ===== Glückszahl: ein Feld, nur Ziffern (wie in allen Trainern) ===== */
 let padTasten=null;
 function zahlenfeld(){
-  let z="";
-  app.innerHTML=`<div class="card"><h2 style="color:var(--ink)">Tippe deine Glückszahl</h2>
-    <p>Nimm dieselbe Glückszahl wie im Rechtschreibtraining.</p>
-    <div class="gzanz" id="gzanz" aria-live="polite"></div>
-    <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-n="${n}">${n}</button>`).join("")}
-      <button id="gzdel" aria-label="Löschen">⌫</button><button data-n="0">0</button><button class="ok" id="gzok">OK</button></div></div>`;
-  const zeichne=()=>{document.getElementById("gzanz").innerHTML=z?[...z].map(d=>`<span>${d}</span>`).join(""):`<span class="leer">?</span>`;document.getElementById("gzok").disabled=!z;};
-  const tipp=n=>{if(z.length<4){z+=n;zeichne();}};
-  const weg=()=>{z=z.slice(0,-1);zeichne();};
-  const fertig=()=>{if(z)bestaetigen(z);};
-  app.querySelectorAll(".pad [data-n]").forEach(b=>b.onclick=()=>tipp(b.dataset.n));
-  document.getElementById("gzdel").onclick=weg;document.getElementById("gzok").onclick=fertig;
-  if(padTasten)document.removeEventListener("keydown",padTasten);
-  padTasten=e=>{if(!document.getElementById("gzanz")){document.removeEventListener("keydown",padTasten);padTasten=null;return;}
-    if(/^[0-9]$/.test(e.key))tipp(e.key);else if(e.key==="Backspace")weg();else if(e.key==="Enter")fertig();};
-  document.addEventListener("keydown",padTasten);
-  zeichne();toTop();
+  if(padTasten){document.removeEventListener("keydown",padTasten);padTasten=null;}
+  app.innerHTML=`<div class="card"><h2 style="color:var(--ink)">Deine Glückszahl</h2>
+    <p>Schreib deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl, dann machst du dort weiter, wo du aufgehört hast.</p>
+    <div class="gzrow"><input class="gzfeld" id="gzfeld" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="?" aria-label="Deine Glückszahl"><button class="gzlos" id="gzok">Los geht's →</button></div></div>`;
+  const f=document.getElementById("gzfeld");
+  const los=()=>{const z=f.value.replace(/\D/g,"").slice(0,4); if(!z){f.classList.add("no");f.focus();return;}
+    gz=String(+z);store.set("rs.gz",gz); if(!store.get("uebung.gz"))store.set("uebung.gz",gz); home();};
+  f.addEventListener("input", ()=>{ const v = f.value.replace(/\D/g,"").slice(0,4); if(f.value!==v) f.value = v; f.classList.remove("no"); });
+  f.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();los();}});
+  document.getElementById("gzok").onclick=los;
+  f.focus({preventScroll:true});toTop();
 }
 function bestaetigen(z){
   app.innerHTML=`<div class="card" style="text-align:center"><h2 style="color:var(--ink)">Ist das deine Glückszahl?</h2>
