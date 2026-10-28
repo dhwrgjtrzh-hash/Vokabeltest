@@ -203,14 +203,40 @@ svg.nl .hit{cursor:pointer}
 .topic.goal .lv .st i{width:16px;height:7px}
 .topic.goal .lv b{display:inline;white-space:nowrap;font-size:.78rem;color:var(--mute)}
 .topics{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+
+/* Lernportal, Direktstart, iPhone */
+header{flex-wrap:nowrap}
+.back{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--accent);font-weight:700;font-size:.95rem;padding:8px 12px 8px 8px;border:2px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap;flex:none}
+.back:active{transform:scale(.97)}
+button.pill{cursor:pointer;color:var(--ink)}
+.start h2{font-size:1.35rem}
+.startrow{gap:12px}
+.startrow .ans{width:5.2em}
+.start .hint{margin:16px 0 0;font-size:.9rem}
+@media (max-width:560px){
+  body{padding:10px max(10px, env(safe-area-inset-right)) 32px max(10px, env(safe-area-inset-left))}
+  header{gap:8px;margin-bottom:10px}
+  header .logo{display:none}
+  header h1{font-size:1.15rem}
+  .back{font-size:.85rem;padding:6px 10px 6px 6px}
+  .pill{font-size:.8rem;padding:5px 10px}
+  .card{padding:14px}
+  .sesshead{gap:6px;margin-bottom:10px}
+  .sesshead .qtype{font-size:.8rem}
+  .q{font-size:1.1rem}
+  .btn{padding:12px 18px;min-height:50px}
+  .actions .btn{flex:1}
+  details.help{margin-top:16px;padding:2px 12px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
+    <a class="back" href="./#mathe">‹ Lernportal</a>
     <div class="logo">&lt; &gt;</div>
-    <h1 class="grow"><small>Mathematik 6 · Thema 7 · LZK 6.3</small>Zahlen ordnen</h1>
-    <div class="pill" id="pill" hidden></div>
+    <h1 class="grow">Zahlen ordnen</h1>
+    <button class="pill" id="pill" type="button" title="Andere Glückszahl eingeben" hidden></button>
   </header>
   <main id="app"></main>
 </div>
@@ -476,45 +502,36 @@ function levelBar(id){
 
 function home(){
   pill.hidden = true;
-  if(gz) loadP();
-  const card = g=>{
-    const s = gz ? gs(g.id) : null;
-    return `<button class="topic goal ${s&&s.done?"mastered":""}" data-k="${g.id}" style="--c:${g.c}" title="${esc(g.info+" · "+g.tb)}"><span class="ic">${g.ic}</span>
-      <span class="gbody"><b>${g.title}</b>${s?levelBar(g.id):""}</span></button>`;
-  };
-  const cards = GOALS.filter(g=>!g.erw).map(card).join("");
-  const extra = GOALS.filter(g=>g.erw).map(card).join("");
-  const last = gz && P.last && GOAL[P.last] ? P.last : null;
-  const nextGoal = gz ? (GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done)) : null;
-  const resumeId = last && !gs(last).done ? last : nextGoal && nextGoal.id;
-  app.innerHTML = `<div class="card">
-    <div class="who">
-      <label for="gz">Deine Glückszahl</label>
-      <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" value="${esc(gz)}" placeholder="?">
-      <p class="note">Schreib hier deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl – dann machst du dort weiter, wo du aufgehört hast.</p>
+  if(gz){ loadP(); return startAuto(); }
+  app.innerHTML = `<div class="card start">
+    <h2>Deine Glückszahl</h2>
+    <p class="sub">Schreib deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl, dann machst du dort weiter, wo du aufgehört hast.</p>
+    <div class="row startrow">
+      <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="?" aria-label="Deine Glückszahl">
+      <button class="btn" id="los">Los geht's →</button>
     </div>
-    ${gz ? `<div class="resume">
-      ${resumeId?`<button class="btn" id="resume">▶ Weitermachen<small>${GOAL[resumeId].title} · Stufe ${gs(resumeId).lv}</small></button>`:""}
-      <button class="btn ghost" id="testmode">📝 Test-Training<small>${TEST_N} gemischte Aufgaben wie in der Lernzielkontrolle</small></button>
-    </div>` : ""}
-    <h2>Lernziele</h2>
-    <p class="sub">3 Stufen pro Lernziel · ${STREAK} richtig hintereinander = nächste Stufe</p>
-    <div class="topics">${cards}</div>
-    ${extra?`<h2 style="margin-top:22px">Für Profis ⭐</h2><div class="topics">${extra}</div>`:""}
-    <p class="sub" style="margin:18px 0 0">${START_NOTE}</p>
-    <div class="teacher no-print"><button class="linkish" id="teach">Lehrperson</button></div>
+    <p class="sub hint">${START_NOTE}</p>
   </div>`;
   const inp = document.getElementById("gz");
-  const upd = ()=>{ const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value=v; const changed = v!==gz; gz=v; store.set("uebung.gz",gz); return changed; };
-  inp.addEventListener("change", ()=>{ if(upd()) home(); });
-  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); if(upd()) home(); } });
-  const need = ()=>{ upd(); if(!gz){ inp.focus(); inp.classList.add("no"); document.querySelector(".who .note").innerHTML="<b style='color:var(--bad)'>Bitte zuerst deine Glückszahl eintragen.</b>"; return false; } loadP(); return true; };
-  app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{ if(need()) startGoal(b.dataset.k); });
-  const r = document.getElementById("resume"); if(r) r.onclick=()=>{ if(need()) startGoal(resumeId); };
-  const t = document.getElementById("testmode"); if(t) t.onclick=()=>{ if(need()) startTest(); };
-  document.getElementById("teach").onclick = teacher;
-  if(!gz) inp.focus({preventScroll:true});
+  const los = ()=>{
+    const v = inp.value.replace(/\D/g,"").slice(0,4);
+    if(!v){ inp.classList.add("no"); inp.focus(); return; }
+    gz = v; store.set("uebung.gz", gz); loadP(); startAuto();
+  };
+  inp.addEventListener("input", ()=>{ inp.classList.remove("no"); });
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); los(); } });
+  document.getElementById("los").onclick = los;
+  inp.focus({preventScroll:true});
 }
+
+/* Startet direkt: zuerst das zuletzt geübte Lernziel, sonst das nächste noch offene. Sind alle geschafft, kommen gemischte Aufgaben. */
+function allDone(){ return GOALS.every(g=>gs(g.id).done); }
+function startAuto(){
+  const last = P.last && GOAL[P.last] && !gs(P.last).done ? P.last : null;
+  const open = GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done);
+  startGoal(last || (open ? open.id : pick(GOALS).id));
+}
+function otherNumber(){ sendPending(); S = null; gz = ""; store.set("uebung.gz", ""); home(); }
 
 function startGoal(id){
   P.last = id; saveP();
@@ -561,8 +578,7 @@ function head(){
       <p class="sub" style="margin:-4px 0 10px">${g.ic} ${g.title}</p>`;
   }
   let dots=""; for(let i=0;i<NEED;i++) dots+=`<i class="${i<s.pr?"on":""}"></i>`;
-  return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span><span class="grow"></span>
-    <button class="btn ghost small" id="quit">⟵ Übersicht</button></div>
+  return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span></div>
     <div class="sesshead"><b>${s.done?"Alle Stufen geschafft – du übst weiter auf Stufe 3":LVNAME[s.lv]}</b><span class="grow"></span><span class="dots">${dots}<span>${s.pr}/${NEED}${(s.streak||0)>0?` · 🔥 ${s.streak} in Folge`:""}</span></span></div>`;
 }
 
@@ -620,7 +636,7 @@ function draw(){
   if(t.type==="order") setupOrder();
   if(t.type==="place") setupPlace();
   document.getElementById("nextBtn").onclick = go;
-  document.getElementById("quit").onclick = leave;
+  const qb = document.getElementById("quit"); if(qb) qb.onclick = leave;
 }
 
 function setupOrder(){
@@ -744,7 +760,7 @@ function finish(ok, given, extra){
         if(s.lv<LEVELS){ s.lv++; s.pr=0; s.streak=0; toast = `🎉 Stufe ${s.lv-1} geschafft${fast?` – ${STREAK} richtig hintereinander`:""}! Jetzt kommt <b>Stufe ${s.lv}</b>.`; }
         else if(!s.done){ s.done=true; s.pr=NEED; S.goalDone = true;
           const nx = nextGoal(g.id);
-          toast = `🏆 Super! Du hast «${g.title}» geschafft.${nx?`<br>Weiter geht es mit <b>${GOAL[nx].title}</b>.`:"<br>Du hast alle Lernziele geschafft – probier jetzt das Test-Training!"}`; }
+          toast = `🏆 Super! Du hast «${g.title}» geschafft.${nx?`<br>Weiter geht es mit <b>${GOAL[nx].title}</b>.`:"<br>Du hast alle Lernziele geschafft! Jetzt kommen gemischte Aufgaben."}`; }
         else s.pr = NEED;
       }
     } else { s.streak = 0; if(!s.done) s.pr = Math.max(0, s.pr-1); }
@@ -780,8 +796,10 @@ function go(){
   if(S.mode==="goal" && S.goalDone){
     S.goalDone = false;
     const nx = nextGoal(S.goal);
-    if(nx){ sendPending(); S.goal = nx; P.last = nx; saveP(); } else { sendPending(); S=null; return home(); }
+    sendPending();
+    if(nx){ S.goal = nx; P.last = nx; saveP(); }
   }
+  if(S.mode==="goal" && allDone()) S.goal = pick(GOALS).id;   // alles geschafft: gemischt weiterüben
   next();
 }
 function leave(){ sendPending(); S=null; home(); }
@@ -913,6 +931,7 @@ function teacherView(filter){
   });
 }
 
+pill.onclick = otherNumber;
 recoverPending();
 home();
 flush();

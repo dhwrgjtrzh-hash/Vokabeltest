@@ -151,9 +151,14 @@ th{font-size:14px;color:var(--soft);font-weight:400}
 .sheet{background:var(--paper);width:100%;max-width:640px;max-height:88%;overflow:auto;border-radius:20px 20px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px))}
 .sheet h2{font-size:26px;margin-bottom:10px}
 .tw{overflow-x:auto}
+
+.lp-back{display:inline-flex;align-items:center;margin:12px 0 0 max(14px, env(safe-area-inset-left));text-decoration:none;color:#2F6FDB;font-weight:700;font-size:.95rem;padding:7px 12px 7px 8px;border:2px solid #d5dee6;border-radius:999px;background:#fff}
+.lp-back[hidden]{display:none}
 </style>
 </head>
 <body>
+<a class="lp-back" id="lpBack" href="./#deutsch">‹ Lernportal</a>
+<script>try{ if(window.self!==window.top) document.getElementById("lpBack").hidden=true; }catch(e){}</script>
 <div id="app"></div>
 <div id="ov"></div>
 <script>
