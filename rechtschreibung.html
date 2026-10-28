@@ -239,6 +239,29 @@ body.eingebettet header{display:none}
 .gzfeld{font:inherit;font-size:1.6rem;font-weight:800;width:5.2em;max-width:100%;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums;-webkit-appearance:none}
 .gzfeld:focus{outline:none;border-color:var(--accent)}
 .gzfeld.no{border-color:#ef7b6f;background:#fde4e1}
+
+/* Dunkelmodus (folgt der Einstellung des Geräts; nicht in der Deutsch-Station) */
+@media (prefers-color-scheme: dark){
+  html{background:#0f1522}
+  body:not(.eingebettet){
+    --bg:#0f1522; --card:#1a2233; --ink:#e9eef8; --mute:#9aa6bd; --line:#2e3a52;
+    --accent:#5b7cfa; --accent-soft:#1f2b52; --good:#6ad895; --good-bg:#14331f; --bad:#ff9a8f; --bad-bg:#3b1c1c;
+    color-scheme:dark;
+  }
+  body:not(.eingebettet) .card{box-shadow:none}
+  body:not(.eingebettet) :is(.gzanz span, .pad button, .node.now b, .tile, .topic, input.ans, textarea.ans, .gzfeld){background:var(--card);color:var(--ink)}
+  body:not(.eingebettet) .tile.hot{background:#2b2411}
+  body:not(.eingebettet) .qtype{color:#a9bbff}
+  body:not(.eingebettet) :is(.luecke, .rule, .kpis div){background:#1d2638}
+  body:not(.eingebettet) .explain{background:#2b2111;border-color:#6b5022}
+  body:not(.eingebettet) .explain h3{color:#f2b27a}
+  body:not(.eingebettet) :is(.explain.ok, .assess){background:#12291b;border-color:#2c5a3b}
+  body:not(.eingebettet) .wort.falsch{color:#ff9a8f}
+  body:not(.eingebettet) :is(.zeit.mittel, .doppelt, .tag.half){background:#3a3013;color:#f0cf6a}
+  body:not(.eingebettet) .zeit.wenig{background:#222d42;color:#aab6cc}
+  body:not(.eingebettet) table.t tr.klick:hover td{background:#1d2638}
+  body:not(.eingebettet) .back{background:var(--card);border-color:var(--line);color:#5fd3b5}
+}
 </style>
 </head>
 <body>
