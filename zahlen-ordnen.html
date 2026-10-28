@@ -228,6 +228,37 @@ button.pill{cursor:pointer;color:var(--ink)}
   .actions .btn{flex:1}
   details.help{margin-top:16px;padding:2px 12px}
 }
+
+/* Dunkelmodus (folgt der Einstellung des Geräts) */
+svg.nl{color:var(--ink)}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1522; --card:#1a2233; --ink:#e9eef8; --mute:#9aa6bd; --line:#2e3a52;
+    --accent:#5b7cfa; --accent-soft:#1f2b52; --good:#6ad895; --good-bg:#14331f; --bad:#ff9a8f; --bad-bg:#3b1c1c;
+    --sol:#f2b27a; --sol-bg:#36240f; color-scheme:dark;
+  }
+  .card{box-shadow:none}
+  .topic, input.ans, .cmpbtns button, .tok, .svt td{background:var(--card);color:var(--ink)}
+  .svt{border-color:#3a4760}
+  .svt th, .svt td{border-color:#2e3a52}
+  .svt th{background:#222d42;color:var(--mute)}
+  .svt th b{color:var(--ink)}
+  .svt .dec{background:#1d2638}
+  .svt th.dec{background:#16301f}
+  .qtype, details.help summary, details.way summary{color:#a9bbff}
+  details.help{background:#152033;border-color:#33415c}
+  .explain{background:#2b2111;border-color:#6b5022}
+  .explain h3{color:#f2b27a}
+  .explain.ok{background:#12291b;border-color:#2c5a3b}
+  .explain.ok h3{color:var(--good)}
+  .toast{background:linear-gradient(135deg,#3a3214,#3a1a2c);color:var(--ink)}
+  .goal.mastered{background:#14251b}
+  .goal .tag2{background:#222d42;color:#aab6cc}
+  .goal .tag2.erw{background:#16301f;color:var(--good)}
+  .eq, .seq .arr, .slots .lt, .slots .ph, .cmp .slot{color:#6f7b93}
+  .tag.half{background:#3a3013;color:#f0cf6a}
+  .back{color:#a9bbff}
+}
 </style>
 </head>
 <body>
@@ -320,10 +351,10 @@ function numberLine(o){
   for(let i=0;i<=total;i++){
     const isBig = i%big===0, isMid = mid && i%mid===0;
     const h = isBig?18:isMid?12:7;
-    ticks+=`<line x1="${X(i)}" y1="${y-h}" x2="${X(i)}" y2="${y+h}" stroke="#1b2433" stroke-width="${isBig?3.2:isMid?2.2:1.4}" stroke-linecap="round"/>`;
+    ticks+=`<line x1="${X(i)}" y1="${y-h}" x2="${X(i)}" y2="${y+h}" stroke="currentColor" stroke-width="${isBig?3.2:isMid?2.2:1.4}" stroke-linecap="round"/>`;
   }
   let lab="";
-  for(const [i,t] of Object.entries(labels)) lab+=`<text x="${X(+i)}" y="${y+48}" text-anchor="middle" font-size="24" font-weight="800" fill="#1b2433" font-family="inherit">${t}</text>`;
+  for(const [i,t] of Object.entries(labels)) lab+=`<text x="${X(+i)}" y="${y+48}" text-anchor="middle" font-size="24" font-weight="800" fill="currentColor" font-family="inherit">${t}</text>`;
   let arr="";
   for(const [i,t] of Object.entries(arrows)){
     const x=X(+i);
@@ -331,7 +362,7 @@ function numberLine(o){
     if(t) arr+=`<text x="${x}" y="${y-70}" text-anchor="middle" font-size="22" font-weight="800" fill="#c47f00" font-family="inherit">${t}</text>`;
   }
   return `<svg class="nl" ${id?`id="${id}"`:""} viewBox="0 -10 ${W} ${H+10}" data-x0="${x0}" data-x1="${x1}" data-total="${total}" role="img" aria-label="Zahlenstrahl">
-    <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#1b2433" stroke-width="3.5" stroke-linecap="round"/>${ticks}${lab}${arr}
+    <line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>${ticks}${lab}${arr}
     <g class="mark"></g>${id?`<rect class="hit" x="0" y="0" width="${W}" height="${H}" fill="transparent"/>`:""}</svg>`;
 }
 const ol = steps => `<ol>${steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
