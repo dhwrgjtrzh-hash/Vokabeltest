@@ -155,9 +155,70 @@ function doPost(e) {
   }
 }
 
-/* Einfacher Funktionstest: Die Web-App-Adresse im Browser öffnen zeigt «bereit». */
-function doGet() {
-  return json_({ ok: true, bereit: true, eingerichtet: !!PropertiesService.getScriptProperties().getProperty("SCHLUESSEL") });
+/* Ohne Parameter: einfacher Funktionstest (zeigt «bereit»).
+ * Mit Schlüssel (für die Lernportal-Station auf dem Mac, per Skript-Tag/JSONP):
+ *   aktion=daten               → alle Runden (optional &uebung=…)
+ *   aktion=loeschen&ids=a,b,c  → einzelne Runden löschen (Blatt «Runden»)
+ *   aktion=lernstand-loeschen&glueckszahl=12[&uebung=…] → gespeicherten Lernstand zurücksetzen
+ * «code» gilt als anderer Name für «schluessel» (frühere Mathe-Station). */
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  const cb = String(p.callback || "");
+  const antwort = function (obj) {
+    if (/^[A-Za-z_][\w.]*$/.test(cb)) {
+      return ContentService.createTextOutput(cb + "(" + JSON.stringify(obj) + ");").setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return json_(obj);
+  };
+  const aktion = String(p.aktion || (p.code ? "daten" : ""));
+  if (!aktion) return json_({ ok: true, bereit: true, eingerichtet: !!PropertiesService.getScriptProperties().getProperty("SCHLUESSEL") });
+  const z = zugang_(p.schluessel || p.code, false);
+  if (z !== "ok") return antwort({ ok: false, grund: z, fehler: MELDUNG[z] });
+  try {
+    if (aktion === "daten") { const a = daten_(String(p.uebung || "")); a.befehle = befehle_(); return antwort(a); }
+    if (aktion === "loeschen") return antwort(loeschen_(String(p.ids || "").split(",").filter(Boolean)));
+    if (aktion === "lernstand-loeschen") return antwort(lernstandLoeschen_(String(p.glueckszahl || ""), String(p.uebung || "")));
+  } catch (err) { return antwort({ ok: false, fehler: String(err) }); }
+  return antwort({ ok: false, fehler: "Unbekannte Aktion" });
+}
+
+/* Runden anhand ihrer ID aus dem Blatt «Runden» entfernen */
+function loeschen_(ids) {
+  if (!ids.length) return { ok: true, geloescht: 0 };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sh = blatt_();
+    const n = sh.getLastRow() - 1;
+    if (n < 1) return { ok: true, geloescht: 0 };
+    const spalte = sh.getRange(2, 1, n, 1).getValues();
+    const set = {};
+    ids.forEach(function (i) { set[String(i)] = true; });
+    let anzahl = 0;
+    for (let i = spalte.length - 1; i >= 0; i--) {
+      if (set[String(spalte[i][0])]) { sh.deleteRow(i + 2); anzahl++; }
+    }
+    return { ok: true, geloescht: anzahl };
+  } finally { lock.releaseLock(); }
+}
+
+/* Gespeicherten Lernstand einer Glückszahl entfernen (das Kind beginnt wieder bei null) */
+function lernstandLoeschen_(g, uebung) {
+  g = String(g).replace(/\D/g, "");
+  if (!g) return { ok: false, fehler: "Glückszahl fehlt" };
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Lernstand");
+  if (!sh || sh.getLastRow() < 2) return { ok: true, geloescht: 0 };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const n = sh.getLastRow() - 1;
+    const w = sh.getRange(2, 1, n, 2).getValues();
+    let anzahl = 0;
+    for (let i = w.length - 1; i >= 0; i--) {
+      if (String(w[i][1]).replace(/^'/, "") === g && (!uebung || String(w[i][0]) === uebung)) { sh.deleteRow(i + 2); anzahl++; }
+    }
+    return { ok: true, geloescht: anzahl };
+  } finally { lock.releaseLock(); }
 }
 
 
