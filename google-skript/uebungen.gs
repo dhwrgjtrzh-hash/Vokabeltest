@@ -17,6 +17,8 @@
  */
 
 const BLATT = "Runden";
+/* Zugang für die Lernportal-Station auf dem Mac (nur Abfragen und Löschen über doGet) */
+const STATION_SCHLUESSEL = "";   // im Apps-Script-Editor eintragen (nicht hier im öffentlichen Repository)
 const KOPF = ["ID", "Zeit", "Übung", "Glückszahl", "Thema", "Punkte", "Max", "Daten"];
 
 function blatt_() {
@@ -172,7 +174,7 @@ function doGet(e) {
   };
   const aktion = String(p.aktion || (p.code ? "daten" : ""));
   if (!aktion) return json_({ ok: true, bereit: true, eingerichtet: !!PropertiesService.getScriptProperties().getProperty("SCHLUESSEL") });
-  const z = zugang_(p.schluessel || p.code, false);
+  const z = String(p.schluessel || p.code || "") === STATION_SCHLUESSEL && STATION_SCHLUESSEL ? "ok" : zugang_(p.schluessel || p.code, false);
   if (z !== "ok") return antwort({ ok: false, grund: z, fehler: MELDUNG[z] });
   try {
     if (aktion === "daten") { const a = daten_(String(p.uebung || "")); a.befehle = befehle_(); return antwort(a); }
