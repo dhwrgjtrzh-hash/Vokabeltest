@@ -707,7 +707,7 @@ function pick(k){
   const btns=[...app.querySelectorAll("[data-k]")];
   const btn=btns.find(b=>+b.dataset.k===k);
   const fb=document.getElementById("fb"),hb=document.getElementById("hb");
-  if(S.tries===0&&!q.re&&S.log)S.log.push({id:CH[S.ch].id+"-"+q.j,ok:k===it.a,a:antwortText(it,k),tipp:!!S.help});
+  if(S.tries===0&&!q.re&&S.log)S.log.push({id:CH[S.ch].id+"-"+q.j,ok:k===it.a,a:antwortText(it,k),tipp:!!S.help,t:Date.now()});
   if(k===it.a){
     S.done=true;
     if(S.tries===0&&!q.re)S.first++;
@@ -885,7 +885,7 @@ function vpPick(k){
 function vpWeiter(){
   if(VPS.sel==null)return;
   const it=VP[P.vp.pos];
-  P.vp.antw.push({id:it.id,k:it.k,b:it.b,ok:VPS.sel===it.a,a:antwortText(it,VPS.sel),l:vpLoesung(it),s:vpSatz(it)});
+  P.vp.antw.push({id:it.id,k:it.k,b:it.b,ok:VPS.sel===it.a,a:antwortText(it,VPS.sel),l:vpLoesung(it),s:vpSatz(it),t:Date.now()});
   P.vp.pos++;
   if(P.vp.pos>=VP.length)return vpEnde();
   save(); vpShow();
