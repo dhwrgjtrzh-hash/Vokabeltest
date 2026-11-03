@@ -259,6 +259,12 @@ svg.nl{color:var(--ink)}
   .tag.half{background:#3a3013;color:#f0cf6a}
   .back{color:#a9bbff}
 }
+.gzfehler{color:#c0392b;font-weight:700;margin:10px 0 0}
+.gzfrage{text-align:center}
+.gzfrage .gzgross{font-size:64px;font-weight:800;line-height:1;margin:14px 0;color:var(--accent,#2f5bea)}
+.gzfrage .gzfair{background:#fff4d6;color:#5c4300;border-radius:14px;padding:12px 14px;margin:14px auto;max-width:460px;text-align:left;font-size:.98rem;line-height:1.4}
+.gzfrage .gzknoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@media (prefers-color-scheme: dark){.gzfrage .gzfair{background:#3a3014;color:#f3dfa2}.gzfehler{color:#ff8a80}}
 </style>
 </head>
 <body>
@@ -598,6 +604,8 @@ const TEST_N = GOALS.length >= 8 ? GOALS.length : 10;
 const GOAL = Object.fromEntries(GOALS.map(g=>[g.id,g]));
 const LVNAME = ["","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
 let gz = (store.get("uebung.gz")||store.get("dz.gz")||store.get("rs.gz")||"").replace(/\D/g,"");
+const gzGueltig = v => /^\d{1,2}$/.test(String(v)) && +v >= 1 && +v <= 21;   // Glückszahlen der Klasse: 1 bis 21
+if(gz && !gzGueltig(gz)) gz = "";
 let P = null, S = null;
 
 function pkey(){ return "uebung.p."+UEBUNG+"."+gz; }
@@ -622,18 +630,20 @@ function home(){
     <h2>Deine Glückszahl</h2>
     <p class="sub">Schreib deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl, dann machst du dort weiter, wo du aufgehört hast.</p>
     <div class="row startrow">
-      <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="?" aria-label="Deine Glückszahl">
+      <input class="ans small" id="gz" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" placeholder="?" aria-label="Deine Glückszahl">
       <button class="btn" id="los">Los geht's →</button>
     </div>
+    <p class="gzfehler" id="gzfehler" hidden>Die Glückszahlen gehen von 1 bis 21. Schau nochmals nach, welche Zahl du hast.</p>
     <p class="sub hint">${START_NOTE}</p>
   </div>`;
   const inp = document.getElementById("gz");
   const los = ()=>{
-    const v = inp.value.replace(/\D/g,"").slice(0,4);
+    const v = inp.value.replace(/\D/g,"").slice(0,2);
     if(!v){ inp.classList.add("no"); inp.focus(); return; }
-    gz = String(+v); store.set("uebung.gz", gz); if(!store.get("rs.gz")) store.set("rs.gz", gz); STAND.holen(UEBUNG, gz, pkey(), ()=>{ loadP(); startAuto(); });
+    if(!gzGueltig(v)){ inp.classList.add("no"); document.getElementById("gzfehler").hidden = false; inp.select(); return; }
+    gzFrage(String(+v), z => { gz = z; store.set("uebung.gz", gz); if(!store.get("rs.gz")) store.set("rs.gz", gz); STAND.holen(UEBUNG, gz, pkey(), ()=>{ loadP(); startAuto(); }); }, home);
   };
-  inp.addEventListener("input", ()=>{ const v = inp.value.replace(/\D/g,"").slice(0,4); if(inp.value!==v) inp.value = v; inp.classList.remove("no"); });
+  inp.addEventListener("input", ()=>{ const v = inp.value.replace(/\D/g,"").slice(0,2); if(inp.value!==v) inp.value = v; inp.classList.remove("no"); document.getElementById("gzfehler").hidden = true; });
   inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); los(); } });
   document.getElementById("los").onclick = los;
   inp.focus({preventScroll:true});
@@ -641,6 +651,18 @@ function home(){
 
 /* Startet direkt: zuerst das zuletzt geübte Lernziel, sonst das nächste noch offene. Sind alle geschafft, kommen gemischte Aufgaben. */
 function allDone(){ return GOALS.every(g=>gs(g.id).done); }
+/* Nach der Eingabe nochmals nachfragen: Ist das wirklich deine Glückszahl? */
+function gzFrage(z, ja, nein){
+  app.innerHTML = `<div class="card gzfrage">
+    <h2>Ist das wirklich deine Glückszahl?</h2>
+    <div class="gzgross">${z}</div>
+    <p class="gzfair">Nimm nur <b>deine eigene</b> Glückszahl. Wenn du die Zahl von einem anderen Kind nimmst, werden eure Ergebnisse vermischt. Das ist unfair für das andere Kind – und man sieht nicht mehr, was du selbst schon kannst.</p>
+    <div class="gzknoepfe"><button class="btn" id="gzja">✓ Ja, das ist meine Zahl</button><button class="btn ghost" id="gznein">Nein, ändern</button></div>
+  </div>`;
+  document.getElementById("gzja").onclick = () => ja(z);
+  document.getElementById("gznein").onclick = nein;
+  document.getElementById("gzja").focus({preventScroll:true});
+}
 function startAuto(){
   const last = P.last && GOAL[P.last] && !gs(P.last).done ? P.last : null;
   const open = GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done);
