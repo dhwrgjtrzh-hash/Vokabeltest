@@ -160,6 +160,12 @@ th{font-size:14px;color:var(--soft);font-weight:400}
 .gzfeld:focus{outline:none;border-color:var(--btn)}
 .gzfeld.no{border-color:#e5484d}
 .gzlos{border:0;border-radius:14px;padding:15px 22px;font-weight:700;font-size:19px;background:var(--btn);color:var(--btn-ink)}
+.gzfehler{color:#c0392b;font-weight:700;margin:10px 0 0}
+.gzfrage{text-align:center}
+.gzfrage .gzgross{font-size:64px;font-weight:800;line-height:1;margin:14px 0;color:var(--accent,#2f5bea)}
+.gzfrage .gzfair{background:#fff4d6;color:#5c4300;border-radius:14px;padding:12px 14px;margin:14px auto;max-width:460px;text-align:left;font-size:.98rem;line-height:1.4}
+.gzfrage .gzknoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@media (prefers-color-scheme: dark){.gzfrage .gzfair{background:#3a3014;color:#f3dfa2}.gzfehler{color:#ff8a80}}
 </style>
 </head>
 <body>
@@ -369,6 +375,8 @@ function uid(){ try{ const a=new Uint8Array(12); crypto.getRandomValues(a); retu
 const GERAET = (()=>{ let g = store.get("rs.geraet"); if(!g){ g = uid(); store.set("rs.geraet", g); } return g; })();
 /* Glückszahl: dieselbe wie im Rechtschreibtraining (gleiche Adresse, gleiches Tablet) */
 let gz = VORSCHAU ? "0" : (store.get("rs.gz")||store.get("uebung.gz")||"").replace(/\D/g,"");
+const gzGueltig = v => /^\d{1,2}$/.test(String(v)) && +v >= 1 && +v <= 21;   // Glückszahlen der Klasse: 1 bis 21
+if(!VORSCHAU && gz && !gzGueltig(gz)) gz = "";
 let P = null;
 const pkey = () => "fa.p." + (VORSCHAU ? "vorschau" : gz);
 function ladeP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P = null; } if(!P) P = {done:{},run:null,vp:null}; }
@@ -479,20 +487,22 @@ function zahlenfeld(){
   if(padTasten){document.removeEventListener("keydown",padTasten);padTasten=null;}
   app.innerHTML=`<div class="card"><h2 style="color:var(--ink)">Deine Glückszahl</h2>
     <p>Schreib deine Glückszahl hin, nicht deinen Namen. Nimm immer dieselbe Zahl, dann machst du dort weiter, wo du aufgehört hast.</p>
-    <div class="gzrow"><input class="gzfeld" id="gzfeld" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="?" aria-label="Deine Glückszahl"><button class="gzlos" id="gzok">Los geht's →</button></div></div>`;
+    <div class="gzrow"><input class="gzfeld" id="gzfeld" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" placeholder="?" aria-label="Deine Glückszahl"><button class="gzlos" id="gzok">Los geht's →</button></div><p class="gzfehler" id="gzfehler" hidden>Die Glückszahlen gehen von 1 bis 21. Schau nochmals nach, welche Zahl du hast.</p></div>`;
   const f=document.getElementById("gzfeld");
-  const los=()=>{const z=f.value.replace(/\D/g,"").slice(0,4); if(!z){f.classList.add("no");f.focus();return;}
-    gz=String(+z);store.set("rs.gz",gz); if(!store.get("uebung.gz"))store.set("uebung.gz",gz); home();};
-  f.addEventListener("input", ()=>{ const v = f.value.replace(/\D/g,"").slice(0,4); if(f.value!==v) f.value = v; f.classList.remove("no"); });
+  const los=()=>{const z=f.value.replace(/\D/g,"").slice(0,2); if(!z){f.classList.add("no");f.focus();return;}
+    if(!gzGueltig(z)){f.classList.add("no");document.getElementById("gzfehler").hidden=false;f.select();return;}
+    bestaetigen(String(+z));};
+  f.addEventListener("input", ()=>{ const v = f.value.replace(/\D/g,"").slice(0,2); if(f.value!==v) f.value = v; f.classList.remove("no"); const fe=document.getElementById("gzfehler"); if(fe) fe.hidden=true; });
   f.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();los();}});
   document.getElementById("gzok").onclick=los;
   f.focus({preventScroll:true});toTop();
 }
 function bestaetigen(z){
-  app.innerHTML=`<div class="card" style="text-align:center"><h2 style="color:var(--ink)">Ist das deine Glückszahl?</h2>
+  app.innerHTML=`<div class="card gzfrage"><h2 style="color:var(--ink)">Ist das wirklich deine Glückszahl?</h2>
     <div class="gzanz">${[...z].map(d=>`<span>${d}</span>`).join("")}</div>
-    <button class="main" id="gzja">Ja, das stimmt</button><button class="sec" id="gznein">Nein, nochmals</button></div>`;
-  document.getElementById("gzja").onclick=()=>{gz=String(+z);store.set("rs.gz",gz);home();};
+    <p class="gzfair">Nimm nur <b>deine eigene</b> Glückszahl. Wenn du die Zahl von einem anderen Kind nimmst, werden eure Ergebnisse vermischt. Das ist unfair für das andere Kind – und man sieht nicht mehr, was du selbst schon kannst.</p>
+    <button class="main" id="gzja">Ja, das ist meine Zahl</button><button class="sec" id="gznein">Nein, ändern</button></div>`;
+  document.getElementById("gzja").onclick=()=>{gz=String(+z);store.set("rs.gz",gz);if(!store.get("uebung.gz"))store.set("uebung.gz",gz);home();};
   document.getElementById("gznein").onclick=zahlenfeld;
 }
 
