@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de-CH">
+<html lang="de-CH" data-fach="deutsch" data-trainer="faelle">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -167,9 +167,10 @@ th{font-size:14px;color:var(--soft);font-weight:400}
 .gzfrage .gzknoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 @media (prefers-color-scheme: dark){.gzfrage .gzfair{background:#3a3014;color:#f3dfa2}.gzfehler{color:#ff8a80}}
 </style>
+<link rel="stylesheet" href="lernportal.css">
 </head>
 <body>
-<a class="lp-back" id="lpBack" href="./#deutsch">‹ Lernportal</a>
+<header class="lp-kopf"><a class="lp-zurueck" id="lpBack" href="./#deutsch">‹ Lernportal</a><div class="lp-logo">?</div><h1 class="lp-titel"><small>Deutsch · Die vier Fälle</small>Fall-Detektiv</h1></header>
 <script>try{ if(window.self!==window.top) document.getElementById("lpBack").hidden=true; }catch(e){}</script>
 <div id="app"></div>
 <div id="ov"></div>
@@ -456,7 +457,6 @@ function home(){
        <button class="main" onclick="vpStart()">${vp&&vp.pos>0&&vp.ver===VP_VER?`Vorprüfung weitermachen (Aufgabe ${vp.pos+1} von ${VP.length})`:"Vorprüfung starten"}</button></div>`;
   app.innerHTML=`
   <div class="hero">
-    <h1><span class="f"><span>F</span><span>a</span><span>l</span><span>l</span></span>-Detektiv</h1>
     <p>Jeder Fall hat seine Frage. Wer die richtige Frage stellt, löst ihn.</p>
   </div>
   <div class="who"><span class="gzchip">Glückszahl <b>${esc(VORSCHAU?"Vorschau":gz)}</b></span>${VORSCHAU?"":`<button class="link" onclick="if(confirm('Möchtest du wirklich eine andere Glückszahl eingeben?'))zahlenfeld()">Andere Glückszahl</button>`}</div>

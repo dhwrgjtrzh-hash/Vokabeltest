@@ -1,0 +1,137 @@
+/* =====================================================================
+   Lernportal 6b – gemeinsames Erscheinungsbild aller Trainer
+   Wird von jedem Trainer NACH seinen eigenen Stilen geladen.
+   - gleiche Schriften wie das Portal (Fredoka für Titel, Atkinson Hyperlegible für Text)
+   - gleicher Hintergrund, gleiche Karten, gleiche Kopfzeile
+   - jedes Fach hat seine Farbe (wie die Kacheln im Portal)
+   ===================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap");
+
+/* ---------- Grundfarben ---------- */
+html[data-fach]{
+  --lp-bg:#f3f6fb; --lp-karte:#ffffff; --lp-ink:#1b2433; --lp-leise:#5f6b85; --lp-linie:#dfe5ef;
+  --lp-gut:#127a3c; --lp-gut-bg:#dcf5e4; --lp-falsch:#b42318; --lp-falsch-bg:#fde4e1;
+  --lp-titel:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --lp-text:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --lp-schatten:0 1px 2px rgba(24,35,61,.05),0 6px 18px rgba(24,35,61,.06);
+}
+html[data-fach="mathe"]       {--lp-akzent:#2f5bea; --lp-akzent-soft:#e8eeff}
+html[data-fach="deutsch"]     {--lp-akzent:#c2255c; --lp-akzent-soft:#fbe6ee}
+html[data-fach="englisch"]    {--lp-akzent:#0b8a78; --lp-akzent-soft:#dcf4ef}
+html[data-fach="franzoesisch"]{--lp-akzent:#5b46c9; --lp-akzent-soft:#ecebfa}
+html[data-fach="nmg"]         {--lp-akzent:#b8690a; --lp-akzent-soft:#fbefdc}
+
+@media (prefers-color-scheme: dark){
+  html[data-fach]:not([data-theme="light"]){
+    --lp-bg:#111726; --lp-karte:#1a2235; --lp-ink:#eef2fb; --lp-leise:#a3aec6; --lp-linie:#2a344c;
+    --lp-gut:#6ad895; --lp-gut-bg:#14331f; --lp-falsch:#ff9a8f; --lp-falsch-bg:#3b1c1c;
+    --lp-schatten:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+  }
+  /* im Dunkeln mittlere Töne: gut lesbar als Schrift und mit weisser Schrift auf Knöpfen */
+  html[data-fach="mathe"]:not([data-theme="light"])       {--lp-akzent:#5b7cfa; --lp-akzent-soft:#1f2b52}
+  html[data-fach="deutsch"]:not([data-theme="light"])     {--lp-akzent:#d9467d; --lp-akzent-soft:#3e1d2b}
+  html[data-fach="englisch"]:not([data-theme="light"])    {--lp-akzent:#11a08b; --lp-akzent-soft:#13372f}
+  html[data-fach="franzoesisch"]:not([data-theme="light"]){--lp-akzent:#7a66e6; --lp-akzent-soft:#262343}
+  html[data-fach="nmg"]:not([data-theme="light"])         {--lp-akzent:#c97a14; --lp-akzent-soft:#3b2a12}
+}
+
+/* ---------- Die Farbnamen der einzelnen Trainer auf die gemeinsamen Farben umlenken ---------- */
+/* Mathe-Trainer und Rechtschreibung */
+html[data-trainer="mathe"], html[data-trainer="rechtschreibung"],
+html[data-trainer="mathe"]:not([data-theme="light"]), html[data-trainer="rechtschreibung"]:not([data-theme="light"]){
+  --bg:var(--lp-bg); --card:var(--lp-karte); --ink:var(--lp-ink); --mute:var(--lp-leise); --line:var(--lp-linie);
+  --accent:var(--lp-akzent); --accent-soft:var(--lp-akzent-soft);
+  --good:var(--lp-gut); --good-bg:var(--lp-gut-bg); --bad:var(--lp-falsch); --bad-bg:var(--lp-falsch-bg);
+}
+/* Fall-Detektiv (die vier Fallfarben bleiben, sie gehören zum Lernstoff) */
+html[data-trainer="faelle"], html[data-trainer="faelle"]:not([data-theme="light"]){
+  --bg:var(--lp-bg); --paper:var(--lp-karte); --ink:var(--lp-ink); --soft:var(--lp-leise); --line:var(--lp-linie);
+  --ok:var(--lp-gut); --bad:var(--lp-falsch); --btn:var(--lp-akzent); --btn-ink:#fff;
+}
+/* Tierwörter */
+html[data-trainer="tierwoerter"], html[data-trainer="tierwoerter"]:not([data-theme="light"]){
+  --bg:var(--lp-bg); --surface:var(--lp-karte); --ink:var(--lp-ink); --muted:var(--lp-leise); --line:var(--lp-linie);
+  --soft:var(--lp-akzent-soft); --accent:var(--lp-akzent); --accent-ink:#fff;
+  --ok:var(--lp-gut); --ok-soft:var(--lp-gut-bg); --bad:var(--lp-falsch); --bad-soft:var(--lp-falsch-bg);
+  --display:var(--lp-titel); --body:var(--lp-text);
+}
+/* Französisch */
+html[data-trainer="franzoesisch"], html[data-trainer="franzoesisch"]:not([data-theme="light"]){
+  --bg:var(--lp-bg); --card:var(--lp-karte); --ink:var(--lp-ink); --mute:var(--lp-leise); --line:var(--lp-linie);
+  --soft:var(--lp-akzent-soft); --fr:var(--lp-akzent); --fr-ink:#fff;
+  --good:var(--lp-gut); --good-bg:var(--lp-gut-bg); --bad:var(--lp-falsch); --bad-bg:var(--lp-falsch-bg);
+  --display:var(--lp-titel); --body:var(--lp-text);
+}
+/* Römer */
+html[data-trainer="roemer"], html[data-trainer="roemer"]:not([data-theme="light"]){
+  --ground:var(--lp-bg); --surface:var(--lp-karte); --ink:var(--lp-ink); --ink-2:var(--lp-leise); --line:var(--lp-linie);
+  --accent:var(--lp-akzent); --accent-soft:var(--lp-akzent-soft); --accent-ink:#fff;
+  --good:var(--lp-gut); --good-soft:var(--lp-gut-bg); --bad:var(--lp-falsch); --bad-soft:var(--lp-falsch-bg);
+  --shadow:var(--lp-schatten);
+}
+
+
+/* ---------- Schrift ---------- */
+html[data-fach] body{font-family:var(--lp-text); background:var(--lp-bg); color:var(--lp-ink)}
+html[data-fach] button, html[data-fach] input, html[data-fach] select, html[data-fach] textarea{font-family:inherit}
+html[data-fach] h1, html[data-fach] h2, html[data-fach] h3{font-family:var(--lp-titel); font-weight:600; letter-spacing:0}
+
+/* ---------- Kopfzeile (in allen Trainern gleich) ---------- */
+.lp-kopf{display:flex; align-items:center; gap:12px; flex-wrap:nowrap; width:100%; align-self:stretch; box-sizing:border-box;
+  max-width:860px; margin:0 auto 18px; padding:0}
+html[data-fach] .lp-kopf .lp-zurueck{display:inline-flex; align-items:center; gap:4px; flex:none; white-space:nowrap;
+  text-decoration:none; color:var(--lp-akzent); background:var(--lp-karte);
+  border:2px solid var(--lp-linie); border-radius:999px; padding:8px 13px 8px 10px;
+  font:700 .95rem/1 var(--lp-text); align-self:center; margin:0}
+html[data-fach] .lp-kopf .lp-zurueck:hover{border-color:var(--lp-akzent)}
+html[data-fach] .lp-kopf .lp-logo{flex:none; min-width:48px; height:48px; padding:0 9px; border-radius:14px;
+  display:grid; place-items:center; background:var(--lp-akzent); color:#fff;
+  font:600 1.1rem/1 var(--lp-titel); letter-spacing:-.01em; white-space:nowrap}
+html[data-fach] .lp-kopf .lp-titel{flex:1; min-width:0; margin:0; font:600 1.55rem/1.1 var(--lp-titel); color:var(--lp-ink)}
+html[data-fach] .lp-kopf .lp-titel small{display:block; margin-bottom:2px; font:700 .78rem/1.2 var(--lp-text);
+  letter-spacing:.04em; text-transform:uppercase; color:var(--lp-leise)}
+.lp-kopf .lp-rechts{flex:none; display:flex; align-items:center; gap:8px}
+.lp-kopf .pill{font-family:var(--lp-text)}
+@media (max-width:560px){
+  .lp-kopf{gap:9px}
+  html[data-fach] .lp-kopf .lp-logo{min-width:40px; height:40px; border-radius:12px; font-size:.95rem}
+  html[data-fach] .lp-kopf .lp-titel{font-size:1.25rem}
+  html[data-fach] .lp-kopf .lp-titel small{font-size:.68rem}
+  html[data-fach] .lp-kopf .lp-zurueck{padding:7px 10px 7px 8px; font-size:.88rem}
+}
+@media print{ .lp-kopf .lp-zurueck{display:none} }
+
+/* ---------- Kopfzeile in die Breite des jeweiligen Trainers einpassen ---------- */
+.wrap > .lp-kopf, #wrap > .lp-kopf{max-width:none}
+html[data-trainer="tierwoerter"] .lp-kopf, html[data-trainer="franzoesisch"] .lp-kopf{margin-bottom:0}
+html[data-trainer="faelle"] .lp-kopf{max-width:860px; padding:18px 16px 0; margin-bottom:0}
+html[data-trainer="faelle"] #app{padding-top:16px; max-width:860px}
+html[data-trainer="roemer"] .lp-kopf{max-width:860px; padding:20px 18px 0; margin-bottom:6px}
+/* alle Trainer gleich breit wie die Mathe-Trainer */
+html[data-trainer="roemer"] .wrap{max-width:860px}
+html[data-trainer="tierwoerter"] .wrap{max-width:860px}
+html[data-trainer="franzoesisch"] .wrap{max-width:860px}
+
+/* ---------- Rechtschreibung: setzt ihre Farben am <body> (wegen der Ansicht in der Deutsch-Station) ---------- */
+html[data-trainer="rechtschreibung"] body{
+  --bg:var(--lp-bg); --card:var(--lp-karte); --ink:var(--lp-ink); --mute:var(--lp-leise); --line:var(--lp-linie);
+  --accent:var(--lp-akzent); --accent-soft:var(--lp-akzent-soft);
+  --good:var(--lp-gut); --good-bg:var(--lp-gut-bg); --bad:var(--lp-falsch); --bad-bg:var(--lp-falsch-bg);
+}
+/* in der Deutsch-Station eingebettet: immer hell, wie bisher */
+@media (prefers-color-scheme: dark){
+  html[data-trainer="rechtschreibung"] body.eingebettet{
+    --lp-bg:#f3f6fb; --lp-karte:#ffffff; --lp-ink:#1b2433; --lp-leise:#5f6b85; --lp-linie:#dfe5ef;
+    --lp-gut:#127a3c; --lp-gut-bg:#dcf5e4; --lp-falsch:#b42318; --lp-falsch-bg:#fde4e1;
+    --lp-akzent:#c2255c; --lp-akzent-soft:#fbe6ee; color-scheme:light;
+  }
+  html[data-trainer="rechtschreibung"] body:not(.eingebettet) .qtype{color:var(--lp-akzent)}
+}
+
+/* ---------- Schmale Bildschirme (Handy): Zurück-Knopf nur als Pfeil, Titel darf umbrechen ---------- */
+@media (max-width:560px){
+  html[data-fach] .lp-kopf .lp-zurueck{font-size:0; padding:0; width:40px; height:40px; justify-content:center}
+  html[data-fach] .lp-kopf .lp-zurueck::before{content:"‹"; font-size:1.5rem; line-height:1; margin-top:-3px}
+  html[data-fach] .lp-kopf .lp-titel{hyphens:auto; overflow-wrap:break-word}
+  html[data-fach] .lp-kopf .lp-titel small{letter-spacing:.02em}
+}
