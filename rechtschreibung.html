@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de-CH">
+<html lang="de-CH" data-fach="deutsch" data-trainer="rechtschreibung">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -269,13 +269,14 @@ body.eingebettet header{display:none}
 .gzfrage .gzknoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 @media (prefers-color-scheme: dark){.gzfrage .gzfair{background:#3a3014;color:#f3dfa2}.gzfehler{color:#ff8a80}}
 </style>
+<link rel="stylesheet" href="lernportal.css">
 </head>
 <body>
 <div class="wrap" id="wrap">
-  <header>
-    <a class="back" href="./#deutsch">‹ Lernportal</a>
-    <div class="logo">Abc</div>
-    <h1 class="grow"><small>Deutsch · Diktat-Training</small>Rechtschreibung üben</h1>
+  <header class="lp-kopf">
+    <a class="back lp-zurueck" href="./#deutsch">‹ Lernportal</a>
+    <div class="logo lp-logo">Abc</div>
+    <h1 class="grow lp-titel"><small>Deutsch · Diktat-Training</small>Rechtschreibung üben</h1>
     <div class="pill" id="pill" hidden></div>
   </header>
   <main id="app"></main>

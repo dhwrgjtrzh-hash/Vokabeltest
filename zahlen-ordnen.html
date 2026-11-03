@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de-CH">
+<html lang="de-CH" data-fach="mathe" data-trainer="mathe">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -266,13 +266,14 @@ svg.nl{color:var(--ink)}
 .gzfrage .gzknoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 @media (prefers-color-scheme: dark){.gzfrage .gzfair{background:#3a3014;color:#f3dfa2}.gzfehler{color:#ff8a80}}
 </style>
+<link rel="stylesheet" href="lernportal.css">
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <a class="back" href="./#mathe">‹ Lernportal</a>
-    <div class="logo">&lt; &gt;</div>
-    <h1 class="grow">Zahlen ordnen</h1>
+  <header class="lp-kopf">
+    <a class="back lp-zurueck" href="./#mathe">‹ Lernportal</a>
+    <div class="logo lp-logo">&lt; &gt;</div>
+    <h1 class="grow lp-titel"><small>Mathe</small>Zahlen ordnen</h1>
     <button class="pill" id="pill" type="button" title="Andere Glückszahl eingeben" hidden></button>
   </header>
   <main id="app"></main>
