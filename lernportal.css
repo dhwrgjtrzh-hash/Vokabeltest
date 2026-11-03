@@ -19,7 +19,6 @@ html[data-fach="mathe"]       {--lp-akzent:#2f5bea; --lp-akzent-soft:#e8eeff}
 html[data-fach="deutsch"]     {--lp-akzent:#c2255c; --lp-akzent-soft:#fbe6ee}
 html[data-fach="englisch"]    {--lp-akzent:#0b8a78; --lp-akzent-soft:#dcf4ef}
 html[data-fach="franzoesisch"]{--lp-akzent:#5b46c9; --lp-akzent-soft:#ecebfa}
-html[data-fach="nmg"]         {--lp-akzent:#b8690a; --lp-akzent-soft:#fbefdc}
 
 @media (prefers-color-scheme: dark){
   html[data-fach]:not([data-theme="light"]){
@@ -32,7 +31,6 @@ html[data-fach="nmg"]         {--lp-akzent:#b8690a; --lp-akzent-soft:#fbefdc}
   html[data-fach="deutsch"]:not([data-theme="light"])     {--lp-akzent:#d9467d; --lp-akzent-soft:#3e1d2b}
   html[data-fach="englisch"]:not([data-theme="light"])    {--lp-akzent:#11a08b; --lp-akzent-soft:#13372f}
   html[data-fach="franzoesisch"]:not([data-theme="light"]){--lp-akzent:#7a66e6; --lp-akzent-soft:#262343}
-  html[data-fach="nmg"]:not([data-theme="light"])         {--lp-akzent:#c97a14; --lp-akzent-soft:#3b2a12}
 }
 
 /* ---------- Die Farbnamen der einzelnen Trainer auf die gemeinsamen Farben umlenken ---------- */
@@ -61,13 +59,6 @@ html[data-trainer="franzoesisch"], html[data-trainer="franzoesisch"]:not([data-t
   --soft:var(--lp-akzent-soft); --fr:var(--lp-akzent); --fr-ink:#fff;
   --good:var(--lp-gut); --good-bg:var(--lp-gut-bg); --bad:var(--lp-falsch); --bad-bg:var(--lp-falsch-bg);
   --display:var(--lp-titel); --body:var(--lp-text);
-}
-/* Römer */
-html[data-trainer="roemer"], html[data-trainer="roemer"]:not([data-theme="light"]){
-  --ground:var(--lp-bg); --surface:var(--lp-karte); --ink:var(--lp-ink); --ink-2:var(--lp-leise); --line:var(--lp-linie);
-  --accent:var(--lp-akzent); --accent-soft:var(--lp-akzent-soft); --accent-ink:#fff;
-  --good:var(--lp-gut); --good-soft:var(--lp-gut-bg); --bad:var(--lp-falsch); --bad-soft:var(--lp-falsch-bg);
-  --shadow:var(--lp-schatten);
 }
 
 
@@ -106,9 +97,7 @@ html[data-fach] .lp-kopf .lp-titel small{display:block; margin-bottom:2px; font:
 html[data-trainer="tierwoerter"] .lp-kopf, html[data-trainer="franzoesisch"] .lp-kopf{margin-bottom:0}
 html[data-trainer="faelle"] .lp-kopf{max-width:860px; padding:18px 16px 0; margin-bottom:0}
 html[data-trainer="faelle"] #app{padding-top:16px; max-width:860px}
-html[data-trainer="roemer"] .lp-kopf{max-width:860px; padding:20px 18px 0; margin-bottom:6px}
 /* alle Trainer gleich breit wie die Mathe-Trainer */
-html[data-trainer="roemer"] .wrap{max-width:860px}
 html[data-trainer="tierwoerter"] .wrap{max-width:860px}
 html[data-trainer="franzoesisch"] .wrap{max-width:860px}
 
