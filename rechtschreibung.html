@@ -1238,18 +1238,19 @@ const AUDIO_DIR = "audio/rs/";
 const AUDIO_DA = new Set((typeof AUDIO_LISTE === "string" ? AUDIO_LISTE : "").split(" ").filter(Boolean));
 const audioKey = t => String(t).replace(/\^/g,"").replace(/\s+/g," ").trim().toLowerCase();
 const fnv = s => { let h=0x811c9dc5; for(const ch of s){ h^=ch.codePointAt(0); h=Math.imul(h,0x01000193)>>>0; } return h.toString(16).padStart(8,"0"); };
-const audioPfad = t => { const h = fnv(audioKey(t)); return AUDIO_DA.has(h) ? AUDIO_DIR + h + ".mp3" : null; };
+/* Langsam: eigene, langsam gesprochene Aufnahme (nicht künstlich gedehnt) */
+const audioPfad = (t, langsam) => { const h = fnv(audioKey(t)); return AUDIO_DA.has(h) ? AUDIO_DIR + (langsam ? "langsam/" + h + ".m4a" : h + ".mp3") : null; };
 const HOEREN = TTS || AUDIO_DA.size > 0;
 const PLAYER = new Audio(); PLAYER.preload = "auto";
 let spielId = 0;
 function stille(){ spielId++; try{ PLAYER.pause(); }catch(e){} if(TTS) try{ speechSynthesis.cancel(); }catch(e){} }
 /* texte: Liste von Stücken, die nacheinander gespielt werden (z. B. Wort, Satz, Wort) */
 function spiele(texte, langsam){
-  const pfade = texte.map(audioPfad);
+  const pfade = texte.map(t => audioPfad(t, langsam));
   const ersatz = () => sag(texte.map(sprechText).join(" … "), langsam ? 0.6 : 0.85);
   stille();
   if(!pfade.length || pfade.some(p=>!p)) return ersatz();
-  const id = spielId, rate = langsam ? 0.75 : 1;
+  const id = spielId, rate = 1;
   let i = 0;
   const weiter = () => {
     if(id !== spielId || i >= pfade.length) return;
