@@ -1,8 +1,8 @@
-<!doctype html><html lang="de-CH" data-fach="nmg" data-trainer="roemer"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="de-CH"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Römer-Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Asap:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 <style>
 :root{
   --ground:#F1EFE9; --surface:#FFFFFF; --surface-2:#E8E4DA; --sunk:#DFDACE;
@@ -52,7 +52,7 @@ header.top{
 .top-in{max-width:940px; margin:0 auto; padding:20px 18px 18px; display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap}
 .brand{display:flex; flex-direction:column; gap:2px}
 .eyebrow{font-size:12px; letter-spacing:.18em; text-transform:uppercase; opacity:.78; font-weight:600}
-h1{font-family:var(--lp-titel); font-weight:700; font-size:clamp(28px,6vw,40px);
+h1{font-family:"Cinzel",Georgia,serif; font-weight:700; font-size:clamp(28px,6vw,40px);
    margin:0; letter-spacing:.04em; text-wrap:balance}
 .score-pill{
   margin-left:auto; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28);
@@ -64,7 +64,7 @@ h1{font-family:var(--lp-titel); font-weight:700; font-size:clamp(28px,6vw,40px);
 
 /* ---------- Startseite ---------- */
 .lead{margin:26px 0 22px; color:var(--ink-2); max-width:62ch}
-.group-title{font-family:var(--lp-titel); font-size:20px; letter-spacing:.03em; margin:28px 0 12px; color:var(--accent)}
+.group-title{font-family:"Cinzel",Georgia,serif; font-size:20px; letter-spacing:.03em; margin:28px 0 12px; color:var(--accent)}
 .tessera.small{font-size:16px}
 .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px}
 .card{
@@ -78,7 +78,7 @@ h1{font-family:var(--lp-titel); font-weight:700; font-size:clamp(28px,6vw,40px);
 .tessera{
   flex:0 0 auto; width:48px; height:48px; border-radius:6px;
   background:var(--accent-soft); color:var(--accent);
-  display:grid; place-items:center; font-family:var(--lp-titel);
+  display:grid; place-items:center; font-family:"Cinzel",Georgia,serif;
   font-weight:700; font-size:19px; letter-spacing:.02em;
 }
 .card.done .tessera{background:var(--good-soft); color:var(--good)}
@@ -95,7 +95,7 @@ h1{font-family:var(--lp-titel); font-weight:700; font-size:clamp(28px,6vw,40px);
 
 /* ---------- Übungsansicht ---------- */
 .ex-head{display:flex; align-items:center; gap:14px; margin:22px 0 6px; flex-wrap:wrap}
-.ex-head h2{font-family:var(--lp-titel); font-size:clamp(20px,4.4vw,27px); margin:0; letter-spacing:.02em}
+.ex-head h2{font-family:"Cinzel",Georgia,serif; font-size:clamp(20px,4.4vw,27px); margin:0; letter-spacing:.02em}
 .bar{height:8px; background:var(--sunk); border-radius:999px; overflow:hidden; margin:14px 0 22px}
 .bar i{display:block; height:100%; background:var(--gold); border-radius:999px; transition:width .3s ease}
 .q{font-size:clamp(19px,3.6vw,23px); font-weight:600; margin:0 0 16px; text-wrap:balance}
@@ -132,14 +132,14 @@ h1{font-family:var(--lp-titel); font-weight:700; font-size:clamp(28px,6vw,40px);
 .input-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
 input[type="text"]{
   flex:1 1 200px; min-width:0; font:inherit; font-size:24px; font-weight:700;
-  font-family:var(--lp-titel); letter-spacing:.06em; text-align:center;
+  font-family:"Cinzel",Georgia,serif; letter-spacing:.06em; text-align:center;
   padding:14px 12px; border-radius:var(--r); border:2px solid var(--line);
   background:var(--surface); color:var(--ink);
 }
 input[type="text"]:focus{outline:none; border-color:var(--accent)}
 .keypad{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
 .key{
-  font:inherit; font-family:var(--lp-titel); font-weight:700; font-size:19px;
+  font:inherit; font-family:"Cinzel",Georgia,serif; font-weight:700; font-size:19px;
   min-width:52px; padding:10px 0; border-radius:10px; border:1px solid var(--line);
   background:var(--surface-2); color:var(--ink); cursor:pointer;
 }
@@ -154,7 +154,7 @@ input[type="text"]:focus{outline:none; border-color:var(--accent)}
 }
 .sortrow.good{border-color:var(--good); background:var(--good-soft)}
 .sortrow.bad{border-color:var(--bad); background:var(--bad-soft)}
-.sortrow .pos{font-family:var(--lp-titel); font-weight:700; color:var(--ink-3); width:26px}
+.sortrow .pos{font-family:"Cinzel",Georgia,serif; font-weight:700; color:var(--ink-3); width:26px}
 .sortrow .txt{flex:1; font-weight:500; min-width:0}
 .arrows{display:flex; gap:6px}
 .arrow{
@@ -192,9 +192,9 @@ p.counter{margin:-10px 0 12px 0; font-size:14px; letter-spacing:.06em; text-tran
 
 /* Ergebnis */
 .result{text-align:center; padding:30px 10px}
-.laurel{font-family:var(--lp-titel); font-size:clamp(46px,12vw,72px); font-weight:700;
+.laurel{font-family:"Cinzel",Georgia,serif; font-size:clamp(46px,12vw,72px); font-weight:700;
   color:var(--gold); line-height:1; margin-bottom:6px; font-variant-numeric:tabular-nums}
-.result h2{font-family:var(--lp-titel); margin:0 0 8px; font-size:26px}
+.result h2{font-family:"Cinzel",Georgia,serif; margin:0 0 8px; font-size:26px}
 .result p{color:var(--ink-2); margin:0 auto 22px; max-width:44ch}
 
 :where(button,input,a):focus-visible{outline:3px solid var(--gold); outline-offset:2px}
@@ -207,13 +207,16 @@ p.counter{margin:-10px 0 12px 0; font-size:14px; letter-spacing:.06em; text-tran
 .lp-back{display:inline-flex;align-items:center;text-decoration:none;color:inherit;font-weight:600;font-size:15px;padding:7px 12px 7px 9px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(255,255,255,.14);align-self:center}
 @media (prefers-color-scheme:dark){ .lp-back{border-color:rgba(0,0,0,.3);background:rgba(0,0,0,.14)} }
 </style>
-<link rel="stylesheet" href="lernportal.css">
 
-<header class="lp-kopf">
-  <a class="lp-zurueck" href="./#nmg">‹ Lernportal</a>
-  <div class="lp-logo">XII</div>
-  <h1 class="lp-titel"><small>NMG · Die alten Römer</small>Römer-Trainer</h1>
-  <div class="lp-rechts"><div class="score-pill" id="scorePill" hidden><span>Punkte</span> <b id="scoreNum">0</b><span id="scoreMax">/0</span></div></div>
+<header class="top">
+  <div class="top-in">
+    <a class="lp-back" href="./#nmg">‹ Lernportal</a>
+    <div class="brand">
+      <span class="eyebrow">NMG · Die alten Römer</span>
+      <h1>Römer-Trainer</h1>
+    </div>
+    <div class="score-pill" id="scorePill" hidden><span>Punkte</span> <b id="scoreNum">0</b><span id="scoreMax">/0</span></div>
+  </div>
 </header>
 
 <main class="wrap" id="app"></main>

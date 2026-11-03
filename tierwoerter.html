@@ -43,16 +43,19 @@ button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid
 .chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
 .chip small{opacity:.75;margin-left:4px;font-variant-numeric:tabular-nums}
 
-/* stage cards */
-.stages{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:460px){.stages{grid-template-columns:1fr}}
-.stage{position:relative;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:18px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px;min-width:0;transition:transform .12s,border-color .12s}
-.stage:hover{border-color:var(--accent);transform:translateY(-2px)}
-.stage .num{font-family:var(--display);font-weight:800;font-size:15px;color:var(--accent)}
-.stage h3{font-size:22px;font-weight:800}
-.stage p{margin:0;font-size:14px;color:var(--muted)}
-.stage .stars{margin-top:6px}
-.stage.write{border-style:dashed;grid-column:1/-1}
+/* Wörter-Auswahl in einer Karte (wie im Französisch-Trainer) */
+.wahl{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px}
+/* Stufen als Liste (gleich aufgebaut wie die Kapitel im Fall-Detektiv) */
+.stages{display:flex;flex-direction:column;gap:10px}
+.stage{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-left:8px solid var(--accent);border-radius:14px;padding:14px 16px;transition:border-color .15s,transform .15s}
+.stage:hover{border-color:var(--accent);transform:translateY(-1px)}
+.stage .num{font-family:var(--display);font-weight:800;font-size:28px;color:var(--accent);min-width:28px;text-align:center;line-height:1}
+.stage .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.stage h3{font-size:21px;font-weight:700}
+.stage p{margin:0;font-size:15px;color:var(--muted)}
+.stage .t .tag{align-self:flex-start;margin-top:4px}
+.stage .stars{white-space:nowrap;font-size:18px}
+.stage.write{border-left-color:var(--muted)}
 .tag.hardtag{background:var(--sun);color:#3A2A00}
 .claim{display:flex;flex-direction:column;align-items:center;gap:10px}
 .claim .eq{font-size:14px;color:var(--muted)}
@@ -167,12 +170,15 @@ td.dots{white-space:nowrap;text-align:right}
       <p>Du siehst das deutsche Wort und suchst das englische. Fang bei Stufe 1 an – geschrieben wird erst ganz am Schluss.</p>
     </div>
 
-    <div>
+    <div class="wahl">
       <div class="eyebrow" style="margin-bottom:8px">Welche Wörter?</div>
       <div class="chips" id="chips"></div>
     </div>
 
-    <div class="stages" id="stages"></div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Wähle eine Stufe</div>
+      <div class="stages" id="stages"></div>
+    </div>
 
     <details class="list">
       <summary>Alle Wörter ansehen und anhören</summary>
@@ -346,8 +352,9 @@ function renderHome(){
   STAGES.forEach(s=>{
     const best = (store.best[store.set]||{})[s.id]||0;
     const b = el("button","stage"+(s.write?" write":"")+(s.hard?" hard":""),
-      `<span class="num">Stufe ${s.n}</span><h3>${s.name}</h3><p>${s.desc}</p>
-       ${s.write?'<span class="tag">Erst wenn Stufe 1–4 sitzen</span>':''}${s.hard?'<span class="tag hardtag">Knifflig</span>':''}
+      `<span class="num">${s.n}</span>
+       <span class="t"><h3>${s.name}</h3><p>${s.desc}</p>
+       ${s.write?'<span class="tag">Erst wenn Stufe 1–4 sitzen</span>':''}${s.hard?'<span class="tag hardtag">Knifflig</span>':''}</span>
        <span class="stars" aria-label="${best} von 3 Sternen">${starHTML(best)}</span>`);
     b.type="button"; b.onclick=()=>startStage(s.id);
     st.appendChild(b);
