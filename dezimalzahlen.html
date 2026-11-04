@@ -665,6 +665,9 @@ function gzFrage(z, ja, nein){
   document.getElementById("gzja").focus({preventScroll:true});
 }
 function startAuto(){
+  /* Kommt das Kind über «… üben» aus dem Lernportal, startet genau dieses Lernziel (nur einmal) */
+  const zp = new URLSearchParams(location.search).get("ziel");
+  if(zp && GOAL[zp] && !startAuto.ziel){ startAuto.ziel = true; try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){} return startGoal(zp); }
   const last = P.last && GOAL[P.last] && !gs(P.last).done ? P.last : null;
   const open = GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done);
   startGoal(last || (open ? open.id : pick(GOALS).id));
