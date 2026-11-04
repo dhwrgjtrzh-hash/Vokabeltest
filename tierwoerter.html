@@ -206,6 +206,7 @@ td.dots{white-space:nowrap;text-align:right}
   </section>
 </div>
 
+<script src="lp-ergebnisse.js"></script>
 <script>
 const WORDS = [
   // Tierfakten
@@ -385,7 +386,7 @@ function pickRound(stage){
 
 function startStage(stage){
   const words = pickRound(stage);
-  G = {stage, words, queue:words.slice(), done:0, total:words.length, right:new Set(), wrong:new Set(), retried:new Set(), kind:{}};
+  G = {stage, words, queue:words.slice(), done:0, total:words.length, right:new Set(), wrong:new Set(), retried:new Set(), kind:{}, ans:{}, zeit:{}, fr:{}, lsg:{}};
   if(stage===5){ // 3 richtige, 3 falsche Wörter, Rest Schreibfehler
     shuffle(words).forEach((w,i)=>{ G.kind[w.id] = i<3 ? "ok" : i<6 ? "meaning" : "spell"; });
   }
@@ -406,6 +407,8 @@ function promptCard(w, ask){
   return `<div class="prompt pop"><span class="tag">${GROUPNAME[w.g]}</span><div class="de">${esc(w.de)}</div><div class="ask">${ask}</div></div>`;
 }
 
+/* erste Antwort eines Wortes für die Auswertung merken (geht mit der Glückszahl an die Lehrperson) */
+function merke(w, antwort){ if(!(w.id in G.ans)) G.ans[w.id] = String(antwort==null?"":antwort); G.zeit[w.id] = Date.now(); }
 /* result of one word in stages 1,3,4 */
 function resolve(w, firstTry, {requeue=!firstTry}={}){
   if(firstTry && !G.retried.has(w.id)){ G.right.add(w.id); setMastered(w.id, G.stage); }
@@ -451,7 +454,7 @@ function stageChoice(w){
       if(!ok){ b.classList.add("shake"); [...opts.children][choices.indexOf(w)].classList.add("ok"); }
       fb.className = "feedback "+(ok?"ok":"bad"); fb.innerHTML = feedbackHTML(ok, w);
       say(w.en);
-      resolve(w, ok);
+      merke(w, c.en); resolve(w, ok);
       if(ok) setTimeout(nextWord, w.note?1700:1100); else continueButton(area, nextWord);
     };
     opts.appendChild(b);
@@ -476,13 +479,14 @@ function nextPairs(){
     if(a.dataset.id===b.dataset.id){
       const w = WORDS[+a.dataset.id];
       [a,b].forEach(x=>{ x.classList.remove("sel"); x.classList.add("ok"); x.disabled=true; });
-      say(w.en); found++;
+      say(w.en); found++; merke(w, w.en);
       if(!missed.has(w.id)){ G.right.add(w.id); setMastered(w.id,2); }
       G.done++; updateBar(); save();
       fb.className="feedback ok"; fb.innerHTML = feedbackHTML(true, w);
       if(found===left.length) setTimeout(nextPairs, 1200);
     } else {
       missed.add(+a.dataset.id); missed.add(+b.dataset.id);
+      merke(WORDS[+a.dataset.id], WORDS[+b.dataset.id].en);
       G.wrong.add(+a.dataset.id); G.wrong.add(+b.dataset.id);
       [a,b].forEach(x=>{ x.classList.remove("sel"); x.classList.add("bad","shake"); });
       fb.className="feedback bad"; fb.textContent="Passt nicht zusammen – versuch es nochmals.";
@@ -549,6 +553,7 @@ function stageLetters(w){
     locked = true;
     const guess = filled.map(t=>tiles[t].ch).join("");
     const ok = guess === letters.join("");
+    merke(w, guess);
     const slotEls = slotsEl.querySelectorAll(".slot");
     if(ok){
       slotEls.forEach(s=>s.classList.add("ok"));
@@ -600,7 +605,7 @@ function stageType(w){
     e.preventDefault();
     const a = norm(inp.value); if(!a) return;
     const ok = [w.en, ...(w.alt||[])].some(x=>norm(x)===a);
-    tries++;
+    tries++; merke(w, inp.value.trim());
     if(ok){
       inp.classList.add("ok"); inp.disabled=true; btn.disabled=true;
       fb.className="feedback ok"; fb.innerHTML = feedbackHTML(true,w); say(w.en);
@@ -633,6 +638,7 @@ function stageError(w){
     shownText = wrongWord.en;
   }
   const isError = shownText !== w.en;
+  G.fr[w.id] = `«${shownText}» für «${w.de}» – stimmt das?`; G.lsg[w.id] = isError ? `Fehler – richtig ist ${w.en}` : "stimmt";
   const claim = el("div","claim");
   claim.appendChild(el("div","eq","auf Englisch:"));
   let shown;
@@ -657,6 +663,7 @@ function stageError(w){
 
   function done(ok, msg){
     fb.className = "feedback "+(ok?"ok":"bad"); fb.innerHTML = msg + note;
+    merke(w, ok ? (isError ? "Fehler gefunden" : "stimmt") : (isError ? "Fehler nicht gefunden" : "Fehler gesehen, wo keiner ist"));
     say(w.en); resolve(w, ok);
     if(ok) setTimeout(nextWord, 1900); else continueButton(area, nextWord);
   }
@@ -723,6 +730,9 @@ function finish(){
   const stars = ratio>=.9?3: ratio>=.7?2: ratio>=.5?1:0;
   const b = store.best[store.set] || (store.best[store.set]={});
   b[G.stage] = Math.max(b[G.stage]||0, stars); save();
+  if(window.LP) LP.runde("Tierwörter", `Stufe ${stageById(G.stage).n} · ${stageById(G.stage).name}`, G.words.map(w=>({
+    frage: G.fr[w.id] || w.de, antwort: G.ans[w.id] ?? "", loesung: G.lsg[w.id] || w.en,
+    punkte: G.right.has(w.id) && !G.wrong.has(w.id) ? 1 : 0, thema: GROUPNAME[w.g], t: G.zeit[w.id] })));
   const msgs = ["Weiter üben – das wird!","Guter Anfang!","Stark!","Super, fast alles auf Anhieb!"];
   const wrong = G.words.filter(w=>G.wrong.has(w.id));
   const box = $("resultBox");
@@ -750,6 +760,7 @@ function finish(){
 /* ---------- start ---------- */
 if(canSpeak){ try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>{}; }catch(e){} }
 renderSound(); renderHome();
+if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
 </script>
 
 </body></html>
