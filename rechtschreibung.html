@@ -135,6 +135,7 @@ textarea.ans{resize:none;font-size:1.4rem;line-height:1.4}
 .tok.extra{text-decoration:line-through;color:var(--bad)}
 mark.x{background:#ffb4a8;color:#7a0d03;border-radius:3px;padding:0 1px}
 mark.y{background:#b9ecc9;color:#0a5a2a;border-radius:3px;padding:0 1px;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:5px}
+.fix-titel{margin:0 0 8px;font-size:1.15rem}
 .fix-card{margin-top:14px;border:3px solid var(--accent);border-radius:18px;padding:16px 18px;background:#fbfcff}
 .wort{font-size:2.1rem;font-weight:800;margin:0;letter-spacing:.02em;word-break:break-word}
 .wort.falsch{color:#7a2a20}
@@ -1685,6 +1686,9 @@ function regelBoxen(bereiche, ziel, antwort, satzanfang){
 /* Pflicht-Korrektur: jedes falsche Wort einprägen, abdecken, richtig schreiben */
 function korrektur(it, falsche){
   const fb = $("fb");
+  /* Das falsche Wort steht in der Korrektur-Karte – oben ausblenden, damit es beim Nachschreiben nicht sichtbar ist */
+  const inp0 = $("inp"); if(inp0) inp0.hidden = true;
+  document.querySelectorAll(".task > .hint").forEach(h=>h.hidden = true);
   let kopf = "";
   if(it.typ==="S"){
     const paare = it._paare;
@@ -1702,7 +1706,7 @@ function korrektur(it, falsche){
   let k = 0;
   const schritt = () => {
     if(k >= falsche.length){
-      fb.innerHTML = kopf + `<div class="explain ok"><h3>Gut korrigiert!</h3><p style="margin:0">${falsche.length>1?"Diese Wörter kommen":"Das Wort kommt"} in deine Fehlerkiste und taucht später nochmals auf.</p></div>
+      fb.innerHTML = `<div class="explain ok"><h3>✅ Gut korrigiert!</h3><p style="margin:0">${falsche.length>1?"Diese Wörter kommen":"Das Wort kommt"} in deine Fehlerkiste und taucht später nochmals auf.</p></div>
         <div class="actions"><button class="btn" id="next">Weiter →</button></div>`;
       $("next").onclick = ()=>zeigeAufgabe(true); $("next").focus({preventScroll:true});
       return;
@@ -1711,9 +1715,9 @@ function korrektur(it, falsche){
     const bereiche = f.a ? fehlerBereiche(res) : ["SO"];
     const nr = falsche.length>1 ? ` <span class="sub">(${k+1} von ${falsche.length})</span>` : "";
     const merken = (hinweis) => {
-      fb.innerHTML = kopf + `<div class="fix-card">
-        ${hinweis||""}
-        ${f.a ? `<p class="lab">Du hast geschrieben:</p><p class="wort falsch">${zeigeMarkiert(f.a, res.markA, "x")}</p>` : `<p class="lab">Dieses Wort fehlt:</p>`}
+      fb.innerHTML = (hinweis ? "" : kopf) + `<div class="fix-card">
+        ${hinweis||(it.typ==="W" ? `<h3 class="fix-titel">Nicht ganz richtig – schau genau hin</h3>` : "")}
+        ${hinweis ? "" : f.a ? `<p class="lab">Du hast geschrieben:</p><p class="wort falsch">${zeigeMarkiert(f.a, res.markA, "x")}</p>` : `<p class="lab">Dieses Wort fehlt:</p>`}
         <p class="lab">Richtig ist:${nr}</p><p class="wort richtig">${zeigeMarkiert(ziel, res.markT, "y")}</p>
         ${regelBoxen(bereiche, ziel, f.a, !!f.erstes)}
         <p class="sub" style="margin:12px 0 8px">Präg dir das Wort gut ein. Dann deckst du es zu und schreibst es aus dem Kopf.</p>
@@ -1724,7 +1728,7 @@ function korrektur(it, falsche){
       fb.scrollIntoView({behavior:"smooth", block:"start"});
     };
     const schreiben = () => {
-      fb.innerHTML = kopf + `<div class="fix-card">
+      fb.innerHTML = `<div class="fix-card">
         <p class="lab">Jetzt aus dem Kopf: Schreib das Wort richtig.${nr}</p>
         <p class="wort zu">${"•".repeat(Math.min(ziel.length, 14))}</p>
         <input class="ans wide" id="nach" ${TA} placeholder="Wort richtig schreiben …">
@@ -1735,16 +1739,13 @@ function korrektur(it, falsche){
         const v = norm(ni.value).replace(/[.!?,;:]+$/,"");
         if(!v) return ni.focus();
         if(v === ziel){ k++; schritt(); }
-        else merken(`<div class="again">Noch nicht ganz. Schau dir das Wort nochmals genau an.</div>`);
+        else merken(`<div class="again">Noch nicht ganz: Du hast «${esc(ni.value.trim())}» geschrieben. Schau dir das Wort nochmals genau an.</div>`);
       };
       $("ok2").onclick = go;
       ni.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); go(); } });
     };
     merken("");
   };
-  if(it.typ==="W"){
-    kopf = `<div class="explain"><h3>Nicht ganz richtig</h3><p style="margin:0">Schau, was nicht stimmt – und lies die Regel dazu.</p></div>`;
-  }
   schritt();
 }
 
