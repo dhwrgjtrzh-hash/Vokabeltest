@@ -119,6 +119,7 @@ footer{font-size:13px; color:var(--muted); text-align:center}
 .u-nochmal{color:#c0392b; font-weight:700}
 .u-weiter{color:#b35c00; font-weight:700}
 .u-balken i.halb{background:#f0a020}
+.u-balken i.halb-ok{background:linear-gradient(90deg,#2fa35c 50%,#f0a020 50%)}
 .u-ziel.halb{border-left-color:#f0a020}
 .u-leise{color:var(--muted)}
 .ueben{--rot:#d93a2b; background:var(--surface); border:3px solid var(--rot); border-radius:18px; box-shadow:var(--shadow); overflow:hidden}
@@ -294,9 +295,11 @@ function planLage(p, st){
   /* rot: unter 60 % richtig · orange: 60–84 % richtig (noch nicht ganz sicher) · jeweils nur, solange das Lernziel nicht geschafft ist */
   const nochmal = z.filter(x => !x.done && x.n >= 4 && x.q < 0.6).sort((a, b) => a.q - b.q);
   const sicherer = z.filter(x => !x.done && x.n >= 3 && !nochmal.includes(x) && x.q < 0.85).sort((a, b) => a.q - b.q);
+  /* geschafft, aber insgesamt unter 75 % richtig: nochmals anschauen */
+  const auffrischen = z.filter(x => x.done && x.n >= 3 && x.q < 0.75).sort((a, b) => a.q - b.q);
   const dran = z.filter(x => !x.done && x.n > 0 && !nochmal.includes(x) && !sicherer.includes(x));
   const offen = z.filter(x => x.n === 0 && !x.done);
-  return { z, geschafft, begonnen, nochmal, sicherer, dran, offen, last: st && st.last };
+  return { z, geschafft, begonnen, nochmal, sicherer, auffrischen, dran, offen, last: st && st.last };
 }
 function matheUebenHtml(gz, staende){
   const lagen = MATHE_PLAENE.map(p => ({ p, l: planLage(p, staende[p.plan]) }));
@@ -304,10 +307,11 @@ function matheUebenHtml(gz, staende){
   const status = {};
   lagen.forEach(({p, l}) => {
     const tot = p.ziele.length, gs = l.geschafft.length;
-    const balken = `<span class="u-balken" aria-hidden="true">${l.z.map(z => `<i class="${z.done ? 'ok' : z.n ? (l.nochmal.includes(z) ? 'no' : l.sicherer.includes(z) ? 'halb' : 'dran') : ''}"></i>`).join('')}</span>`;
+    const balken = `<span class="u-balken" aria-hidden="true">${l.z.map(z => `<i class="${z.done ? (l.auffrischen.includes(z) ? 'ok halb-ok' : 'ok') : z.n ? (l.nochmal.includes(z) ? 'no' : l.sicherer.includes(z) ? 'halb' : 'dran') : ''}"></i>`).join('')}</span>`;
     const text = !l.begonnen.length && !gs ? `<span class="u-leise">Noch nicht geübt</span>`
       : l.nochmal.length ? `<span class="u-nochmal">Nochmals üben: ${esc(l.nochmal[0].titel)}</span>`
       : l.sicherer.length ? `<span class="u-weiter">Weiter üben: ${esc(l.sicherer[0].titel)}</span>`
+      : l.auffrischen.length ? `<span class="u-weiter">Nochmals anschauen: ${esc(l.auffrischen[0].titel)}</span>`
       : gs === tot ? `<span>Alles geschafft 🏆</span>` : `<span>${gs} von ${tot} geschafft${gs ? ' ⭐' : ''}</span>`;
     status[p.plan] = `${balken}${text}`;
   });
@@ -315,6 +319,7 @@ function matheUebenHtml(gz, staende){
   const zielLink = (p, x) => `<a class="u-los" href="${esc(BASIS + p.url)}?ziel=${encodeURIComponent(x.id)}">«${esc(x.titel)}» üben ${ICONS.pfeil}</a>`;
   const nochmal = lagen.flatMap(({p, l}) => l.nochmal.slice(0, 2).map(x => ({p, x}))).sort((a, b) => a.x.q - b.x.q);
   const sicherer = lagen.flatMap(({p, l}) => l.sicherer.slice(0, 2).map(x => ({p, x}))).sort((a, b) => a.x.q - b.x.q).slice(0, Math.max(0, 3 - nochmal.length));
+  const auffrischen = lagen.flatMap(({p, l}) => l.auffrischen.map(x => ({p, x}))).sort((a, b) => a.x.q - b.x.q).slice(0, Math.max(0, 3 - nochmal.length - sicherer.length));
   const neu = lagen.filter(({l}) => !l.begonnen.length && !l.geschafft.length).map(({p}) => p.plan);
   const offen = lagen.flatMap(({p, l}) => l.begonnen.length ? l.offen.filter(x => !x.erw).map(x => ({p, x})) : []);
   const teile = [];
@@ -327,11 +332,15 @@ function matheUebenHtml(gz, staende){
     teile.push(`<p class="u-intro">${nochmal.length ? 'Auch hier' : 'Hier'} passieren noch Fehler – ${sicherer.length === 1 ? 'das sitzt' : 'das sitzt'} noch nicht ganz sicher. Übe weiter, bis du es geschafft hast:</p>`);
     sicherer.forEach(({p, x}) => teile.push(karte(p, x, 'halb')));
   }
-  const allesGut = !nochmal.length && !sicherer.length && lagen.some(({l}) => l.begonnen.length);
+  if (auffrischen.length){
+    teile.push(`<p class="u-intro">${auffrischen.length === 1 ? 'Dieses Lernziel hast du' : 'Diese Lernziele hast du'} geschafft ⭐ – aber dabei sind noch viele Fehler passiert. Schau dir die Erklärung nochmals an und übe ${auffrischen.length === 1 ? 'es' : 'sie'} noch einmal:</p>`);
+    auffrischen.forEach(({p, x}) => teile.push(karte(p, x, 'halb')));
+  }
+  const allesGut = !nochmal.length && !sicherer.length && !auffrischen.length && lagen.some(({l}) => l.begonnen.length);
   if (allesGut && (neu.length || offen.length)) teile.push(`<p class="u-intro">Super, was du bisher geübt hast, klappt gut! Hier wartet noch Neues auf dich:</p>`);
   if (neu.length) teile.push(`<p><b>Noch nicht begonnen:</b> ${neu.map(esc).join(', ')}</p>`);
   if (offen.length) teile.push(`<p><b>Noch nicht geübt:</b></p><ul class="u-offen">${MATHE_PLAENE.filter(p => offen.some(o => o.p === p)).map(p => `<li><span class="u-leise">${esc(p.plan)}:</span> ${offen.filter(o => o.p === p).map(({x}) => esc(x.titel)).join(', ')}</li>`).join('')}</ul>`);
-  const anzahl = nochmal.length + sicherer.length;
+  const anzahl = nochmal.length + sicherer.length + auffrischen.length;
   const detail = teile.length ? `<summary><span>🎯 Das solltest du noch üben</span>${anzahl ? `<span class="u-zahl">${anzahl}</span>` : ''}<span class="u-nr">Nr. ${esc(gz)}</span></summary>
     <div class="u-inhalt">${teile.join('')}</div>` : '';
   return { status, detail };
