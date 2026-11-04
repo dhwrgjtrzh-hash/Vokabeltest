@@ -110,40 +110,41 @@ footer{font-size:13px; color:var(--muted); text-align:center}
   .trainer{grid-template-columns:auto minmax(0,1fr); }
   .trainer .pfeil{display:none}
 }
-/* «Was du noch üben solltest» (Mathe) */
-.ueben{background:var(--surface); border:2px solid var(--c); border-radius:20px; padding:16px 18px; box-shadow:var(--shadow)}
-.ueben h3{font-family:var(--display); font-weight:600; font-size:22px; margin:0 0 6px; display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-.u-nr{font-family:var(--body); font-size:13px; font-weight:700; color:var(--muted); border:1.5px solid var(--line); border-radius:999px; padding:2px 9px}
-.u-tipp{margin:0 0 12px; padding:10px 12px; border-radius:12px; background:var(--soft)}
-.u-plan{border-top:1.5px solid var(--line); padding:12px 0 6px}
-.u-kopf{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:4px 12px}
-.u-kopf b{font-family:var(--display); font-weight:600; font-size:19px}
-.u-leise{color:var(--muted); font-size:14px}
-.u-balken{display:flex; gap:4px; margin:6px 0 8px}
-.u-balken i, .u-legende i{flex:1; height:9px; border-radius:5px; background:var(--line); display:block}
-.u-balken i.ok, .u-legende i.ok{background:#2fa35c} .u-balken i.dran, .u-legende i.dran{background:var(--c)} .u-balken i.no, .u-legende i.no{background:#e0614f}
-.u-legende{display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin:10px 0 0}
-.u-legende i{flex:none; width:22px; display:inline-block; margin-right:-4px}
-.u-plan p{margin:6px 0}
-.u-ziel{border-left:4px solid #e0614f; padding:4px 0 6px 12px; margin:8px 0}
-.u-ziel details{margin:4px 0 8px}
+/* Mathe: Status in den Trainer-Zeilen und eingeklappte Tipps */
+.u-status{display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin-top:7px; font-size:14px}
+.u-status:empty{display:none}
+.u-balken{display:inline-flex; gap:3px; width:120px; flex:none}
+.u-balken i{flex:1; height:7px; border-radius:4px; background:var(--line); display:block}
+.u-balken i.ok{background:#2fa35c} .u-balken i.dran{background:var(--c)} .u-balken i.no{background:#e0614f}
+.u-nochmal{color:#c0392b; font-weight:700}
+.u-leise{color:var(--muted)}
+.ueben{background:var(--surface); border:2px solid var(--line); border-radius:16px; box-shadow:var(--shadow)}
+.ueben > summary{display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; font-weight:700; list-style:none}
+.ueben > summary::-webkit-details-marker{display:none}
+.ueben > summary::after{content:"▾"; margin-left:auto; color:var(--muted)}
+.ueben[open] > summary::after{content:"▴"}
+.u-zahl{background:#e0614f; color:#fff; border-radius:999px; font-size:12px; padding:1px 8px}
+.u-nr{font-size:12px; font-weight:700; color:var(--muted); border:1.5px solid var(--line); border-radius:999px; padding:1px 8px}
+.u-inhalt{padding:0 16px 12px; font-size:15px}
+.u-inhalt p{margin:6px 0}
+.u-offen{margin:2px 0 4px; padding-left:20px}
+.u-ziel{border-left:4px solid #e0614f; padding:2px 0 4px 12px; margin:8px 0}
+.u-ziel details{margin:2px 0 6px}
 .u-ziel summary{cursor:pointer; font-weight:700; color:var(--c)}
-.u-hilfe{margin-top:6px; padding:10px 12px; border-radius:12px; background:var(--bg); font-size:16px; line-height:1.5}
+.u-hilfe{margin-top:6px; padding:10px 12px; border-radius:12px; background:var(--bg); line-height:1.5}
 .u-hilfe p{margin:0 0 6px}
-.u-los{display:inline-flex; align-items:center; gap:8px; font-weight:700; text-decoration:none; color:var(--surface); background:var(--c); border-radius:999px; padding:9px 16px; margin:4px 0}
-.u-los svg{width:16px; height:16px}
-.u-neu{color:var(--muted)}
-.u-offen span{font-weight:700}
+.u-los{display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:14px; text-decoration:none; color:var(--surface); background:var(--c); border-radius:999px; padding:6px 12px}
+.u-los svg{width:14px; height:14px}
 .u-hilfe .fr{display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; line-height:1.05; margin:0 .08em; font-size:.82em; font-weight:inherit}
 .u-hilfe .fr>span{display:block; padding:0 .14em; text-align:center}
 .u-hilfe .fr>span:first-child{border-bottom:.09em solid currentColor; padding-bottom:.07em}
 .u-hilfe .fr>span:last-child{padding-top:.07em}
 .u-hilfe .svt{border-collapse:separate; border-spacing:0; margin:6px 0 10px; font-variant-numeric:tabular-nums; border:2px solid var(--line); border-radius:12px; overflow:hidden}
-.u-hilfe .svt th, .u-hilfe .svt td{border-right:2px solid var(--line); padding:6px; text-align:center; min-width:50px}
+.u-hilfe .svt th, .u-hilfe .svt td{border-right:2px solid var(--line); padding:5px; text-align:center; min-width:44px}
 .u-hilfe .svt th:last-child, .u-hilfe .svt td:last-child{border-right:0}
-.u-hilfe .svt th{background:var(--soft); font-size:.75rem; color:var(--muted); line-height:1.15; border-bottom:2px solid var(--line); font-weight:400}
-.u-hilfe .svt th b{display:block; font-size:1.05rem; color:var(--ink)}
-.u-hilfe .svt td{font-size:1.4rem; font-weight:800; background:var(--surface)}
+.u-hilfe .svt th{background:var(--soft); font-size:.72rem; color:var(--muted); line-height:1.15; border-bottom:2px solid var(--line); font-weight:400}
+.u-hilfe .svt th b{display:block; font-size:1rem; color:var(--ink)}
+.u-hilfe .svt td{font-size:1.25rem; font-weight:800; background:var(--surface)}
 .u-hilfe .svt .dot{border-left:5px solid var(--ink)}
 @media (prefers-reduced-motion: reduce){ .fach, .trainer{transition:none} .fach:hover, .trainer:hover{transform:none} }
 </style>
@@ -240,7 +241,6 @@ function fachseite(f){
         <h2 id="fachtitel">${f.name}</h2>
       </div>
       <p class="tipp">${f.tipp}</p>
-      ${f.id === 'mathe' ? '<div id="ueben"></div>' : ''}
       <ul class="liste">
         ${f.trainer.map(t => `
           <li>
@@ -250,11 +250,13 @@ function fachseite(f){
                 <p class="t-name">${t.name}</p>
                 <p class="t-text">${t.text}</p>
                 <span class="chips">${t.chips.map(c => `<span class="chip">${c}</span>`).join('')}</span>
+                ${f.id === 'mathe' ? `<span class="u-status" data-plan="${esc(t.name)}"></span>` : ''}
               </span>
               <span class="pfeil">${ICONS.pfeil}</span>
             </a>
           </li>`).join('')}
       </ul>
+      ${f.id === 'mathe' ? '<details class="ueben" id="ueben" hidden></details>' : ''}
     </section>`;
   if (f.id === 'mathe' && window.MATHE_PLAENE) matheUeben();
   document.getElementById('zurueck').addEventListener('click', () => {
@@ -287,57 +289,49 @@ function planLage(p, st){
   return { z, geschafft, begonnen, nochmal, dran, offen, last: st && st.last };
 }
 function matheUebenHtml(gz, staende){
-  if (!gz) return `<div class="ueben"><h3>Was du noch üben solltest</h3>
-    <p class="u-leise">Öffne einen Mathe-Trainer und gib deine Glückszahl ein. Danach siehst du hier, was du schon geschafft hast und was du noch üben solltest.</p></div>`;
   const lagen = MATHE_PLAENE.map(p => ({ p, l: planLage(p, staende[p.plan]) }));
-  /* Der wichtigste Tipp zuerst: etwas, das noch nicht klappt – sonst ein Plan, der noch nicht begonnen ist */
-  const schwach = lagen.flatMap(({p, l}) => l.nochmal.map(x => ({p, x}))).sort((a, b) => a.x.q - b.x.q)[0];
-  const neu = lagen.find(({l}) => !l.begonnen.length);
-  const tipp = schwach ? `Übe zuerst <b>«${esc(schwach.x.titel)}»</b> (${esc(schwach.p.plan)}) – das klappt noch nicht so gut.`
-    : neu ? `Du hast <b>${esc(neu.p.plan)}</b> noch gar nicht geübt. Fang dort an!`
-    : lagen.every(({l}) => l.offen.length === 0 && !l.dran.length) ? `Du hast alle Lernziele geschafft. Super! 🏆` : `Mach weiter, wo du aufgehört hast – du bist auf gutem Weg.`;
-  const zielLink = (p, x, text) => `<a class="u-los" href="${esc(BASIS + p.url)}?ziel=${encodeURIComponent(x.id)}">${text} ${ICONS.pfeil}</a>`;
-  const plan = ({p, l}) => {
+  /* kurze Statuszeile in jeder Trainer-Zeile */
+  const status = {};
+  lagen.forEach(({p, l}) => {
     const tot = p.ziele.length, gs = l.geschafft.length;
-    let inhalt = '';
-    if (!l.begonnen.length && !gs) inhalt = `<p class="u-neu">Hast du noch nicht geübt.</p><a class="u-los" href="${esc(BASIS + p.url)}">Jetzt anfangen ${ICONS.pfeil}</a>`;
-    else {
-      inhalt += l.nochmal.slice(0, 2).map(x => `<div class="u-ziel">
-          <p><b>${esc(x.titel)}</b> – das klappt noch nicht so gut <span class="u-leise">(${x.ok} von ${x.n} richtig)</span>. Schau dir die Erklärung an und übe es nochmals.</p>
-          <details><summary>So geht's</summary><div class="u-hilfe">${x.hilfe}</div></details>
-          ${zielLink(p, x, 'Jetzt «' + esc(x.titel) + '» üben')}
-        </div>`).join('');
-      if (!l.nochmal.length && l.dran.length){ const x = l.dran.find(y => y.id === l.last) || l.dran[0];
-        inhalt += `<p>Als Nächstes: <b>${esc(x.titel)}</b> <span class="u-leise">(Stufe ${x.lv} von 3)</span></p>`; }
-      const offen = l.offen.filter(x => !x.erw);
-      if (offen.length) inhalt += `<p class="u-offen"><span>Noch nicht geübt:</span> ${offen.map(x => esc(x.titel)).join(', ')}</p>`;
-      if (gs === tot) inhalt += `<p>Alles geschafft! 🏆</p>`;
-    }
-    return `<div class="u-plan">
-      <div class="u-kopf"><b>${esc(p.plan)}</b><span class="u-leise">${gs} von ${tot} Lernzielen geschafft${gs ? ' ⭐' : ''}</span></div>
-      <div class="u-balken" aria-hidden="true">${p.ziele.map(x => { const z = l.z.find(y => y.id === x.id); return `<i class="${z.done ? 'ok' : z.n ? (l.nochmal.includes(z) ? 'no' : 'dran') : ''}" title="${esc(x.titel)}"></i>`; }).join('')}</div>
-      ${inhalt}
-    </div>`;
-  };
-  return `<div class="ueben">
-    <h3>Was du noch üben solltest <span class="u-nr">Nr. ${esc(gz)}</span></h3>
-    <p class="u-tipp">${tipp}</p>
-    ${lagen.map(plan).join('')}
-    <p class="u-leise u-legende"><i class="ok"></i> geschafft <i class="dran"></i> angefangen <i class="no"></i> nochmals üben <i></i> noch nicht geübt</p>
-  </div>`;
+    const balken = `<span class="u-balken" aria-hidden="true">${l.z.map(z => `<i class="${z.done ? 'ok' : z.n ? (l.nochmal.includes(z) ? 'no' : 'dran') : ''}"></i>`).join('')}</span>`;
+    const text = !l.begonnen.length && !gs ? `<span class="u-leise">Noch nicht geübt</span>`
+      : l.nochmal.length ? `<span class="u-nochmal">Nochmals üben: ${esc(l.nochmal[0].titel)}</span>`
+      : gs === tot ? `<span>Alles geschafft 🏆</span>` : `<span>${gs} von ${tot} geschafft${gs ? ' ⭐' : ''}</span>`;
+    status[p.plan] = `${balken}${text}`;
+  });
+  /* ausführliche Tipps (eingeklappt) */
+  const zielLink = (p, x) => `<a class="u-los" href="${esc(BASIS + p.url)}?ziel=${encodeURIComponent(x.id)}">«${esc(x.titel)}» üben ${ICONS.pfeil}</a>`;
+  const nochmal = lagen.flatMap(({p, l}) => l.nochmal.slice(0, 2).map(x => ({p, x}))).sort((a, b) => a.x.q - b.x.q);
+  const neu = lagen.filter(({l}) => !l.begonnen.length && !l.geschafft.length).map(({p}) => p.plan);
+  const offen = lagen.flatMap(({p, l}) => l.begonnen.length ? l.offen.filter(x => !x.erw).map(x => ({p, x})) : []);
+  const teile = [];
+  nochmal.forEach(({p, x}) => teile.push(`<div class="u-ziel"><p><b>${esc(x.titel)}</b> <span class="u-leise">(${esc(p.plan)} · ${x.ok} von ${x.n} richtig)</span></p>
+      <details><summary>So geht's</summary><div class="u-hilfe">${x.hilfe}</div></details>${zielLink(p, x)}</div>`));
+  if (neu.length) teile.push(`<p><b>Noch nicht begonnen:</b> ${neu.map(esc).join(', ')}</p>`);
+  if (offen.length) teile.push(`<p><b>Noch nicht geübt:</b></p><ul class="u-offen">${MATHE_PLAENE.filter(p => offen.some(o => o.p === p)).map(p => `<li><span class="u-leise">${esc(p.plan)}:</span> ${offen.filter(o => o.p === p).map(({x}) => esc(x.titel)).join(', ')}</li>`).join('')}</ul>`);
+  const anzahl = nochmal.length;
+  const detail = teile.length ? `<summary><span>💡 Was du noch üben solltest</span>${anzahl ? `<span class="u-zahl">${anzahl}</span>` : ''}<span class="u-nr">Nr. ${esc(gz)}</span></summary>
+    <div class="u-inhalt">${teile.join('')}</div>` : '';
+  return { status, detail };
+}
+function matheUebenZeigen(gz, staende){
+  const r = matheUebenHtml(gz, staende);
+  document.querySelectorAll('.u-status[data-plan]').forEach(el => { el.innerHTML = r.status[el.dataset.plan] || ''; });
+  const d = document.getElementById('ueben');
+  if (d){ const offen = d.open; d.innerHTML = r.detail; d.hidden = !r.detail; d.open = offen; }
 }
 async function matheUeben(){
-  const box = document.getElementById('ueben'); if (!box) return;
   const gz = meineZahl();
-  const lokal = {}; MATHE_PLAENE.forEach(p => { lokal[p.plan] = gz ? lokalerStand(p.plan, gz) : null; });
-  box.innerHTML = matheUebenHtml(gz, lokal);
-  if (!gz) return;
+  if (!gz) return;   // ohne Glückszahl nichts anzeigen – die Kinder geben sie im Trainer ein
+  const lokal = {}; MATHE_PLAENE.forEach(p => { lokal[p.plan] = lokalerStand(p.plan, gz); });
+  matheUebenZeigen(gz, lokal);
   /* Stand aus der Tabelle holen (falls auf einem anderen Gerät geübt wurde) – der neuere gilt */
   const server = await Promise.all(MATHE_PLAENE.map(p => serverStand(p.plan, gz)));
-  const b2 = document.getElementById('ueben'); if (!b2) return;
+  if (!document.getElementById('ueben')) return;
   let neuer = false;
   MATHE_PLAENE.forEach((p, i) => { const s = server[i], l = lokal[p.plan]; if (s && (!l || (s.t || 0) > (l.t || 0))) { lokal[p.plan] = s; neuer = true; } });
-  if (neuer) b2.innerHTML = matheUebenHtml(gz, lokal);
+  if (neuer) matheUebenZeigen(gz, lokal);
 }
 
 function zeigen(){
