@@ -118,17 +118,22 @@ footer{font-size:13px; color:var(--muted); text-align:center}
 .u-balken i.ok{background:#2fa35c} .u-balken i.dran{background:var(--c)} .u-balken i.no{background:#e0614f}
 .u-nochmal{color:#c0392b; font-weight:700}
 .u-leise{color:var(--muted)}
-.ueben{background:var(--surface); border:2px solid var(--line); border-radius:16px; box-shadow:var(--shadow)}
-.ueben > summary{display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; font-weight:700; list-style:none}
+.ueben{--rot:#d93a2b; background:var(--surface); border:3px solid var(--rot); border-radius:18px; box-shadow:var(--shadow); overflow:hidden}
+.ueben > summary{display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; font-family:var(--display); font-weight:600; font-size:20px; list-style:none; background:#fdeceb; color:#a32315}
+@media (prefers-color-scheme: dark){ .ueben{--rot:#ff7b6b} .ueben > summary{background:#3d1d1a; color:#ffb3a8} }
+.u-intro{font-weight:700; margin:12px 0 4px!important}
+.u-titel{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin:0 0 2px!important}
+.u-titel b{font-size:17px}
+.u-plan{font-size:12px; font-weight:700; color:var(--c); background:var(--soft); border-radius:999px; padding:2px 9px}
 .ueben > summary::-webkit-details-marker{display:none}
 .ueben > summary::after{content:"▾"; margin-left:auto; color:var(--muted)}
 .ueben[open] > summary::after{content:"▴"}
-.u-zahl{background:#e0614f; color:#fff; border-radius:999px; font-size:12px; padding:1px 8px}
-.u-nr{font-size:12px; font-weight:700; color:var(--muted); border:1.5px solid var(--line); border-radius:999px; padding:1px 8px}
+.u-zahl{background:var(--rot); color:#fff; border-radius:999px; font-family:var(--body); font-size:13px; font-weight:700; padding:1px 9px}
+.u-nr{white-space:nowrap; font-family:var(--body); font-size:12px; font-weight:700; color:var(--muted); border:1.5px solid var(--line); border-radius:999px; padding:1px 8px}
 .u-inhalt{padding:0 16px 12px; font-size:15px}
 .u-inhalt p{margin:6px 0}
 .u-offen{margin:2px 0 4px; padding-left:20px}
-.u-ziel{border-left:4px solid #e0614f; padding:2px 0 4px 12px; margin:8px 0}
+.u-ziel{border:1.5px solid var(--line); border-left:5px solid var(--rot); border-radius:12px; padding:9px 12px; margin:10px 0}
 .u-ziel details{margin:2px 0 6px}
 .u-ziel summary{cursor:pointer; font-weight:700; color:var(--c)}
 .u-hilfe{margin-top:6px; padding:10px 12px; border-radius:12px; background:var(--bg); line-height:1.5}
@@ -306,12 +311,15 @@ function matheUebenHtml(gz, staende){
   const neu = lagen.filter(({l}) => !l.begonnen.length && !l.geschafft.length).map(({p}) => p.plan);
   const offen = lagen.flatMap(({p, l}) => l.begonnen.length ? l.offen.filter(x => !x.erw).map(x => ({p, x})) : []);
   const teile = [];
-  nochmal.forEach(({p, x}) => teile.push(`<div class="u-ziel"><p><b>${esc(x.titel)}</b> <span class="u-leise">(${esc(p.plan)} · ${x.ok} von ${x.n} richtig)</span></p>
+  if (nochmal.length) teile.push(`<p class="u-intro">${nochmal.length === 1 ? 'Dieses Lernziel klappt' : 'Diese Lernziele klappen'} noch nicht so gut. Lies die Erklärung bei «So geht's» und übe ${nochmal.length === 1 ? 'es' : 'sie'} dann nochmals.</p>`);
+  nochmal.forEach(({p, x}) => teile.push(`<div class="u-ziel"><p class="u-titel"><b>${esc(x.titel)}</b> <span class="u-plan">${esc(p.plan)}</span></p>
+      <p class="u-leise">${esc(x.info || '')}${x.info ? ' · ' : ''}${x.ok} von ${x.n} Aufgaben richtig</p>
       <details><summary>So geht's</summary><div class="u-hilfe">${x.hilfe}</div></details>${zielLink(p, x)}</div>`));
+  if (!nochmal.length && (neu.length || offen.length)) teile.push(`<p class="u-intro">Super, bei dem, was du schon geübt hast, klappt alles gut! Hier wartet noch Neues auf dich:</p>`);
   if (neu.length) teile.push(`<p><b>Noch nicht begonnen:</b> ${neu.map(esc).join(', ')}</p>`);
   if (offen.length) teile.push(`<p><b>Noch nicht geübt:</b></p><ul class="u-offen">${MATHE_PLAENE.filter(p => offen.some(o => o.p === p)).map(p => `<li><span class="u-leise">${esc(p.plan)}:</span> ${offen.filter(o => o.p === p).map(({x}) => esc(x.titel)).join(', ')}</li>`).join('')}</ul>`);
   const anzahl = nochmal.length;
-  const detail = teile.length ? `<summary><span>💡 Was du noch üben solltest</span>${anzahl ? `<span class="u-zahl">${anzahl}</span>` : ''}<span class="u-nr">Nr. ${esc(gz)}</span></summary>
+  const detail = teile.length ? `<summary><span>🎯 Das solltest du noch üben</span>${anzahl ? `<span class="u-zahl">${anzahl}</span>` : ''}<span class="u-nr">Nr. ${esc(gz)}</span></summary>
     <div class="u-inhalt">${teile.join('')}</div>` : '';
   return { status, detail };
 }
@@ -319,7 +327,7 @@ function matheUebenZeigen(gz, staende){
   const r = matheUebenHtml(gz, staende);
   document.querySelectorAll('.u-status[data-plan]').forEach(el => { el.innerHTML = r.status[el.dataset.plan] || ''; });
   const d = document.getElementById('ueben');
-  if (d){ const offen = d.open; d.innerHTML = r.detail; d.hidden = !r.detail; d.open = offen; }
+  if (d){ const offen = d.dataset.gesetzt ? d.open : true; d.innerHTML = r.detail; d.hidden = !r.detail; d.open = offen; d.dataset.gesetzt = '1'; }
 }
 async function matheUeben(){
   const gz = meineZahl();
