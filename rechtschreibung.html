@@ -1351,22 +1351,28 @@ function lernwoerterUebernehmen(text){
   ladeP();
   P.lw = P.lw || {};
   const t = Date.now() - 61e3;   // sofort in der nächsten Etappe verfügbar
-  let neu = 0;
+  const aktuell = new Set();
+  let geaendert = 0;
   for(const e of L.woerter){
-    const w = norm(String(e.w||"").replace(/\u00AD/g,"")).replace(/[.!?,;:]+$/,"");
-    const x = norm(String(e.x||"").replace(/\u00AD/g,""));
+    const w = norm(String(e.w||"").replace(/­/g,"")).replace(/[.!?,;:]+$/,"");
+    const x = norm(String(e.x||"").replace(/­/g,""));
+    if(!w || w.split(" ").length > 3) continue;
     const lk = w + "¦" + x;   // gleiches Wort in einem anderen Satz = eigenes Lernwort
-    if(!w || w.split(" ").length > 3 || P.lw[lk]) continue;
+    aktuell.add(lk);
+    if(P.lw[lk]) continue;
     const toks = x ? sprechText(x).split(" ") : [];
     // Lückensatz nur, wenn das Wort genau so im Satz steht (am Satzanfang gross wäre in der Lücke sonst «falsch»)
     const W = w.split(" "), pos = toks.findIndex((_,i)=>W.every((v,j)=>toks[i+j] !== undefined && stripPunct(toks[i+j]) === v));
     P.lw[lk] = 1;
     const key = P.kiste[w] ? lk : w;
-    if(!P.kiste[key]) P.kiste[key] = {w, x, s:P.stufe||1, ims: pos>=0, pos: pos>=0 ? pos : undefined, n:0, t, lw:1};
-    neu++;
+    if(!P.kiste[key]) P.kiste[key] = {w, x, s:P.stufe||1, ims: pos>=0, pos: pos>=0 ? pos : undefined, n:0, t, lw:1, lk};
+    geaendert++;
   }
-  if(neu) speichereP();
-  return neu;
+  // Die Liste der Lehrperson gilt: Was dort gelöscht oder geändert wurde, verschwindet aus der Fehlerkiste
+  for(const [k,v] of Object.entries(P.kiste)) if(v.lk && !aktuell.has(v.lk)){ delete P.kiste[k]; geaendert++; }
+  for(const k of Object.keys(P.lw)) if(k.includes("¦") && !aktuell.has(k)){ delete P.lw[k]; geaendert++; }
+  if(geaendert) speichereP();
+  return geaendert;
 }
 
 /* ===== Übungsrunde ===== */
@@ -1690,7 +1696,7 @@ function protokolliere(it, eintraege){
       const r = e.res; zaehle(r, P.stat); P.worte++;
       const key = (it.typ==="W" && it.kk) || e.w;   // Eintrag der Fehlerkiste, aus dem die Aufgabe kommt
       const nurSatzanfang = e.erstes && fehlerBereiche(r).every(c=>c==="GK");
-      if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, pos: Number.isInteger(e.idx) ? e.idx : undefined, n:0, t:Date.now(), lw: it.lw || (P.kiste[key] && P.kiste[key].lw) || undefined}; }
+      if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, pos: Number.isInteger(e.idx) ? e.idx : undefined, n:0, t:Date.now(), lw: it.lw || (P.kiste[key] && P.kiste[key].lw) || undefined, lk: (P.kiste[key] && P.kiste[key].lk) || undefined}; }
       else if(P.kiste[key] && (it.q==="K" || P.kiste[key].t < S.start)){ P.kiste[key].n++; P.kiste[key].t = Date.now(); if(P.kiste[key].n >= KISTE_RAUS) delete P.kiste[key]; }
     }
   }

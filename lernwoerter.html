@@ -1,51 +1,71 @@
 <!doctype html>
-<html lang="de" data-fach="deutsch">
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Lernwörter eintragen</title>
+<title>Lernwörter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-/* Seite für Lehr- und Fachpersonen: Lernwörter von Schabi in die Fehlerkiste der Kinder (Rechtschreibtrainer) übernehmen.
-   Die Kinder werden nur über ihre Glückszahl ausgewählt – auf dieser Seite gibt es keine Namen. */
-:root{--bg:#f3f6fb;--karte:#fff;--ink:#1b2433;--leise:#5f6b85;--linie:#dfe5ef;--akzent:#c2255c;--akzent-soft:#fbe6ee;--warn:#7a5600;--gut:#127a3c;--falsch:#b42318;color-scheme:light}
+/* Lernwörter-Liste pro Kind führen (für Lehr- und Fachpersonen). Die Wörter kommen in die Fehlerkiste des Kindes im Rechtschreibtrainer.
+   Die Kinder werden über ihre Glückszahl gewählt. Namen (freiwillig) bleiben nur im Browser dieses Geräts. */
+:root{--bg:#f3f6fb;--karte:#fff;--ink:#1b2433;--leise:#5f6b85;--linie:#dfe5ef;--akzent:#c2255c;--akzent-soft:#fbe6ee;--warn:#8a5a00;--gut:#127a3c;--falsch:#b42318;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#111726;--karte:#1a2235;--ink:#eef2fb;--leise:#a3aec6;--linie:#2a344c;--akzent:#d9467d;--akzent-soft:#3e1d2b;--warn:#f3d77a;--gut:#6ad895;--falsch:#ff9a8f;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
-.wrap{max-width:760px;margin:0 auto;padding:22px 16px 48px}
+.wrap{max-width:900px;margin:0 auto;padding:22px 16px 110px}
 h1{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-weight:600;font-size:28px;margin:0 0 4px}
 .leise{color:var(--leise);font-size:14px}
-.karte{background:var(--karte);border:1px solid var(--linie);border-radius:16px;padding:18px;margin-top:16px}
+.karte{background:var(--karte);border:1px solid var(--linie);border-radius:16px;padding:16px;margin-top:16px}
 label{font-weight:700}
 input,select,textarea,button{font:inherit;color:inherit}
-input,select,textarea{background:var(--karte);border:1.5px solid var(--linie);border-radius:10px;padding:9px 11px}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--akzent);outline-offset:1px}
-textarea{width:100%;min-height:140px;margin-top:10px;resize:vertical;font-size:15px}
+input,select,textarea{background:var(--karte);border:1.5px solid var(--linie);border-radius:10px;padding:8px 10px;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--akzent);outline-offset:1px;border-color:transparent}
 .zeile{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.btn{border:1.5px solid var(--linie);background:var(--karte);border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:700}
+.btn{border:1.5px solid var(--linie);background:var(--karte);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:var(--akzent)}
 .btn.primary{background:var(--akzent);border-color:var(--akzent);color:#fff}
 .btn[disabled]{opacity:.45;cursor:default}
 .linkish{background:none;border:0;color:var(--leise);text-decoration:underline;cursor:pointer;padding:0;font-size:14px}
 .fehler{color:var(--falsch);font-weight:700}
 .ok{color:var(--gut);font-weight:700}
-.vorschau{margin-top:12px;max-height:340px;overflow:auto;border:1px solid var(--linie);border-radius:10px}
-.vorschau:empty{display:none}
-table{border-collapse:collapse;width:100%}
-td{padding:6px 9px;border-top:1px solid var(--linie);vertical-align:top;font-size:14px}
-tr:first-child td{border-top:0}
-td.nr{color:var(--leise);width:1%;white-space:nowrap}
-td.w{font-weight:700;white-space:nowrap}
-tr.weg td{opacity:.5;text-decoration:line-through}
-.hw{color:var(--warn);font-size:13px}
-ol{margin:8px 0 0;padding-left:20px}
+#gz{font-weight:700;min-width:200px}
+/* Tabelle Wort | Satz */
+.liste{margin-top:14px;display:grid;gap:8px}
+.kopf,.reihe{display:grid;grid-template-columns:28px minmax(110px,1fr) minmax(0,3fr) 36px;gap:8px;align-items:start}
+.kopf{font-size:13px;font-weight:700;color:var(--leise);padding:0 2px}
+.reihe .nr{color:var(--leise);font-size:13px;padding-top:10px;text-align:right}
+.reihe input{width:100%}
+.reihe .hw{grid-column:3/4;margin-top:-4px;font-size:12.5px;color:var(--warn)}
+.reihe .hw.rot{color:var(--falsch)}
+.weg{border:0;background:none;color:var(--leise);cursor:pointer;font-size:18px;padding:6px 0;border-radius:8px}
+.weg:hover{color:var(--falsch);background:var(--akzent-soft)}
+@media (max-width:600px){
+  .kopf{display:none}
+  .reihe{grid-template-columns:22px minmax(0,1fr) 32px;border-top:1px solid var(--linie);padding-top:8px}
+  .reihe .w{grid-column:2/3}.reihe .x{grid-column:2/3;grid-row:2}.reihe .weg{grid-column:3/4;grid-row:1}
+  .reihe .hw{grid-column:2/3;grid-row:3;margin-top:0}
+}
+.leiste{position:fixed;left:0;right:0;bottom:0;background:var(--karte);border-top:1px solid var(--linie);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.leiste .in{max-width:900px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.leiste .sp{flex:1}
+details{margin-top:14px}
+summary{cursor:pointer;color:var(--leise);font-size:14px}
+textarea{width:100%;min-height:110px;margin-top:8px;resize:vertical;font-size:14px}
+dialog{border:1px solid var(--linie);border-radius:16px;background:var(--karte);color:var(--ink);padding:18px;max-width:440px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(10,15,30,.45)}
+.namen{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;max-height:55vh;overflow:auto;margin:10px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Lernwörter eintragen</h1>
-  <p class="leise" style="margin:0">Die Lernwörter kommen in die Fehlerkiste des Kindes im Rechtschreibtrainer. Auf dieser Seite gibt es keine Namen – nur die Glückszahlen.</p>
+  <h1>Lernwörter</h1>
+  <p class="leise" style="margin:0">Pro Kind eine Liste mit Wort und Satz. Die Wörter kommen in die Fehlerkiste des Kindes im Rechtschreibtrainer – sobald es den Trainer das nächste Mal öffnet.</p>
   <div id="app"></div>
 </div>
+<div class="leiste" id="leiste" hidden><div class="in"><span id="status" class="leise"></span><span class="sp"></span><button class="btn primary" id="speichern" disabled>Speichern</button></div></div>
+<dialog id="dlg"></dialog>
 
 <script>
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbyk0lFil4xRSsFLkPV_RuamQ-XPSU9Hn76HxHjInfYCJyDaVxjsW1S7gQHBP1rYV5dT/exec";
@@ -55,6 +75,8 @@ const esc = s => String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }, del(k){ try{ localStorage.removeItem(k); }catch(e){} } };
 const post = body => fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body)}).then(r=>r.json());
 let CODE = store.get("lw.code") || "";
+let NAMEN = {}; try { NAMEN = JSON.parse(store.get("lw.namen") || "{}") || {}; } catch(e){}
+const anzeige = g => NAMEN[g] ? `${g} · ${NAMEN[g]}` : `Glückszahl ${g}`;
 
 /* ---------- Kopierten Text von Schabi lesen (gleich wie in der Lernportal-Station) ----------
    «Nummer  Wort  ganzer Satz» – mit Tabulatoren, Leerzeichen oder auf mehreren Zeilen, auch umgebrochene Sätze,
@@ -143,6 +165,7 @@ function lwParse(text){
 
 /* ---------- 1) Code ---------- */
 function codeSeite(meldung){
+  $("#leiste").hidden = true;
   $("#app").innerHTML = `<div class="karte">
     <label for="code">Code</label>
     <p class="leise" style="margin:2px 0 10px">Den Code bekommst du von der Klassenlehrperson. Er wird auf diesem Gerät gespeichert, du musst ihn nur einmal eingeben.</p>
@@ -153,72 +176,155 @@ function codeSeite(meldung){
     $("#weiter").disabled = true; $("#weiter").textContent = "Prüfe …";
     try {
       const r = await post({typ:"lernwoerter-code", code:c});
-      if (r && r.ok) { CODE = c; store.set("lw.code", c); eingabeSeite(); }
-      else codeSeite(r && r.fehler ? r.fehler : "Der Code stimmt nicht.");
+      if (r && r.ok) { CODE = c; store.set("lw.code", c); liste(); }
+      else codeSeite(r && r.typ === undefined && r.fehler === "Unbekannter Typ" ? "Die Seite ist noch nicht freigeschaltet (Google-Skript)." : "Der Code stimmt nicht.");
     } catch(e){ codeSeite("Keine Verbindung – bitte nochmals versuchen."); }
   };
   $("#weiter").onclick = go; f.onkeydown = e => { if (e.key === "Enter") go(); }; f.focus();
 }
 
-/* ---------- 2) Lernwörter einfügen ---------- */
-function eingabeSeite(){
-  $("#app").innerHTML = `<div class="karte">
-      <div class="zeile"><label for="gz">Glückszahl</label>
-        <select id="gz">${GZ.map(g=>`<option value="${g}">${g}</option>`).join("")}</select>
-        <span class="leise" id="bisher"></span></div>
-      <ol class="leise">
-        <li>Auf Schabi die Lernwörter des Kindes öffnen und die Liste (Nummer, Wort, Satz) markieren und kopieren.</li>
-        <li>Hier einfügen und in der Vorschau prüfen, ob links das Wort und rechts der passende Satz steht.</li>
-        <li>Speichern. Das ersetzt die bisherige Liste dieses Kindes; Wörter, die es schon geübt hat, kommen nicht nochmals.</li>
-      </ol>
-      <textarea id="text" placeholder="Lernwörter hier einfügen …"></textarea>
-      <div class="vorschau" id="vorschau"></div>
-      <p class="leise" id="summe" style="margin:8px 0 0"></p>
-      <div class="zeile" style="justify-content:flex-end;margin-top:12px"><button class="btn primary" id="speichern" disabled>Speichern</button></div>
-    </div>
-    <p style="margin-top:14px"><button class="linkish" id="abmelden">Code auf diesem Gerät vergessen</button></p>`;
-  const sel = $("#gz"), ta = $("#text"), gespeichert = {};
-  const markiere = g => { const o = sel.querySelector(`option[value="${g}"]`); if (o) o.textContent = g + (gespeichert[g] ? `  ✓ ${gespeichert[g].n} Wörter` : ""); };
-  const bisher = () => { const x = gespeichert[sel.value];
-    $("#bisher").textContent = x === undefined ? "lädt …" : x ? `bisher ${x.n} Lernwörter, gespeichert am ${new Date(x.t).toLocaleDateString("de-CH")}` : "noch keine Lernwörter gespeichert"; };
-  GZ.forEach(g => post({typ:"stand-laden", uebung:UEBUNG, glueckszahl:g}).then(r=>{
-      let L = null; try { L = r && r.stand ? JSON.parse(r.stand) : null; } catch(e){}
-      gespeichert[g] = L && Array.isArray(L.woerter) ? {n:L.woerter.length, t:L.t || r.t} : null;
-    }).catch(()=>{ gespeichert[g] = null; }).then(()=>{ markiere(g); if (sel.value === g) bisher(); }));
-  let E = [];
-  const vorschau = () => {
-    E = lwParse(ta.value);
-    const n = E.filter(e=>e.ok).length, weg = E.length - n;
-    $("#vorschau").innerHTML = E.length ? `<table>${E.map(e=>`<tr class="${e.ok?"":"weg"}"><td class="nr">${e.nr!=null?e.nr:""}</td><td class="w">${esc(e.w)||"–"}</td><td>${esc(e.x)||"–"}${e.hw?`<div class="hw">${esc(e.hw)}</div>`:""}</td></tr>`).join("")}</table>` : "";
-    $("#summe").textContent = ta.value.trim() ? (n ? `${n} Lernwörter erkannt${weg?` · ${weg} ${weg===1?"wird":"werden"} nicht übernommen`:""}` : "Keine Lernwörter erkannt.")
-      + (E.fehlend && E.fehlend.length ? ` · Diese Nummern fehlen: ${E.fehlend.slice(0,12).join(", ")}${E.fehlend.length>12?" …":""} – auf Schabi nachschauen` : "") : "";
-    $("#speichern").disabled = !n; $("#speichern").textContent = n ? `Speichern (${n})` : "Speichern";
-  };
-  ta.oninput = vorschau; sel.onchange = bisher; bisher();
-  $("#abmelden").onclick = () => { store.del("lw.code"); CODE = ""; codeSeite(); };
-  $("#speichern").onclick = async () => {
-    const g = sel.value, t = Date.now(), woerter = E.filter(e=>e.ok).map(e=>({w:e.w, x:e.x}));
-    if (!woerter.length) return;
-    $("#speichern").disabled = true; $("#speichern").textContent = "Speichert …";
-    try {
-      const r = await post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:g, t, code:CODE, stand:JSON.stringify({v:1, t, woerter})});
-      if (r && r.grund === "code") { store.del("lw.code"); return codeSeite("Der Code stimmt nicht mehr – bitte neu eingeben."); }
-      if (!r || !r.ok) throw new Error((r && r.fehler) || "Keine Antwort");
-      gespeichert[g] = {n:woerter.length, t}; markiere(g);
-      ta.value = ""; vorschau();
-      const i = GZ.indexOf(g); if (i < GZ.length-1) sel.value = GZ[i+1];
-      bisher();
-      $("#summe").innerHTML = `<span class="ok">✓ ${woerter.length} Lernwörter für Glückszahl ${esc(g)} gespeichert.</span> Weiter mit Glückszahl ${esc(sel.value)}.`;
-      ta.focus();
-    } catch(e){
-      $("#summe").innerHTML = `<span class="fehler">Speichern hat nicht geklappt: ${esc(e.message)}</span>`;
-      $("#speichern").disabled = false; $("#speichern").textContent = "Nochmals versuchen";
-    }
-  };
-  ta.focus();
+/* ---------- 2) Liste eines Kindes führen ---------- */
+const LISTEN = {};          // geladen: Glückszahl → {t, woerter:[{w,x}]} oder null
+let AKTUELL = null, GESPEICHERT = "", ROWS = [];
+const laden = g => post({typ:"stand-laden", uebung:UEBUNG, glueckszahl:g}).then(r=>{
+    let L = null; try { L = r && r.stand ? JSON.parse(r.stand) : null; } catch(e){}
+    LISTEN[g] = L && Array.isArray(L.woerter) ? {t: L.t || r.t, woerter: L.woerter} : null;
+  });
+const zustand = () => JSON.stringify(ROWS.filter(r=>r.w.trim() || r.x.trim()).map(r=>[r.w.trim(), r.x.trim()]));
+const geaendert = () => AKTUELL && zustand() !== GESPEICHERT;
+
+function pruefeReihe(r, alle){
+  const w = r.w.trim().replace(/\s+/g," "), x = r.x.trim().replace(/\s+/g," ");
+  if (!w && !x) return {hw:"", ok:false, leer:true};
+  if (!w) return {hw:"Das Wort fehlt.", rot:true, ok:false};
+  if (w.split(" ").length > 3) return {hw:"Höchstens drei Wörter – so wird es nicht gespeichert.", rot:true, ok:false};
+  if (alle.filter(o=>o.w.trim().replace(/\s+/g," ")===w && o.x.trim().replace(/\s+/g," ")===x).length > 1 && alle.findIndex(o=>o.w.trim().replace(/\s+/g," ")===w && o.x.trim().replace(/\s+/g," ")===x) !== alle.indexOf(r))
+    return {hw:"Steht genau so schon weiter oben – wird nur einmal gespeichert.", ok:false};
+  if (!x) return {hw:"Ohne Satz: Das Kind hört nur das Wort.", ok:true};
+  const toks = x.split(" ").map(t=>t.replace(/^[«»"„“”'(]+|[«»"„“”'.,;:!?)]+$/g,""));
+  if (!toks.some((_, i) => w.split(" ").every((v, j) => toks[i + j] === v))) return {hw:"Das Wort steht nicht genau so im Satz – es wird ohne Lücke geübt.", ok:true};
+  return {hw:"", ok:true};
 }
 
-if (CODE) eingabeSeite(); else codeSeite();
+function liste(){
+  $("#app").innerHTML = `<div class="karte">
+      <div class="zeile"><label for="gz">Kind</label><select id="gz"></select>
+        <button class="linkish" id="namenBtn">Namen eintragen (nur auf diesem Gerät)</button></div>
+      <div class="liste" id="liste"></div>
+      <div class="zeile" style="margin-top:10px"><button class="btn" id="plus">+ Zeile</button></div>
+      <details id="einf"><summary>Eine Liste einfügen (z. B. von Schabi kopiert)</summary>
+        <textarea id="text" placeholder="Nummer, Wort und Satz hier einfügen …"></textarea>
+        <div class="zeile"><span class="leise" id="einfInfo"></span><span style="flex:1"></span><button class="btn" id="uebernehmen" disabled>In die Liste übernehmen</button></div>
+      </details>
+    </div>
+    <p style="margin-top:14px"><button class="linkish" id="abmelden">Code auf diesem Gerät vergessen</button></p>`;
+  $("#leiste").hidden = false;
+  const sel = $("#gz");
+  const optionen = () => { const v = sel.value; sel.innerHTML = GZ.map(g=>`<option value="${g}">${esc(anzeige(g))}${LISTEN[g] ? `  ✓ ${LISTEN[g].woerter.length}` : ""}</option>`).join(""); sel.value = v || AKTUELL || GZ[0]; };
+  optionen();
+  Promise.all(GZ.map(g=>laden(g).catch(()=>{}))).then(()=>{ optionen(); if (AKTUELL && !geaendert()) zeigeKind(AKTUELL); });
+  sel.onchange = () => { if (geaendert() && !confirm("Die Änderungen sind noch nicht gespeichert. Trotzdem wechseln?")) { sel.value = AKTUELL; return; } zeigeKind(sel.value); };
+  $("#plus").onclick = () => { ROWS.push({w:"", x:""}); zeichne(ROWS.length-1); };
+  $("#namenBtn").onclick = namenDialog;
+  $("#abmelden").onclick = () => { if (geaendert() && !confirm("Die Änderungen sind noch nicht gespeichert. Trotzdem abmelden?")) return; store.del("lw.code"); CODE = ""; AKTUELL = null; codeSeite(); };
+  const ta = $("#text");
+  ta.oninput = () => { const E = lwParse(ta.value), n = E.filter(e=>e.ok).length; $("#einfInfo").textContent = ta.value.trim() ? `${n} Einträge erkannt` : ""; $("#uebernehmen").disabled = !n; };
+  $("#uebernehmen").onclick = () => {
+    const E = lwParse(ta.value).filter(e=>e.ok);
+    ROWS = ROWS.filter(r=>r.w.trim() || r.x.trim()).concat(E.map(e=>({w:e.w, x:e.x})));
+    ta.value = ""; ta.oninput(); $("#einf").open = false; zeichne(); status();
+  };
+  zeigeKind(AKTUELL || sel.value);
+}
+
+function zeigeKind(g){
+  AKTUELL = g; $("#gz").value = g;
+  const L = LISTEN[g];
+  ROWS = (L ? L.woerter : []).map(e=>({w:e.w||"", x:e.x||""}));
+  GESPEICHERT = zustand();
+  zeichne(); status();
+}
+function zeichne(fokus){
+  if (!ROWS.length || ROWS[ROWS.length-1].w.trim() || ROWS[ROWS.length-1].x.trim()) ROWS.push({w:"", x:""});   // immer eine leere Zeile am Schluss
+  const box = $("#liste");
+  box.innerHTML = `<div class="kopf"><span></span><span>Wort</span><span>Satz</span><span></span></div>` + ROWS.map((r,i)=>{ const p = pruefeReihe(r, ROWS);
+    return `<div class="reihe" data-i="${i}"><span class="nr">${p.leer ? "" : i+1}</span>
+      <input class="w" value="${esc(r.w)}" placeholder="Wort" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input class="x" value="${esc(r.x)}" placeholder="Satz, in dem das Wort vorkommt" autocomplete="off" spellcheck="false">
+      <button class="weg" title="Zeile löschen" ${p.leer ? "hidden" : ""}>✕</button>
+      ${p.hw ? `<span class="hw ${p.rot?"rot":""}">${esc(p.hw)}</span>` : ""}</div>`; }).join("");
+  box.querySelectorAll(".reihe").forEach(el=>{
+    const i = +el.dataset.i, w = el.querySelector(".w"), x = el.querySelector(".x");
+    w.oninput = () => { ROWS[i].w = w.value; nachEingabe(i, el); };
+    x.oninput = () => { ROWS[i].x = x.value; nachEingabe(i, el); };
+    w.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); x.focus(); } };
+    x.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); const n = box.querySelector(`.reihe[data-i="${i+1}"] .w`); if (n) n.focus(); else { ROWS.push({w:"",x:""}); zeichne(i+1); } } };
+    w.onblur = x.onblur = () => { setTimeout(()=>{ if (!box.contains(document.activeElement)) zeichne(); }, 0); };
+    el.querySelector(".weg").onclick = () => { ROWS.splice(i, 1); zeichne(); status(); };
+  });
+  if (fokus != null) { const f = box.querySelector(`.reihe[data-i="${fokus}"] .w`); if (f) f.focus(); }
+}
+function nachEingabe(i, el){
+  // Hinweis dieser Zeile auffrischen, ohne den Fokus zu verlieren; letzte Zeile benutzt → neue leere Zeile anhängen
+  const p = pruefeReihe(ROWS[i], ROWS);
+  let hw = el.querySelector(".hw"); if (!hw) { hw = document.createElement("span"); hw.className = "hw"; el.append(hw); }
+  hw.textContent = p.hw; hw.className = "hw" + (p.rot ? " rot" : ""); hw.hidden = !p.hw;
+  el.querySelector(".nr").textContent = p.leer ? "" : i+1; el.querySelector(".weg").hidden = !!p.leer;
+  if (i === ROWS.length-1 && !p.leer) {
+    ROWS.push({w:"", x:""});
+    const box = $("#liste"), d = document.createElement("div"); box.append(d);
+    d.outerHTML = `<div class="reihe" data-i="${ROWS.length-1}"><span class="nr"></span><input class="w" placeholder="Wort" autocomplete="off" autocapitalize="off" spellcheck="false"><input class="x" placeholder="Satz, in dem das Wort vorkommt" autocomplete="off" spellcheck="false"><button class="weg" title="Zeile löschen" hidden>✕</button></div>`;
+    const neu = box.lastElementChild, k = ROWS.length-1, w = neu.querySelector(".w"), x = neu.querySelector(".x");
+    w.oninput = () => { ROWS[k].w = w.value; nachEingabe(k, neu); };
+    x.oninput = () => { ROWS[k].x = x.value; nachEingabe(k, neu); };
+    w.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); x.focus(); } };
+    x.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); ROWS.push({w:"",x:""}); zeichne(k+1); } };
+    w.onblur = x.onblur = () => { setTimeout(()=>{ if (!box.contains(document.activeElement)) zeichne(); }, 0); };
+    neu.querySelector(".weg").onclick = () => { ROWS.splice(k, 1); zeichne(); status(); };
+  }
+  status();
+}
+function zuSpeichern(){
+  const gesehen = new Set(), out = [];
+  ROWS.forEach(r=>{ const p = pruefeReihe(r, ROWS); if (!p.ok) return;
+    const w = r.w.trim().replace(/\s+/g," ").replace(/[.,;:!?]+$/,""), x = r.x.trim().replace(/\s+/g," ");
+    if (gesehen.has(w+"¦"+x)) return; gesehen.add(w+"¦"+x); out.push({w, x}); });
+  return out;
+}
+function status(){
+  const n = zuSpeichern().length, rot = ROWS.filter(r=>pruefeReihe(r, ROWS).rot).length, L = LISTEN[AKTUELL];
+  const b = $("#speichern");
+  if (geaendert()) { $("#status").innerHTML = `<b>${n} ${n===1?"Wort":"Wörter"}</b> · noch nicht gespeichert${rot?` · <span class="fehler">${rot===1?"Eine Zeile ist":rot+" Zeilen sind"} rot markiert – bitte zuerst korrigieren</span>`:""}`; b.disabled = rot > 0; b.textContent = "Speichern"; }
+  else { $("#status").innerHTML = L ? `<span class="ok">✓ gespeichert</span> · ${L.woerter.length} ${L.woerter.length===1?"Wort":"Wörter"} · ${new Date(L.t).toLocaleDateString("de-CH")}` : `${esc(anzeige(AKTUELL))}: noch keine Lernwörter`; b.disabled = true; b.textContent = "Speichern"; }
+}
+$("#speichern").onclick = async () => {
+  const g = AKTUELL, t = Date.now(), woerter = zuSpeichern(), b = $("#speichern");
+  b.disabled = true; b.textContent = "Speichert …";
+  try {
+    const r = await post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:g, t, code:CODE, stand:JSON.stringify({v:1, t, woerter})});
+    if (r && r.grund === "code") { store.del("lw.code"); return codeSeite("Der Code stimmt nicht mehr – bitte neu eingeben."); }
+    if (!r || !r.ok) throw new Error((r && r.fehler) || "Keine Antwort");
+    LISTEN[g] = {t, woerter};
+    const o = $("#gz").querySelector(`option[value="${g}"]`); if (o) o.textContent = anzeige(g) + `  ✓ ${woerter.length}`;
+    if (AKTUELL === g) zeigeKind(g);
+  } catch(e){ $("#status").innerHTML = `<span class="fehler">Speichern hat nicht geklappt: ${esc(e.message)}</span>`; b.disabled = false; b.textContent = "Nochmals versuchen"; }
+};
+window.addEventListener("beforeunload", e => { if (geaendert()) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- Namen (freiwillig, nur in diesem Browser) ---------- */
+function namenDialog(){
+  const d = $("#dlg");
+  d.innerHTML = `<h2 style="margin:0 0 4px">Namen</h2><p class="leise" style="margin:0">Die Namen bleiben nur in diesem Browser auf diesem Gerät. Sie werden nie gesendet.</p>
+    <div class="namen">${GZ.map(g=>`<b>${g}</b><input data-g="${g}" value="${esc(NAMEN[g]||"")}" autocomplete="off">`).join("")}</div>
+    <div class="zeile" style="justify-content:flex-end"><button class="btn" id="nNo">Abbrechen</button><button class="btn primary" id="nOk">Speichern</button></div>`;
+  d.showModal();
+  $("#nNo").onclick = () => d.close();
+  $("#nOk").onclick = () => { d.querySelectorAll("input[data-g]").forEach(i=>{ const v = i.value.trim(); if (v) NAMEN[i.dataset.g] = v; else delete NAMEN[i.dataset.g]; });
+    store.set("lw.namen", JSON.stringify(NAMEN)); d.close();
+    const sel = $("#gz"); if (sel) { const v = sel.value; sel.innerHTML = GZ.map(g=>`<option value="${g}">${esc(anzeige(g))}${LISTEN[g] ? `  ✓ ${LISTEN[g].woerter.length}` : ""}</option>`).join(""); sel.value = v; status(); } };
+}
+
+if (CODE) liste(); else codeSeite();
 </script>
 </body>
 </html>
