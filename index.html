@@ -100,11 +100,10 @@ h1{font-family:var(--display); font-weight:600; font-size:clamp(28px, 6vw, 38px)
 .trainer .t-text{margin:2px 0 0; color:var(--muted); font-size:15px}
 .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px}
 .chip{font-size:12px; font-weight:700; letter-spacing:.03em; padding:3px 9px; border-radius:999px; border:1.5px solid var(--line); color:var(--muted)}
-/* Beta-Test: deutlich rot umrandet */
-.trainer.beta{--rot:#d93a2b; border:3px solid var(--rot)}
-.trainer.beta:hover{border-color:var(--rot)}
-.chip.beta{background:#fdeceb; color:#a32315; border-color:var(--rot,#d93a2b)}
-@media (prefers-color-scheme: dark){ .trainer.beta{--rot:#ff7b6b} .chip.beta{background:#3d1d1a; color:#ffb3a8} }
+/* Beta-Test: Hinweis direkt neben dem Namen */
+.beta-name{display:inline-block; vertical-align:3px; margin-left:6px; font-family:var(--body); font-size:12px; font-weight:700; letter-spacing:.03em;
+  padding:3px 9px; border-radius:999px; background:#fdeceb; color:#a32315; border:1.5px solid #d93a2b}
+@media (prefers-color-scheme: dark){ .beta-name{background:#3d1d1a; color:#ffb3a8; border-color:#ff7b6b} }
 .trainer .beta-satz{display:block; margin-top:6px; font-size:13.5px; font-weight:700; color:#a32315}
 @media (prefers-color-scheme: dark){ .trainer .beta-satz{color:#ffb3a8} }
 .trainer .pfeil{width:40px; height:40px; border-radius:50%; background:var(--c); color:var(--surface); display:grid; place-items:center}
@@ -211,7 +210,7 @@ const FAECHER = [
     trainer:[
       { name:'Rechtschreibung üben', text:'Du hörst Wörter und Sätze und schreibst sie auf.', zeichen:'Abc', url:BASIS+'rechtschreibung.html', chips:['Kopfhörer nötig'] },
       { name:'Fall-Detektiv', text:'Die vier Fälle erkennen, Kapitel für Kapitel.', zeichen:'?', url:BASIS+'faelle.html', chips:['4 Fälle'] },
-      { name:'Leseverstehen', text:'Texte lesen und Fragen beantworten – Stufe für Stufe.', zeichen:'Aa', url:BASIS+'lesen.html', chips:['Beta-Test'], beta:true }
+      { name:'Leseverstehen', text:'Texte lesen und Fragen beantworten – Stufe für Stufe.', zeichen:'Aa', url:BASIS+'lesen.html', chips:[], beta:true }
     ]},
   { id:'englisch', name:'Englisch',
     tipp:'Übe die Wörter so lange, bis du sie <b>ohne Fehler</b> schreiben kannst.',
@@ -261,12 +260,12 @@ function fachseite(f){
       <ul class="liste">
         ${f.trainer.map(t => `
           <li>
-            <a class="trainer${t.beta ? ' beta' : ''}" href="${esc(t.url)}">
+            <a class="trainer" href="${esc(t.url)}">
               <span class="t-ico">${t.zeichen}</span>
               <span>
-                <p class="t-name">${t.name}</p>
+                <p class="t-name">${t.name}${t.beta ? '<span class="beta-name">🧪 Beta-Test</span>' : ''}</p>
                 <p class="t-text">${t.text}</p>
-                <span class="chips">${t.chips.map(c => `<span class="chip${t.beta && c === 'Beta-Test' ? ' beta' : ''}">${t.beta && c === 'Beta-Test' ? '🧪 ' : ''}${c}</span>`).join('')}</span>
+                <span class="chips">${t.chips.map(c => `<span class="chip">${c}</span>`).join('')}</span>
                 ${t.beta ? `<span class="beta-satz">Noch in der Probephase – es kann Fehler geben.</span>` : ''}
                 ${f.id === 'mathe' ? `<span class="u-status" data-plan="${esc(t.name)}"></span>` : ''}
               </span>
