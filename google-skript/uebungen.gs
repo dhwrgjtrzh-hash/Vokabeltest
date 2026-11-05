@@ -84,6 +84,11 @@ function doPost(e) {
   let d;
   try { d = JSON.parse(e.postData.contents); } catch (x) { return json_({ ok: false, fehler: "Ungültige Anfrage" }); }
 
+  /* Lernwörter (Seite lernwoerter.html und Lernportal-Station): Code prüfen */
+  if (d.typ === "lernwoerter-code") return json_({ ok: lernwoerterErlaubt_(d), fehler: "Der Code stimmt nicht." });
+  if (d.typ === "stand-speichern" && String(d.uebung) === "Lernwörter" && !lernwoerterErlaubt_(d))
+    return json_({ ok: false, grund: "code", fehler: "Der Code stimmt nicht." });
+
   /* Lernstand speichern und laden (pro Glückszahl) */
   if (d.typ === "stand-laden" || d.typ === "stand-speichern") {
     try { return json_(stand_(d, SpreadsheetApp.getActiveSpreadsheet())); } catch (x) { return json_({ ok: false, fehler: String(x) }); }
@@ -254,4 +259,13 @@ function stand_(d, ss) {
     else if (t >= (Number(sh.getRange(z, 3).getValue()) || 0)) sh.getRange(z, 3, 1, 2).setValues([[t, text]]);
   } finally { lock.releaseLock(); }
   return { ok: true };
+}
+
+/* Wer darf Lernwörter speichern? Die Lernportal-Station (mit ihrem Schlüssel) oder wer den Code kennt.
+ * Den Code legt die Lehrperson fest: Projekteinstellungen (Zahnrad) → Skripteigenschaften → «LERNWOERTER_CODE». */
+function lernwoerterErlaubt_(d) {
+  const s = String(d.schluessel || "");
+  if (s && ((STATION_SCHLUESSEL && s === STATION_SCHLUESSEL) || zugang_(s, false) === "ok")) return true;
+  const code = PropertiesService.getScriptProperties().getProperty("LERNWOERTER_CODE");
+  return !!code && String(d.code || "").trim().toLowerCase() === String(code).trim().toLowerCase();
 }
