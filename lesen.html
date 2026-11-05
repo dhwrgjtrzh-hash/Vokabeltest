@@ -107,6 +107,12 @@ details.mehr{margin-top:18px}details.mehr summary{cursor:pointer;color:var(--lei
 .aktionen{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
 .ergebnis{text-align:center}
 .ergebnis .gross{font:600 3rem/1 var(--titel);color:var(--akzent);margin:10px 0}
+.beta{display:flex;gap:10px;align-items:flex-start;background:var(--mark);color:var(--mark-ink);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
+.beta b{white-space:nowrap}
+.beta-hinter{position:fixed;inset:0;z-index:10000;background:rgba(15,21,34,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.beta-karte{background:var(--karte);color:var(--ink);border-radius:20px;padding:22px;max-width:440px;width:100%;text-align:center}
+.beta-karte .gross{font-size:2.6rem;line-height:1;margin-bottom:6px}
+.beta-karte p{margin:10px 0 0;line-height:1.5;text-align:left}
 .shake{animation:shake .35s}@keyframes shake{25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -116,7 +122,7 @@ details.mehr{margin-top:18px}details.mehr summary{cursor:pointer;color:var(--lei
   <header class="lp-kopf">
     <a class="lp-zurueck" href="./#deutsch">‹ Lernportal</a>
     <div class="lp-logo">Aa</div>
-    <h1 class="lp-titel"><small>Deutsch</small>Leseverstehen</h1>
+    <h1 class="lp-titel"><small>Deutsch · Beta-Test</small>Leseverstehen</h1>
     <div class="lp-rechts"></div>
   </header>
   <main id="app"></main>
@@ -187,7 +193,7 @@ function home(){
   window.scrollTo(0, 0);
   if(!P.sb || !P.sb.fertig){
     const begonnen = P.sb && P.sb.erg ? Object.keys(P.sb.erg).length : 0;
-    app.innerHTML = `<div class="karte">
+    app.innerHTML = BETA_LEISTE + `<div class="karte">
       <div class="stufe-kopf"><div class="stufe-nr">📖</div><div><h2>Standortbestimmung</h2><p class="leise" style="margin:0">Drei kurze Texte mit je vier Fragen. Danach weisst du, auf welcher Stufe du startest.</p></div></div>
       <ul style="margin:14px 0 0;padding-left:20px;line-height:1.6">
         <li>Lies jeden Text in Ruhe. Du darfst ihn beim Antworten immer wieder anschauen.</li>
@@ -204,7 +210,7 @@ function home(){
     return `<button class="textkarte" data-id="${t.id}"><b>${esc(t.titel)}</b>${stat}<span class="meta">${esc(t.art)} · ${esc(t.thema)} · ${t.fragen.length} Fragen</span></button>`; };
   const frueher = [1,2,3,4,5].filter(s => s < st && texteDerStufe(s).length);
   const naechste = st < 5 ? (texteDerStufe(st+1).length ? `Wenn du alle Texte dieser Stufe mit mindestens ${Math.round(BESTANDEN*100)} % geschafft hast, geht es weiter mit Stufe ${st+1}: ${STUFEN[st+1]}.` : `Stufe ${st+1} (${STUFEN[st+1]}) kommt bald.`) : "";
-  app.innerHTML = `<div class="karte">
+  app.innerHTML = BETA_LEISTE + `<div class="karte">
       <div class="stufe-kopf"><div class="stufe-nr">${st}</div><div><h2>Stufe ${st}: ${esc(STUFEN[st])}</h2><p class="leise" style="margin:0">${esc(STUFE_TEXT[st])}</p></div></div>
       <div class="punkte">${liste.map(t => `<i class="${(P.texte[t.id]||{}).best >= BESTANDEN ? "gut" : ""}"></i>`).join("")}<span class="leise" style="font-size:.9rem;margin-left:6px">${geschafft} von ${liste.length} Texten geschafft</span></div>
       <div class="texte">${liste.map(tk).join("")}</div>
@@ -488,6 +494,19 @@ function sbAbschluss(){
     <div class="aktionen" style="justify-content:center"><button class="btn" id="w">Los geht's →</button></div></div>`;
   $("#w").onclick = home; window.scrollTo(0,0);
 }
+
+/* ===== Beta-Test: Hinweis beim Öffnen und auf der Startseite ===== */
+const BETA_LEISTE = `<div class="beta"><span>🧪</span><span><b>Beta-Test:</b> Dieser Trainer ist neu. Es kann noch Fehler geben. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</span></div>`;
+function betaHinweis(){
+  const h = document.createElement("div"); h.className = "beta-hinter"; h.setAttribute("role", "dialog"); h.setAttribute("aria-modal", "true");
+  h.innerHTML = `<div class="beta-karte"><div class="gross">🧪</div><h2>Achtung: Beta-Test</h2>
+    <p>Das Leseverstehen ist ganz neu und wird gerade ausprobiert. Darum kann es noch Fehler haben: zum Beispiel eine Aufgabe, die nicht ganz stimmt, oder eine Antwort, die falsch bewertet wird.</p>
+    <p>Wenn dir etwas komisch vorkommt, merk dir den Text und die Frage und sag es deiner Lehrperson. So hilfst du mit, den Trainer besser zu machen.</p>
+    <div class="aktionen" style="justify-content:center"><button class="btn" id="betaOk">Verstanden – los geht's</button></div></div>`;
+  document.body.appendChild(h);
+  const ok = h.querySelector("#betaOk"); ok.onclick = () => h.remove(); ok.focus();
+}
+betaHinweis();
 
 /* ===== Los ===== */
 if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
