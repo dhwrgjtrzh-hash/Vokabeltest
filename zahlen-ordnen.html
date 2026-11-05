@@ -904,7 +904,7 @@ async function flush(){
 }
 const PENDKEY = "uebung.pending."+UEBUNG;
 function makeRec(items, thema, g){
-  return {typ:"uebung-runde", v:2, uebung:UEBUNG, glueckszahl:g, thema, datum:new Date().toISOString(),
+  return {typ:"uebung-runde", v:2, id:Date.now().toString(36)+Math.random().toString(36).slice(2,10), uebung:UEBUNG, glueckszahl:g, thema, datum:new Date().toISOString(),
     punkte:items.filter(i=>i.punkte).length, max:items.length,
     aufgaben:items.map(i=>({nr:i.nr, thema:i.thema, stufe:i.stufe, frage:i.frage, antworten:i.antworten, loesung:i.loesung, punkte:i.punkte, t:i.t}))};
 }

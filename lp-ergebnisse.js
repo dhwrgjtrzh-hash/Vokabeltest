@@ -152,7 +152,7 @@
     runde(uebung, thema, aufgaben){
       if(VORSCHAU || !gz || !aufgaben || !aufgaben.length) return;
       const punkte = aufgaben.reduce((a,x) => a + (+x.punkte || 0), 0);
-      const rec = {typ:"uebung-runde", v:1, uebung, glueckszahl:gz, thema, datum:new Date().toISOString(),
+      const rec = {typ:"uebung-runde", v:1, id:Date.now().toString(36)+Math.random().toString(36).slice(2,10), uebung, glueckszahl:gz, thema, datum:new Date().toISOString(),
         punkte, max:aufgaben.length,
         aufgaben: aufgaben.map((x,i) => ({nr:i+1, thema:x.thema||thema, frage:String(x.frage), antworten:[String(x.antwort==null?"":x.antwort)],
           loesung:String(x.loesung), punkte:+x.punkte||0, t:x.t||Date.now()}))};
