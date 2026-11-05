@@ -10,7 +10,8 @@
 
    Verwendung im Trainer:
      LP.start({rechts: element})            // Glückszahl-Knopf in die Kopfzeile, ggf. Abfrage zeigen
-     LP.runde("Tierwörter", "Stufe 1 · Auswählen", [{frage, antwort, loesung, punkte, thema?, t}])
+     LP.runde("Tierwörter", "Stufe 1 · Auswählen", [{frage, antwort, loesung, punkte, thema?, t}], {zusatz?})
+     LP.endpoint                            // Adresse der Tabelle (z. B. für den Lernstand über die Glückszahl)
    ===================================================================== */
 (function(){
   const ENDPOINT = "https://script.google.com/macros/s/AKfycbzrgzAVAzJ9qKnFE-A4AocZiMw3cG-8pMTBbJ73ypN3HQH7XzOCM7hVgW2WbqBkBNIs/exec";
@@ -149,13 +150,16 @@
     },
     glueckszahl(){ return gz; },
     /* eine fertige Runde merken und senden */
-    runde(uebung, thema, aufgaben){
+    endpoint: ENDPOINT,
+    runde(uebung, thema, aufgaben, zusatz){
       if(VORSCHAU || !gz || !aufgaben || !aufgaben.length) return;
       const punkte = aufgaben.reduce((a,x) => a + (+x.punkte || 0), 0);
       const rec = {typ:"uebung-runde", v:1, id:Date.now().toString(36)+Math.random().toString(36).slice(2,10), uebung, glueckszahl:gz, thema, datum:new Date().toISOString(),
         punkte, max:aufgaben.length,
         aufgaben: aufgaben.map((x,i) => ({nr:i+1, thema:x.thema||thema, frage:String(x.frage), antworten:[String(x.antwort==null?"":x.antwort)],
           loesung:String(x.loesung), punkte:+x.punkte||0, t:x.t||Date.now()}))};
+      // zusätzliche Angaben eines Trainers (z. B. Stufe, Lesezeit) – die Grundfelder bleiben unverändert
+      if(zusatz) for(const k in zusatz) if(!(k in rec)) rec[k] = zusatz[k];
       const q = schlange(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-80)));
       senden();
     }
