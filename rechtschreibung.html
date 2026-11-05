@@ -1155,8 +1155,9 @@ function pruefeSatz(ziel, antwort){
 /* Wortmodus: Begleiter vor einem Nomen erlauben («der Hund») */
 function wortEingabe(ziel, eingabe, satz){
   let a = norm(eingabe).replace(/[.!?,;:]+$/,"");
-  if(isUpper(ziel[0])){ const m = a.match(/^(der|die|das|ein|eine|einen)\s+(\S+)$/i); if(m) a = m[2]; }
-  if(/\s/.test(a)) a = wortAusSatz(ziel, a, satz);
+  const n = ziel.split(" ").length;
+  if(n === 1 && isUpper(ziel[0])){ const m = a.match(/^(der|die|das|ein|eine|einen)\s+(\S+)$/i); if(m) a = m[2]; }
+  if(satzTokens(a).length > n) a = wortAusSatz(ziel, a, satz);
   return a;
 }
 
@@ -1165,18 +1166,24 @@ function wortEingabe(ziel, eingabe, satz){
    ziel: gesuchtes Wort · satz: Satz, in dem es vorkommt (falls vorhanden) · pos: seine Stelle im Satz */
 function wortAusSatz(ziel, eingabe, satz, pos){
   const v = norm(eingabe).replace(/[.!?,;:]+$/,"");
-  const A = satzTokens(v), zr = rein(ziel), zl = zr.toLowerCase();
-  if(A.length < 2) return v;                       // nur ein Wort: wie bisher
-  const aehnlichstes = () => A.reduce((b,t)=>{ const d = ausrichten(zl, t.toLowerCase()).dist; return d < b.d ? {t,d} : b; }, {t:"", d:Infinity}).t;
-  if(!satz) return A.includes(zr) ? zr : aehnlichstes();
+  const A = satzTokens(v), zr = rein(ziel), zl = zr.toLowerCase(), ZT = zr.split(" "), n = ZT.length;
+  if(A.length <= n) return v;                      // nur das Wort (oder die Wortgruppe): wie bisher
+  const fenster = i => A.slice(i, i+n).join(" ");
+  const aehnlichstes = () => { let best = {t:"", d:Infinity};
+    for(let i=0; i+n<=A.length; i++){ const t = fenster(i), d = ausrichten(zl, t.toLowerCase()).dist; if(d < best.d) best = {t, d}; }
+    return best.t; };
+  if(!satz){ for(let i=0; i+n<=A.length; i++) if(fenster(i) === zr) return zr; return aehnlichstes(); }
   const paare = pruefeSatz(satz, v).filter(p=>!p.extra);
-  const gleich = q => rein(q.z).toLowerCase() === zl;
-  let p = Number.isInteger(pos) && paare[pos] && gleich(paare[pos]) ? paare[pos] : null;
-  if(!p) p = paare.find(q => rein(q.z) === zr) || paare.find(gleich);
-  if(!p || !p.a) return aehnlichstes();
+  const ab = (i, gk) => ZT.every((t,j)=>paare[i+j] && (gk ? rein(paare[i+j].z) === t : rein(paare[i+j].z).toLowerCase() === t.toLowerCase()));
+  let i0 = Number.isInteger(pos) && ab(pos, false) ? pos : -1;
+  if(i0 < 0) i0 = paare.findIndex((_,i)=>ab(i, true));
+  if(i0 < 0) i0 = paare.findIndex((_,i)=>ab(i, false));
+  if(i0 < 0) return aehnlichstes();
+  const P = paare.slice(i0, i0+n);
+  if(P.every(p=>!p.a)) return aehnlichstes();
   // so geschrieben wie im Satz (z. B. am Satzanfang gross: «Heute regnet es.») – das gilt als richtig
-  if(p.a === rein(p.z)) return zr;
-  return p.a;
+  if(P.every(p=>p.a === rein(p.z))) return zr;
+  return P.map(p=>p.a).filter(Boolean).join(" ");
 }
 
 /* Zählen pro Bereich: Chancen und Fehler */
@@ -1347,11 +1354,11 @@ function lernwoerterUebernehmen(text){
   let neu = 0;
   for(const e of L.woerter){
     const w = norm(String(e.w||"").replace(/\u00AD/g,"")).replace(/[.!?,;:]+$/,"");
-    if(!w || /\s/.test(w) || P.lw[w]) continue;
+    if(!w || w.split(" ").length > 3 || P.lw[w]) continue;
     const x = norm(String(e.x||"").replace(/\u00AD/g,""));
     const toks = x ? sprechText(x).split(" ") : [];
     // Lückensatz nur, wenn das Wort genau so im Satz steht (am Satzanfang gross wäre in der Lücke sonst «falsch»)
-    const pos = toks.findIndex(k=>stripPunct(k)===w);
+    const W = w.split(" "), pos = toks.findIndex((_,i)=>W.every((v,j)=>toks[i+j] !== undefined && stripPunct(toks[i+j]) === v));
     P.lw[w] = 1;
     if(!P.kiste[w]) P.kiste[w] = {w, x, s:P.stufe||1, ims: pos>=0, pos: pos>=0 ? pos : undefined, n:0, t, lw:1};
     neu++;
@@ -1590,17 +1597,26 @@ function regelIntro(c){
 
 /* Wörter aus Sätzen (Fehlerkiste) werden im Satz mit einer Lücke geübt – so sieht man, ob gross oder klein */
 function lueckenPos(it){
-  const toks = sprechText(it.x).split(" ");
-  if(Number.isInteger(it.pos) && it.pos < toks.length && stripPunct(toks[it.pos]) === rein(it.w)) return it.pos;
-  let k = toks.findIndex(t => stripPunct(t) === rein(it.w));
-  if(k < 0) k = toks.findIndex(t => stripPunct(t).toLowerCase() === rein(it.w).toLowerCase());
+  const toks = sprechText(it.x).split(" "), W = rein(it.w).split(" ");
+  const an = (k, ci) => W.every((w,j)=>{ const t = toks[k+j]; if(t === undefined) return false; const x = stripPunct(t); return ci ? x.toLowerCase() === w.toLowerCase() : x === w; });
+  if(Number.isInteger(it.pos) && it.pos < toks.length && an(it.pos, false)) return it.pos;
+  let k = toks.findIndex((_,i)=>an(i, false));
+  if(k < 0) k = toks.findIndex((_,i)=>an(i, true));
   return k;
 }
 function lueckenSatz(it){
-  const toks = sprechText(it.x).split(" "), k = lueckenPos(it);
+  const toks = sprechText(it.x).split(" "), k = lueckenPos(it), n = rein(it.w).split(" ").length;
   if(k < 0) return null;
-  return toks.map((t,i) => { if(i !== k) return esc(t); const w = stripPunct(t), j = t.indexOf(w);
-    return esc(t.slice(0,j)) + `<span class="gap">${"&nbsp;".repeat(Math.max(6, Math.round(w.length*1.6)))}</span>` + esc(t.slice(j+w.length)); }).join(" ");
+  const out = [];
+  toks.forEach((t,i) => {
+    if(i < k || i >= k+n){ out.push(esc(t)); return; }
+    if(i > k) return;
+    const erst = toks[k], letzt = toks[k+n-1], w1 = stripPunct(erst), w2 = stripPunct(letzt);
+    const vor = erst.slice(0, erst.indexOf(w1)), nach = letzt.slice(letzt.lastIndexOf(w2) + w2.length);
+    const len = toks.slice(k, k+n).map(stripPunct).join(" ").length;
+    out.push(esc(vor) + `<span class="gap">${"&nbsp;".repeat(Math.max(6, Math.round(len*1.6)))}</span>` + esc(nach));
+  });
+  return out.join(" ");
 }
 const istLuecke = it => it.typ==="W" && it.ims && it.x && lueckenPos(it) >= 0;
 
@@ -1632,7 +1648,7 @@ function zeigeAufgabe(vorlesenJetzt){
       <button class="btn ghost" id="h2">🐢 Langsam</button>
       ${istSatz?`<button class="btn ghost" id="h3">Stück für Stück <small id="teilnr"></small></button>`:""}
     </div>` : `<div class="flash" id="flash">${esc(sprechText(it.w))}</div>`}
-    ${istLuecke(it) ? `<p class="luecke">${lueckenSatz(it)}</p><p class="hint">Schreib das Wort, das in die Lücke gehört. Achte darauf, wo es im Satz steht.</p>`
+    ${istLuecke(it) ? `<p class="luecke">${lueckenSatz(it)}</p><p class="hint">${rein(it.w).includes(" ")?"Schreib die Wörter, die in die Lücke gehören. Achte darauf, wo sie im Satz stehen.":"Schreib das Wort, das in die Lücke gehört. Achte darauf, wo es im Satz steht."}</p>`
       : `<p class="hint">${istSatz?"Schreib den ganzen Satz auf. Achte auf Gross- und Kleinschreibung.":"Schreib das Wort auf. Nomen schreibst du gross."}</p>`}
     ${istSatz ? `<textarea class="ans wide" id="inp" rows="2" ${TA} placeholder="Satz hier schreiben …"></textarea>`
               : `<input class="ans wide" id="inp" ${TA} placeholder="Wort hier schreiben …">`}
@@ -1798,7 +1814,7 @@ function korrektur(it, falsche){
         // Hat das Kind den ganzen Satz geschrieben, zählt das Wort an seiner Stelle im Satz
         const satz = it.typ==="S" ? it.w : it.x;
         const pos = Number.isInteger(res.idx) ? res.idx : (f.luecke ? lueckenPos(it) : undefined);
-        const v = wortAusSatz(f.z, roh, satz, pos), ganzerSatz = /\s/.test(roh);
+        const v = wortAusSatz(f.z, roh, satz, pos), ganzerSatz = satzTokens(roh).length > ziel.split(" ").length;
         if(v === ziel){ k++; schritt(); }
         else merken(`<div class="again">Noch nicht ganz: Du hast «${esc(ganzerSatz && v ? v : ni.value.trim())}» geschrieben. Schau dir das Wort nochmals genau an.${ganzerSatz?" Du musst nur das Wort schreiben, nicht den ganzen Satz.":""}</div>`);
       };
