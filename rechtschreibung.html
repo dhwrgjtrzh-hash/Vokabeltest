@@ -1324,6 +1324,41 @@ const STAND = (()=>{
   return {brauche, holen, merken, jetzt};
 })();
 const kisteN = () => Object.keys(P.kiste).length;
+const lwN = () => Object.values(P.kiste).filter(v=>v.lw).length;
+
+/* ===== Lernwörter von Schabi =====
+   Die Lehrperson trägt sie in der Lernportal-Station ein – gespeichert wird nur Glückszahl + Wörter (Übung «Lernwörter»).
+   Jedes Lernwort kommt einmal in die Fehlerkiste; ist es zweimal richtig geschrieben, ist es draussen und kommt nicht wieder. */
+const LW_UEBUNG = "Lernwörter", lwGeholt = {};
+function holeLernwoerter(g, weiter){
+  lwGeholt[g] = true;
+  if(!ENDPOINT){ weiter(); return; }
+  let fertig = false; const w = ()=>{ if(!fertig){ fertig = true; weiter(); } };
+  setTimeout(w, 4000);
+  fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({typ:"stand-laden", uebung:LW_UEBUNG, glueckszahl:g})})
+    .then(r=>r.json()).then(d=>{ if(!fertig && d && d.ok && d.stand) lernwoerterUebernehmen(d.stand); }).catch(()=>{}).finally(w);
+}
+function lernwoerterUebernehmen(text){
+  let L; try{ L = JSON.parse(text); }catch(e){ return 0; }
+  if(!L || !Array.isArray(L.woerter)) return 0;
+  ladeP();
+  P.lw = P.lw || {};
+  const t = Date.now() - 61e3;   // sofort in der nächsten Etappe verfügbar
+  let neu = 0;
+  for(const e of L.woerter){
+    const w = norm(String(e.w||"").replace(/\u00AD/g,"")).replace(/[.!?,;:]+$/,"");
+    if(!w || /\s/.test(w) || P.lw[w]) continue;
+    const x = norm(String(e.x||"").replace(/\u00AD/g,""));
+    const toks = x ? sprechText(x).split(" ") : [];
+    // Lückensatz nur, wenn das Wort genau so im Satz steht (am Satzanfang gross wäre in der Lücke sonst «falsch»)
+    const pos = toks.findIndex(k=>stripPunct(k)===w);
+    P.lw[w] = 1;
+    if(!P.kiste[w]) P.kiste[w] = {w, x, s:P.stufe||1, ims: pos>=0, pos: pos>=0 ? pos : undefined, n:0, t, lw:1};
+    neu++;
+  }
+  if(neu) speichereP();
+  return neu;
+}
 
 /* ===== Übungsrunde ===== */
 let S = null;
@@ -1338,7 +1373,7 @@ function nimm(pool, n){
 }
 function kisteItems(n, ausser){
   return Object.entries(P.kiste).filter(([k,v])=>!ausser || v.t < ausser).sort((a,b)=>a[1].t-b[1].t).slice(0,n)
-    .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims, pos:v.pos}));
+    .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims, pos:v.pos, lw:v.lw}));
 }
 function starteEtappe(){
   const st = P.stufe || 1;
@@ -1388,6 +1423,7 @@ function starteSB(){
 const app = $("app"), pill = $("pill");
 function home(){
   if(gz && STAND.brauche("Rechtschreibung", gz)) return STAND.holen("Rechtschreibung", gz, pkey(), home);
+  if(gz && !lwGeholt[gz]) return holeLernwoerter(gz, home);
   $("wrap").classList.remove("wide");
   stille();
   pill.hidden = true; pill.textContent = "Nr. "+gz;
@@ -1423,7 +1459,7 @@ function home(){
         <button class="btn big-btn" id="etappe">▶ ${meister?"Meisterrunde":"Etappe "+(nr+1)} starten<small>${NEUE_WOERTER} Wörter${kn?` + bis ${KISTE_PRO_ETAPPE} aus der Fehlerkiste`:""} · ${SAETZE_PRO_ETAPPE} Sätze</small></button>
       </div>
       <div class="tiles">
-        <button class="tile" id="kiste" ${kn?"":"disabled"}><span class="ic">📦</span><b>Fehlerkiste <em class="badge">${kn}</em></b><span>${kn?"Wörter, die noch nicht sicher sitzen. Zweimal richtig – dann sind sie draussen.":"Leer – super!"}</span></button>
+        <button class="tile" id="kiste" ${kn?"":"disabled"}><span class="ic">📦</span><b>Fehlerkiste <em class="badge">${kn}</em></b><span>${kn?`Wörter, die noch nicht sicher sitzen${lwN()?` – auch ${lwN()===1?"dein Lernwort":"deine "+lwN()+" Lernwörter"} aus Schabi`:""}. Zweimal richtig – dann sind sie draussen.`:"Leer – super!"}</span></button>
         <button class="tile" id="regel"><span class="ic">🎯</span><b>Regeltraining</b><span>Übe gezielt eine Rechtschreibregel.</span></button>
         <button class="tile ${sbFrei?"hot":""}" id="sb" ${sbFrei?"":"disabled"}><span class="ic">📝</span><b>Standortbestimmung</b><span>${sbFrei?"Wieder freigeschaltet – zeig, was du gelernt hast!":`Wieder möglich nach ${SB_NACH_ETAPPEN-P.seit} weiteren Etappen.`}</span></button>
       </div>
@@ -1627,13 +1663,14 @@ function protokolliere(it, eintraege){
     const rec = {w:e.w, a:e.a, ok:e.ok?1:0, s:it.s, k:it.typ, q:it.q, t:Date.now()};
     if(z) rec.z = z;
     if(e.ims && it.typ==="W") rec.ims = 1;
+    if(it.lw) rec.lw = 1;
     S.pending.push(rec);
     // Statistik und Fehlerkiste
     if(e.w){
       const r = e.res; zaehle(r, P.stat); P.worte++;
       const key = e.w;
       const nurSatzanfang = e.erstes && fehlerBereiche(r).every(c=>c==="GK");
-      if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, pos: Number.isInteger(e.idx) ? e.idx : undefined, n:0, t:Date.now()}; }
+      if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, pos: Number.isInteger(e.idx) ? e.idx : undefined, n:0, t:Date.now(), lw: it.lw || (P.kiste[key] && P.kiste[key].lw) || undefined}; }
       else if(P.kiste[key] && (it.q==="K" || P.kiste[key].t < S.start)){ P.kiste[key].n++; P.kiste[key].t = Date.now(); if(P.kiste[key].n >= KISTE_RAUS) delete P.kiste[key]; }
     }
   }
