@@ -1354,13 +1354,15 @@ function lernwoerterUebernehmen(text){
   let neu = 0;
   for(const e of L.woerter){
     const w = norm(String(e.w||"").replace(/\u00AD/g,"")).replace(/[.!?,;:]+$/,"");
-    if(!w || w.split(" ").length > 3 || P.lw[w]) continue;
     const x = norm(String(e.x||"").replace(/\u00AD/g,""));
+    const lk = w + "¦" + x;   // gleiches Wort in einem anderen Satz = eigenes Lernwort
+    if(!w || w.split(" ").length > 3 || P.lw[lk]) continue;
     const toks = x ? sprechText(x).split(" ") : [];
     // Lückensatz nur, wenn das Wort genau so im Satz steht (am Satzanfang gross wäre in der Lücke sonst «falsch»)
     const W = w.split(" "), pos = toks.findIndex((_,i)=>W.every((v,j)=>toks[i+j] !== undefined && stripPunct(toks[i+j]) === v));
-    P.lw[w] = 1;
-    if(!P.kiste[w]) P.kiste[w] = {w, x, s:P.stufe||1, ims: pos>=0, pos: pos>=0 ? pos : undefined, n:0, t, lw:1};
+    P.lw[lk] = 1;
+    const key = P.kiste[w] ? lk : w;
+    if(!P.kiste[key]) P.kiste[key] = {w, x, s:P.stufe||1, ims: pos>=0, pos: pos>=0 ? pos : undefined, n:0, t, lw:1};
     neu++;
   }
   if(neu) speichereP();
@@ -1379,8 +1381,10 @@ function nimm(pool, n){
   return shuffle(pool.slice()).sort((a,b)=>(g[a.id]||0)-(g[b.id]||0)).slice(0,n);
 }
 function kisteItems(n, ausser){
-  return Object.entries(P.kiste).filter(([k,v])=>!ausser || v.t < ausser).sort((a,b)=>a[1].t-b[1].t).slice(0,n)
-    .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims, pos:v.pos, lw:v.lw}));
+  const schon = new Set();   // dasselbe Wort (in einem anderen Satz) nicht zweimal in derselben Runde
+  return Object.entries(P.kiste).filter(([k,v])=>!ausser || v.t < ausser).sort((a,b)=>a[1].t-b[1].t)
+    .filter(([k,v])=>{ if(schon.has(v.w)) return false; schon.add(v.w); return true; }).slice(0,n)
+    .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims, pos:v.pos, lw:v.lw, kk:k}));
 }
 function starteEtappe(){
   const st = P.stufe || 1;
@@ -1684,7 +1688,7 @@ function protokolliere(it, eintraege){
     // Statistik und Fehlerkiste
     if(e.w){
       const r = e.res; zaehle(r, P.stat); P.worte++;
-      const key = e.w;
+      const key = (it.typ==="W" && it.kk) || e.w;   // Eintrag der Fehlerkiste, aus dem die Aufgabe kommt
       const nurSatzanfang = e.erstes && fehlerBereiche(r).every(c=>c==="GK");
       if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, pos: Number.isInteger(e.idx) ? e.idx : undefined, n:0, t:Date.now(), lw: it.lw || (P.kiste[key] && P.kiste[key].lw) || undefined}; }
       else if(P.kiste[key] && (it.q==="K" || P.kiste[key].t < S.start)){ P.kiste[key].n++; P.kiste[key].t = Date.now(); if(P.kiste[key].n >= KISTE_RAUS) delete P.kiste[key]; }
