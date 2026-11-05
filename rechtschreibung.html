@@ -1153,10 +1153,30 @@ function pruefeSatz(ziel, antwort){
 }
 
 /* Wortmodus: Begleiter vor einem Nomen erlauben («der Hund») */
-function wortEingabe(ziel, eingabe){
+function wortEingabe(ziel, eingabe, satz){
   let a = norm(eingabe).replace(/[.!?,;:]+$/,"");
   if(isUpper(ziel[0])){ const m = a.match(/^(der|die|das|ein|eine|einen)\s+(\S+)$/i); if(m) a = m[2]; }
+  if(/\s/.test(a)) a = wortAusSatz(ziel, a, satz);
   return a;
+}
+
+/* Ganzer Satz statt nur das Wort: Viele Kinder überlesen, dass nur das Wort gefragt ist, und schreiben
+   den ganzen Satz. Dann wird das Wort an seiner Stelle im Satz herausgesucht und nur dieses geprüft.
+   ziel: gesuchtes Wort · satz: Satz, in dem es vorkommt (falls vorhanden) · pos: seine Stelle im Satz */
+function wortAusSatz(ziel, eingabe, satz, pos){
+  const v = norm(eingabe).replace(/[.!?,;:]+$/,"");
+  const A = satzTokens(v), zr = rein(ziel), zl = zr.toLowerCase();
+  if(A.length < 2) return v;                       // nur ein Wort: wie bisher
+  const aehnlichstes = () => A.reduce((b,t)=>{ const d = ausrichten(zl, t.toLowerCase()).dist; return d < b.d ? {t,d} : b; }, {t:"", d:Infinity}).t;
+  if(!satz) return A.includes(zr) ? zr : aehnlichstes();
+  const paare = pruefeSatz(satz, v).filter(p=>!p.extra);
+  const gleich = q => rein(q.z).toLowerCase() === zl;
+  let p = Number.isInteger(pos) && paare[pos] && gleich(paare[pos]) ? paare[pos] : null;
+  if(!p) p = paare.find(q => rein(q.z) === zr) || paare.find(gleich);
+  if(!p || !p.a) return aehnlichstes();
+  // so geschrieben wie im Satz (z. B. am Satzanfang gross: «Heute regnet es.») – das gilt als richtig
+  if(p.a === rein(p.z)) return zr;
+  return p.a;
 }
 
 /* Zählen pro Bereich: Chancen und Fehler */
@@ -1630,7 +1650,7 @@ function pruefen(){
   let ok, falsche = [], logEintrag;
   if(it.typ==="W"){
     const luecke = istLuecke(it), lpos = luecke ? lueckenPos(it) : -1;
-    const a = luecke ? norm(roh).replace(/[.!?,;:]+$/,"") : wortEingabe(rein(it.w), roh);
+    const a = luecke ? wortAusSatz(it.w, roh, it.x, lpos) : wortEingabe(rein(it.w), roh, it.x);
     const res = pruefeWort(it.w, a, !!it.ims);
     ok = res.ok;
     const e = [{w:it.w, a, ok, res, ims:!!it.ims, idx: luecke ? lpos : it.pos, erstes: lpos===0}];
@@ -1736,10 +1756,14 @@ function korrektur(it, falsche){
       </div>`;
       const ni = $("nach"); ni.focus({preventScroll:true});
       const go = () => {
-        const v = norm(ni.value).replace(/[.!?,;:]+$/,"");
-        if(!v) return ni.focus();
+        const roh = norm(ni.value).replace(/[.!?,;:]+$/,"");
+        if(!roh) return ni.focus();
+        // Hat das Kind den ganzen Satz geschrieben, zählt das Wort an seiner Stelle im Satz
+        const satz = it.typ==="S" ? it.w : it.x;
+        const pos = Number.isInteger(res.idx) ? res.idx : (f.luecke ? lueckenPos(it) : undefined);
+        const v = wortAusSatz(f.z, roh, satz, pos), ganzerSatz = /\s/.test(roh);
         if(v === ziel){ k++; schritt(); }
-        else merken(`<div class="again">Noch nicht ganz: Du hast «${esc(ni.value.trim())}» geschrieben. Schau dir das Wort nochmals genau an.</div>`);
+        else merken(`<div class="again">Noch nicht ganz: Du hast «${esc(ganzerSatz && v ? v : ni.value.trim())}» geschrieben. Schau dir das Wort nochmals genau an.${ganzerSatz?" Du musst nur das Wort schreiben, nicht den ganzen Satz.":""}</div>`);
       };
       $("ok2").onclick = go;
       ni.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); go(); } });
