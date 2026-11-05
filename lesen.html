@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="de-CH" data-fach="deutsch" data-trainer="lesen">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leseverstehen</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="lernportal.css">
+<style>
+/* Aufbau: Kopf wie alle Trainer. Startseite = Stufe mit ihren Texten. Beim Üben: zuerst den Text lesen,
+   dann Fragen; auf breiten Bildschirmen steht der Text links und die Frage rechts, auf dem Handy die Frage oben, der Text darunter. */
+:root{
+  --bg:var(--lp-bg,#f3f6fb); --karte:var(--lp-karte,#fff); --ink:var(--lp-ink,#1b2433); --leise:var(--lp-leise,#5f6b85); --linie:var(--lp-linie,#dfe5ef);
+  --akzent:var(--lp-akzent,#c2255c); --soft:var(--lp-akzent-soft,#fbe6ee);
+  --gut:var(--lp-gut,#127a3c); --gut-bg:var(--lp-gut-bg,#dcf5e4); --falsch:var(--lp-falsch,#b42318); --falsch-bg:var(--lp-falsch-bg,#fde4e1);
+  --mark:#fff1b8; --mark-ink:#5c4300;
+  --titel:var(--lp-titel,"Fredoka",system-ui,sans-serif); --text:var(--lp-text,"Atkinson Hyperlegible",system-ui,sans-serif);
+}
+@media (prefers-color-scheme:dark){ :root{ --mark:#4a3d12; --mark-ink:#f3d77a; } }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--text);-webkit-text-size-adjust:100%}
+.wrap{max-width:1100px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left)) 48px}
+.lp-kopf{margin-bottom:18px}
+h2{font:600 1.45rem/1.2 var(--titel);margin:0 0 6px}
+h3{font:600 1.15rem/1.25 var(--titel);margin:0 0 6px}
+.leise{color:var(--leise)}
+.karte{background:var(--karte);border:1.5px solid var(--linie);border-radius:18px;padding:18px}
+.btn{font:700 1rem/1.2 var(--text);border:0;border-radius:14px;padding:13px 20px;min-height:48px;cursor:pointer;background:var(--akzent);color:#fff}
+.btn.zweit{background:var(--karte);color:var(--ink);border:1.5px solid var(--linie)}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn:focus-visible,.opt:focus-visible,.pill:focus-visible{outline:3px solid var(--akzent);outline-offset:2px}
+.zeile{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{flex:1}
+/* Startseite */
+.stufe-kopf{display:flex;gap:14px;align-items:center}
+.stufe-nr{flex:none;width:58px;height:58px;border-radius:16px;background:var(--soft);color:var(--akzent);display:grid;place-items:center;font:600 1.6rem/1 var(--titel)}
+.texte{display:grid;gap:12px;margin-top:14px}
+.textkarte{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;text-align:left;width:100%;font:inherit;color:inherit;
+  background:var(--karte);border:1.5px solid var(--linie);border-radius:16px;padding:14px 16px;cursor:pointer}
+.textkarte:hover{border-color:var(--akzent)}
+.textkarte b{font:600 1.15rem/1.2 var(--titel)}
+.textkarte .meta{grid-column:1;font-size:.9rem;color:var(--leise)}
+.status{grid-row:1/3;grid-column:2;font-weight:700;font-size:.9rem;border-radius:999px;padding:6px 12px;background:var(--soft);color:var(--akzent);white-space:nowrap}
+.status.gut{background:var(--gut-bg);color:var(--gut)}
+.punkte{display:flex;gap:6px;margin-top:10px}.punkte i{width:12px;height:12px;border-radius:50%;background:var(--linie)}.punkte i.gut{background:var(--gut)}
+details.mehr{margin-top:18px}details.mehr summary{cursor:pointer;color:var(--leise);font-weight:700}
+.balken{display:grid;grid-template-columns:minmax(0,1fr) 120px 44px;gap:8px 10px;align-items:center;font-size:.95rem;margin-top:10px}
+.balken .b{height:10px;border-radius:6px;background:var(--linie);overflow:hidden}.balken .b i{display:block;height:100%;background:var(--akzent)}
+/* Lesen + Fragen */
+.lesen{display:grid;gap:16px}
+@media (min-width:860px){ .lesen.fragen{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
+  .lesen.fragen .textbox{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;order:1}
+  .lesen.fragen .fragebox{order:2} }
+.textbox h2{margin-bottom:10px}
+.textbox .art{font-size:.85rem;font-weight:700;color:var(--leise);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.textbox p{margin:0 0 .9em;font-size:1.08rem;line-height:1.7}
+.textbox p:last-child{margin-bottom:0}
+.absnr{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:7px;background:var(--soft);color:var(--akzent);font:700 .8rem/1 var(--text);margin-right:6px;vertical-align:2px}
+.satz{border-radius:6px;transition:background .15s}
+.wahl-satz .satz{cursor:pointer;background:color-mix(in srgb,var(--soft) 45%,transparent)}
+.wahl-satz .satz:hover{background:var(--soft)}
+.satz.gewaehlt{background:var(--soft);outline:2px solid var(--akzent);outline-offset:1px}
+.satz.beleg{background:var(--mark);color:var(--mark-ink)}
+.satz.beleg.gut{background:var(--gut-bg);color:var(--gut)}
+.wahl-wort .w{cursor:pointer;border-radius:5px;padding:0 1px}
+.wahl-wort .w:hover{background:var(--soft)}
+.w.gewaehlt{background:var(--akzent);color:#fff}
+.w.loesung{background:var(--gut-bg);color:var(--gut);font-weight:700}
+.fortschritt{display:flex;gap:5px;margin-bottom:12px}.fortschritt i{flex:1;height:7px;border-radius:4px;background:var(--linie)}
+.fortschritt i.jetzt{background:var(--akzent)}.fortschritt i.gut{background:var(--gut)}.fortschritt i.nein{background:var(--falsch)}
+.frage{font-size:1.12rem;font-weight:700;margin:4px 0 14px}
+.hinweis{font-size:.95rem;color:var(--leise);margin:-6px 0 12px}
+.opts{display:grid;gap:9px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:inherit;background:var(--karte);border:1.5px solid var(--linie);border-radius:14px;padding:12px 14px;cursor:pointer;min-height:48px}
+.opt:hover{border-color:var(--akzent)}
+.opt .k{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--linie);margin-top:1px}
+.opt.multi .k{border-radius:6px}
+.opt.an{border-color:var(--akzent);background:var(--soft)}.opt.an .k{border-color:var(--akzent);background:var(--akzent);box-shadow:inset 0 0 0 3px var(--karte)}
+.opt.richtig{border-color:var(--gut);background:var(--gut-bg)}.opt.richtig .k{border-color:var(--gut);background:var(--gut);box-shadow:inset 0 0 0 3px var(--gut-bg)}
+.opt.falsch{border-color:var(--falsch);background:var(--falsch-bg)}.opt.falsch .k{border-color:var(--falsch);background:var(--falsch);box-shadow:inset 0 0 0 3px var(--falsch-bg)}
+.opt.fehlt{border-color:var(--gut);border-style:dashed}
+.opts.zu .opt{cursor:default}
+.tf{display:grid;gap:12px}
+.tf .aus{border:1.5px solid var(--linie);border-radius:14px;padding:12px 14px}
+.tf .aus.richtig{border-color:var(--gut);background:var(--gut-bg)}.tf .aus.falsch{border-color:var(--falsch);background:var(--falsch-bg)}
+.tf .aus p{margin:0 0 9px;font-weight:700}
+.pills{display:flex;gap:7px;flex-wrap:wrap}
+.pill{font:700 .92rem/1.2 var(--text);border:1.5px solid var(--linie);background:var(--karte);color:var(--ink);border-radius:999px;padding:9px 14px;cursor:pointer;min-height:42px}
+.pill.an{background:var(--akzent);border-color:var(--akzent);color:#fff}
+.pill.loes{border-color:var(--gut);color:var(--gut)}
+.kurz{width:100%;font:inherit;font-size:1.1rem;padding:12px 14px;border:1.5px solid var(--linie);border-radius:14px;background:var(--karte);color:var(--ink)}
+.kurz:focus{outline:3px solid var(--akzent);outline-offset:1px}
+.ordnen .gewaehlt-liste{display:grid;gap:7px;margin-bottom:10px;min-height:20px}
+.ordnen .g{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:12px;padding:10px 12px;cursor:pointer}
+.ordnen .g b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--akzent);color:#fff;display:grid;place-items:center;font-size:.9rem}
+.zuord{display:grid;gap:9px}
+.zuord label{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1.5px solid var(--linie);border-radius:14px;padding:10px 12px;font-weight:700}
+.zuord select{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linie);background:var(--karte);color:var(--ink)}
+.zuord label.richtig{border-color:var(--gut);background:var(--gut-bg)}.zuord label.falsch{border-color:var(--falsch);background:var(--falsch-bg)}
+.meldung{margin-top:14px;border-radius:14px;padding:12px 14px;font-weight:700}
+.meldung.gut{background:var(--gut-bg);color:var(--gut)}.meldung.nein{background:var(--falsch-bg);color:var(--falsch)}
+.meldung p,.meldung .zus{margin:6px 0 0;font-weight:400;color:var(--ink)}
+.fehltext{color:var(--falsch);font-weight:700;font-size:.95rem;margin:10px 0 0}
+.aktionen{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.ergebnis{text-align:center}
+.ergebnis .gross{font:600 3rem/1 var(--titel);color:var(--akzent);margin:10px 0}
+.shake{animation:shake .35s}@keyframes shake{25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="lp-zurueck" href="./#deutsch">‹ Lernportal</a>
+    <div class="lp-logo">Aa</div>
+    <h1 class="lp-titel"><small>Deutsch</small>Leseverstehen</h1>
+    <div class="lp-rechts"></div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script src="lp-ergebnisse.js"></script>
+<script src="lesen-texte.js"></script>
+<script>
+const UEBUNG = "Lesen";
+const STUFEN = {1:"Genau lesen", 2:"Informationen verbinden", 3:"Zwischen den Zeilen lesen", 4:"Den ganzen Text verstehen", 5:"Kritisch lesen"};
+const STUFE_TEXT = {
+  1:"Kurze Texte. Die Antworten stehen genau so im Text – lies genau nach.",
+  2:"Längere Texte. Oft musst du zwei Stellen im Text verbinden oder etwas ordnen.",
+  3:"Manches steht nicht direkt da. Überlege, was die Figuren fühlen und warum etwas passiert.",
+  4:"Hauptaussage, Überschriften und Aufbau eines Texts.",
+  5:"Tatsache oder Meinung? Texte vergleichen, Tabellen und Pläne lesen."
+};
+const FAEHIG = {finden:"Informationen finden", verbinden:"Informationen verbinden", schliessen:"Zwischen den Zeilen lesen", wortschatz:"Wörter aus dem Zusammenhang verstehen", ganz:"Den ganzen Text verstehen"};
+const BESTANDEN = 0.8, SB_GRENZE = 0.75;
+const app = document.getElementById("app");
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mische = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const store = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const TEXT = id => LESETEXTE.find(t => t.id === id);
+const SB_TEXTE = LESETEXTE.filter(t => t.sb).sort((a,b)=>a.stufe-b.stufe);
+const texteDerStufe = s => LESETEXTE.filter(t => !t.sb && t.stufe === s);
+const hoechsteStufe = Math.max(...LESETEXTE.filter(t=>!t.sb).map(t=>t.stufe));
+const sauber = w => w.replace(/^[«»"„“”'(]+|[«»"„“”'.,;:!?)]+$/g, "");
+
+/* ===== Lernstand (pro Glückszahl, auch über mehrere Geräte) ===== */
+let gz = "", P = null;
+const pkey = () => "lesen.p." + gz;
+const neuerStand = () => ({v:1, stufe:0, sb:null, texte:{}, faehig:{}, t:0});
+function ladeP(){ try{ P = JSON.parse(store.get(pkey()) || "null"); }catch(e){ P = null; } if(!P || P.v !== 1) P = neuerStand(); }
+let sendeTimer = null;
+function speichereP(){
+  P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt);
+  clearTimeout(sendeTimer); sendeTimer = setTimeout(() => post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:gz, t:P.t, stand:txt}).catch(()=>{}), 1500);
+}
+const post = body => fetch(window.LP.endpoint, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body)}).then(r=>r.json());
+const geholt = {};
+function holeStand(weiter){
+  if(geholt[gz] || !window.LP || !window.LP.endpoint){ weiter(); return; }
+  geholt[gz] = true;
+  let fertig = false; const w = () => { if(!fertig){ fertig = true; weiter(); } };
+  setTimeout(w, 4000);
+  post({typ:"stand-laden", uebung:UEBUNG, glueckszahl:gz}).then(d => {
+    if(fertig) return;
+    const lokal = (() => { try{ return JSON.parse(store.get(pkey()) || "null"); }catch(e){ return null; } })();
+    const tl = (lokal && lokal.t) || 0, tr = (d && d.ok && d.stand) ? (Number(d.t) || 0) : -1;
+    if(tr > tl) store.set(pkey(), d.stand);
+    else if(lokal && tl > 0) post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:gz, t:tl, stand:JSON.stringify(lokal)}).catch(()=>{});
+  }).catch(()=>{}).finally(w);
+}
+
+/* ===== Start ===== */
+function start(){
+  const g = window.LP ? window.LP.glueckszahl() : "";
+  if(!g){ app.innerHTML = `<div class="karte"><h2>Gib zuerst deine Glückszahl ein.</h2><p class="leise">Tippe oben rechts auf den Knopf, falls das Fenster nicht erscheint.</p></div>`; setTimeout(start, 800); return; }
+  if(g !== gz){ gz = g; P = null; }
+  holeStand(home);
+}
+function home(){
+  ladeP(); S = null;
+  window.scrollTo(0, 0);
+  if(!P.sb || !P.sb.fertig){
+    const begonnen = P.sb && P.sb.erg ? Object.keys(P.sb.erg).length : 0;
+    app.innerHTML = `<div class="karte">
+      <div class="stufe-kopf"><div class="stufe-nr">📖</div><div><h2>Standortbestimmung</h2><p class="leise" style="margin:0">Drei kurze Texte mit je vier Fragen. Danach weisst du, auf welcher Stufe du startest.</p></div></div>
+      <ul style="margin:14px 0 0;padding-left:20px;line-height:1.6">
+        <li>Lies jeden Text in Ruhe. Du darfst ihn beim Antworten immer wieder anschauen.</li>
+        <li>Es gibt verschiedene Aufgaben: auswählen, ein Wort im Text antippen, kurz schreiben …</li>
+      </ul>
+      <div class="aktionen"><button class="btn" id="los">${begonnen ? `Weiter mit Text ${begonnen+1} →` : "Los geht's →"}</button></div></div>`;
+    $("#los").onclick = () => starteSB();
+    return;
+  }
+  const st = P.stufe, liste = texteDerStufe(st);
+  const geschafft = liste.filter(t => (P.texte[t.id]||{}).best >= BESTANDEN).length;
+  const tk = t => { const x = P.texte[t.id];
+    const stat = !x ? `<span class="status">neu</span>` : x.best >= BESTANDEN ? `<span class="status gut">✓ ${Math.round(x.best*100)} %</span>` : `<span class="status">${Math.round(x.best*100)} %</span>`;
+    return `<button class="textkarte" data-id="${t.id}"><b>${esc(t.titel)}</b>${stat}<span class="meta">${esc(t.art)} · ${esc(t.thema)} · ${t.fragen.length} Fragen</span></button>`; };
+  const frueher = [1,2,3,4,5].filter(s => s < st && texteDerStufe(s).length);
+  const naechste = st < 5 ? (texteDerStufe(st+1).length ? `Wenn du alle Texte dieser Stufe mit mindestens ${Math.round(BESTANDEN*100)} % geschafft hast, geht es weiter mit Stufe ${st+1}: ${STUFEN[st+1]}.` : `Stufe ${st+1} (${STUFEN[st+1]}) kommt bald.`) : "";
+  app.innerHTML = `<div class="karte">
+      <div class="stufe-kopf"><div class="stufe-nr">${st}</div><div><h2>Stufe ${st}: ${esc(STUFEN[st])}</h2><p class="leise" style="margin:0">${esc(STUFE_TEXT[st])}</p></div></div>
+      <div class="punkte">${liste.map(t => `<i class="${(P.texte[t.id]||{}).best >= BESTANDEN ? "gut" : ""}"></i>`).join("")}<span class="leise" style="font-size:.9rem;margin-left:6px">${geschafft} von ${liste.length} Texten geschafft</span></div>
+      <div class="texte">${liste.map(tk).join("")}</div>
+      ${naechste ? `<p class="leise" style="margin:14px 0 0;font-size:.95rem">${esc(naechste)}</p>` : ""}
+    </div>
+    ${frueher.length ? `<details class="mehr"><summary>Texte früherer Stufen nochmals lesen</summary><div class="texte">${frueher.flatMap(s => texteDerStufe(s)).map(tk).join("")}</div></details>` : ""}
+    ${staerken()}`;
+  app.querySelectorAll(".textkarte").forEach(b => b.onclick = () => starteText(TEXT(b.dataset.id)));
+}
+/* Was gelingt schon gut? (aus allen beantworteten Fragen) */
+function staerken(){
+  const F = P.faehig || {}, keys = Object.keys(FAEHIG).filter(k => F[k] && F[k].n >= 3);
+  if(keys.length < 2) return "";
+  const zeile = k => { const p = Math.round(F[k].r / F[k].n * 100); return `<span>${esc(FAEHIG[k])}</span><span class="b"><i style="width:${p}%;background:${p>=80?"var(--gut)":p>=60?"#d39b16":"var(--falsch)"}"></i></span><b>${p} %</b>`; };
+  const schwach = keys.filter(k => F[k].r / F[k].n < 0.7).sort((a,b) => F[a].r/F[a].n - F[b].r/F[b].n)[0];
+  return `<details class="mehr"><summary>Was klappt schon gut?</summary><div class="karte" style="margin-top:10px">
+    <div class="balken">${keys.map(zeile).join("")}</div>
+    ${schwach ? `<p style="margin:12px 0 0">Darauf kannst du noch achten: <b>${esc(FAEHIG[schwach])}</b>. ${esc(TIPP[schwach])}</p>` : ""}</div></details>`;
+}
+const TIPP = {
+  finden:"Lies die Frage genau und such im Text das passende Wort oder den passenden Satz.",
+  verbinden:"Oft steht die Antwort an zwei Stellen. Lies auch den Satz davor und danach.",
+  schliessen:"Frag dich: Warum macht die Figur das? Wie würdest du dich fühlen?",
+  wortschatz:"Lies den ganzen Satz um das Wort herum. Er verrät, was das Wort bedeutet.",
+  ganz:"Lies am Schluss jeden Abschnitt nochmals kurz an: Worum geht es hier?"
+};
+
+/* ===== Eine Runde: Text lesen, dann Fragen ===== */
+let S = null;
+function starteSB(){
+  P.sb = P.sb || {erg:{}};
+  const naechster = SB_TEXTE.find(t => !(t.id in P.sb.erg));
+  if(!naechster) return sbAbschluss();
+  starteText(naechster, true);
+}
+function starteText(t, sb){
+  S = {t, sb:!!sb, i:-1, log:[], start:Date.now(), lesezeit:0, fragen:t.fragen.map(q => vorbereiten(q))};
+  zeigeText();
+}
+function vorbereiten(q){
+  const x = Object.assign({}, q);
+  if(q.typ === "mc" || q.typ === "beleg") x.optionen = mische([q.richtig].concat(q.falsch));
+  if(q.typ === "multi") x.optionen = mische(q.richtig.concat(q.falsch));
+  if(q.typ === "ordnen") { do { x.pool = mische(q.items); } while(x.pool.join("|") === q.items.join("|")); }
+  return x;
+}
+function textHtml(t){
+  let n = 0;
+  const mehrere = t.absaetze.length > 1;
+  return t.absaetze.map((a, ai) => `<p>${mehrere ? `<span class="absnr" title="Abschnitt ${ai+1}">${ai+1}</span>` : ""}${a.map(s => `<span class="satz" data-s="${n++}">${s.split(" ").map(w => `<span class="w" data-w="${esc(sauber(w))}">${esc(w)}</span>`).join(" ")}</span>`).join(" ")}</p>`).join("");
+}
+const saetze = t => t.absaetze.flat();
+function zeigeText(){
+  const t = S.t;
+  app.innerHTML = `<div class="lesen"><div class="karte textbox" id="textbox">
+      <div class="art">${S.sb ? "Standortbestimmung · " : `Stufe ${t.stufe} · `}${esc(t.art)}</div>
+      <h2>${esc(t.titel)}</h2><div id="text">${textHtml(t)}</div></div>
+      <div class="aktionen"><button class="btn" id="fertig">Ich habe den Text gelesen → zu den Fragen</button><button class="btn zweit" id="abbruch">Abbrechen</button></div></div>`;
+  $("#fertig").onclick = () => { S.lesezeit = Date.now() - S.start; S.i = 0; zeigeFrage(); };
+  $("#abbruch").onclick = home;
+  window.scrollTo(0, 0);
+}
+
+/* ===== Frage zeigen ===== */
+function zeigeFrage(){
+  const t = S.t, q = S.fragen[S.i], n = S.fragen.length;
+  S.antwort = {wahl:null, multi:new Set(), satz:null, wort:null, tf:{}, ordnung:[], zuord:{}, text:""};
+  S.geprueft = false;
+  const prog = S.fragen.map((_,k) => { const l = S.log[k]; return `<i class="${k === S.i ? "jetzt" : l ? (l.punkte ? "gut" : "nein") : ""}"></i>`; }).join("");
+  app.innerHTML = `<div class="lesen fragen">
+      <div class="karte fragebox" id="fragebox">
+        <div class="fortschritt">${prog}</div>
+        <div class="leise" style="font-size:.9rem;font-weight:700">Frage ${S.i+1} von ${n}</div>
+        <div class="frage">${esc(q.frage)}</div>
+        <div id="hinweis"></div>
+        <div id="eingabe"></div>
+        <div id="meldung"></div>
+        <div class="aktionen" id="aktionen"><button class="btn" id="pruefen">Prüfen</button></div>
+      </div>
+      <div class="karte textbox" id="textbox">
+        <div class="art">${esc(t.art)}</div><h2>${esc(t.titel)}</h2><div id="text">${textHtml(t)}</div>
+      </div></div>`;
+  baueEingabe(q);
+  $("#pruefen").onclick = pruefen;
+  window.scrollTo(0, 0);
+}
+const textEl = () => $("#text");
+function modus(m){ const el = textEl(); el.classList.toggle("wahl-satz", m === "satz"); el.classList.toggle("wahl-wort", m === "wort"); }
+function hinweis(txt){ $("#hinweis").innerHTML = txt ? `<p class="hinweis">${txt}</p>` : ""; }
+function fehlt(txt){ const m = $("#meldung"); m.innerHTML = `<p class="fehltext">${esc(txt)}</p>`; const f = $("#fragebox"); f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake"); }
+
+function baueEingabe(q){
+  const E = $("#eingabe"), A = S.antwort;
+  const optKnopf = (o, i, multi) => `<button class="opt ${multi ? "multi" : ""}" data-i="${i}"><span class="k"></span><span>${esc(o)}</span></button>`;
+  if(q.typ === "mc" || q.typ === "beleg"){
+    E.innerHTML = `<div class="opts">${q.optionen.map((o,i) => optKnopf(o,i)).join("")}</div>`;
+    E.querySelectorAll(".opt").forEach(b => b.onclick = () => { if(S.geprueft) return; A.wahl = +b.dataset.i; E.querySelectorAll(".opt").forEach(x => x.classList.toggle("an", x === b)); $("#meldung").innerHTML = "";
+      if(q.typ === "beleg"){ modus("satz"); hinweis(`<b>Und jetzt:</b> Tippe im Text auf den Satz, der deine Antwort zeigt.${innerWidth < 860 ? " Der Text steht weiter unten." : ""}`); } });
+    if(q.typ === "beleg") hinweis("Wähle zuerst eine Antwort. Danach tippst du im Text auf den Satz, wo es steht.");
+  }
+  if(q.typ === "multi"){
+    hinweis("Es können mehrere Antworten richtig sein.");
+    E.innerHTML = `<div class="opts">${q.optionen.map((o,i) => optKnopf(o,i,true)).join("")}</div>`;
+    E.querySelectorAll(".opt").forEach(b => b.onclick = () => { if(S.geprueft) return; const i = +b.dataset.i; A.multi.has(i) ? A.multi.delete(i) : A.multi.add(i); b.classList.toggle("an", A.multi.has(i)); $("#meldung").innerHTML = ""; });
+  }
+  if(q.typ === "tf"){
+    const wahl = q.wahl || ["Stimmt","Stimmt nicht","Steht nicht im Text"];
+    E.innerHTML = `<div class="tf">${q.aussagen.map(([a],i) => `<div class="aus" data-i="${i}"><p>${esc(a)}</p><div class="pills">${wahl.map(w => `<button class="pill" data-w="${esc(w)}">${esc(w)}</button>`).join("")}</div></div>`).join("")}</div>`;
+    E.querySelectorAll(".aus").forEach(z => z.querySelectorAll(".pill").forEach(p => p.onclick = () => { if(S.geprueft) return; A.tf[z.dataset.i] = p.dataset.w; z.querySelectorAll(".pill").forEach(x => x.classList.toggle("an", x === p)); $("#meldung").innerHTML = ""; }));
+  }
+  if(q.typ === "wort"){
+    modus("wort");
+    hinweis(innerWidth < 860 ? "Der Text steht weiter unten. Tippe dort auf das Wort." : "Tippe im Text auf das Wort.");
+    E.innerHTML = `<p style="margin:0">Dein Wort: <b id="wortwahl" class="leise">noch keines</b></p>`;
+  }
+  if(q.typ === "kurz"){
+    E.innerHTML = `<input class="kurz" id="kurz" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Antwort hier schreiben …">`;
+    const f = $("#kurz"); f.oninput = () => { A.text = f.value; $("#meldung").innerHTML = ""; }; f.onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); S.geprueft ? weiter() : pruefen(); } };
+    if(innerWidth >= 860) f.focus();
+  }
+  if(q.typ === "ordnen"){
+    hinweis("Tippe die Kärtchen in der richtigen Reihenfolge an. Tippst du ein gewähltes Kärtchen nochmals an, kommt es zurück.");
+    const zeichne = () => {
+      E.innerHTML = `<div class="ordnen"><div class="gewaehlt-liste">${A.ordnung.map((it,k) => `<div class="g" data-k="${k}"><b>${k+1}</b><span>${esc(it)}</span></div>`).join("")}</div>
+        <div class="opts">${q.pool.filter(it => !A.ordnung.includes(it)).map(it => `<button class="opt" data-it="${esc(it)}"><span class="k"></span><span>${esc(it)}</span></button>`).join("")}</div></div>`;
+      E.querySelectorAll(".opt").forEach(b => b.onclick = () => { if(S.geprueft) return; A.ordnung.push(b.dataset.it); $("#meldung").innerHTML = ""; zeichne(); });
+      E.querySelectorAll(".g").forEach(g => g.onclick = () => { if(S.geprueft) return; A.ordnung.splice(+g.dataset.k, 1); zeichne(); });
+    };
+    zeichne(); S.zeichneOrdnen = zeichne;
+  }
+  if(q.typ === "zuordnen"){
+    const n = S.t.absaetze.length;
+    hinweis("Die Abschnitte sind im Text nummeriert.");
+    E.innerHTML = `<div class="zuord">${q.titel.map(([ti],i) => `<label data-i="${i}"><span>${esc(ti)}</span><select data-i="${i}"><option value="">Abschnitt …</option>${Array.from({length:n},(_,k)=>`<option value="${k+1}">Abschnitt ${k+1}</option>`).join("")}</select></label>`).join("")}</div>`;
+    E.querySelectorAll("select").forEach(s => s.onchange = () => { A.zuord[s.dataset.i] = s.value ? +s.value : null; $("#meldung").innerHTML = ""; });
+  }
+  // Klicks im Text (Satz oder Wort wählen)
+  textEl().onclick = e => {
+    if(S.geprueft) return;
+    if(q.typ === "beleg" && textEl().classList.contains("wahl-satz")){
+      const s = e.target.closest(".satz"); if(!s) return;
+      A.satz = +s.dataset.s; textEl().querySelectorAll(".satz").forEach(x => x.classList.toggle("gewaehlt", x === s)); $("#meldung").innerHTML = "";
+      hinweis("Gut. Jetzt kannst du prüfen.");
+      if(innerWidth < 860) $("#fragebox").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+    if(q.typ === "wort"){
+      const w = e.target.closest(".w"); if(!w) return;
+      A.wort = w.dataset.w; textEl().querySelectorAll(".w").forEach(x => x.classList.toggle("gewaehlt", x === w));
+      const ww = $("#wortwahl"); ww.textContent = "«" + A.wort + "»"; ww.classList.remove("leise"); $("#meldung").innerHTML = "";
+      if(innerWidth < 860) $("#fragebox").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+  };
+}
+
+/* ===== Prüfen ===== */
+const norm = s => String(s||"").normalize("NFC").replace(/ß/g,"ss").toLowerCase().replace(/[«»"„“”'.,;:!?]/g,"").replace(/\s+/g," ").trim();
+const ohneVorwort = s => { let x = s, alt; do { alt = x; x = x.replace(/^(in|im|auf|am|an|aus|bei|beim|der|die|das|den|dem|ein|eine|einen|gleis|um|ca|etwa|ungefähr)\s+/, ""); } while(x !== alt); return x; };
+function abstand(a, b){ const m = a.length, n = b.length, d = Array.from({length:m+1}, (_,i) => [i].concat(Array(n).fill(0))); for(let j=1;j<=n;j++) d[0][j] = j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + (a[i-1]===b[j-1]?0:1)); return d[m][n]; }
+function kurzRichtig(eingabe, loesungen){
+  const a = ohneVorwort(norm(eingabe));
+  return loesungen.some(l => { const b = ohneVorwort(norm(l)); return a === b || (b.length >= 5 && abstand(a, b) <= 1); });
+}
+const belegIdx = q => { const S_ = saetze(S.t); return [].concat(q.beleg||[]).flatMap(b => S_.map((s,i) => s.includes(b) ? i : -1).filter(i => i >= 0)); };
+
+function pruefen(){
+  const q = S.fragen[S.i], A = S.antwort;
+  // Eingabe vollständig?
+  const leer = {
+    mc: () => A.wahl == null && "Wähle zuerst eine Antwort.",
+    beleg: () => A.wahl == null ? "Wähle zuerst eine Antwort." : A.satz == null && "Tippe noch im Text auf den Satz, der deine Antwort zeigt.",
+    multi: () => !A.multi.size && "Wähle mindestens eine Antwort.",
+    tf: () => Object.keys(A.tf).length < q.aussagen.length && "Beurteile zuerst alle Aussagen.",
+    wort: () => !A.wort && "Tippe zuerst im Text auf ein Wort.",
+    kurz: () => !norm(A.text) && "Schreib zuerst eine Antwort.",
+    ordnen: () => A.ordnung.length < q.items.length && "Ordne zuerst alle Kärtchen.",
+    zuordnen: () => q.titel.some((_,i) => !A.zuord[i]) && "Wähle für jede Überschrift einen Abschnitt."
+  }[q.typ]();
+  if(leer) return fehlt(leer);
+  S.geprueft = true; modus("");
+  let ok = false, antwort = "", loesung = "", zusatz = "";
+  const E = $("#eingabe"), B = belegIdx(q);
+  if(q.typ === "mc" || q.typ === "beleg"){
+    const r = q.optionen.indexOf(q.richtig); ok = A.wahl === r; antwort = q.optionen[A.wahl]; loesung = q.richtig;
+    E.querySelector(".opts").classList.add("zu");
+    E.querySelectorAll(".opt").forEach(b => { const i = +b.dataset.i; b.classList.remove("an"); if(i === r) b.classList.add("richtig"); else if(i === A.wahl) b.classList.add("falsch"); });
+    if(q.typ === "beleg"){
+      const satzOk = B.includes(A.satz);
+      antwort += " · Satz " + (A.satz + 1) + (satzOk ? " (richtig)" : " (falsch)");
+      if(ok && !satzOk) zusatz = "Die Antwort stimmt, aber der Satz nicht. Gelb markiert ist der Satz, wo es steht.";
+      ok = ok && satzOk;
+      textEl().querySelectorAll(".satz").forEach(x => x.classList.remove("gewaehlt"));
+    }
+  }
+  if(q.typ === "multi"){
+    const R = new Set(q.richtig.map(r => q.optionen.indexOf(r)));
+    ok = R.size === A.multi.size && [...R].every(i => A.multi.has(i));
+    antwort = [...A.multi].map(i => q.optionen[i]).join(" | "); loesung = q.richtig.join(" | ");
+    E.querySelector(".opts").classList.add("zu");
+    E.querySelectorAll(".opt").forEach(b => { const i = +b.dataset.i; b.classList.remove("an"); if(R.has(i)) b.classList.add(A.multi.has(i) ? "richtig" : "fehlt"); else if(A.multi.has(i)) b.classList.add("falsch"); });
+    if(!ok) zusatz = "Grün umrandet sind alle richtigen Antworten.";
+  }
+  if(q.typ === "tf"){
+    ok = q.aussagen.every(([a,v],i) => A.tf[i] === v);
+    antwort = q.aussagen.map(([a],i) => A.tf[i]).join(" | "); loesung = q.aussagen.map(([a,v]) => v).join(" | ");
+    E.querySelectorAll(".aus").forEach(z => { const i = +z.dataset.i, v = q.aussagen[i][1]; z.classList.add(A.tf[i] === v ? "richtig" : "falsch");
+      z.querySelectorAll(".pill").forEach(p => { if(p.dataset.w === v && A.tf[i] !== v) p.classList.add("loes"); }); });
+    if(!ok){ const f = q.aussagen.filter(([a,v],i) => A.tf[i] !== v).length; zusatz = `${f === 1 ? "Eine Aussage ist" : f + " Aussagen sind"} noch nicht richtig. Die richtige Antwort ist grün umrandet.`; }
+  }
+  if(q.typ === "wort"){
+    ok = q.loesung.some(l => norm(l) === norm(A.wort)); antwort = A.wort; loesung = q.loesung[0];
+    textEl().querySelectorAll(".w").forEach(x => { x.classList.remove("gewaehlt"); if(q.loesung.some(l => norm(l) === norm(x.dataset.w))) x.classList.add("loesung"); });
+    if(!ok) zusatz = `Gesucht war «${q.loesung[0]}» – im Text grün markiert.`;
+  }
+  if(q.typ === "kurz"){
+    ok = kurzRichtig(A.text, q.loesung); antwort = A.text.trim(); loesung = q.loesung[0];
+    $("#kurz").readOnly = true; $("#kurz").style.borderColor = ok ? "var(--gut)" : "var(--falsch)";
+    if(!ok) zusatz = `Richtig wäre: «${q.loesung[0]}».`;
+  }
+  if(q.typ === "ordnen"){
+    ok = A.ordnung.join("|") === q.items.join("|"); antwort = A.ordnung.join(" → "); loesung = q.items.join(" → ");
+    if(!ok) zusatz = `<span>So ist die richtige Reihenfolge:</span><ol style="margin:6px 0 0;padding-left:22px">${q.items.map(it => `<li>${esc(it)}</li>`).join("")}</ol>`;
+    E.querySelectorAll(".g").forEach((g,k) => g.style.background = A.ordnung[k] === q.items[k] ? "var(--gut-bg)" : "var(--falsch-bg)");
+  }
+  if(q.typ === "zuordnen"){
+    ok = q.titel.every(([ti,a],i) => A.zuord[i] === a);
+    antwort = q.titel.map(([ti],i) => ti + "→" + A.zuord[i]).join(" | "); loesung = q.titel.map(([ti,a]) => ti + "→" + a).join(" | ");
+    E.querySelectorAll("label").forEach(l => { const i = +l.dataset.i, a = q.titel[i][1]; l.classList.add(A.zuord[i] === a ? "richtig" : "falsch"); const s = l.querySelector("select"); s.disabled = true;
+      if(A.zuord[i] !== a){ const k = document.createElement("span"); k.style.cssText = "grid-column:1/3;font-weight:400;font-size:.92rem"; k.textContent = "Richtig: Abschnitt " + a; l.append(k); } });
+  }
+  // Belegstelle zeigen
+  B.forEach(i => { const el = textEl().querySelector(`.satz[data-s="${i}"]`); if(el) el.classList.add("beleg", ...(ok ? ["gut"] : [])); });
+  const LOB = ["Richtig!", "Genau!", "Stimmt!", "Super gelesen!"];
+  const belegTxt = B.length && !zusatz.includes("gelb") ? `<p>${ok ? "Im Text markiert: Hier steht es." : "Im Text gelb markiert: Hier steht es."}</p>` : "";
+  $("#meldung").innerHTML = `<div class="meldung ${ok ? "gut" : "nein"}">${ok ? LOB[Math.floor(Math.random()*LOB.length)] : "Nicht ganz."}${zusatz ? `<div class="zus">${zusatz.startsWith("<") ? zusatz : esc(zusatz)}</div>` : ""}${belegTxt}</div>`;
+  S.log[S.i] = {frage: q.typ === "tf" ? q.frage + " " + q.aussagen.map(x=>x[0]).join(" / ") : q.frage, antwort, loesung, punkte: ok ? 1 : 0, thema: q.art, typ: q.typ, t: Date.now()};
+  $("#aktionen").innerHTML = `<button class="btn" id="weiter">${S.i < S.fragen.length - 1 ? "Weiter →" : "Fertig →"}</button>`;
+  $("#weiter").onclick = weiter; $("#weiter").focus({preventScroll:true});
+}
+function weiter(){ S.i++; if(S.i < S.fragen.length) zeigeFrage(); else abschluss(); }
+
+/* ===== Abschluss eines Texts ===== */
+function abschluss(){
+  const t = S.t, r = S.log.filter(l => l.punkte).length, n = S.log.length, q = r / n;
+  // Fähigkeiten zählen
+  P.faehig = P.faehig || {};
+  S.log.forEach(l => { const f = P.faehig[l.thema] || (P.faehig[l.thema] = {n:0, r:0}); f.n++; f.r += l.punkte; });
+  // Ergebnis senden
+  const worte = saetze(t).join(" ").split(/\s+/).filter(Boolean).length;
+  if(window.LP) LP.runde(UEBUNG, (S.sb ? "Standortbestimmung" : "Stufe " + t.stufe) + " · " + t.titel, S.log.map(l => ({frage:l.frage, antwort:l.antwort, loesung:l.loesung, punkte:l.punkte, thema:l.thema, t:l.t})),
+    {art: S.sb ? "sb" : "text", text: t.id, stufe: t.stufe, lesezeit: S.lesezeit, woerter: worte, start: S.start});
+  if(S.sb){
+    P.sb.erg[t.id] = q; speichereP();
+    if(SB_TEXTE.some(x => !(x.id in P.sb.erg))){
+      app.innerHTML = `<div class="karte ergebnis"><h2>Text ${Object.keys(P.sb.erg).length} von ${SB_TEXTE.length} geschafft</h2><div class="gross">${r} / ${n}</div>
+        <p class="leise">Weiter mit dem nächsten Text der Standortbestimmung.</p><div class="aktionen" style="justify-content:center"><button class="btn" id="w">Nächster Text →</button></div></div>`;
+      $("#w").onclick = starteSB; window.scrollTo(0,0); return;
+    }
+    return sbAbschluss();
+  }
+  const x = P.texte[t.id] || (P.texte[t.id] = {best:0, n:0});
+  const vorher = x.best; x.n++; x.last = q; x.best = Math.max(x.best, q); x.t = Date.now();
+  let aufstieg = "";
+  const st = P.stufe, alle = texteDerStufe(st);
+  if(t.stufe === st && alle.every(y => (P.texte[y.id]||{}).best >= BESTANDEN) && texteDerStufe(st+1).length){ P.stufe = st + 1; aufstieg = `🎉 Stufe ${st} geschafft! Ab jetzt liest du auf Stufe ${st+1}: ${STUFEN[st+1]}.`; }
+  speichereP();
+  const titel = q >= BESTANDEN ? (vorher >= BESTANDEN ? "Wieder geschafft!" : "Text geschafft!") : "Noch nicht ganz";
+  const txt = q >= BESTANDEN ? "Sehr gut gelesen." : `Für «geschafft» brauchst du ${Math.round(BESTANDEN*100)} %. Lies den Text später nochmals – die Fragen kommen in anderer Reihenfolge.`;
+  app.innerHTML = `<div class="karte ergebnis"><h2>${titel}</h2><div class="gross">${r} / ${n}</div><p>${esc(txt)}</p>
+    ${aufstieg ? `<div class="meldung gut" style="text-align:left">${esc(aufstieg)}</div>` : ""}
+    <div class="aktionen" style="justify-content:center"><button class="btn" id="w">Zur Übersicht</button></div></div>`;
+  $("#w").onclick = home; window.scrollTo(0,0);
+}
+function sbAbschluss(){
+  const E = P.sb.erg;
+  let stufe = hoechsteStufe;
+  for(const t of SB_TEXTE){ if((E[t.id] || 0) < SB_GRENZE){ stufe = t.stufe; break; } }
+  P.stufe = Math.min(stufe, hoechsteStufe); P.sb.fertig = true; P.sb.datum = new Date().toISOString(); speichereP();
+  app.innerHTML = `<div class="karte ergebnis"><h2>Standortbestimmung fertig</h2><div class="gross">Stufe ${P.stufe}</div>
+    <p><b>${esc(STUFEN[P.stufe])}</b> – ${esc(STUFE_TEXT[P.stufe])}</p>
+    <div class="aktionen" style="justify-content:center"><button class="btn" id="w">Los geht's →</button></div></div>`;
+  $("#w").onclick = home; window.scrollTo(0,0);
+}
+
+/* ===== Los ===== */
+if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
+start();
+// Andere Glückszahl gewählt (Knopf oben rechts): Lernstand dieser Zahl laden
+setInterval(() => { if(!S && window.LP && LP.glueckszahl() && LP.glueckszahl() !== gz) start(); }, 1500);
+</script>
+</body>
+</html>
