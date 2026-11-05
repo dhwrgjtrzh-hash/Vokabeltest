@@ -126,6 +126,7 @@ details.mehr{margin-top:18px}details.mehr summary{cursor:pointer;color:var(--lei
 <script src="lesen-texte.js"></script>
 <script>
 const UEBUNG = "Lesen";
+const VORSCHAU = /[?&]vorschau/.test(location.search);   // zum Ausprobieren: keine Glückszahl, nichts wird gesendet
 const STUFEN = {1:"Genau lesen", 2:"Informationen verbinden", 3:"Zwischen den Zeilen lesen", 4:"Den ganzen Text verstehen", 5:"Kritisch lesen"};
 const STUFE_TEXT = {
   1:"Kurze Texte. Die Antworten stehen genau so im Text – lies genau nach.",
@@ -155,12 +156,13 @@ function ladeP(){ try{ P = JSON.parse(store.get(pkey()) || "null"); }catch(e){ P
 let sendeTimer = null;
 function speichereP(){
   P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt);
+  if(VORSCHAU) return;
   clearTimeout(sendeTimer); sendeTimer = setTimeout(() => post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:gz, t:P.t, stand:txt}).catch(()=>{}), 1500);
 }
 const post = body => fetch(window.LP.endpoint, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body)}).then(r=>r.json());
 const geholt = {};
 function holeStand(weiter){
-  if(geholt[gz] || !window.LP || !window.LP.endpoint){ weiter(); return; }
+  if(VORSCHAU || geholt[gz] || !window.LP || !window.LP.endpoint){ weiter(); return; }
   geholt[gz] = true;
   let fertig = false; const w = () => { if(!fertig){ fertig = true; weiter(); } };
   setTimeout(w, 4000);
@@ -175,7 +177,7 @@ function holeStand(weiter){
 
 /* ===== Start ===== */
 function start(){
-  const g = window.LP ? window.LP.glueckszahl() : "";
+  const g = VORSCHAU ? "vorschau" : window.LP ? window.LP.glueckszahl() : "";
   if(!g){ app.innerHTML = `<div class="karte"><h2>Gib zuerst deine Glückszahl ein.</h2><p class="leise">Tippe oben rechts auf den Knopf, falls das Fenster nicht erscheint.</p></div>`; setTimeout(start, 800); return; }
   if(g !== gz){ gz = g; P = null; }
   holeStand(home);
@@ -491,7 +493,7 @@ function sbAbschluss(){
 if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
 start();
 // Andere Glückszahl gewählt (Knopf oben rechts): Lernstand dieser Zahl laden
-setInterval(() => { if(!S && window.LP && LP.glueckszahl() && LP.glueckszahl() !== gz) start(); }, 1500);
+if(!VORSCHAU) setInterval(() => { if(!S && window.LP && LP.glueckszahl() && LP.glueckszahl() !== gz) start(); }, 1500);
 </script>
 </body>
 </html>
