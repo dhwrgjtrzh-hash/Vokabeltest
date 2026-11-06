@@ -89,6 +89,12 @@ function doPost(e) {
   if (d.typ === "stand-speichern" && String(d.uebung) === "Lernwörter" && !lernwoerterErlaubt_(d))
     return json_({ ok: false, grund: "code", fehler: "Der Code stimmt nicht." });
 
+  /* Übersicht für die Lernwörter-Seite: wie die Kinder an Lernwörtern und Fehlerkiste arbeiten (nur mit Code) */
+  if (d.typ === "lernwoerter-uebersicht") {
+    if (!lernwoerterErlaubt_(d)) return json_({ ok: false, grund: "code", fehler: "Der Code stimmt nicht." });
+    try { return json_(lwUebersicht_()); } catch (x) { return json_({ ok: false, fehler: String(x) }); }
+  }
+
   /* Lernstand speichern und laden (pro Glückszahl) */
   if (d.typ === "stand-laden" || d.typ === "stand-speichern") {
     try { return json_(stand_(d, SpreadsheetApp.getActiveSpreadsheet())); } catch (x) { return json_({ ok: false, fehler: String(x) }); }
@@ -269,4 +275,28 @@ function lernwoerterErlaubt_(d) {
   if (s && typeof zugang_ === "function" && zugang_(s, false) === "ok") return true;
   const code = PropertiesService.getScriptProperties().getProperty("LERNWOERTER_CODE");
   return !!code && String(d.code || "").trim().toLowerCase() === String(code).trim().toLowerCase();
+}
+
+/* Pro Glückszahl: Lernwörter-Liste, Fehlerkiste und Stufe aus dem Lernstand sowie die Rechtschreib-Runden
+ * der letzten 60 Tage (nur Antworten auf Lernwörter und Wörter aus der Fehlerkiste). Keine Namen – nur Glückszahlen. */
+function lwUebersicht_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet(), kinder = {};
+  const k = function (g) { return kinder[g] || (kinder[g] = { lernwoerter: null, stand: null, runden: [] }); };
+  const sh = ss.getSheetByName("Lernstand");
+  if (sh && sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues().forEach(function (z) {
+    const u = String(z[0]), g = String(z[1]).replace(/^'/, "");
+    try {
+      if (u === "Lernwörter") { const L = JSON.parse(String(z[3] || "{}")); k(g).lernwoerter = { t: L.t || Number(z[2]) || 0, woerter: L.woerter || [] }; }
+      else if (u === "Rechtschreibung") { const P = JSON.parse(String(z[3] || "{}"));
+        k(g).stand = { t: P.t || Number(z[2]) || 0, stufe: P.stufe || 0, etappe: P.etappe || 0, kiste: P.kiste || {}, lw: Object.keys(P.lw || {}) }; }
+    } catch (x) {}
+  });
+  const seit = Date.now() - 60 * 864e5;
+  daten_("Rechtschreibung").runden.forEach(function (r) {
+    const t = Date.parse(r.datum || r.zeit); if (!(t >= seit)) return;
+    const a = (r.aufgaben || []).filter(function (x) { return x && x.w && (x.lw || x.q === "K"); })
+      .map(function (x) { return { w: x.w, a: x.a, ok: x.ok ? 1 : 0, t: x.t || t, lw: x.lw ? 1 : 0 }; });
+    k(String(r.glueckszahl)).runden.push({ zeit: t, start: Number(r.start) || 0, art: r.art || "", punkte: Number(r.punkte) || 0, max: Number(r.max) || 0, antworten: a });
+  });
+  return { ok: true, kinder: kinder };
 }

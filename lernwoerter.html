@@ -56,13 +56,63 @@ textarea{width:100%;min-height:110px;margin-top:8px;resize:vertical;font-size:14
 dialog{border:1px solid var(--linie);border-radius:16px;background:var(--karte);color:var(--ink);padding:18px;max-width:440px;width:calc(100% - 32px)}
 dialog::backdrop{background:rgba(10,15,30,.45)}
 .namen{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;max-height:55vh;overflow:auto;margin:10px 0}
+/* Reiter */
+.tabs{display:flex;gap:4px;margin-top:16px;border-bottom:1.5px solid var(--linie)}
+.tabs button{border:0;background:none;padding:10px 14px;font:inherit;font-weight:700;color:var(--leise);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1.5px}
+.tabs button[aria-selected="true"]{color:var(--akzent);border-bottom-color:var(--akzent)}
+/* Übersicht */
+:root{--mittel:#a35f00;--grau:#c9d1df}
+@media (prefers-color-scheme:dark){:root{--mittel:#f0b44c;--grau:#3d4964}}
+.balken{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--grau)}
+.balken i{display:block;height:100%}
+.b-sitzt{background:var(--gut)}.b-arbeit{background:var(--mittel)}.b-neu{background:var(--grau)}
+.legende{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--leise);margin:12px 0 4px}
+.legende i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.ue-kopf,.kind>summary{display:grid;grid-template-columns:minmax(120px,1.3fr) minmax(150px,2.2fr) 110px 120px 92px;gap:14px;align-items:center}
+.ue-kopf{font-size:13px;font-weight:700;color:var(--leise);padding:14px 10px 6px}
+.kind{border-top:1px solid var(--linie)}
+.kind>summary{list-style:none;cursor:pointer;padding:10px;border-radius:10px;color:var(--ink)}
+.k-name b{color:var(--ink);font-size:16px}
+.kind>summary::-webkit-details-marker{display:none}
+.kind>summary:hover{background:var(--bg)}
+.kind[open]>summary{background:var(--akzent-soft)}
+.k-name b::before{content:"▸ ";color:var(--leise)}
+.kind[open] .k-name b::before{content:"▾ "}
+.lwtxt{font-size:13px;color:var(--leise);margin-top:3px}
+.k-zul.alt{color:var(--warn);font-weight:700}
+.mobil{display:none}
+.k-detail{padding:4px 10px 18px}
+.k-detail h3{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-weight:600;font-size:17px;margin:18px 0 6px}
+.k-detail .kurz{margin:8px 0 0;font-size:14px}
+.wl,.sl{list-style:none;margin:0;padding:0}
+.wl li{display:grid;grid-template-columns:24px 168px minmax(0,1fr);gap:2px 10px;padding:7px 0;border-top:1px solid var(--linie);align-items:baseline}
+.wl .nr{color:var(--leise);font-size:13px;text-align:right}
+.wl .satz{color:var(--leise);font-size:13.5px}
+.wl .fx{font-size:13.5px;color:var(--falsch)}
+.pill{display:inline-block;font-size:12.5px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.sitzt{color:var(--gut);background:color-mix(in srgb,var(--gut) 14%,transparent)}
+.pill.eins,.pill.falsch,.pill.offen{color:var(--mittel);background:color-mix(in srgb,var(--mittel) 14%,transparent)}
+.pill.neu{color:var(--leise);background:color-mix(in srgb,var(--leise) 14%,transparent)}
+.sl li{display:grid;grid-template-columns:150px 190px minmax(0,1fr);gap:2px 10px;padding:6px 0;border-top:1px solid var(--linie);font-size:14px}
+@media (max-width:640px){
+  .ue-kopf{display:none}
+  .kind>summary{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name zul" "lw lw" "kiste tage";gap:6px 10px}
+  .k-name{grid-area:name}.k-zul{grid-area:zul;font-size:14px;text-align:right}.k-lw{grid-area:lw}.k-kiste{grid-area:kiste;font-size:14px}.k-tage{grid-area:tage;font-size:14px;text-align:right}
+  .mobil{display:inline}
+  .wl li{grid-template-columns:22px minmax(0,1fr)}
+  .wl li>:nth-child(3){grid-column:2/3}
+  .sl li{grid-template-columns:minmax(0,1fr) auto}
+  .sl li>:nth-child(3){grid-column:1/3;color:var(--leise)}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Lernwörter</h1>
-  <p class="leise" style="margin:0">Pro Kind eine Liste mit Wort und Satz. Die Wörter kommen in die Fehlerkiste des Kindes im Rechtschreibtrainer – sobald es den Trainer das nächste Mal öffnet.</p>
+  <p class="leise" style="margin:0">Pro Kind eine Liste mit Wort und Satz. Die Wörter kommen in die Fehlerkiste des Kindes im Rechtschreibtrainer – sobald es den Trainer das nächste Mal öffnet. Unter «Übersicht» siehst du, wie die Kinder damit arbeiten.</p>
+  <nav class="tabs" id="tabs" hidden><button data-tab="liste" aria-selected="true">Listen bearbeiten</button><button data-tab="ueb" aria-selected="false">Übersicht</button></nav>
   <div id="app"></div>
+  <div id="ueb" hidden></div>
 </div>
 <div class="leiste" id="leiste" hidden><div class="in"><span id="status" class="leise"></span><span class="sp"></span><button class="btn primary" id="speichern" disabled>Speichern</button></div></div>
 <dialog id="dlg"></dialog>
@@ -165,7 +215,8 @@ function lwParse(text){
 
 /* ---------- 1) Code ---------- */
 function codeSeite(meldung){
-  $("#leiste").hidden = true;
+  $("#leiste").hidden = true; $("#tabs").hidden = true; $("#ueb").hidden = true; $("#app").hidden = false;
+  UEB = null; $("#ueb").innerHTML = "";
   $("#app").innerHTML = `<div class="karte">
     <label for="code">Code</label>
     <p class="leise" style="margin:2px 0 10px">Den Code bekommst du von der Klassenlehrperson. Er wird auf diesem Gerät gespeichert, du musst ihn nur einmal eingeben.</p>
@@ -176,7 +227,7 @@ function codeSeite(meldung){
     $("#weiter").disabled = true; $("#weiter").textContent = "Prüfe …";
     try {
       const r = await post({typ:"lernwoerter-code", code:c});
-      if (r && r.ok) { CODE = c; store.set("lw.code", c); liste(); }
+      if (r && r.ok) { CODE = c; store.set("lw.code", c); start(); }
       else codeSeite(r && r.typ === undefined && r.fehler === "Unbekannter Typ" ? "Die Seite ist noch nicht freigeschaltet (Google-Skript)." : "Der Code stimmt nicht.");
     } catch(e){ codeSeite("Keine Verbindung – bitte nochmals versuchen."); }
   };
@@ -324,7 +375,158 @@ function namenDialog(){
     const sel = $("#gz"); if (sel) { const v = sel.value; sel.innerHTML = GZ.map(g=>`<option value="${g}">${esc(anzeige(g))}${LISTEN[g] ? `  ✓ ${LISTEN[g].woerter.length}` : ""}</option>`).join(""); sel.value = v; status(); } };
 }
 
-if (CODE) liste(); else codeSeite();
+/* ---------- Reiter ---------- */
+let TAB = "liste";
+function start(){
+  $("#tabs").hidden = false;
+  liste();
+  zeigeTab(location.hash === "#uebersicht" ? "ueb" : "liste");
+}
+function zeigeTab(t){
+  TAB = t;
+  $("#tabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === t)));
+  $("#app").hidden = t !== "liste"; $("#ueb").hidden = t !== "ueb"; $("#leiste").hidden = t !== "liste";
+  try { history.replaceState(null, "", t === "ueb" ? "#uebersicht" : location.pathname + location.search); } catch(e){}
+  if (t === "ueb") uebersicht();
+}
+$("#tabs").querySelectorAll("button").forEach(b => b.onclick = () => zeigeTab(b.dataset.tab));
+
+/* ---------- 3) Übersicht: Wie arbeiten die Kinder an den Lernwörtern und an der Fehlerkiste? ----------
+   Ein Lernwort ist im Rechtschreibtrainer ein Eintrag in der Fehlerkiste. Es «sitzt», wenn es die Fehlerkiste verlassen hat
+   (zweimal richtig). Steht es noch nicht im Lernstand des Kindes, hat das Kind den Trainer seit dem Speichern nicht mehr geöffnet. */
+const TAG = 864e5, ARTNAME = {etappe:"Etappe", kiste:"Fehlerkiste", regel:"Regeltraining", sb:"Standortbestimmung"};
+const SHY = new RegExp(String.fromCharCode(0xAD), "g");
+const normT = s => String(s==null?"":s).replace(SHY, "").normalize("NFC").replace(/ß/g,"ss").replace(/ẞ/g,"SS").replace(/[‘’`´]/g,"'").replace(/\s+/g," ").trim();   // wie norm() im Trainer
+const PILL = {sitzt:"✓ sitzt", eins:"1× richtig", falsch:"noch nicht richtig", offen:"noch nicht geübt", neu:"noch nicht im Trainer"};
+const PILL_TITEL = {sitzt:"Zweimal richtig geschrieben – nicht mehr in der Fehlerkiste.", eins:"Einmal richtig – noch einmal richtig, dann ist es draussen.",
+  falsch:"In der Fehlerkiste, bisher nicht richtig geschrieben.", offen:"In der Fehlerkiste, noch nicht geübt.",
+  neu:"Kommt in die Fehlerkiste, sobald das Kind den Rechtschreibtrainer das nächste Mal öffnet."};
+let UEB = null, UEB_LAEDT = null;
+const OFFEN_K = new Set();
+
+async function uebersicht(neu){
+  const box = $("#ueb");
+  if (UEB && !neu) return zeichneUeb();
+  box.innerHTML = `<div class="karte leise">⏳ Die Übersicht wird geladen …</div>`;
+  try {
+    if (!UEB_LAEDT) UEB_LAEDT = post({typ:"lernwoerter-uebersicht", code:CODE}).finally(() => { UEB_LAEDT = null; });
+    const r = await UEB_LAEDT;
+    if (r && r.grund === "code") { store.del("lw.code"); CODE = ""; return codeSeite("Der Code stimmt nicht mehr – bitte neu eingeben."); }
+    if (!r || !r.ok) throw new Error(r && r.fehler === "Unbekannter Typ" ? "Die Übersicht ist im Google-Skript noch nicht freigeschaltet." : (r && r.fehler) || "Keine Antwort");
+    UEB = {kinder: r.kinder || {}, t: Date.now()};
+    if (TAB === "ueb") zeichneUeb();
+  } catch(e){
+    box.innerHTML = `<div class="karte"><p class="fehler" style="margin-top:0">Die Übersicht konnte nicht geladen werden: ${esc(e.message)}</p><button class="btn" id="ueNochmals">Nochmals versuchen</button></div>`;
+    $("#ueNochmals").onclick = () => uebersicht(true);
+  }
+}
+
+function falschGeschrieben(A){ return [...new Set(A.filter(a => !a.ok && a.a).map(a => String(a.a).slice(0, 40)))].slice(0, 4); }
+
+function kindModell(g){
+  const K = (UEB && UEB.kinder[g]) || {}, st = K.stand || null, kiste = (st && st.kiste) || {}, lwSet = new Set((st && st.lw) || []);
+  const L = g in LISTEN ? LISTEN[g] : K.lernwoerter;   // nach dem Speichern gilt die neue Liste sofort
+  // Antworten (doppelt gesendete nur einmal) nach Wort; Teil-Sendungen einer Übung über ihren Start zusammenfassen
+  const doppelt = new Set(), antw = {}, sitz = {};
+  (K.runden || []).forEach(r => {
+    const id = r.start || r.zeit;
+    const s = sitz[id] || (sitz[id] = {start: r.start || 0, ende: 0, art: r.art, lw: [0, 0], ki: [0, 0]});
+    s.ende = Math.max(s.ende, r.zeit || 0);
+    (r.antworten || []).forEach(a => {
+      const k = a.w + "|" + a.t + "|" + a.a + "|" + a.ok; if (doppelt.has(k)) return; doppelt.add(k);
+      (antw[a.w] = antw[a.w] || []).push(a);
+      const z = a.lw ? s.lw : s.ki; z[1]++; if (a.ok) z[0]++;
+    });
+  });
+  Object.values(antw).forEach(A => A.sort((a, b) => b.t - a.t));
+  const eintraege = Object.entries(kiste).map(([key, v]) => Object.assign({key}, v)), benutzt = new Set();
+  const frei = v => !benutzt.has(v.key);
+  const woerter = ((L && L.woerter) || []).map((e, i) => {
+    const w = normT(e.w).replace(/[.!?,;:]+$/, ""), x = normT(e.x), lk = w + "¦" + x;
+    const da = lwSet.has(lk) || lwSet.has(w);
+    let k = eintraege.find(v => v.lk === lk && frei(v)) || eintraege.find(v => !v.lk && v.lw && v.w === w && frei(v));
+    if (!k && da) k = eintraege.find(v => !v.lk && v.w === w && frei(v));   // sass schon, wurde später wieder falsch geschrieben
+    if (k) benutzt.add(k.key);
+    const A = antw[w] || [];
+    const s = !da ? "neu" : !k ? "sitzt" : (k.n || 0) >= 1 ? "eins" : A.length ? "falsch" : "offen";
+    return {nr: i + 1, w: e.w, x: e.x, s, falsch: falschGeschrieben(A)};
+  });
+  // übrige Fehlerkiste: Wörter aus den eigenen Fehlern (Einträge alter Listen verschwinden beim nächsten Öffnen)
+  const rest = eintraege.filter(v => frei(v) && !v.lk).sort((a, b) => (b.t || 0) - (a.t || 0))
+    .map(v => ({w: v.w, s: (v.n || 0) >= 1 ? "eins" : "falsch", falsch: falschGeschrieben(antw[v.w] || [])}));
+  const sitzungen = Object.values(sitz).sort((a, b) => b.ende - a.ende);
+  const seit = Date.now() - 14 * TAG, tage = new Set(), z14 = {lw: [0, 0], ki: [0, 0]};
+  sitzungen.forEach(s => { if (s.ende >= seit) { tage.add(new Date(s.ende).toDateString()); ["lw", "ki"].forEach(a => { z14[a][0] += s[a][0]; z14[a][1] += s[a][1]; }); } });
+  const c = {sitzt: 0, arbeit: 0, neu: 0};
+  woerter.forEach(w => c[w.s === "sitzt" ? "sitzt" : w.s === "neu" ? "neu" : "arbeit"]++);
+  return {g, woerter, rest, c, sitzungen, kisteN: Object.keys(kiste).length, tage14: tage.size, z14,
+    zuletzt: sitzungen.length ? sitzungen[0].ende : 0, daten: !!(st || woerter.length || sitzungen.length)};
+}
+
+function wann(t){
+  if (!t) return "–";
+  const heute = new Date(); heute.setHours(0, 0, 0, 0);
+  const d = new Date(t); d.setHours(0, 0, 0, 0);
+  const n = Math.round((heute - d) / TAG);
+  return n <= 0 ? "heute" : n === 1 ? "gestern" : n < 7 ? `vor ${n} Tagen` : new Date(t).toLocaleDateString("de-CH", {day: "numeric", month: "numeric"});
+}
+const datumZeit = t => new Date(t).toLocaleDateString("de-CH", {weekday: "short", day: "numeric", month: "numeric"}) + ", " + new Date(t).toLocaleTimeString("de-CH", {hour: "2-digit", minute: "2-digit"});
+const balken = c => { const n = c.sitzt + c.arbeit + c.neu; return `<div class="balken" title="${c.sitzt} sitzen · ${c.arbeit} in der Fehlerkiste · ${c.neu} noch nicht im Trainer">`
+  + ["sitzt", "arbeit", "neu"].filter(k => c[k]).map(k => `<i class="b-${k}" style="width:${c[k] / n * 100}%"></i>`).join("") + `</div>`; };
+const anteil = (z, wort) => z[1] ? `${wort} ${z[0]} von ${z[1]} richtig` : "";
+
+function zeichneUeb(){
+  const box = $("#ueb"), M = GZ.map(kindModell), mit = M.filter(m => m.daten), ohne = M.filter(m => !m.daten).map(m => m.g);
+  const C = mit.reduce((s, m) => ({sitzt: s.sitzt + m.c.sitzt, arbeit: s.arbeit + m.c.arbeit, neu: s.neu + m.c.neu}), {sitzt: 0, arbeit: 0, neu: 0});
+  const total = C.sitzt + C.arbeit + C.neu;
+  const zeile = m => { const n = m.woerter.length, alt = n && (!m.zuletzt || m.zuletzt < Date.now() - 7 * TAG);
+    return `<details class="kind" data-g="${m.g}"${OFFEN_K.has(m.g) ? " open" : ""}><summary>
+      <span class="k-name"><b>${esc(anzeige(m.g))}</b></span>
+      <span class="k-lw">${n ? balken(m.c) + `<div class="lwtxt">${m.c.sitzt} von ${n} ${n === 1 ? "Lernwort sitzt" : "Lernwörtern sitzen"}</div>` : `<span class="leise">keine Lernwörter</span>`}</span>
+      <span class="k-kiste">📦 ${m.kisteN} <span class="leise">${m.kisteN === 1 ? "Wort" : "Wörter"}</span></span>
+      <span class="k-tage">${m.tage14 ? `${m.tage14} ${m.tage14 === 1 ? "Tag" : "Tage"}<span class="mobil leise"> geübt (14 Tage)</span>` : `<span class="leise">nicht geübt<span class="mobil"> (14 Tage)</span></span>`}</span>
+      <span class="k-zul${alt ? " alt" : ""}">${m.zuletzt ? `<span class="mobil leise">zuletzt </span>${wann(m.zuletzt)}` : "–"}</span>
+    </summary><div class="k-detail">${detail(m)}</div></details>`; };
+  box.innerHTML = `<div class="karte">
+      <div class="zeile"><div style="flex:1;min-width:220px"><b>Klasse:</b> ${total ? `${C.sitzt} von ${total} Lernwörtern sitzen · ${C.arbeit} in der Fehlerkiste${C.neu ? ` · ${C.neu} noch nicht im Trainer` : ""}` : "noch keine Lernwörter"}
+        <div class="leise">Stand ${datumZeit(UEB.t)} · Übungen der letzten 60 Tage</div></div>
+        <button class="btn" id="ueNeu">↻ Aktualisieren</button></div>
+      <div class="legende"><span><i class="b-sitzt"></i>sitzt (zweimal richtig)</span><span><i class="b-arbeit"></i>in der Fehlerkiste</span><span><i class="b-neu"></i>noch nicht im Trainer</span></div>
+      <div class="ue-kopf"><span>Kind</span><span>Lernwörter</span><span>Fehlerkiste</span><span>Geübt (14 Tage)</span><span>Zuletzt</span></div>
+      ${mit.map(zeile).join("") || `<p class="leise">Noch keine Daten.</p>`}
+      ${ohne.length && mit.length ? `<p class="leise" style="margin-bottom:0">Noch keine Daten: Glückszahl ${ohne.map(g => esc(NAMEN[g] ? `${g} (${NAMEN[g]})` : g)).join(", ")}</p>` : ""}
+    </div>
+    <p class="leise" style="margin-top:12px">Ein Lernwort <b>sitzt</b>, wenn das Kind es in der Fehlerkiste zweimal richtig geschrieben hat – dann verlässt es die Fehlerkiste. In der Fehlerkiste sind auch Wörter, die das Kind beim Üben falsch geschrieben hat. Neue oder geänderte Lernwörter kommen hinein, sobald das Kind den Rechtschreibtrainer das nächste Mal öffnet. Tippe auf ein Kind für die Einzelheiten.</p>`;
+  $("#ueNeu").onclick = () => uebersicht(true);
+  box.querySelectorAll("details.kind").forEach(d => d.ontoggle = () => { d.open ? OFFEN_K.add(d.dataset.g) : OFFEN_K.delete(d.dataset.g); });
+  box.querySelectorAll("[data-bearbeiten]").forEach(b => b.onclick = () => bearbeite(b.dataset.bearbeiten));
+}
+
+function detail(m){
+  const pill = s => `<span class="pill ${s}" title="${esc(PILL_TITEL[s])}">${PILL[s]}</span>`;
+  const fx = f => f.length ? `<div class="fx">falsch geschrieben: ${f.map(esc).join(" · ")}</div>` : "";
+  let h = `<p class="kurz">${m.tage14 ? `In den letzten 14 Tagen an <b>${m.tage14} ${m.tage14 === 1 ? "Tag" : "Tagen"}</b> geübt` : "In den letzten 14 Tagen nicht geübt"}${
+    [anteil(m.z14.lw, "Lernwörter:"), anteil(m.z14.ki, "übrige Fehlerkiste:")].filter(Boolean).map(t => " · " + t).join("")}.</p>`;
+  h += `<h3>Lernwörter</h3>` + (m.woerter.length
+    ? `<ul class="wl">${m.woerter.map(w => `<li><span class="nr">${w.nr}</span><span>${pill(w.s)}</span><span><b>${esc(w.w)}</b>${w.x ? ` <span class="satz">${esc(w.x)}</span>` : ""}${fx(w.falsch)}</span></li>`).join("")}</ul>`
+    : `<p class="leise" style="margin:0">Für dieses Kind gibt es noch keine Lernwörter.</p>`);
+  h += `<h3>Weitere Wörter in der Fehlerkiste <span class="leise">(${m.rest.length})</span></h3>` + (m.rest.length
+    ? `<p class="leise" style="margin:0 0 4px;font-size:14px">Wörter, die das Kind beim Üben falsch geschrieben hat.</p><ul class="wl">${m.rest.map((w, i) => `<li><span class="nr">${i + 1}</span><span>${pill(w.s)}</span><span><b>${esc(w.w)}</b>${fx(w.falsch)}</span></li>`).join("")}</ul>`
+    : `<p class="leise" style="margin:0">Keine.</p>`);
+  const dauer = s => { const min = (s.ende - s.start) / 6e4; return s.start && min > 0.5 && min < 180 ? ` · ${Math.max(1, Math.round(min))} Min.` : ""; };
+  h += `<h3>Letzte Übungen im Rechtschreibtrainer</h3>` + (m.sitzungen.length
+    ? `<ul class="sl">${m.sitzungen.slice(0, 8).map(s => `<li><span>${datumZeit(s.ende)}</span><span>${esc(ARTNAME[s.art] || "Übung")}${dauer(s)}</span><span>${[anteil(s.lw, "Lernwörter"), anteil(s.ki, "Fehlerkiste")].filter(Boolean).join(" · ") || `<span class="leise">ohne Lernwörter / Fehlerkiste</span>`}</span></li>`).join("")}</ul>`
+    : `<p class="leise" style="margin:0">In den letzten 60 Tagen keine Übungen.</p>`);
+  return h + `<div class="zeile" style="margin-top:14px"><button class="btn" data-bearbeiten="${m.g}">✎ Lernwörter-Liste bearbeiten</button></div>`;
+}
+
+function bearbeite(g){
+  zeigeTab("liste");
+  if (AKTUELL !== g) { if (geaendert() && !confirm("Die Änderungen sind noch nicht gespeichert. Trotzdem wechseln?")) return; zeigeKind(g); }
+  window.scrollTo(0, 0);
+}
+
+if (CODE) start(); else codeSeite();
 </script>
 </body>
 </html>
