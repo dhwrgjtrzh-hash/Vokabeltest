@@ -269,6 +269,9 @@ body.eingebettet header{display:none}
 .gzfrage .gzfair{background:#fff4d6;color:#5c4300;border-radius:14px;padding:12px 14px;margin:14px auto;max-width:460px;text-align:left;font-size:.98rem;line-height:1.4}
 .gzfrage .gzknoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 @media (prefers-color-scheme: dark){.gzfrage .gzfair{background:#3a3014;color:#f3dfa2}.gzfehler{color:#ff8a80}}
+/* Während der Stand geladen wird: Startseite sichtbar, Knöpfe kurz gesperrt */
+.card.laedt button:not(#gzneu):not(#ton2){pointer-events:none;opacity:.5}
+.laedt-hinweis{font-size:14px;font-weight:700;color:var(--muted,#5f6b85);margin:-4px 0 10px}
 </style>
 <link rel="stylesheet" href="lernportal.css">
 </head>
@@ -1337,13 +1340,14 @@ const lwN = () => Object.values(P.kiste).filter(v=>v.lw).length;
    Die Lehrperson trägt sie in der Lernportal-Station ein – gespeichert wird nur Glückszahl + Wörter (Übung «Lernwörter»).
    Jedes Lernwort kommt einmal in die Fehlerkiste; ist es zweimal richtig geschrieben, ist es draussen und kommt nicht wieder. */
 const LW_UEBUNG = "Lernwörter", lwGeholt = {};
+/* Holt die Lernwörter und gibt sie an «weiter» (übernommen werden sie erst, wenn auch der Lernstand geladen ist) */
 function holeLernwoerter(g, weiter){
   lwGeholt[g] = true;
-  if(!ENDPOINT){ weiter(); return; }
-  let fertig = false; const w = ()=>{ if(!fertig){ fertig = true; weiter(); } };
+  if(!ENDPOINT){ weiter(null); return; }
+  let fertig = false, text = null; const w = ()=>{ if(!fertig){ fertig = true; weiter(text); } };
   setTimeout(w, 4000);
   fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({typ:"stand-laden", uebung:LW_UEBUNG, glueckszahl:g})})
-    .then(r=>r.json()).then(d=>{ if(!fertig && d && d.ok && d.stand) lernwoerterUebernehmen(d.stand); }).catch(()=>{}).finally(w);
+    .then(r=>r.json()).then(d=>{ if(d && d.ok && d.stand) text = d.stand; }).catch(()=>{}).finally(w);
 }
 function lernwoerterUebernehmen(text){
   let L; try{ L = JSON.parse(text); }catch(e){ return 0; }
@@ -1438,9 +1442,26 @@ function starteSB(){
 
 /* ===== Ansicht: Start ===== */
 const app = $("app"), pill = $("pill");
+/* Lernstand und Lernwörter vom Server holen – beide gleichzeitig und ohne die Startseite zu blockieren:
+   Die Startseite erscheint sofort mit dem Stand auf diesem Gerät; die Knöpfe sind kurz gesperrt (höchstens 4 Sekunden),
+   danach wird die Startseite mit dem aktuellen Stand neu gezeichnet. */
+const laedt = new Set();
+function ladeVomServer(){
+  if(!gz || laedt.has(gz)) return;
+  const brauchtStand = STAND.brauche("Rechtschreibung", gz), brauchtLw = !lwGeholt[gz];
+  if(!brauchtStand && !brauchtLw) return;
+  const fuer = gz; laedt.add(fuer);
+  let offen = (brauchtStand?1:0) + (brauchtLw?1:0), lwText = null;
+  // Erst wenn beides da ist: zuerst gilt der Lernstand, dann kommen die Lernwörter dazu
+  // (sonst würde ein älterer Stand auf diesem Gerät den neueren vom Server überschreiben)
+  const fertig = () => { if(--offen > 0) return; laedt.delete(fuer);
+    if(lwText && fuer === gz) lernwoerterUebernehmen(lwText);
+    if(fuer === gz && app.querySelector("[data-start]")) home(); };
+  if(brauchtStand) STAND.holen("Rechtschreibung", gz, pkey(), fertig);
+  if(brauchtLw) holeLernwoerter(gz, t => { lwText = t; fertig(); });
+}
 function home(){
-  if(gz && STAND.brauche("Rechtschreibung", gz)) return STAND.holen("Rechtschreibung", gz, pkey(), home);
-  if(gz && !lwGeholt[gz]) return holeLernwoerter(gz, home);
+  ladeVomServer();
   $("wrap").classList.remove("wide");
   stille();
   pill.hidden = true; pill.textContent = "Nr. "+gz;
@@ -1482,7 +1503,9 @@ function home(){
       </div>
       ${meinStand()}`;
   }
-  app.innerHTML = `<div class="card">
+  const wartet = laedt.has(gz);
+  app.innerHTML = `<div class="card${wartet?" laedt":""}" data-start>
+    ${wartet?`<div class="laedt-hinweis" role="status">⏳ Dein Stand wird geladen …</div>`:""}
     <div class="who">
       <span class="gzchip">Glückszahl <b>${esc(gz)}</b></span>
       <button class="btn ghost small" id="ton2">🔊 Ton testen</button>
