@@ -1381,10 +1381,20 @@ function lernwoerterUebernehmen(text){
 
 /* ===== Übungsrunde ===== */
 let S = null;
-const skey = () => "rs.s."+gz;
-function speichereS(){ if(S && gz) store.set(skey(), JSON.stringify(S)); }
-function ladeS(){ try{ return JSON.parse(store.get(skey())||"null"); }catch(e){ return null; } }
-function loescheS(){ store.del(skey()); }
+/* Angefangene Runden: pro Art ein eigener Speicherplatz (Etappe, Fehlerkiste, Regeltraining, Standortbestimmung).
+   So kann ein Kind eine angefangene Fehlerkiste liegen lassen und trotzdem an der Etappe weiterarbeiten. */
+const ARTEN = ["etappe","kiste","regel","sb"];
+const skey = art => "rs.s."+gz+"."+art;
+function altesFormat(){   // früher gab es nur einen Platz «rs.s.<Glückszahl>»
+  const alt = store.get("rs.s."+gz); if(!alt) return;
+  try{ const x = JSON.parse(alt); if(x && ARTEN.includes(x.art) && !store.get(skey(x.art))) store.set(skey(x.art), alt); }catch(e){}
+  store.del("rs.s."+gz);
+}
+function speichereS(){ if(S && gz) store.set(skey(S.art), JSON.stringify(S)); }
+function ladeS(art){ altesFormat(); try{ const x = JSON.parse(store.get(skey(art))||"null"); return x && x.items && x.i < x.items.length ? x : null; }catch(e){ return null; } }
+function alleS(){ const o = {}; ARTEN.forEach(a=>{ const x = ladeS(a); if(x) o[a] = x; }); return o; }
+function loescheS(art){ (art ? [art] : S ? [S.art] : ARTEN).forEach(a=>store.del(skey(a))); }
+const weiterTxt = x => `Aufgabe ${Math.min(x.i+1, x.items.length)} von ${x.items.length}`;
 
 function nimm(pool, n){
   const g = P.gesehen;
@@ -1467,7 +1477,7 @@ function home(){
   pill.hidden = true; pill.textContent = "Nr. "+gz;
   if(!gz) return zahlenfeld();
   ladeP();
-  const offen = gz ? ladeS() : null;
+  const OFFEN = gz ? alleS() : {}, offen = OFFEN.sb || null;   // eine angefangene Standortbestimmung wird zuerst fertig gemacht
   let inhalt = "";
   const hinweis = befehlHinweis; befehlHinweis = "";
   if(!gz){
@@ -1494,11 +1504,11 @@ function home(){
       <div class="etappe">
         <div><div class="dots">${dots}<span>${meister?`Stufe 5 geschafft – Meisterrunden`:`Etappe ${nr+1} von ${ETAPPEN_PRO_STUFE}`}</span></div>
         <p class="sub" style="margin:6px 0 0">Stufe ${st}: ${esc(STUFEN[st])}</p></div>
-        <button class="btn big-btn" id="etappe">▶ ${meister?"Meisterrunde":"Etappe "+(nr+1)} starten<small>${NEUE_WOERTER} Wörter${kn?` + bis ${KISTE_PRO_ETAPPE} aus der Fehlerkiste`:""} · ${SAETZE_PRO_ETAPPE} Sätze</small></button>
+        ${OFFEN.etappe ? `<button class="btn big-btn" id="etappe">▶ Weitermachen<small>${esc(OFFEN.etappe.thema)} · ${weiterTxt(OFFEN.etappe)}</small></button>` : `<button class="btn big-btn" id="etappe">▶ ${meister?"Meisterrunde":"Etappe "+(nr+1)} starten<small>${NEUE_WOERTER} Wörter${kn?` + bis ${KISTE_PRO_ETAPPE} aus der Fehlerkiste`:""} · ${SAETZE_PRO_ETAPPE} Sätze</small></button>`}
       </div>
       <div class="tiles">
-        <button class="tile" id="kiste" ${kn?"":"disabled"}><span class="ic">📦</span><b>Fehlerkiste <em class="badge">${kn}</em></b><span>${kn?`Wörter, die noch nicht sicher sitzen${lwN()?` – auch ${lwN()===1?"dein Lernwort":"deine "+lwN()+" Lernwörter"} aus Schabi`:""}. Zweimal richtig – dann sind sie draussen.`:"Leer – super!"}</span></button>
-        <button class="tile" id="regel"><span class="ic">🎯</span><b>Regeltraining</b><span>Übe gezielt eine Rechtschreibregel.</span></button>
+        <button class="tile${OFFEN.kiste?" hot":""}" id="kiste" ${kn||OFFEN.kiste?"":"disabled"}><span class="ic">📦</span><b>Fehlerkiste <em class="badge">${kn}</em></b><span>${OFFEN.kiste?`Angefangen – ${weiterTxt(OFFEN.kiste)}. Hier weitermachen.`:kn?`Wörter, die noch nicht sicher sitzen${lwN()?` – auch ${lwN()===1?"dein Lernwort":"deine "+lwN()+" Lernwörter"} aus Schabi`:""}. Zweimal richtig – dann sind sie draussen.`:"Leer – super!"}</span></button>
+        <button class="tile${OFFEN.regel?" hot":""}" id="regel"><span class="ic">🎯</span><b>Regeltraining</b><span>${OFFEN.regel?`«${esc(String(OFFEN.regel.thema).replace(/^Regeltraining: /,""))}» angefangen – ${weiterTxt(OFFEN.regel)}.`:"Übe gezielt eine Rechtschreibregel."}</span></button>
         <button class="tile ${sbFrei?"hot":""}" id="sb" ${sbFrei?"":"disabled"}><span class="ic">📝</span><b>Standortbestimmung</b><span>${sbFrei?"Wieder freigeschaltet – zeig, was du gelernt hast!":`Wieder möglich nach ${SB_NACH_ETAPPEN-P.seit} weiteren Etappen.`}</span></button>
       </div>
       ${meinStand()}`;
@@ -1515,10 +1525,11 @@ function home(){
     ${inhalt}
   </div>`;
   const on = (id,f) => { const b=$(id); if(b) b.onclick=f; };
+  const weiter = x => () => { S = x; zeigeAufgabe(true); };
   on("weiter", ()=>{ S = offen; zeigeAufgabe(true); });
   on("sb", starteSB);
-  on("etappe", starteEtappe);
-  on("kiste", starteKiste);
+  on("etappe", OFFEN.etappe ? weiter(OFFEN.etappe) : starteEtappe);
+  on("kiste", OFFEN.kiste ? weiter(OFFEN.kiste) : starteKiste);
   on("regel", regelWahl);
   on("ton", ()=>spiele(["Hallo! Wenn du mich gut hörst, funktioniert der Ton."]));
   on("ton2", ()=>spiele(["Hallo! Wenn du mich gut hörst, funktioniert der Ton."]));
@@ -1579,7 +1590,7 @@ function fortschrittMitnehmen(alt, neu){
   if(!hat(pAlt) || hat(pNeu)) return;
   if(!confirm(`Möchtest du deinen bisherigen Fortschritt (Stufe ${pAlt.stufe||1}, ${pAlt.worte} Wörter) zur Glückszahl ${neu} mitnehmen?`)) return;
   store.set("rs.p."+neu, store.get("rs.p."+alt)); store.del("rs.p."+alt);
-  const s = store.get("rs.s."+alt); if(s){ store.set("rs.s."+neu, s); store.del("rs.s."+alt); }
+  ["", ".etappe", ".kiste", ".regel", ".sb"].forEach(e=>{ const s = store.get("rs.s."+alt+e); if(s){ store.set("rs.s."+neu+e, s); store.del("rs.s."+alt+e); } });
   const q = queue(); let geaendert = false;
   q.forEach(r => { if(String(r.glueckszahl) === String(alt)){ r.glueckszahl = neu; geaendert = true; } });
   if(geaendert) store.set(QKEY, JSON.stringify(q));
@@ -1610,12 +1621,14 @@ function regelWahl(){
   const st = P.stat;
   app.innerHTML = `<div class="card">
     <h2>🎯 Regeltraining</h2>
+    ${(()=>{ const o = ladeS("regel"); return o ? `<div class="resume" style="margin:6px 0 14px"><button class="btn big-btn" id="regelWeiter">▶ Weitermachen<small>${esc(o.thema)} · ${weiterTxt(o)}</small></button></div>` : ""; })()}
     <p class="sub">Wähle eine Regel. Du bekommst Wörter oder Sätze, in denen genau diese Regel wichtig ist.</p>
     <div class="topics">${CAT_ORDER.map(c=>{ const x=st[c], p = x&&x.n>=5 ? Math.round((1-x.f/x.n)*100) : null;
       return `<button class="topic" data-c="${c}" style="--c:${CATS[c].farbe}"><span><b>${esc(CATS[c].name)}</b><span>${p===null?"noch wenig geübt":`bisher ${p}% richtig`}</span></span></button>`; }).join("")}</div>
     <div class="actions"><button class="btn ghost" id="zur">Zurück</button></div>
   </div>`;
   app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>regelIntro(b.dataset.c));
+  const rw = $("regelWeiter"); if(rw) rw.onclick = ()=>{ S = ladeS("regel"); zeigeAufgabe(true); };
   $("zur").onclick = home;
 }
 function regelIntro(c){
@@ -1662,7 +1675,10 @@ function teile(text){
   return out;
 }
 function vorlesen(it, langsam){
-  if(it.typ==="W"){ const w = rein(it.w); spiele(it.x ? [w, it.x, w] : [w], langsam); }
+  // Lückensatz (z. B. «das»/«dass», Nominalisierungen): Erst im Satz hört man, wie das Wort geschrieben wird –
+  // darum nur den Satz vorlesen, nicht zuerst das Wort allein.
+  if(it.typ==="W" && istLuecke(it)) spiele([it.x], langsam);
+  else if(it.typ==="W"){ const w = rein(it.w); spiele(it.x ? [w, it.x, w] : [w], langsam); }
   else spiele([it.w], langsam);
 }
 function zeigeAufgabe(vorlesenJetzt){
@@ -1677,7 +1693,7 @@ function zeigeAufgabe(vorlesenJetzt){
     <div class="sesshead"><span class="qtype">${istSatz?"💬 Satz":"✏️ Wort"} ${S.i+1} von ${n}</span><span class="grow sub" style="margin:0">${esc(S.thema)}</span><button class="btn ghost small" id="pause">Pause</button></div>
     <div class="progress">${prog}</div>
     ${HOEREN ? `<div class="hear">
-      <button class="btn hearbtn" id="h1">🔊 ${istSatz?"Satz anhören":"Anhören"}</button>
+      <button class="btn hearbtn" id="h1">🔊 ${istSatz||istLuecke(it)?"Satz anhören":"Anhören"}</button>
       <button class="btn ghost" id="h2">🐢 Langsam</button>
       ${istSatz?`<button class="btn ghost" id="h3">Stück für Stück <small id="teilnr"></small></button>`:""}
     </div>` : `<div class="flash" id="flash">${esc(sprechText(it.w))}</div>`}
@@ -1695,7 +1711,7 @@ function zeigeAufgabe(vorlesenJetzt){
     if(istSatz){ const T = teile(it.w); const lab = $("teilnr"); lab.textContent = `1/${T.length}`;
       $("h3").onclick = ()=>{ spiele([T[teilIdx]], true); teilIdx = (teilIdx+1) % T.length; lab.textContent = `${teilIdx+1}/${T.length}`; inp.focus({preventScroll:true}); }; }
     if(vorlesenJetzt) vorlesen(it,false);
-    const nx = S.items[S.i+1]; if(nx) vorladen(nx.typ==="W" ? [rein(nx.w), nx.x||""] : [nx.w]);
+    const nx = S.items[S.i+1]; if(nx) vorladen(nx.typ==="W" ? (istLuecke(nx) ? [nx.x] : [rein(nx.w), nx.x||""]) : [nx.w]);
   } else {
     setTimeout(()=>{ const f=$("flash"); if(f) f.classList.add("hidden"); }, istSatz ? 6000 : 2500);
   }
@@ -1789,8 +1805,73 @@ function regelBoxen(bereiche, ziel, antwort, satzanfang){
   }).join("");
 }
 
+/* Vergleich «Du hast geschrieben» / «So ist es richtig» für einen Satz */
+function satzVergleich(it, paare){
+  const deins = paare.map(p=>{ if(p.extra) return `<span class="tok extra">${esc(p.a)}</span>`; if(!p.a) return `<span class="tok miss">___</span>`;
+    return `<span class="tok ${p.ok?"good":"bad"}">${p.ok?esc(p.a):zeigeMarkiert(p.a, p.markA, "x")}</span>`; }).join(" ");
+  const zeichen = /[.?!]$/.test(it.w) ? it.w.slice(-1) : "";
+  const richtig = paare.filter(p=>!p.extra).map(p=>`<span class="tok ${p.ok?"":"fix"}">${p.ok?esc(rein(p.z)):zeigeMarkiert(rein(p.z), p.markT, "y")}</span>`).join(" ").replace(/<\/span>$/, esc(zeichen)+"</span>");
+  return {deins, richtig, extra: paare.filter(p=>p.extra).length};
+}
+/* Satz-Korrektur: Das Kind schreibt den ganzen Satz nochmals – mit grossem Anfang und Satzzeichen am Schluss –, bis alles stimmt */
+function satzKorrektur(it, falsche){
+  const fb = $("fb"), ziel = sprechText(it.w), zeichen = /[.?!]$/.test(it.w) ? it.w.slice(-1) : "";
+  // den falschen Satz oben ausblenden – er steht in der Korrektur-Karte
+  const inp0 = $("inp"); if(inp0) inp0.hidden = true;
+  document.querySelectorAll(".task > .hint").forEach(h=>h.hidden = true);
+  const regeln = () => { const gesehen = new Set(); return falsche.map(f=>{ const bereiche = f.a ? fehlerBereiche(f.res) : ["SO"];
+    return bereiche.filter(c=>{ const k = c+"|"+(c==="GK"?rein(f.z):""); if(gesehen.has(k)) return false; gesehen.add(k); return true; })
+      .map(c=>regelBoxen([c], rein(f.z), f.a, !!f.erstes)).join(""); }).join(""); };
+  const merken = (paare, nochmals) => {
+    const V = satzVergleich(it, paare);
+    fb.innerHTML = `<div class="explain">${nochmals ? `<div class="again" style="margin-bottom:10px">Noch nicht ganz – schau nochmals genau hin.</div>` : `<h3>Fast! Schau genau hin:</h3>`}
+      <p class="lab">Du hast geschrieben:</p><p class="satz">${V.deins}</p>
+      <p class="lab">So ist es richtig:</p><p class="satz">${V.richtig}</p>
+      ${V.extra?`<p class="sub">Durchgestrichen: Dieses Wort gehört nicht in den Satz.</p>`:""}</div>
+      <div class="fix-card">${regeln()}
+        <p class="sub" style="margin:12px 0 8px">Präg dir den Satz gut ein. Dann deckst du ihn zu und schreibst den <b>ganzen Satz</b> nochmals – mit grossem Anfang und ${zeichen==="?"?"Fragezeichen":zeichen==="!"?"Ausrufezeichen":"Punkt"} am Schluss.</p>
+        <div class="actions"><button class="btn" id="gemerkt">Ich habe ihn mir gemerkt</button>${HOEREN?`<button class="btn ghost" id="hoer">🔊</button>`:""}</div>
+      </div>`;
+    $("gemerkt").onclick = schreiben; $("gemerkt").focus({preventScroll:true});
+    const h = $("hoer"); if(h) h.onclick = ()=>spiele([it.w], true);
+    fb.scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  const schreiben = () => {
+    fb.innerHTML = `<div class="fix-card">
+      <p class="lab">Jetzt aus dem Kopf: Schreib den ganzen Satz richtig.</p>
+      <p class="wort zu">${"•".repeat(Math.min(ziel.length, 28))}</p>
+      <textarea class="ans wide" id="nach" rows="2" ${TA} placeholder="Ganzen Satz richtig schreiben …"></textarea>
+      <div class="actions"><button class="btn" id="ok2">Prüfen</button>${HOEREN?`<button class="btn ghost" id="hoer2">🔊 Satz nochmals hören</button>`:""}</div>
+    </div>`;
+    const ni = $("nach"); ni.focus({preventScroll:true});
+    const h2 = $("hoer2"); if(h2) h2.onclick = ()=>{ spiele([it.w], false); ni.focus({preventScroll:true}); };
+    const go = () => {
+      const roh = norm(ni.value);
+      if(!roh) return ni.focus();
+      const paare = pruefeSatz(it.w, roh);
+      const alleOk = paare.every(p=>!p.extra && p.ok);
+      const zeichenOk = !zeichen || roh.endsWith(zeichen);
+      if(alleOk && zeichenOk){
+        fb.innerHTML = `<div class="explain ok"><h3>✅ Gut korrigiert!</h3><p style="margin:0">${falsche.length>1?"Die falschen Wörter kommen in deine Fehlerkiste und tauchen":"Das falsche Wort kommt in deine Fehlerkiste und taucht"} später nochmals auf.</p></div>
+          <div class="actions"><button class="btn" id="next">Weiter →</button></div>`;
+        $("next").onclick = ()=>zeigeAufgabe(true); $("next").focus({preventScroll:true});
+        return;
+      }
+      if(alleOk && !zeichenOk){
+        fb.querySelector(".fix-card").insertAdjacentHTML("beforeend", `<div class="again" style="margin-top:10px">Fast! Am Schluss fehlt noch ${zeichen==="?"?"das Fragezeichen":zeichen==="!"?"das Ausrufezeichen":"der Punkt"}.</div>`);
+        ni.focus({preventScroll:true}); return;
+      }
+      merken(paare, true);
+    };
+    $("ok2").onclick = go;
+    ni.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); go(); } });
+  };
+  merken(it._paare, false);
+}
+
 /* Pflicht-Korrektur: jedes falsche Wort einprägen, abdecken, richtig schreiben */
 function korrektur(it, falsche){
+  if(it.typ==="S") return satzKorrektur(it, falsche);
   const fb = $("fb");
   /* Das falsche Wort steht in der Korrektur-Karte – oben ausblenden, damit es beim Nachschreiben nicht sichtbar ist */
   const inp0 = $("inp"); if(inp0) inp0.hidden = true;
