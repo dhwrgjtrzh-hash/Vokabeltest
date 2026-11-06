@@ -265,7 +265,8 @@ function stand_(d, ss) {
  * Den Code legt die Lehrperson fest: Projekteinstellungen (Zahnrad) → Skripteigenschaften → «LERNWOERTER_CODE». */
 function lernwoerterErlaubt_(d) {
   const s = String(d.schluessel || "");
-  if (s && ((STATION_SCHLUESSEL && s === STATION_SCHLUESSEL) || zugang_(s, false) === "ok")) return true;
+  if (s && typeof STATION_SCHLUESSEL !== "undefined" && STATION_SCHLUESSEL && s === STATION_SCHLUESSEL) return true;
+  if (s && typeof zugang_ === "function" && zugang_(s, false) === "ok") return true;
   const code = PropertiesService.getScriptProperties().getProperty("LERNWOERTER_CODE");
   return !!code && String(d.code || "").trim().toLowerCase() === String(code).trim().toLowerCase();
 }
