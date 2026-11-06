@@ -400,8 +400,8 @@ function d2bSteps(m){
 const GOALS = [
 /* ---------- B2 Bruch → Dezimalzahl ---------- */
 {id:"B2", code:"B2", title:"Bruch → Dezimalzahl", ic:"➗", c:"#2f5bea", info:"Brüche in Dezimalzahlen umwandeln", tb:"TB S. 25, 27",
- help:()=>`<p><b>Erweitern:</b> Erweitere den Bruch so, dass im Nenner 10, 100 oder 1000 steht.<br>${fr(3,25)} = ${fr(12,100)} = 12 Hundertstel = <b>0.12</b> · ${fr(3,8)} = ${fr(375,1000)} = <b>0.375</b></p>
-   <p><b>Oder dividieren:</b> ${fr(1,4)} = 1 : 4 = <b>0.25</b></p>`,
+ help:()=>`<p><b>Erweitern:</b> Erweitere den Bruch so, dass im Nenner 10, 100 oder 1000 steht.<br>${fr(3,25)} = ${fr(12,100)} = 12 Hundertstel = <b>0.12</b> · ${fr(3,40)} = ${fr(75,1000)} = <b>0.075</b></p>
+   <p><b>Oder dividieren:</b> ${fr(11,4)} = 11 : 4 = <b>2.75</b></p>`,
  gen(lv){
    const f = lv===1 ? termFrac(1,[2,4,5,10,100],false) : lv===2 ? termFrac(1,[4,5,8,20,25,50],false) : termFrac(pick([1,2.2]),[8,40,125,200,250,500,1000,20,25],false);
    const m = milli(f.n,f.d);
@@ -412,7 +412,7 @@ const GOALS = [
 /* ---------- B1 Dezimalzahl → gekürzter Bruch ---------- */
 {id:"B1", code:"B1", title:"Dezimalzahl → Bruch", ic:"🔁", c:"#7c4dff", info:"Als Bruch schreiben und so weit wie möglich kürzen", tb:"TB S. 24, 26, 27",
  help:()=>`<p>1. Lies die Dezimalzahl in Zehnteln, Hundertsteln oder Tausendsteln.<br>2. Schreibe sie als Bruch.<br>3. Kürze, so weit es geht.</p>
-   <p>0.32 = 32 Hundertstel = ${fr(32,100)} = ${fr(16,50)} = <b>${fr(8,25)}</b><br>0.04 = ${fr(4,100)} = <b>${fr(1,25)}</b> · 2.25 = ${fr(225,100)} = <b>${fr(9,4)}</b></p>`,
+   <p>0.36 = 36 Hundertstel = ${fr(36,100)} = ${fr(18,50)} = <b>${fr(9,25)}</b><br>0.05 = ${fr(5,100)} = <b>${fr(1,20)}</b> · 2.25 = ${fr(225,100)} = <b>${fr(9,4)}</b></p>`,
  gen(lv){
    const f = lv===1 ? termFrac(1,[2,4,5,10],true) : lv===2 ? termFrac(1,[4,5,20,25,50,8],true) : termFrac(pick([1,2.6]),[8,40,125,200,250,4,5,20],true);
    const m = milli(f.n,f.d);
@@ -424,7 +424,7 @@ const GOALS = [
 
 /* ---------- Division ---------- */
 {id:"DV", code:"B1/B2", title:"Division → Bruch und Dezimalzahl", ic:"🧩", c:"#e0732b", info:"Resultat als gekürzten Bruch und als Dezimalzahl", tb:"TB S. 25, 26",
- help:()=>`<p>Eine Division kannst du als Bruch schreiben: 15 : 20 = ${fr(15,20)}</p><p>Kürzen: ${fr(15,20)} = <b>${fr(3,4)}</b> · Dezimalzahl: ${fr(3,4)} = ${fr(75,100)} = <b>0.75</b></p>`,
+ help:()=>`<p>Eine Division kannst du als Bruch schreiben: 18 : 40 = ${fr(18,40)}</p><p>Kürzen: ${fr(18,40)} = <b>${fr(9,20)}</b> · Dezimalzahl: ${fr(9,20)} = ${fr(45,100)} = <b>0.45</b></p>`,
  gen(lv){
    let a,b;
    if(lv===1){ a=rnd(1,9); b=pick([10,100,1000]); }
@@ -440,7 +440,7 @@ const GOALS = [
 /* ---------- Zahlenstrahl ---------- */
 {id:"ZS", code:"B1/B2", title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Brüche und Dezimalzahlen am Zahlenstrahl", tb:"TB S. 24, 26",
  help:()=>`<p>1. In wie viele gleiche Abschnitte ist die Strecke von 0 bis 1 geteilt? Das ist der <b>Nenner</b>.<br>2. Wie viele Abschnitte sind es bis zum Pfeil? Das ist der <b>Zähler</b>.</p>
-   <p>20 Abschnitte, Pfeil beim 7. → ${fr(7,20)} = ${fr(35,100)} = <b>0.35</b></p>`,
+   <p>20 Abschnitte, Pfeil beim 11. → ${fr(11,20)} = ${fr(55,100)} = <b>0.55</b></p>`,
  gen(lv){
    if(lv<3){
      const n = lv===1 ? pick([4,5,10,2]) : pick([20,20,25,8]);
@@ -462,7 +462,7 @@ const GOALS = [
 
 /* ---------- Stimmt das? ---------- */
 {id:"SD", code:"B2", title:"Stimmt das?", ic:"🔎", c:"#d6336c", info:"Haben Bruch und Dezimalzahl den gleichen Wert?", tb:"TB S. 24",
- help:()=>`<p>Rechne den Bruch selber in eine Dezimalzahl um und vergleiche.</p><p>${fr(1,4)} = 0.25 ✓ – aber <b>nicht</b> 0.4! Der Nenner ist nicht die Dezimalzahl.<br>${fr(3,5)} = ${fr(6,10)} = 0.6 – <b>nicht</b> 0.35</p>`,
+ help:()=>`<p>Rechne den Bruch selber in eine Dezimalzahl um und vergleiche.</p><p>${fr(1,5)} = 0.2 ✓ – aber <b>nicht</b> 0.5! Der Nenner ist nicht die Dezimalzahl.<br>${fr(4,25)} = ${fr(16,100)} = 0.16 – <b>nicht</b> 0.425</p>`,
  gen(lv){
    const f = termFrac(lv===3?2:1.2, lv===1?[2,4,5,10]:[4,5,8,20,25,50], true);
    const m = milli(f.n,f.d), truth = Math.random()<.45;
@@ -475,16 +475,16 @@ const GOALS = [
 
 /* ---------- Unendlich viele Dezimalen (erweitert) ---------- */
 {id:"UE", code:"", erw:true, title:"Unendlich viele Dezimalen", ic:"♾️", c:"#5b6b8a", info:"Periodische Dezimalzahlen wie 0.333…", tb:"TB S. 27, S. 154",
- help:()=>`<p>Manche Divisionen hören nie auf: 1 : 3 = 0.333… · 2 : 3 = 0.666…<br>Bei Neuntel wiederholt sich der Zähler: ${fr(1,9)} = 0.111… · ${fr(4,9)} = 0.444…<br>Bei 99-stel wiederholen sich zwei Ziffern: ${fr(5,99)} = 0.0505… · ${fr(25,99)} = 0.2525…</p>`,
+ help:()=>`<p>Manche Divisionen hören nie auf: 1 : 3 = 0.333… · 5 : 6 = 0.8333…<br>Bei Neuntel wiederholt sich der Zähler: ${fr(1,9)} = 0.111… · ${fr(4,9)} = 0.444…<br>Bei 99-stel wiederholen sich zwei Ziffern: ${fr(5,99)} = 0.0505… · ${fr(25,99)} = 0.2525…</p>`,
  gen(lv){
    if(lv===1){
-     const z = rnd(2,8);
+     const z = pick([4,5,6,7,8]);
      const opts = shuffle([`0.${String(z).repeat(4)}…`, `0.${z}`, `0.${z}9`, `${z}.9`]);
-     return {type:"choice", words:true, html:`<p class="q">1 : 9 = 0.1111… &nbsp; 2 : 9 = 0.2222…<br>Was ist <b>${z} : 9</b>?</p>`, options:opts.map(o=>({label:o})), answer:opts.indexOf(`0.${String(z).repeat(4)}…`),
+     return {type:"choice", words:true, html:`<p class="q">1 : 9 = 0.1111… &nbsp; 3 : 9 = 0.3333…<br>Was ist <b>${z} : 9</b>?</p>`, options:opts.map(o=>({label:o})), answer:opts.indexOf(`0.${String(z).repeat(4)}…`),
        text:`${z} : 9`, show:`0.${String(z).repeat(4)}…`, explain: ol([`Bei Divisionen durch 9 wiederholt sich der Zähler immer wieder: 1 : 9 = 0.111…`, `Also ${z} : 9 = <b>0.${String(z).repeat(4)}…</b>`])};
    }
    if(lv===2){
-     const c = pick([[1,3,"0.3333…"],[2,3,"0.6666…"],[1,6,"0.1666…"],[5,6,"0.8333…"],[1,9,"0.1111…"],[7,9,"0.7777…"]]);
+     const c = pick([[1,3,"0.3333…"],[5,9,"0.5555…"],[1,6,"0.1666…"],[5,6,"0.8333…"],[1,9,"0.1111…"],[7,9,"0.7777…"]]);
      const wrong = [`0.${c[0]}${c[1]}`, `${c[0]}.${c[1]}`, `0.${c[0]}`, `0.${String(c[0]*10/c[1]).slice(0,1)}`].filter((x,i,a)=>x!==c[2] && a.indexOf(x)===i).slice(0,3);
      const opts = shuffle([c[2], ...wrong]);
      return {type:"choice", words:true, html:`<p class="q">Schreibe den Bruch als Dezimalzahl.</p><p class="big">${fr(c[0],c[1])} = ?</p>`, options:opts.map(o=>({label:o})), answer:opts.indexOf(c[2]),
@@ -503,6 +503,17 @@ const GOALS = [
      text:`Division zu 0.${s}${s}…`, show:`${z} : 99`, explain: ol([`1 : 99 = 0.0101… – bei 99 wiederholen sich <b>zwei</b> Ziffern.`, `Hier wiederholt sich «${s}». Also: <b>${z} : 99</b> = 0.${s.repeat(3)}…`])};
  }},
 ];
+
+/* ===== Sperrliste: Aufgaben aus der Lernzielkontrolle LZK 6.3 =====
+   Diese Aufgaben kommen im Trainer nie vor. Erzeugt der Zufall eine davon, wird neu gewürfelt. */
+const LZK_NORM = s => String(s||"").replace(/[’']/g,"").replace(/\s+/g," ").trim();
+const LZK_TEXTE = new Set(["1/4 als Dezimalzahl", "2/20 als Dezimalzahl", "3/8 als Dezimalzahl", "32/50 als Dezimalzahl", "2/3 als Dezimalzahl", "0.6 als gekürzter Bruch", "0.04 als gekürzter Bruch", "0.32 als gekürzter Bruch", "0.75 als gekürzter Bruch", "2 : 9", "0.222222… als Bruch", "0.666666… als Bruch", "35/100 auf dem Zahlenstrahl 0 bis 1 eintragen", "0.4 auf dem Zahlenstrahl 0 bis 1 eintragen", "3/4 auf dem Zahlenstrahl 0 bis 1 eintragen", "0.8 auf dem Zahlenstrahl 0 bis 1 eintragen", "22/25 auf dem Zahlenstrahl 0 bis 1 eintragen", "9/10 auf dem Zahlenstrahl 0 bis 1 eintragen"].map(LZK_NORM));
+function lzkExtra(t, id, text, show){ return false; }
+function lzkGesperrt(t, id){
+  if(!t) return false;
+  if(LZK_TEXTE.has(LZK_NORM(t.text))) return true;
+  return lzkExtra(t, id, LZK_NORM(t.text), LZK_NORM(t.show));
+}
 
 /* ===== Lernpfad ===== */
 const app = document.getElementById("app"), pill = document.getElementById("pill");
@@ -608,7 +619,8 @@ function next(){
   if(probe) lv = 2;
   const sig = t=>t.type+"|"+String(t.q||"")+String(t.a||"")+" "+String(t.b||"")+String(t.html||"").replace(/<[^>]*>/g,"").replace(/[0-9.,’'\/]+/g,"#").slice(0,60);
   let t;
-  for(let k=0;k<30;k++){ const c = GOAL[id].gen(lv); if(!c) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  for(let k=0;k<60;k++){ const c = GOAL[id].gen(lv); if(!c || lzkGesperrt(c, id)) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  for(let k=0; !t && k<2000; k++){ const c = GOAL[id].gen(lv); if(c && !lzkGesperrt(c, id)) t = c; }   // nie eine Testaufgabe
   S.lastSig = sig(t);
   t.goal = id; t.lv = lv; t.probe = probe;
   S.task = t; S.done = false; S.answer = null; S.nr++;

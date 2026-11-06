@@ -382,7 +382,7 @@ const GOALS = [
 /* ---------- A1 Zahlenstrahl ---------- */
 {id:"A1", code:"A1", title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Dezimalzahlen ablesen und eintragen", tb:"TB S. 20, 22",
  help:()=>`<p>1. Schau die beschrifteten Zahlen an.<br>2. Zähle, in wie viele gleiche Abschnitte die Strecke geteilt ist.<br>3. Abstand : Anzahl Abschnitte = Wert von <b>einem</b> Abschnitt.</p>
-   <p>Beispiel: Von 10 bis 11 sind es 100 kleine Abschnitte → ein kleiner Strich = 0.01. Die langen Striche sind die Zehntel 10.1, 10.2, …</p>`,
+   <p>Beispiel: Von 4 bis 5 sind es 100 kleine Abschnitte → ein kleiner Strich = 0.01. Die langen Striche sind die Zehntel 4.1, 4.2, …</p>`,
  gen(lv){
    let a, step, total=10, mid=5, big=10;
    if(lv===1){ step=100; a=rnd(0,30)*T; }
@@ -411,7 +411,7 @@ const GOALS = [
 /* ---------- A2 In Schritten zählen ---------- */
 {id:"A2", code:"A2", title:"In Schritten zählen", ic:"👣", c:"#13a36b", info:"Zahlenfolgen vorwärts und rückwärts", tb:"TB S. 21–23",
  help:()=>`<p>1. Finde den Schritt: Rechne die Differenz von zwei Nachbarzahlen aus.<br>2. Vorwärts: + Schritt. Rückwärts: − Schritt.</p>
-   <p>Beispiel: 13.02, 13.05, 13.08 → Schritt 0.03. Vorwärts: 13.11, 13.14. Rückwärts: 12.99, 12.96.<br>Achtung beim Übergang: 0.75 + 0.25 = <b>1</b> · 13.02 − 0.03 = <b>12.99</b></p>`,
+   <p>Beispiel: 6.07, 6.11, 6.15 → Schritt 0.04. Vorwärts: 6.19, 6.23. Rückwärts: 6.03, 5.99.<br>Achtung beim Übergang: 0.85 + 0.15 = <b>1</b> · 6.03 − 0.04 = <b>5.99</b></p>`,
  gen(lv){
    if(lv===1){
      const st = pick([100,200,500,250,50]), s = rnd(0,40)*st + pick([0,0,100]);
@@ -450,8 +450,8 @@ const GOALS = [
 /* ---------- A3 Nachbarzahlen ---------- */
 {id:"A3", code:"A3", title:"Nachbarzahlen", ic:"🏘️", c:"#e0732b", info:"Nachbar-Tausender bis Nachbar-Tausendstel", tb:"TB S. 21",
  help:()=>`<p><b>Nachbar-Zehntel</b> = das nächstkleinere und das nächstgrössere Zehntel (eine Stelle nach dem Punkt).</p>
-   <p>4.37 → <b>4.3</b> und <b>4.4</b> · 3.954 → Nachbar-Tausendstel? 3.954 ist selbst ein Tausendstel → <b>3.953</b> und <b>3.955</b><br>
-   7.6 ist selbst ein Zehntel → Nachbar-Zehntel <b>7.5</b> und <b>7.7</b> · 128.245 → Nachbar-Hunderter <b>100</b> und <b>200</b></p>`,
+   <p>4.37 → <b>4.3</b> und <b>4.4</b> · 6.418 → Nachbar-Tausendstel? 6.418 ist selbst ein Tausendstel → <b>6.417</b> und <b>6.419</b><br>
+   5.2 ist selbst ein Zehntel → Nachbar-Zehntel <b>5.1</b> und <b>5.3</b> · 317.48 → Nachbar-Hunderter <b>300</b> und <b>400</b></p>`,
  gen(lv){
    let u, x;
    const U1=[1000,100], U2=[100,10,1,10000,100000], U3=[100,10,1,100000,1000000,10000];
@@ -481,8 +481,8 @@ const GOALS = [
 
 /* ---------- A4 mal und durch 10, 100, 1000 ---------- */
 {id:"A4", code:"A4", title:"· und : 10, 100, 1000", ic:"✖️", c:"#2f5bea", info:"Multiplizieren und dividieren mit Stufenzahlen", tb:"TB S. 21",
- help:()=>`<p><b>· 10 / · 100 / · 1000:</b> Jede Ziffer wird 10/100/1000-mal so viel wert. Der Punkt rutscht 1/2/3 Stellen nach <b>rechts</b>.<br>0.75 · 10 = 7.5 · 0.03 · 100 = 3 · 5.25 · 1000 = 5’250</p>
-   <p><b>: 10 / : 100 / : 1000:</b> Der Punkt rutscht 1/2/3 Stellen nach <b>links</b>. Fehlende Stellen mit 0 auffüllen.<br>231.6 : 10 = 23.16 · 37 : 1000 = 0.037</p>`,
+ help:()=>`<p><b>· 10 / · 100 / · 1000:</b> Jede Ziffer wird 10/100/1000-mal so viel wert. Der Punkt rutscht 1/2/3 Stellen nach <b>rechts</b>.<br>0.75 · 10 = 7.5 · 0.06 · 100 = 6 · 3.48 · 1000 = 3’480</p>
+   <p><b>: 10 / : 100 / : 1000:</b> Der Punkt rutscht 1/2/3 Stellen nach <b>links</b>. Fehlende Stellen mit 0 auffüllen.<br>415.2 : 10 = 41.52 · 58 : 1000 = 0.058</p>`,
  gen(lv){
    const p = lv===1 ? 10 : pick([10,100,1000]);
    const st = String(p).length-1;
@@ -565,7 +565,7 @@ const GOALS = [
 
 /* ---------- Mitte (erweitert) ---------- */
 {id:"E1", code:"", erw:true, title:"Die Mitte finden", ic:"🎯", c:"#a05a00", info:"Welche Zahl liegt genau dazwischen?", tb:"TB S. 23",
- help:()=>`<p>1. Abstand: grössere Zahl − kleinere Zahl.<br>2. Abstand halbieren.<br>3. Die Hälfte zur kleineren Zahl dazuzählen.</p><p>10 und 10.5 → Abstand 0.5 → Hälfte 0.25 → <b>10.25</b><br>Achtung: Welche Zahl ist wirklich kleiner? 0.6 ist grösser als 0.006!</p>`,
+ help:()=>`<p>1. Abstand: grössere Zahl − kleinere Zahl.<br>2. Abstand halbieren.<br>3. Die Hälfte zur kleineren Zahl dazuzählen.</p><p>6 und 6.8 → Abstand 0.8 → Hälfte 0.4 → <b>6.4</b><br>Achtung: Welche Zahl ist wirklich kleiner? 0.5 ist grösser als 0.05!</p>`,
  gen(lv){
    let a,b;
    if(lv===1){ a=rnd(1,50)*T; b=a+pick([1000,500,100,2000]); }
@@ -583,7 +583,7 @@ const GOALS = [
 
 /* ---------- Zahlenfolge mit Start und Ziel (erweitert) ---------- */
 {id:"E2", code:"", erw:true, title:"Start, Ziel und Schritte", ic:"🚩", c:"#5b6b8a", info:"Gleich grosse Schritte zwischen Start- und Zielzahl", tb:"TB S. 23",
- help:()=>`<p>1. Abstand: Zielzahl − Startzahl.<br>2. Abstand : Anzahl Schritte = ein Schritt.<br>3. Von der Startzahl aus Schritt für Schritt weiterzählen.</p><p>Start 0.4, Ziel 1.1, 5 Schritte → Abstand 0.7 → Schritt 0.14 → 0.54, 0.68, 0.82, 0.96</p>`,
+ help:()=>`<p>1. Abstand: Zielzahl − Startzahl.<br>2. Abstand : Anzahl Schritte = ein Schritt.<br>3. Von der Startzahl aus Schritt für Schritt weiterzählen.</p><p>Start 2.2, Ziel 3.2, 4 Schritte → Abstand 1 → Schritt 0.25 → 2.45, 2.7, 2.95</p>`,
  gen(lv){
    const n = lv===1 ? rnd(2,4) : lv===2 ? 5 : rnd(4,8);
    const st = lv===1 ? pick([100,200,500,250]) : lv===2 ? pick([140,120,60,180,70,30]) : pick([125,75,45,35,15,250,175]);
@@ -595,6 +595,26 @@ const GOALS = [
      explain: ol([`Abstand: ${fmt(seq[n])} − ${fmt(seq[0])} = ${fmt(n*st)}`, `Ein Schritt: ${fmt(n*st)} : ${n} = <b>${fmt(st)}</b>`, `Weiterzählen: ${seq.map(v=>fmt(v)).join(" → ")}`])};
  }},
 ];
+
+/* ===== Sperrliste: Aufgaben aus der Lernzielkontrolle LZK 6.3 =====
+   Diese Aufgaben kommen im Trainer nie vor. Erzeugt der Zufall eine davon, wird neu gewürfelt. */
+const LZK_NORM = s => String(s||"").replace(/[’']/g,"").replace(/\s+/g," ").trim();
+const LZK_TEXTE = new Set(["Nachbar-Tausendstel von 3.954", "Nachbar-Tausendstel von 12.51", "Nachbar-Hunderter von 128.245", "Nachbar-Hunderter von 2540.6", "Nachbar-Zehntel von 7.6", "Nachbar-Zehntel von 13.07", "Mitte zwischen 10 und 10.5", "Mitte zwischen 10.5 und 10", "Mitte zwischen 0.4 und 20", "Mitte zwischen 20 und 0.4", "Mitte zwischen 0.7 und 0.94", "Mitte zwischen 0.94 und 0.7", "Mitte zwischen 0.6 und 0.006", "Mitte zwischen 0.006 und 0.6", "Start 0.4, Ziel 1.1, 5 Schritte", "0.005 · 10", "0.05 : 10", "0.005 · ☐ = 0.05", "☐ · 10 = 0.05", "0.05 : ☐ = 0.005", "☐ : 10 = 0.005", "23.16 · 10", "231.6 : 10", "23.16 · ☐ = 231.6", "☐ · 10 = 231.6", "231.6 : ☐ = 23.16", "☐ : 10 = 23.16", "0.03 · 100", "3 : 100", "0.03 · ☐ = 3", "☐ · 100 = 3", "3 : ☐ = 0.03", "☐ : 100 = 0.03", "0.04 · 100", "4 : 100", "0.04 · ☐ = 4", "☐ · 100 = 4", "4 : ☐ = 0.04", "☐ : 100 = 0.04", "5.25 · 1000", "5250 : 1000", "5.25 · ☐ = 5250", "☐ · 1000 = 5250", "5250 : ☐ = 5.25", "☐ : 1000 = 5.25", "0.037 · 1000", "37 : 1000", "0.037 · ☐ = 37", "☐ · 1000 = 37", "37 : ☐ = 0.037", "☐ : 1000 = 0.037", "1334 · 10", "13340 : 10", "1334 · ☐ = 13340", "☐ · 10 = 13340", "13340 : ☐ = 1334", "☐ : 10 = 1334", "0.009 · 10", "0.09 : 10", "0.009 · ☐ = 0.09", "☐ · 10 = 0.09", "0.09 : ☐ = 0.009", "☐ : 10 = 0.009"].map(LZK_NORM));
+function lzkExtra(t, id, text, show){
+  if(id==="A1") return /\b10 bis 11\b/.test(text) && ["10.06","10.19","10.48","10.73"].includes(show);
+  if(id==="A2"){
+    const folge = ["12.96","12.99","13.02","13.05","13.08","13.11","13.14"];
+    const m = text.match(/^0\.03er-Schritte ab (\S+)$/); if(m && folge.includes(m[1])) return true;
+    const z = text.match(/\d+(?:\.\d+)?/g) || [];
+    return z.length >= 2 && z.every(x => folge.includes(x));
+  }
+  return false;
+}
+function lzkGesperrt(t, id){
+  if(!t) return false;
+  if(LZK_TEXTE.has(LZK_NORM(t.text))) return true;
+  return lzkExtra(t, id, LZK_NORM(t.text), LZK_NORM(t.show));
+}
 
 /* ===== Lernpfad ===== */
 const app = document.getElementById("app"), pill = document.getElementById("pill");
@@ -700,7 +720,8 @@ function next(){
   if(probe) lv = 2;
   const sig = t=>t.type+"|"+String(t.q||"")+String(t.a||"")+" "+String(t.b||"")+String(t.html||"").replace(/<[^>]*>/g,"").replace(/[0-9.,’'\/]+/g,"#").slice(0,60);
   let t;
-  for(let k=0;k<30;k++){ const c = GOAL[id].gen(lv); if(!c) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  for(let k=0;k<60;k++){ const c = GOAL[id].gen(lv); if(!c || lzkGesperrt(c, id)) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  for(let k=0; !t && k<2000; k++){ const c = GOAL[id].gen(lv); if(c && !lzkGesperrt(c, id)) t = c; }   // nie eine Testaufgabe
   S.lastSig = sig(t);
   t.goal = id; t.lv = lv; t.probe = probe;
   S.task = t; S.done = false; S.answer = null; S.nr++;
