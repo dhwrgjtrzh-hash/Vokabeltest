@@ -418,7 +418,7 @@ const GOALS = [
 
 /* ---------- Bruch und Dezimalzahl ---------- */
 {id:"BD", code:"C2", title:"Bruch und Dezimalzahl", ic:"🔀", c:"#e0732b", info:"Bruch und Dezimalzahl vergleichen", tb:"TB S. 29, 30",
- help:()=>`<p>Schreibe den Bruch als Dezimalzahl, dann kannst du gut vergleichen.</p><p>${fr(2,5)} = ${fr(4,10)} = 0.4 → ${fr(2,5)} &gt; 0.3<br>${fr(2,3)} = 2 : 3 = 0.666… → 0.6 &lt; ${fr(2,3)}</p>`,
+ help:()=>`<p>Schreibe den Bruch als Dezimalzahl, dann kannst du gut vergleichen.</p><p>${fr(7,25)} = ${fr(28,100)} = 0.28 → ${fr(7,25)} &gt; 0.2<br>${fr(5,6)} = 5 : 6 = 0.833… → 0.8 &lt; ${fr(5,6)}</p>`,
  gen(lv){
    const P1=[[2,5],[3,5],[4,5],[1,2],[3,4],[1,4],[7,10],[3,10],[9,10],[1,5]];
    const P2=[[3,8],[5,8],[7,8],[7,20],[9,20],[13,20],[7,5],[5,4],[11,10],[3,2],[14,20],[6,25],[21,10],[33,50]];
@@ -458,7 +458,7 @@ const GOALS = [
 
 /* ---------- Zahlenstrahl ---------- */
 {id:"ZS", code:"C2", title:"Zahlenstrahl", ic:"📏", c:"#0b8ec2", info:"Brüche und Dezimalzahlen auf dem Zahlenstrahl", tb:"TB S. 29, 31",
- help:()=>`<p>1. Schreibe die Zahl als Dezimalzahl (oder als Hundertstel).<br>2. Zähle auf dem Zahlenstrahl ab: Wie viele Abschnitte hat die Strecke von 0 bis 1?</p><p>${fr(22,25)} = ${fr(88,100)} = 0.88 → nach dem langen Strich 0.8 noch 8 kleine Striche.</p>`,
+ help:()=>`<p>1. Schreibe die Zahl als Dezimalzahl (oder als Hundertstel).<br>2. Zähle auf dem Zahlenstrahl ab: Wie viele Abschnitte hat die Strecke von 0 bis 1?</p><p>${fr(17,20)} = ${fr(85,100)} = 0.85 → nach dem langen Strich 0.8 noch 5 kleine Striche.</p>`,
  gen(lv){
    if(lv===1){
      const k = rnd(1,19), right = [F(red(k,20).n,red(k,20).d), D(milli(k,20))][rnd(0,1)];
@@ -482,7 +482,7 @@ const GOALS = [
 
 /* ---------- Kürzen ---------- */
 {id:"KZ", code:"", title:"Kürzen", ic:"✂️", c:"#7c4dff", info:"Brüche so weit wie möglich kürzen", tb:"TB S. 31",
- help:()=>`<p>Teile Zähler und Nenner durch dieselbe Zahl. Mach weiter, bis es nicht mehr geht.</p><p>${fr(50,60)} = ${fr(5,6)} (durch 10) · ${fr(6,9)} = ${fr(2,3)} (durch 3) · ${fr(75,100)} = ${fr(3,4)} (durch 25)</p>`,
+ help:()=>`<p>Teile Zähler und Nenner durch dieselbe Zahl. Mach weiter, bis es nicht mehr geht.</p><p>${fr(50,60)} = ${fr(5,6)} (durch 10) · ${fr(6,9)} = ${fr(2,3)} (durch 3) · ${fr(45,100)} = ${fr(9,20)} (durch 5)</p>`,
  gen(lv){
    const r = randFrac(lv===3?15:10, lv===3?1.6:1);
    const k = lv===1 ? pick([2,5,10]) : lv===2 ? pick([3,4,6,25,8]) : pick([12,14,15,18,24,16,36]);
@@ -494,7 +494,7 @@ const GOALS = [
 /* ---------- Bruch in der Mitte (erweitert) ---------- */
 {id:"MB", code:"", erw:true, title:"Bruch in der Mitte", ic:"🎯", c:"#a05a00", info:"Den Bruch genau zwischen zwei Brüchen finden", tb:"TB S. 31",
  help:()=>`<p>1. Mache die Brüche gleichnamig (gleicher Nenner).<br>2. Liegt zwischen den Zählern keine ganze Zahl in der Mitte, erweitere beide noch mit 2.<br>3. Der Zähler in der Mitte ergibt den Bruch in der Mitte.</p>
-   <p>${fr(1,8)} und ${fr(3,8)} → ${fr(2,8)} = ${fr(1,4)} · ${fr(1,8)} und ${fr(1,16)} → ${fr(2,16)} und ${fr(1,16)} → ${fr(4,32)} und ${fr(2,32)} → <b>${fr(3,32)}</b></p>`,
+   <p>${fr(2,7)} und ${fr(6,7)} → <b>${fr(4,7)}</b> · ${fr(1,7)} und ${fr(1,14)} → ${fr(2,14)} und ${fr(1,14)} → ${fr(4,28)} und ${fr(2,28)} → <b>${fr(3,28)}</b></p>`,
  gen(lv){
    let a,b;
    if(lv===1){ const d=rnd(3,12); const x=rnd(1,d); a={n:x,d}; b={n:x+2,d}; }
@@ -511,6 +511,20 @@ const GOALS = [
        `Der Zähler in der Mitte von ${na} und ${nb} ist ${mn}: <b>${fr(mn,D2)}</b>${r.d!==D2?` = ${fr(r.n,r.d)}`:""}`])};
  }},
 ];
+
+/* ===== Sperrliste: Aufgaben aus der Lernzielkontrolle LZK 6.3 =====
+   Diese Aufgaben kommen im Trainer nie vor. Erzeugt der Zufall eine davon, wird neu gewürfelt. */
+const LZK_NORM = s => String(s||"").replace(/[’']/g,"").replace(/\s+/g," ").trim();
+const LZK_TEXTE = new Set(["5/8 ? 2/4", "2/4 ? 5/8", "2/5 ? 4/10", "4/10 ? 2/5", "7/10 ? 73/100", "73/100 ? 7/10", "7/8 ? 4/5", "4/5 ? 7/8", "32/100 kürzen", "4/100 kürzen", "6/10 kürzen", "75/100 kürzen", "Mitte zwischen 2/5 und 30/100", "Mitte zwischen 30/100 und 2/5", "Mitte zwischen 3/3 und 1/2", "Mitte zwischen 1/2 und 3/3", "Mitte zwischen 1/4 und 3/20", "Mitte zwischen 3/20 und 1/4", "Mitte zwischen 1/8 und 1/16", "Mitte zwischen 1/16 und 1/8"].map(LZK_NORM));
+function lzkExtra(t, id, text, show){
+  if(id==="ZS") return /^(35\/100|0\.4|3\/4|0\.8|22\/25|9\/10) (auf dem Zahlenstrahl 0 bis 1 )?eintragen\b/.test(text);
+  return false;
+}
+function lzkGesperrt(t, id){
+  if(!t) return false;
+  if(LZK_TEXTE.has(LZK_NORM(t.text))) return true;
+  return lzkExtra(t, id, LZK_NORM(t.text), LZK_NORM(t.show));
+}
 
 /* ===== Lernpfad ===== */
 const app = document.getElementById("app"), pill = document.getElementById("pill");
@@ -616,7 +630,8 @@ function next(){
   if(probe) lv = 2;
   const sig = t=>t.type+"|"+String(t.q||"")+String(t.a||"")+" "+String(t.b||"")+String(t.html||"").replace(/<[^>]*>/g,"").replace(/[0-9.,’'\/]+/g,"#").slice(0,60);
   let t;
-  for(let k=0;k<30;k++){ const c = GOAL[id].gen(lv); if(!c) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  for(let k=0;k<60;k++){ const c = GOAL[id].gen(lv); if(!c || lzkGesperrt(c, id)) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  for(let k=0; !t && k<2000; k++){ const c = GOAL[id].gen(lv); if(c && !lzkGesperrt(c, id)) t = c; }   // nie eine Testaufgabe
   S.lastSig = sig(t);
   t.goal = id; t.lv = lv; t.probe = probe;
   S.task = t; S.done = false; S.answer = null; S.nr++;
