@@ -278,6 +278,7 @@ svg.nl{color:var(--ink)}
   </header>
   <main id="app"></main>
 </div>
+<script src="tipp-schutz.js" data-knoepfe=".cmpbtns button"></script>
 <script>
 /* Adresse des Google-Skripts, das die Antworten speichert (leer = nichts senden). */
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbzrgzAVAzJ9qKnFE-A4AocZiMw3cG-8pMTBbJ73ypN3HQH7XzOCM7hVgW2WbqBkBNIs/exec";
@@ -698,6 +699,9 @@ function draw(){
   if(t.type==="place") setupPlace();
   document.getElementById("nextBtn").onclick = go;
   const qb = document.getElementById("quit"); if(qb) qb.onclick = leave;
+  // Wer nach unten gescrollt hat (z. B. zu «Weiter →»), sieht die neue Aufgabe von oben
+  const oben = app.getBoundingClientRect().top;
+  if(oben < 0) window.scrollBy(0, oben - 10);
 }
 
 function setupOrder(){
