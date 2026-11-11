@@ -21,6 +21,7 @@
   --englisch:#0b8a78; --englisch-soft:#dcf4ef;
   --nmg:#b8690a; --nmg-soft:#fbefdc;
   --franz:#5b46c9; --franz-soft:#ecebfa;
+  --mi:#0e7490; --mi-soft:#dff3f8;
   --display:"Fredoka", "Trebuchet MS", system-ui, sans-serif;
   --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   --shadow:0 1px 2px rgba(24,35,61,.06), 0 6px 18px rgba(24,35,61,.07);
@@ -32,6 +33,7 @@
   --englisch:#4dd3bd; --englisch-soft:#13372f;
   --nmg:#f0a94a; --nmg-soft:#3b2a12;
   --franz:#a596ff; --franz-soft:#262343;
+  --mi:#5ccfe6; --mi-soft:#12333d;
   --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
   color-scheme:dark;
 }}
@@ -42,6 +44,7 @@
   --englisch:#4dd3bd; --englisch-soft:#13372f;
   --nmg:#f0a94a; --nmg-soft:#3b2a12;
   --franz:#a596ff; --franz-soft:#262343;
+  --mi:#5ccfe6; --mi-soft:#12333d;
   --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
   color-scheme:dark;
 }
@@ -75,6 +78,12 @@ h1{font-family:var(--display); font-weight:600; font-size:clamp(28px, 6vw, 38px)
 [data-fach="englisch"]{--c:var(--englisch); --soft:var(--englisch-soft)}
 [data-fach="nmg"]{--c:var(--nmg); --soft:var(--nmg-soft)}
 [data-fach="franzoesisch"]{--c:var(--franz); --soft:var(--franz-soft)}
+[data-fach="mi"]{--c:var(--mi); --soft:var(--mi-soft)}
+/* Noch nicht freigeschaltet (z. B. ein Test, der erst später startet) */
+.trainer.zu{cursor:default; box-shadow:none; border-style:dashed; opacity:.85}
+.trainer.zu:hover{transform:none; border-color:var(--line)}
+.trainer.zu .pfeil{background:var(--line); color:var(--muted)}
+.trainer .zu-satz{display:block; margin-top:6px; font-size:14px; font-weight:700; color:var(--c)}
 
 /* Fachansicht */
 .ansicht{display:flex; flex-direction:column; gap:18px}
@@ -193,6 +202,8 @@ const ICONS = {
   englisch:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h14v10H10l-4 4v-4H4z"/><path d="M22 12h6v10h-2v4l-4-4h-6v-2"/></svg>',
   franzoesisch:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h22v15H14l-6 5v-5H5z"/><path d="M12 11h6M12 11v6M12 14h4"/><path d="M21 9l-1.5 2"/></svg>',
   nmg:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><circle cx="16" cy="16" r="11"/><path d="M5 16h22M16 5c3.5 3 5 7 5 11s-1.5 8-5 11c-3.5-3-5-7-5-11s1.5-8 5-11z"/></svg>',
+  mi:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="24" height="16" rx="2.5"/><path d="M12 27h8M16 21v6"/><path d="M11 13h2M15 13h2M19 13h2" stroke-width="3.2"/></svg>',
+  schloss:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="12" height="8" rx="2"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></svg>',
   pfeil:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>',
   zurueck:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10H5M9 5l-5 5 5 5"/></svg>'
 };
@@ -226,8 +237,16 @@ const FAECHER = [
     tipp:'Den Römer-Trainer kannst du <b>so oft du willst</b> wiederholen.',
     trainer:[
       { name:'Römer-Trainer', text:'Acht Übungen zum Leben im alten Rom.', zeichen:'XII', url:BASIS+'roemer.html', chips:['Die Römer'] }
+    ]},
+  { id:'mi', name:'Medien und Informatik',
+    tipp:'Den KI-Test machst du <b>nur einmal</b>. Gib am Anfang deine Glückszahl ein und lies jede Aufgabe genau.',
+    trainer:[
+      /* ab: Erst ab diesem Zeitpunkt anklickbar (der Test selbst ist bis dahin auch auf dem Server gesperrt). */
+      { name:'KI-Test', text:'Lernzielkontrolle «Künstliche Intelligenz».', zeichen:'KI', url:'https://script.google.com/macros/s/AKfycbzCgeEM0MkaJv9LTmw849YvxM4CWkRtHluxmOvm_lZclG1_ODIoqO8k6QRLMiyVM-06/exec', chips:['Lernzielkontrolle'],
+        ab:'2026-11-13T10:00:00+01:00', abText:'Freitag, 13. November, um 10 Uhr' }
     ]}
 ];
+const gesperrt = t => t.ab && Date.now() < Date.parse(t.ab);
 
 const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -260,17 +279,18 @@ function fachseite(f){
       <ul class="liste">
         ${f.trainer.map(t => `
           <li>
-            <a class="trainer" href="${esc(t.url)}">
+            <${gesperrt(t) ? 'div class="trainer zu" aria-disabled="true"' : `a class="trainer" href="${esc(t.url)}"`}>
               <span class="t-ico">${t.zeichen}</span>
               <span>
                 <p class="t-name">${t.name}${t.beta ? '<span class="beta-name">🧪 Beta-Test</span>' : ''}</p>
                 <p class="t-text">${t.text}</p>
                 <span class="chips">${t.chips.map(c => `<span class="chip">${c}</span>`).join('')}</span>
                 ${t.beta ? `<span class="beta-satz">Noch in der Probephase – es kann Fehler geben.</span>` : ''}
+                ${gesperrt(t) ? `<span class="zu-satz">Noch gesperrt – ab ${esc(t.abText)}</span>` : ''}
                 ${f.id === 'mathe' ? `<span class="u-status" data-plan="${esc(t.name)}"></span>` : ''}
               </span>
-              <span class="pfeil">${ICONS.pfeil}</span>
-            </a>
+              <span class="pfeil">${gesperrt(t) ? ICONS.schloss : ICONS.pfeil}</span>
+            </${gesperrt(t) ? 'div' : 'a'}>
           </li>`).join('')}
       </ul>
       ${f.id === 'mathe' ? '<details class="ueben" id="ueben" hidden></details>' : ''}
@@ -379,6 +399,8 @@ function zeigen(){
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', zeigen);
+/* Gesperrte Einträge zur Startzeit von selbst freischalten, falls die Seite schon offen ist */
+FAECHER.forEach(f => f.trainer.forEach(t => { if (gesperrt(t)) { const ms = Date.parse(t.ab) - Date.now() + 1500; if (ms < 2147483000) setTimeout(() => { const y = window.scrollY; zeigen(); window.scrollTo(0, y); }, ms); } }));
 zeigen();
 </script>
 
