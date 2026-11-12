@@ -154,15 +154,15 @@ const GOALS = [
    <p>«3 Maschinen brauchen 8 Tage. 6 Maschinen brauchen 16 Tage.»<br>Doppelt so viele Maschinen brauchen nur <b>die Hälfte</b> der Zeit: 8 Tage : 2 = 4 Tage. → Die Aussage <b>stimmt nicht</b>.</p>`,
  gen(lv){
    const KONT = [
-     {id:"masch", a:[2,3,4,5,6,8,9,10,12], b:[2,3,4,5,6,8,9,10,12,15,18,20], s:(a,b)=>`${a} gleiche Maschinen erledigen einen Auftrag in ${b} Tagen.`, s2:(a,b)=>`Mit ${a} Maschinen dauert es ${b} Tage.`,
+     {id:"masch", min:[2,24], minB:2, a:[2,3,4,5,6,8,9,10,12], b:[2,3,4,5,6,8,9,10,12,15,18,20], s:(a,b)=>`${a} gleiche Maschinen erledigen einen Auftrag in ${b} Tagen.`, s2:(a,b)=>`Mit ${a} Maschinen dauert es ${b} Tage.`,
        mehr:"Mit mehr Maschinen", weniger:"Mit weniger Maschinen", gr:"dauert es länger", kl:"geht es schneller", aE:"Maschinen", bE:"Tage"},
-     {id:"kinder", a:[2,3,4,5,6,8,10,12], b:[6,8,10,12,15,20,24,30,40], s:(a,b)=>`${a} Kinder räumen zusammen das Schulzimmer in ${b} min auf.`, s2:(a,b)=>`${a} Kinder brauchen ${b} min.`,
+     {id:"kinder", min:[2,24], minB:2, a:[2,3,4,5,6,8,10,12], b:[6,8,10,12,15,20,24,30,40], s:(a,b)=>`${a} Kinder räumen zusammen das Schulzimmer in ${b} min auf.`, s2:(a,b)=>`${a} Kinder brauchen ${b} min.`,
        mehr:"Mit mehr Kindern", weniger:"Mit weniger Kindern", gr:"dauert das Aufräumen länger", kl:"geht das Aufräumen schneller", aE:"Kinder", bE:"min"},
-     {id:"stufen", a:[15,16,17,18,20], b:[12,15,16,18,20,24], s:(a,b)=>`Eine Treppe hat ${b} Stufen, jede ist ${a} cm hoch.`, s2:(a,b)=>`Mit ${a} cm hohen Stufen wären es ${b} Stufen.`,
+     {id:"stufen", min:[12,22], minB:6, a:[15,16,17,18,20], b:[12,15,16,18,20,24], s:(a,b)=>`Eine Treppe hat ${b} Stufen, jede ist ${a} cm hoch.`, s2:(a,b)=>`Mit ${a} cm hohen Stufen wären es ${b} Stufen.`,
        mehr:"Mit höheren Stufen", weniger:"Mit niedrigeren Stufen", gr:"braucht es mehr Stufen", kl:"braucht es weniger Stufen", aE:"cm", bE:"Stufen"},
-     {id:"tempo", a:[20,30,40,50,60,90,100,120], b:[1,2,3,4,5,6], s:(a,b)=>`Mit ${a} km/h ist Herr Brunner in ${b} h am Ziel.`, s2:(a,b)=>`Mit ${a} km/h braucht er ${b} h.`,
+     {id:"tempo", min:[20,130], minB:1, a:[20,30,40,50,60,90,100,120], b:[1,2,3,4,5,6], s:(a,b)=>`Mit ${a} km/h ist Herr Brunner in ${b} h am Ziel.`, s2:(a,b)=>`Mit ${a} km/h braucht er ${b} h.`,
        mehr:"Wer schneller fährt,", weniger:"Wer langsamer fährt,", gr:"braucht mehr Zeit", kl:"ist früher am Ziel", aE:"km/h", bE:"h"},
-     {id:"hahn", a:[4,5,6,8,10,12,15], b:[6,8,10,12,15,20,24,30], s:(a,b)=>`Bei ${a} l pro Minute ist ein Becken in ${b} min voll.`, s2:(a,b)=>`Bei ${a} l pro Minute dauert es ${b} min.`,
+     {id:"hahn", min:[2,40], minB:2, a:[4,5,6,8,10,12,15], b:[6,8,10,12,15,20,24,30], s:(a,b)=>`Bei ${a} l pro Minute ist ein Becken in ${b} min voll.`, s2:(a,b)=>`Bei ${a} l pro Minute dauert es ${b} min.`,
        mehr:"Fliesst mehr Wasser pro Minute, dann", weniger:"Fliesst weniger Wasser pro Minute, dann", gr:"dauert es länger", kl:"ist das Becken schneller voll", aE:"l pro Minute", bE:"min"},
    ];
    for(let tries=0; tries<400; tries++){
@@ -180,12 +180,12 @@ const GOALS = [
      let a2;
      if(lv===2){ const f = pick([2,3]); a2 = Math.random()<.5 ? a*f : a/f; if(!ganz(a2)) continue; }
      else { a2 = pick(K.a.concat([a+1,a+2,a*3/2,a*2/3])); if(!ganz(a2) || a2===a || (a2%a===0) || (a%a2===0)) continue; }
-     if(a2<=0) continue;
+     if(a2<K.min[0] || a2>K.min[1]) continue;
      const b2r = P/a2;
-     if(!ganz(b2r) || b2r<1) continue;
+     if(!ganz(b2r) || b2r<K.minB) continue;
      const art = pick(["richtig","prop","falsch"]);
      let b2 = art==="richtig" ? b2r : art==="prop" ? b*a2/a : b2r + pick([-2,-1,1,2])*Math.max(1, Math.round(b2r/6));
-     if(!ganz(b2) || b2<=0 || (art!=="richtig" && b2===b2r)) continue;
+     if(!ganz(b2) || b2<K.minB || (art!=="richtig" && b2===b2r)) continue;
      if(K.id==="tempo" && ((a===50 && a2===75) || (a===45))) continue;
      const stimmt = b2===b2r;
      const aussage = `${K.s(a,b)} ${K.s2(a2,b2)}`;
@@ -210,7 +210,7 @@ const GOALS = [
        const tier = pick([["Hasen","Hasen"],["Ziegen","Ziegen"],["Meerschweinchen","Meerschweinchen"],["Schafe","Schafe"]]);
        a = pick([2,3,4,5,6,8,9,10,12]); b = pick([4,6,8,9,10,12,15,18,20,24]); c = pick([2,3,4,5,6,8,9,10,12,15,16,18]);
        if(!ok(a,c) || !ganz(a*b/c)) continue;
-       const y = a*b/c;
+       const y = a*b/c; if(y<2) continue;
        return {type:"input", html:situation(`Ein Futtervorrat reicht für <b>${a} ${tier[0]}</b> genau <b>${b} Tage</b>.`)+frage(`Wie lange reicht der gleiche Vorrat für <b>${c} ${tier[1]}</b>?`), answer:y, unit:"Tage", k:["futter"+a+"-"+b+"-"+c],
          text:`Futter: ${a} ${tier[0]} ${b} Tage → ${c} ${tier[1]}`, show:zahl(y)+" Tage",
          explain: wpTab([tier[0],"Tage"], [{l:a,r:b},{l:c,r:"?",frage:true,strich:true}].concat(umgRows(a,b,c,zahl,zahl,false))) + `<p>Der Vorrat reicht <b>${zahl(y)} Tage</b>. Kontrolle: ${a} · ${b} = ${c} · ${zahl(y)} = ${a*b}.</p>`};
@@ -218,7 +218,7 @@ const GOALS = [
      if(art==="treppe"){
        a = pick([14,15,16,17,18,19,20]); b = pick([12,14,15,16,18,20,21,24]); c = pick([14,15,16,17,18,19,20,21]);
        if(c===a || (lv===1 ? false : (c%a===0 || a%c===0)) || !ganz(a*b/c) || (a===18 && b===20 && c===15)) continue;
-       const y = a*b/c;
+       const y = a*b/c; if(y<2) continue;
        return {type:"input", html:situation(`Eine Treppe hat <b>${b} Stufen</b>, jede ist <b>${a} cm</b> hoch.`)+frage(`Wie viele Stufen braucht es für die gleiche Treppe, wenn jede Stufe <b>${c} cm</b> hoch ist?`), answer:y, unit:"Stufen", k:["treppe"+a+"-"+b+"-"+c],
          text:`Treppe: ${b} Stufen à ${a} cm → Stufen à ${c} cm`, show:zahl(y)+" Stufen",
          explain: `<p>Die ganze Treppe ist ${b} · ${a} cm = <b>${a*b} cm</b> hoch.</p><p>${a*b} cm : ${c} cm = <b>${zahl(y)} Stufen</b></p>` + wpTab(["Stufenhöhe","Stufen"], umgRows(a,b,c,x=>x+" cm",zahl,false))};
@@ -227,7 +227,7 @@ const GOALS = [
        const ware = pick(["Kartoffeln","Zwiebeln","Mehl","Reis"]);
        a = pick([2,3,4,5,6,8,10,12,15,20,25]); b = pick([12,15,18,20,24,30,36,40,45,48,60]); c = pick([2,3,4,5,6,8,10,12,15,20,25]);
        if(!ok(a,c) || !ganz(a*b/c)) continue;
-       const y = a*b/c;
+       const y = a*b/c; if(y<2) continue;
        return {type:"input", html:situation(`<b>${b} Säcke</b> mit je <b>${a} kg</b> ${ware} werden in Säcke zu <b>${c} kg</b> umgepackt.`)+frage(`Wie viele Säcke gibt es jetzt?`), answer:y, unit:"Säcke", k:["um"+a+"-"+b+"-"+c],
          text:`Umpacken: ${b} Säcke à ${a} kg → Säcke à ${c} kg`, show:zahl(y)+" Säcke",
          explain: `<p>Zusammen sind es ${b} · ${a} kg = <b>${a*b} kg</b>.</p><p>${a*b} kg : ${c} kg = <b>${zahl(y)} Säcke</b></p>` + wpTab(["kg pro Sack","Säcke"], umgRows(a,b,c,zahl,zahl,false))};
@@ -289,7 +289,7 @@ const GOALS = [
      if(art==="masch"){
        const a = pick([3,4,5,6,8,9,10,12,15]), d = pick([6,8,9,10,12,14,15,16,18,20,24]), c = pick([3,4,5,6,8,9,10,12,15,16,18,20]);
        if(c===a || c%a===0 || a%c===0) continue;
-       const y = a*d/c; if(!ganz(y) || (lv===3 && y<3)) continue;
+       const y = a*d/c; if(!ganz(y) || y<2 || (lv===3 && y<3)) continue;
        return {type:"input", html:situation(`<b>${a} gleiche Maschinen</b> erledigen einen Auftrag in <b>${d} Arbeitstagen</b>.`)+frage(`Wie lange brauchen <b>${c} Maschinen</b> für den gleichen Auftrag?`), answer:y, unit:"Tage", k:["m"+a+"-"+d+"-"+c],
          text:`${a} Maschinen ${d} Tage → ${c} Maschinen`, show:zahl(y)+" Tage",
          explain: wpTab(["Maschinen","Tage"], [{l:a,r:d},{l:c,r:"?",frage:true,strich:true}].concat(umgRows(a,d,c,zahl,zahl,false))) + `<p>Oder über das Ganze: ${a} · ${d} = ${a*d} Maschinentage. ${a*d} : ${c} = <b>${zahl(y)} Tage</b>.</p>`};
@@ -297,7 +297,7 @@ const GOALS = [
      if(art==="laster"){
        const x = pick([4,6,8,10,12,15,16,20,24]), n = pick([6,8,9,10,12,15,18,20,24,30]), y = pick([4,6,8,10,12,15,16,20,24]);
        if(y===x || y%x===0 || x%y===0 || (x===18||y===18)) continue;
-       const m = x*n/y; if(!ganz(m)) continue;
+       const m = x*n/y; if(!ganz(m) || m<2) continue;
        return {type:"input", html:situation(`Ein Lastwagen kann <b>${x} t</b> Kies laden. Um einen Kieshaufen wegzuführen, muss er <b>${n} Mal</b> fahren.`)+frage(`Wie oft muss ein Lastwagen fahren, der nur <b>${y} t</b> laden kann?`), answer:m, unit:"Mal", k:["l"+x+"-"+n+"-"+y],
          text:`Lastwagen ${x} t, ${n} Fahrten → ${y} t`, show:zahl(m)+" Mal",
          explain: wpTab(["Ladung","Fahrten"], [{l:x+" t",r:n},{l:y+" t",r:"?",frage:true,strich:true}].concat(umgRows(x,n,y,v=>v+" t",zahl,false))) + `<p>Oder über das Ganze: Der Kieshaufen wiegt ${x} · ${n} = ${x*n} t. ${x*n} : ${y} = <b>${zahl(m)} Fahrten</b>.</p>`};
