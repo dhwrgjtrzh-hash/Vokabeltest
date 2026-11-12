@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Unsere Filme – Rangliste</title>
+<title>Filmauswahl für das Kino</title>
 <link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +23,7 @@ button{font:inherit;color:inherit}
 .card{background:var(--lp-karte);border:2px solid var(--lp-linie);border-radius:20px;padding:16px 18px;box-shadow:var(--lp-schatten)}
 .intro h2{margin:0 0 4px;font-size:1.45rem;line-height:1.15}
 .intro p{margin:0;color:var(--lp-leise)}
+.intro p.erklaerung{margin:6px 0 8px;color:var(--lp-ink);font-weight:700;font-size:1.05rem}
 .ende{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lp-leise);margin:2px 4px}
 .ende.oben{color:var(--lp-akzent)}
 
@@ -88,7 +89,7 @@ button{font:inherit;color:inherit}
   <header class="lp-kopf">
     <a class="lp-zurueck" href="./">‹ Lernportal</a>
     <div class="lp-logo">★</div>
-    <h1 class="lp-titel"><small>Klasse 6b · Abstimmung</small>Unsere Filme</h1>
+    <h1 class="lp-titel"><small>Klasse 6b · Kino morgen</small>Filmauswahl</h1>
     <div class="lp-rechts"></div>
   </header>
 
@@ -97,8 +98,9 @@ button{font:inherit;color:inherit}
   <!-- Sortieren -->
   <section id="sortieren">
     <div class="card intro">
-      <h2>Welchen Film möchtest du am liebsten schauen?</h2>
-      <p>Zieh die Filme in deine Reihenfolge: <b>ganz oben</b> dein Lieblingsfilm, <b>ganz unten</b> der Film, den du am wenigsten schauen möchtest. Du kannst auch die Pfeile benutzen.</p>
+      <h2>Welchen Film schauen wir morgen im Kino?</h2>
+      <p class="erklaerung">Aus den anderen Klassen gibt es insgesamt diese 10 Filmvorschläge. Erstelle deine Reihenfolge: Zuoberst steht der Film, den du am liebsten schauen möchtest, zuunterst der Film, den du am wenigsten gern schauen würdest.</p>
+      <p>Zieh die Filme an ihren Platz oder benutze die Pfeile. Dann schickst du deine Rangliste unten ab.</p>
     </div>
     <p class="ende oben" style="margin-top:14px">★ Am liebsten</p>
     <ol class="liste" id="liste" aria-label="Deine Rangliste"></ol>
@@ -124,7 +126,7 @@ button{font:inherit;color:inherit}
 <script>
 /* ---------- Die Abstimmung ---------- */
 const UEBUNG = "Filmrangliste";        // Name in der Tabelle «Übungen – Resultate» und in der Station
-const THEMA  = "Unsere Filme";
+const THEMA  = "Filmauswahl Kino";
 const FILME = [
   "Ice Age",
   "Nachts im Museum",
