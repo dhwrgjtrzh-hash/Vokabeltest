@@ -1,0 +1,1222 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>KI-Lernwerkstatt</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: eine zentrierte Spalte (max 760px) auf Rechenheft-Karo; Ansichten wechseln an Ort: Übersicht → Kapitel (Schritt für Schritt) → Lernstand-Check. Alle Icons sind 0/1-Pixelbilder, wie in Kapitel 4. */
+:root{
+  --paper:#f8faff; --grid:#e1e8f6; --card:#ffffff; --line:#d3dbec;
+  --ink:#1a2348; --ink-soft:#56607f;
+  --blue:#2b55d4; --blue-soft:#e7edfd; --on-blue:#ffffff;
+  --marker:#ffcf2e; --hl:#ffe27a; --hl-soft:#fff6cf;
+  --good:#1d8a4b; --good-soft:#e2f4e9; --bad:#c6372c; --bad-soft:#fbe6e3;
+  --cr1:#ef78a6; --cr2:#45b97c; --cr3:#5a8af0; --cr4:#f0b232;
+  --eye:#ffffff; --pupil:#1a2348; --tag-ink:#1a2348;
+  --f-display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#10152a; --grid:#1a2241; --card:#171f3a; --line:#2b3558;
+    --ink:#e9edf9; --ink-soft:#a5adc8;
+    --blue:#7f9dff; --blue-soft:#1f2a55; --on-blue:#0d1330;
+    --marker:#ffcf2e; --hl:rgba(255,207,46,.32); --hl-soft:#2e2913;
+    --good:#55cf8a; --good-soft:#13331f; --bad:#ff7e72; --bad-soft:#3a1b19;
+    --cr1:#f08ab2; --cr2:#55c78a; --cr3:#7b9ff5; --cr4:#f3bd4c;
+    --eye:#ffffff; --pupil:#1a2348; --tag-ink:#1a2348;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10152a; --grid:#1a2241; --card:#171f3a; --line:#2b3558;
+  --ink:#e9edf9; --ink-soft:#a5adc8;
+  --blue:#7f9dff; --blue-soft:#1f2a55; --on-blue:#0d1330;
+  --marker:#ffcf2e; --hl:rgba(255,207,46,.32); --hl-soft:#2e2913;
+  --good:#55cf8a; --good-soft:#13331f; --bad:#ff7e72; --bad-soft:#3a1b19;
+  --cr1:#f08ab2; --cr2:#55c78a; --cr3:#7b9ff5; --cr4:#f3bd4c;
+  --eye:#ffffff; --pupil:#1a2348; --tag-ink:#1a2348;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.6;
+}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 56px}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+p{margin:0 0 .7em}
+p:last-child{margin-bottom:0}
+b{font-weight:700}
+.hl{background:linear-gradient(transparent 58%,var(--hl) 58%);padding:0 .1em}
+button{font:inherit;color:inherit}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.pix{display:block}
+.pix .p1{fill:var(--ink)}
+.pix .p2{fill:var(--marker)}
+.bit .p1{fill:var(--blue)}
+.bit .p2{fill:var(--marker)}
+
+/* Übersicht */
+.hero{display:flex;gap:18px;align-items:center;margin-bottom:22px}
+.hero .bit{width:84px;flex:none}
+.hero h1{font-size:clamp(2.3rem,8vw,3.5rem);font-weight:800;letter-spacing:-.01em}
+.hero p{margin:.3em 0 0;color:var(--ink-soft);max-width:34em}
+.overall{display:flex;align-items:center;gap:12px;margin:0 0 18px;font-size:.95rem;color:var(--ink-soft)}
+.meter{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--good);border-radius:5px;transition:width .4s}
+.chgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ch-card{display:flex;flex-direction:column;gap:8px;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s,transform .15s}
+.ch-card:hover{border-color:var(--blue);transform:translateY(-2px)}
+.ch-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.icobox{width:46px;height:46px;border-radius:10px;background:var(--blue-soft);display:grid;place-items:center;flex:none}
+.icobox .pix{width:28px;height:28px}
+.ch-card.done .icobox{background:var(--good-soft)}
+.ch-card.done .icobox .p1{fill:var(--good)}
+.kick{font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+.ch-card h3{font-size:1.25rem;font-weight:800}
+.status{font-size:.85rem;color:var(--ink-soft);display:flex;align-items:center;gap:3px;min-height:20px}
+.stars{display:flex;gap:3px}
+.stars .pix{width:16px;height:16px}
+.stars .off .p1{fill:var(--line)}
+.stars .on .p1{fill:var(--marker)}
+.quiz-card{margin-top:14px;width:100%;display:flex;align-items:center;gap:16px;text-align:left;background:var(--blue);color:var(--on-blue);border:0;border-radius:16px;padding:18px;cursor:pointer;transition:transform .15s}
+.quiz-card:hover{transform:translateY(-2px)}
+.quiz-card .pix{width:44px;height:44px;flex:none}
+.quiz-card .pix .p1{fill:var(--marker)}
+.quiz-card h3{font-size:1.5rem;font-weight:800}
+.quiz-card span{font-size:.95rem;opacity:.92}
+.quiz-card .go{margin-left:auto;font-family:var(--f-display);font-size:1.6rem;font-weight:800}
+.foot{margin-top:34px;padding-top:16px;border-top:1.5px dashed var(--line);font-size:.88rem;color:var(--ink-soft)}
+.foot b{color:var(--ink)}
+.linkbtn{background:none;border:0;padding:0;color:var(--blue);text-decoration:underline;cursor:pointer;font-size:.88rem}
+.confirm{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* Kapitel */
+.ch-head{margin-bottom:14px}
+.back{background:none;border:0;padding:4px 0;color:var(--blue);font-weight:700;cursor:pointer;margin-bottom:8px}
+.ch-head h2{font-size:clamp(1.8rem,6vw,2.4rem);font-weight:800}
+.dots{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.dots span{width:14px;height:14px;background:var(--line);border-radius:2px}
+.dots span.past{background:var(--good)}
+.dots span.now{background:var(--blue)}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:22px}
+@media (max-width:480px){.panel{padding:16px}}
+.panel h3{font-size:1.45rem;font-weight:800;margin-bottom:12px}
+.q{font-size:1.12rem;font-weight:700;margin:0 0 14px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{background:var(--blue);color:var(--on-blue);border:0;border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;font-size:1rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+.btn.small{padding:8px 14px;font-size:.92rem}
+.hint{font-size:.9rem;color:var(--ink-soft);margin-top:8px}
+
+/* Bit fragt (Einstieg) */
+.hook{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.hook .bit{width:64px;flex:none}
+.speech{position:relative;background:var(--blue-soft);border-radius:16px;padding:14px 16px;flex:1;min-width:0}
+.speech small{display:block;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+.speech p{font-family:var(--f-display);font-weight:600;font-size:1.25rem;line-height:1.3;margin:2px 0 0}
+.guess{display:flex;flex-wrap:wrap;gap:8px}
+.guess button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer}
+.guess button:hover:not(:disabled){border-color:var(--blue)}
+.guess button.picked{border-color:var(--blue);background:var(--blue-soft)}
+.guess button.right{border-color:var(--good);background:var(--good-soft)}
+.guess button:disabled{cursor:default}
+
+/* Lernkarten */
+.cards{display:flex;flex-direction:column;gap:14px}
+.lk h4{font-size:1.15rem;font-weight:800;margin-bottom:4px;color:var(--blue)}
+.lk+.lk{padding-top:14px;border-top:1.5px dashed var(--line)}
+.wort{margin-top:14px;border:2px solid var(--line);border-radius:12px;padding:10px 14px;font-size:.96rem}
+.wort .kick{margin-bottom:2px}
+.wort dl{margin:0;display:grid;gap:4px}
+.wort dt{font-weight:700;display:inline}
+.wort dd{display:inline;margin:0}
+.merke{margin-top:16px;background:var(--hl-soft);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.merke .tag{font-family:var(--f-display);font-weight:800;background:var(--marker);color:#2b2100;border-radius:6px;padding:1px 9px;flex:none}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 0}
+.compare>div{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.compare h4{margin:0 0 4px;font-family:var(--f-display);font-size:1.1rem;color:var(--ink)}
+.compare p{margin:0;font-size:.96rem}
+.compare small{display:block;margin-top:6px;color:var(--ink-soft);font-size:.86rem}
+@media (max-width:540px){.compare{grid-template-columns:1fr}}
+.loop{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.loop li{background:var(--blue-soft);border-radius:999px;padding:5px 12px;font-weight:700;font-size:.93rem}
+.loop li.arr{background:none;padding:0;color:var(--ink-soft)}
+.tbl{overflow-x:auto;margin:8px 0 0}
+.tbl table{border-collapse:collapse;width:100%;min-width:440px;font-size:.95rem}
+.tbl th,.tbl td{text-align:left;padding:8px 10px;border-bottom:1.5px solid var(--line);vertical-align:top}
+.tbl th{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft)}
+.bb{display:inline-block;border-radius:6px;padding:0 8px;font-weight:700;color:var(--tag-ink)}
+.b1{background:var(--cr1)}.b2{background:var(--cr2)}.b3{background:var(--cr3)}.b4{background:var(--cr4)}
+.phone{border:2px solid var(--line);border-radius:18px;padding:12px;max-width:320px;margin:8px 0}
+.phone .typed{font-family:var(--f-mono);font-size:.95rem;padding:8px 10px;background:var(--blue-soft);border-radius:8px}
+.phone .sugg{display:flex;gap:6px;margin-top:8px}
+.phone .sugg span{flex:1;text-align:center;border:1.5px solid var(--line);border-radius:8px;padding:4px;font-size:.9rem}
+.chat{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+.bubble{border-radius:14px;padding:10px 14px;max-width:88%;font-size:.98rem}
+.bubble.me{align-self:flex-end;background:var(--blue);color:var(--on-blue)}
+.bubble.ai{align-self:flex-start;background:var(--blue-soft)}
+.bubble small{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.lex{border:2px solid var(--ink);border-radius:4px;padding:10px 14px;margin:0 0 14px;font-size:.95rem;background:var(--card)}
+.lex .kick{margin-bottom:2px}
+.mini-ill{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0 0}
+.mini-ill .pix{width:96px;height:96px;border:1.5px solid var(--line);border-radius:6px;padding:4px}
+
+/* Antworten */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .12s}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft);text-decoration:line-through;opacity:.85}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.fb .bit{width:34px;flex:none}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.fb.info{background:var(--blue-soft)}
+.fb b.t{display:block;font-family:var(--f-display);font-size:1.1rem}
+.fb>div{min-width:0}
+
+.sort-list{display:flex;flex-direction:column;gap:10px}
+.sort-item{border:2px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.sort-item .txt{flex:1 1 220px;min-width:0}
+.sort-item.ok{border-color:var(--good);background:var(--good-soft)}
+.sort-item.no{border-color:var(--bad);background:var(--bad-soft)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:.92rem;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.seg button:disabled{cursor:default}
+.check-row{margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.gap-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--f-mono);font-size:1.05rem;padding:10px 0;border-bottom:1.5px dashed var(--line)}
+.gap-row .lbl{font-family:var(--f-body);font-size:.95rem;color:var(--ink-soft)}
+select{font:inherit;font-family:var(--f-mono);border:2px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--card);color:var(--ink)}
+select.ok{border-color:var(--good);background:var(--good-soft)}
+select.no{border-color:var(--bad);background:var(--bad-soft)}
+
+.creatures{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 14px}
+.creature{width:64px;height:64px}
+.ex-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.ex-row .name{font-family:var(--f-display);font-weight:800;font-size:1.2rem;min-width:70px}
+
+.bars{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.bar{display:grid;grid-template-columns:minmax(80px,9em) 1fr 3.4em;gap:10px;align-items:center;font-size:.95rem}
+.bar .lab{min-width:0;overflow-wrap:anywhere}
+.bar .track{height:16px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar .fill{height:100%;background:var(--blue);border-radius:4px;transition:width .5s}
+.bar.top .fill{background:var(--good)}
+.bar.mine .lab{font-weight:700;text-decoration:underline;text-decoration-color:var(--marker);text-decoration-thickness:3px}
+.bar .pct{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;font-size:.88rem}
+
+.pixwork{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.pgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;width:min(100%,280px)}
+.pgrid button{aspect-ratio:1;border:1.5px solid var(--line);background:var(--card);border-radius:3px;padding:0;cursor:pointer;max-width:100%}
+.pgrid button.on{background:var(--ink);border-color:var(--ink)}
+.numgrid{display:grid;grid-template-columns:repeat(8,1.6em);gap:2px;font-family:var(--f-mono);font-size:.95rem;text-align:center}
+.numgrid span{color:var(--ink-soft)}
+.numgrid span.one{color:var(--ink);font-weight:700;background:var(--hl-soft);border-radius:3px}
+.numlbl{font-size:.82rem;color:var(--ink-soft);margin-bottom:4px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
+.chip{display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:8px 12px;cursor:pointer;font-size:.93rem;text-align:left}
+.chip[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-soft);font-weight:700}
+.chip:disabled{cursor:default;opacity:.85}
+.chip .dot{width:14px;height:14px;border-radius:50%;flex:none}
+.sub{font-family:var(--f-display);font-size:1.1rem;font-weight:800;margin:10px 0 2px}
+
+.sentence{font-size:1.3rem;font-family:var(--f-display);font-weight:600;margin:4px 0 14px}
+.sentence .blank{display:inline-block;min-width:4.5em;border-bottom:3px solid var(--marker);text-align:center;color:var(--blue)}
+.wordopts{display:flex;flex-wrap:wrap;gap:8px}
+.wordopts button{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;font-size:1.02rem}
+.wordopts button:hover:not(:disabled){border-color:var(--blue)}
+.wordopts button:disabled{cursor:default;opacity:.6}
+
+.builder{display:grid;gap:10px}
+.builder label{display:grid;grid-template-columns:7em 1fr;gap:10px;align-items:center}
+.builder select{font-family:var(--f-body);width:100%;min-width:0}
+@media (max-width:540px){.builder label{grid-template-columns:1fr}}
+.promptbox{margin-top:14px;border:2px solid var(--line);border-radius:14px;padding:12px 14px;min-height:64px}
+.promptbox .lbl{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:6px}
+.promptbox .part{border-radius:5px;padding:0 3px}
+
+/* Ende & Lernstand-Check */
+.center{text-align:center}
+.end .bit{width:90px;margin:0 auto 10px}
+.bigstars{display:flex;gap:8px;justify-content:center;margin:12px 0}
+.bigstars .pix{width:42px;height:42px}
+.bigstars .off .p1{fill:var(--line)}.bigstars .on .p1{fill:var(--marker)}
+.btnrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.qbar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin:10px 0 18px}
+.qbar i{display:block;height:100%;background:var(--blue);transition:width .3s}
+.score{font-family:var(--f-display);font-weight:800;font-size:4rem;line-height:1;margin:8px 0}
+.score small{font-size:1.6rem;color:var(--ink-soft)}
+.goals{text-align:left;margin-top:18px;display:flex;flex-direction:column}
+.goal{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;padding:10px 0;border-bottom:1.5px solid var(--line)}
+.goal .gl{min-width:0}
+.goal .gl b{display:block;font-size:.98rem}
+.goal .gl span{font-size:.82rem;color:var(--ink-soft)}
+.st{font-size:.82rem;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.st.s2{background:var(--good-soft);color:var(--good)}
+.st.s1{background:var(--hl-soft);color:var(--ink)}
+.st.s0{background:var(--bad-soft);color:var(--bad)}
+.goal .btn{grid-column:1/-1;justify-self:start}
+.proof{border:3px dashed var(--marker);border-radius:16px;padding:14px 18px;margin:16px auto 0;max-width:440px}
+/* Erklärungen & Begründungen */
+.lk{animation:lkin .35s ease-out}
+@keyframes lkin{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ex{background:var(--blue-soft);border-radius:10px;padding:9px 13px;margin-top:8px;font-size:.96rem}
+.ex b.l{display:block;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)}
+.morebtn{margin-top:14px;background:var(--card);border:2px dashed var(--blue);color:var(--blue);border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;width:100%}
+.morebtn:hover{background:var(--blue-soft)}
+.cardcount{font-size:.8rem;color:var(--ink-soft);text-align:right;margin-top:6px}
+.why{flex-basis:100%;font-size:.92rem;line-height:1.45;padding-top:6px;border-top:1px dashed var(--line)}
+.sort-item.no .why{color:var(--ink)}
+.sort-item.no .why::before{content:"Warum? ";font-weight:700;color:var(--bad)}
+.sort-item.ok .why::before{content:"Darum: ";font-weight:700;color:var(--good)}
+.gap-row .why{font-family:var(--f-body);font-size:.9rem}
+.gap-row .why::before{content:"Darum: ";font-weight:700;color:var(--good)}
+.gap-row.no .why::before{content:"Tipp: ";color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap"><main id="app"></main></div>
+
+<script>
+/* ---------- Helfer ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+function h(tag,attrs,...kids){
+  const e=document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs||{})){
+    if(k==='class') e.className=v;
+    else if(k==='html') e.innerHTML=v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2),v);
+    else if(v===true) e.setAttribute(k,'');
+    else if(v!==false&&v!=null) e.setAttribute(k,v);
+  }
+  for(const c of kids.flat()){ if(c==null||c===false) continue; e.append(c.nodeType?c:document.createTextNode(c)); }
+  return e;
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pix(rows,cls=''){
+  const w=rows[0].length,hh=rows.length;let r='';
+  rows.forEach((row,y)=>[...row].forEach((c,x)=>{if(c!=='0')r+=`<rect x="${x}" y="${y}" width="1.03" height="1.03" class="p${c}"/>`;}));
+  return `<svg viewBox="0 0 ${w} ${hh}" class="pix ${cls}" aria-hidden="true" shape-rendering="crispEdges">${r}</svg>`;
+}
+const BIT=["000020000","000010000","011111110","112111211","011111110","012222210","011111110","001000100"];
+const STAR=["0001000","0011100","1111111","0111110","0011100","0110110","1100011"];
+const TROPHY=["11111111","11111111","01111110","00111100","00011000","00011000","00111100","01111110"];
+function bit(){return h('div',{class:'bit',html:pix(BIT,'bit')});}
+function starRow(n,cls='stars'){const d=h('div',{class:cls});for(let i=0;i<3;i++)d.append(h('span',{class:i<n?'on':'off',html:pix(STAR)}));return d;}
+function fb(kind,title,html){return h('div',{class:'fb '+kind},bit(),h('div',{},title?h('b',{class:'t'},title):null,h('div',{html:html||''})));}
+function bars(list,opts={}){
+  const max=Math.max(...list.map(x=>x.p));
+  return h('div',{class:'bars'},list.map(x=>h('div',{class:'bar'+(x.p===max&&opts.markTop?' top':'')+(opts.mine===x.w?' mine':'')},
+    h('span',{class:'lab'},x.w),h('div',{class:'track'},h('div',{class:'fill',style:`width:${x.p}%`})),h('span',{class:'pct'},x.p+' %'))));
+}
+const PRAISE=['Richtig!','Genau!','Super!','Stimmt!','Bravo!'];
+const praise=()=>PRAISE[Math.floor(Math.random()*PRAISE.length)];
+
+/* ---------- Speicher (nur auf diesem Gerät) ---------- */
+const KEY='ki-lernwerkstatt-v1';
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P));}catch(e){}}
+let P=load(); P.ch=P.ch||{};
+
+/* ---------- Wesen für «Blips & Blops» ---------- */
+function creature(shape,col,eyes){
+  let body,ey;
+  if(shape==='rund'){body=`<circle cx="32" cy="30" r="22" fill="var(--${col})"/>`;ey=28;}
+  else if(shape==='dreieck'){body=`<polygon points="32,4 58,52 6,52" fill="var(--${col})"/>`;ey=38;}
+  else {body=`<rect x="10" y="8" width="44" height="44" rx="3" fill="var(--${col})"/>`;ey=28;}
+  const xs={1:[32],2:[25,39],3:[21,32,43]}[eyes];
+  const e=xs.map(x=>`<circle cx="${x}" cy="${ey}" r="4.6" fill="var(--eye)"/><circle cx="${x}" cy="${ey+.8}" r="2.1" fill="var(--pupil)"/>`).join('');
+  return `<svg viewBox="0 0 64 64" class="creature" aria-hidden="true"><line x1="24" y1="50" x2="21" y2="62" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><line x1="40" y1="50" x2="43" y2="62" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>${body}${e}</svg>`;
+}
+const HEART=["00000000","01100110","11111111","11111111","01111110","00111100","00011000","00000000"];
+const SMILE=["00111100","01000010","10100101","10000001","10100101","10011001","01000010","00111100"];
+function numTable(rows){
+  const g=h('div',{class:'numgrid'});
+  rows.forEach(r=>[...r].forEach(c=>g.append(h('span',{class:c==='1'?'one':''},c))));
+  return g;
+}
+
+/* ---------- Kapitel ----------
+   hook = Einstieg «Bit fragt» (nicht bewertet)
+   info = Erklärung in kurzen Karten, Karte für Karte aufgedeckt
+   mc: options = [Text, Begründung]; die erste Option ist die richtige (wird gemischt)
+   sort: items mit why = Begründung; gap: rows mit why */
+const CH=[
+{id:'k1',nr:1,title:'Was ist KI?',
+ icon:["00111100","01111110","01111110","01111110","00111100","00011000","00111100","00011000"],
+ steps:[
+ {type:'hook',q:'Steckt in einem ganz normalen Handy eine KI?',o:['Ja, sogar mehrere','Nein, gar keine','Nur in Spielen'],a:0,
+  reveal:'Ja! Zum Beispiel beim Entsperren mit dem Gesicht, bei den Wortvorschlägen beim Tippen und wenn du in deinen Fotos nach «Hund» suchst. Aber was ist eine KI eigentlich?'},
+ {type:'info',title:'Zwei Arten von Programmen',cards:[
+  {h:'Der Taschenrechner',html:'Ein Mensch hat dem Taschenrechner genau aufgeschrieben, wie man rechnet. Tippst du 7 × 8, folgt er dieser <b>festen Regel</b> und zeigt 56. Er macht es jedes Mal genau gleich. Er lernt nie etwas dazu.',
+   ex:'<b class="l">Die Regel im Taschenrechner</b>Wenn jemand «×» drückt: Nimm die beiden Zahlen mal.'},
+  {h:'Die Übersetzungs-App',html:'Kann man für eine ganze Sprache alle Regeln aufschreiben? Nein! Es gibt viel zu viele Wörter, Ausnahmen und Redewendungen. «Es regnet Bindfäden» heisst auf Englisch nicht «It rains strings».'},
+  {h:'Lernen aus Beispielen',html:'Darum macht man es anders: Man zeigt dem Programm <b>Millionen von Sätzen</b> mit ihrer Übersetzung. Das Programm vergleicht und sucht <span class="hl">selber heraus</span>, welche Wörter und Sätze zusammengehören.'},
+  {h:'Das ist KI',html:'Ein Programm, das sich seine Regeln selber aus vielen Beispielen sucht, nennt man <b>künstliche Intelligenz</b>, kurz <b>KI</b>. Es kann Dinge, für die man früher einen Menschen brauchte: Sprache verstehen, Bilder erkennen, Texte schreiben.'},
+  {h:'Der Trick zum Erkennen',html:'Frag dich bei jedem Gerät: Hat ein Mensch die Regel <b>genau aufgeschrieben</b>? Dann ist es keine KI. Hat das Programm aus <b>vielen Beispielen gelernt</b>? Dann ist es KI.',
+   ex:`<div class="compare" style="margin:0"><div><h4>Feste Regel</h4><small style="margin:0">Taschenrechner, Wecker, Lichtschalter, Ampel mit Zeitschaltung</small></div><div><h4>Aus Beispielen gelernt = KI</h4><small style="margin:0">Chatbot, Übersetzungs-App, Musikvorschläge, Gesichtserkennung, Sprachassistent</small></div></div>`}],
+  merke:'Künstliche Intelligenz heisst: Ein Programm findet aus vielen Beispielen selber Regeln und wendet sie auf neue Fälle an.'},
+ {type:'mc',q:'Warum braucht eine Übersetzungs-App KI, ein Taschenrechner aber nicht?',options:[
+  ['Für eine Sprache kann man nicht alle Regeln aufschreiben – fürs Rechnen schon.','Genau! Rechenregeln sind klar und es sind wenige. Eine Sprache hat so viele Regeln und Ausnahmen, dass das Programm sie aus Beispielen lernen muss.'],
+  ['Übersetzen muss schneller gehen als Rechnen.','Um die Geschwindigkeit geht es nicht. Die Frage ist: Kann ein Mensch alle Regeln genau aufschreiben?'],
+  ['Ein Taschenrechner ist zu klein für eine KI.','Die Grösse spielt keine Rolle. Entscheidend ist, ob das Programm feste Regeln hat oder aus Beispielen lernt.'],
+  ['Wörter sind für Computer leichter als Zahlen.','Im Gegenteil: Wörter sind für Computer viel schwieriger als Zahlen. Gerade darum braucht es dafür eine KI.']],correct:0},
+ {type:'sort',q:'Wende den Trick an: KI oder keine KI?',cats:['KI','keine KI'],items:[
+  {t:'Taschenrechner',c:1,why:'Ein Mensch hat die Rechenregeln genau aufgeschrieben. Der Taschenrechner lernt nichts dazu.'},
+  {t:'Chatbot, der Fragen beantwortet',c:0,why:'Niemand kann alle möglichen Antworten aufschreiben. Ein Chatbot hat aus riesig vielen Texten gelernt.'},
+  {t:'Wecker im Handy',c:1,why:'Er klingelt, weil du eine Uhrzeit eingestellt hast. Das ist eine feste Regel.'},
+  {t:'Musikvorschläge in einer Streaming-App',c:0,why:'Die App lernt aus dem, was du und Millionen andere hören, und schlägt Ähnliches vor.'},
+  {t:'Übersetzungs-App',c:0,why:'Sie hat aus Millionen von übersetzten Sätzen gelernt.'},
+  {t:'Lichtschalter',c:1,why:'Schalter drücken, Licht geht an. Eine ganz einfache feste Regel.'},
+  {t:'Gesichtserkennung beim Entsperren des Handys',c:0,why:'Niemand kann als Regel aufschreiben, wie genau dein Gesicht aussieht. Das Handy hat es aus vielen Bildern gelernt.'},
+  {t:'Sprachassistent auf dem Handy',c:0,why:'Er hat aus sehr vielen Sprachaufnahmen gelernt, gesprochene Wörter zu erkennen.'},
+  {t:'Ampel mit Zeitschaltung',c:1,why:'Sie schaltet nach fest eingestellten Zeiten um. Sie lernt nichts dazu.'}]},
+ {type:'info',title:'Ist eine KI klug?',cards:[
+  {h:'Sieht klug aus',html:'Eine KI kann Texte schreiben, Fragen beantworten und Bilder malen. Ist sie also klug wie ein Mensch?'},
+  {h:'Ein Gedicht über Schnee',html:'Eine KI kann ein schönes Gedicht über Schnee schreiben. Aber sie hat nie Schnee gesehen, nie kalte Finger gehabt und sich nie über einen Schneetag gefreut. Sie weiss nur, <span class="hl">welche Wörter in Schnee-Gedichten oft vorkommen</span>.'},
+  {h:'Sie rechnet',html:'Eine KI ist <b>kein Lebewesen</b>. Sie denkt nicht, sie fühlt nichts, und sie versteht nicht, was sie schreibt. Sie <b>rechnet</b> – mit Zahlen.'},
+  {h:'Worin sie stark ist',html:'Dafür rechnet sie unglaublich schnell. In einer Sekunde verarbeitet sie mehr Text, als du in deinem ganzen Leben lesen kannst. Darum wirkt sie so klug.'}],
+  merke:'Eine KI rechnet sehr schnell mit sehr vielen Beispielen. Sie denkt, fühlt und versteht nicht wie ein Mensch.'},
+ {type:'sort',q:'Stimmt das oder stimmt das nicht?',cats:['stimmt','stimmt nicht'],items:[
+  {t:'Eine KI denkt wie ein Mensch.',c:1,why:'Eine KI denkt nicht. Sie rechnet mit Zahlen.'},
+  {t:'Eine KI kann sehr schnell sehr viel Text verarbeiten.',c:0,why:'Darin ist sie viel schneller als jeder Mensch.'},
+  {t:'Eine KI freut sich, wenn man sie lobt.',c:1,why:'Eine KI hat keine Gefühle. Sie kann höchstens Wörter schreiben, die nach Freude klingen.'},
+  {t:'Eine KI braucht sehr viele Beispiele zum Lernen.',c:0,why:'Aus den Beispielen sucht sie sich ihre Regeln.'},
+  {t:'Eine KI versteht, was sie schreibt.',c:1,why:'Sie weiss nur, welche Wörter oft zusammenpassen – wie beim Schnee-Gedicht.'}]}
+]},
+{id:'k2',nr:2,title:'Muster erkennen',
+ icon:["10000001","11000011","11111111","11011011","11111111","11100111","01111110","00111100"],
+ steps:[
+ {type:'hook',q:'Wie viele Katzenbilder braucht eine KI, bis sie Katzen gut erkennt?',o:['etwa 10','etwa 100','viele Tausend'],a:2,
+  reveal:'Viele Tausend! Ein Kind braucht viel weniger. Warum ist das so?'},
+ {type:'info',title:'Wie lernt man, was eine Katze ist?',cards:[
+  {h:'So hast du es gelernt',html:'Niemand hat dir je eine Liste mit Katzenregeln gegeben. Du hast einfach viele Katzen gesehen: grosse, kleine, getigerte, schwarze. Irgendwann wusstest du: spitze Ohren, Schnurrhaare, leise Schritte – das ist eine Katze.'},
+  {h:'So lernt es die KI',html:'Bei einer KI ist es ähnlich. Man zeigt ihr Tausende Bilder. Zu jedem Bild steht ein Wort: «Katze» oder «keine Katze». Die KI vergleicht die Bilder und sucht, <span class="hl">was bei allen Katzenbildern gleich ist</span>.'},
+  {h:'Muster',html:'Was bei vielen Beispielen immer wieder gleich ist, nennt man ein <b>Muster</b>. Was mal so und mal anders ist, zum Beispiel die Farbe, ist für das Muster unwichtig.',
+   ex:'<b class="l">Beispiel</b>Katzen gibt es in allen Farben – also gehört die Farbe nicht zum Muster «Katze». Spitze Ohren haben fast alle – die gehören dazu.'}],
+  wort:[['Muster','Etwas, das bei vielen Beispielen immer wieder gleich ist.']]},
+ {type:'sort',q:'Spiel selber KI! Schau die Beispiele genau an: Was haben alle Blips gemeinsam? Ordne dann die neuen Wesen zu.',
+  lead:()=>h('div',{},
+   h('div',{class:'ex-row'},h('span',{class:'name'},'Blips'),h('div',{class:'creatures',html:creature('rund','cr1',1)+creature('rund','cr2',3)+creature('rund','cr4',2)})),
+   h('div',{class:'ex-row'},h('span',{class:'name'},'Blops'),h('div',{class:'creatures',html:creature('dreieck','cr2',2)+creature('eckig','cr1',1)+creature('dreieck','cr3',3)})),
+   h('p',{class:'hint',style:'margin:0 0 12px'},'Tipp: Achte auf das, was bei allen Blips gleich ist – nicht auf das, was sich ändert.')),
+  cats:['Blip','Blop'],items:[
+  {html:creature('rund','cr3',2),c:0,label:'blaues rundes Wesen mit zwei Augen',why:'Es ist rund – also ein Blip. Dass es blau ist, spielt keine Rolle: Die Blips hatten verschiedene Farben.'},
+  {html:creature('eckig','cr4',3),c:1,label:'gelbes eckiges Wesen mit drei Augen',why:'Es hat Ecken – also ein Blop. Gelb kam zwar bei einem Blip vor, aber die Farbe gehört nicht zum Muster.'},
+  {html:creature('dreieck','cr1',1),c:1,label:'rosa Dreieck-Wesen mit einem Auge',why:'Ein Dreieck hat Ecken – also ein Blop. Die Anzahl Augen ist egal.'},
+  {html:creature('rund','cr2',1),c:0,label:'grünes rundes Wesen mit einem Auge',why:'Rund heisst Blip – egal, welche Farbe und wie viele Augen.'}]},
+ {type:'gap',q:'Muster gibt es auch bei Zahlen und Buchstaben. Finde die Regel und setze fort!',rows:[
+  {parts:['2 – 4 – 6 – 8 –',{o:['9','10','12','16'],a:'10'},'–',{o:['11','12','14','20'],a:'12'},{lbl:'Regel: jeweils'},{o:['+1','+2','×2'],a:'+2'}],why:'Jede Zahl ist um 2 grösser als die vorherige.'},
+  {parts:['A – C – E – G –',{o:['H','I','J'],a:'I'},'–',{o:['J','K','L'],a:'K'}],why:'Es wird immer ein Buchstabe übersprungen: A (B) C (D) E (F) G (H) I (J) K.'},
+  {parts:['1 – 2 – 4 – 8 –',{o:['10','12','16'],a:'16'},'–',{o:['20','24','32'],a:'32'},{lbl:'Regel: jeweils'},{o:['+2','+4','×2'],a:'×2'}],why:'Jede Zahl ist doppelt so gross wie die vorherige: 8 × 2 = 16, 16 × 2 = 32.'}]},
+ {type:'info',title:'Raten, Fehler, anpassen',cards:[
+  {h:'Am Anfang rät sie',html:'Zu Beginn des Trainings weiss die KI gar nichts. Sie rät einfach – und liegt sehr oft falsch.'},
+  {h:'Nach jedem Fehler',html:'Nach jedem Fehler wird sie ein <b>winziges bisschen</b> verändert, damit sie beim nächsten Mal etwas besser rät.',
+   ex:'<b class="l">Wie beim Zielwerfen</b>Dein Ball fliegt links am Korb vorbei? Dann zielst du beim nächsten Wurf ein bisschen weiter nach rechts.<ol class="loop"><li>raten</li><li class="arr">→</li><li>Fehler?</li><li class="arr">→</li><li>ein bisschen anpassen</li><li class="arr">→</li><li>nochmals raten</li></ol>'},
+  {h:'Millionen Mal',html:'Das passiert nicht zehn Mal, sondern Millionen Mal. Darum braucht eine KI so viele Bilder. Am Schluss liegt sie meistens richtig. Dieses Training nennt man <b>maschinelles Lernen</b>.'},
+  {h:'Aber',html:'Die KI weiss trotzdem nie, was eine Katze wirklich ist. Sie hat nie eine gestreichelt. Sie kennt nur Muster in Bildern. Und: Hat sie nur ähnliche Beispiele gesehen, zum Beispiel nur schwarze Katzen, <span class="hl">glaubt sie, das gehöre zum Muster</span>.'}],
+  wort:[['maschinelles Lernen','Eine KI wird mit vielen Beispielen, Fehlern und Korrekturen trainiert.']],
+  merke:'Eine KI lernt durch Beispiele, Fehler und Korrekturen. Sie erkennt Muster, aber sie versteht sie nicht.'},
+ {type:'mc',q:'Wie wird eine KI beim Training immer besser?',options:[
+  ['Sie rät, und nach jedem Fehler wird sie ein winziges bisschen angepasst.','Genau. Raten, Fehler, anpassen – millionenfach. Das ist maschinelles Lernen.'],
+  ['Ein Mensch schreibt ihr alle Regeln auf eine Liste.','Das wäre ein normales Programm mit festen Regeln. Eine KI sucht sich die Regeln selber aus Beispielen.'],
+  ['Sie liest ein Lexikon und lernt es auswendig.','Auswendiglernen hilft nicht bei neuen Bildern. Die KI muss Muster finden, die auch bei Bildern passen, die sie noch nie gesehen hat.'],
+  ['Sie bekommt jeden Tag die richtigen Antworten geschickt.','Die richtigen Antworten allein reichen nicht. Die KI muss selber raten und nach ihren Fehlern angepasst werden.']],correct:0},
+ {type:'mc',q:'Eine KI hat nur Bilder von schwarzen Katzen gesehen. Nun sieht sie eine weisse Katze. Was passiert wohl?',options:[
+  ['Sie ist unsicher, weil für sie Katzen immer schwarz sind.','Richtig. In all ihren Beispielen waren Katzen schwarz. Darum hält sie «schwarz» für einen Teil des Musters «Katze».'],
+  ['Sie erkennt sie sicher, weil alle Katzen spitze Ohren haben.','Spitze Ohren helfen zwar. Aber die KI hat auch «schwarz» als Teil des Musters gelernt – und das passt hier nicht.'],
+  ['Sie lernt sofort von selbst, dass es weisse Katzen gibt.','Eine KI lernt nur im Training. Wenn sie später ein Bild anschaut, lernt sie nichts mehr dazu.'],
+  ['Sie erkennt sie sicher, weil sie weiss, was eine Katze ist.','Eine KI weiss nicht, was eine Katze ist. Sie kennt nur die Muster aus ihren Beispielen.']],correct:0}
+]},
+{id:'k3',nr:3,title:'Trainingsdaten',
+ icon:["00000000","00100100","01001000","00100100","11111111","01111110","00111100","00000000"],
+ steps:[
+ {type:'hook',q:'Eine Pilz-App hat nur die Fotos aus einem einzigen Pilzbuch gesehen. Würdest du ihr beim Pilzesammeln vertrauen?',o:['Ja, Bücher stimmen immer','Lieber nicht','Nur bei grossen Pilzen'],a:1,
+  reveal:'Lieber nicht! Die App kennt nur die Fotos aus diesem einen Buch. Alles andere hat sie nie gesehen. (Und Pilze zeigt man sowieso immer der Pilzkontrolle.) Warum die Beispiele so wichtig sind, lernst du jetzt.'},
+ {type:'info',title:'Das Futter der KI',cards:[
+  {h:'Trainingsdaten',html:'Alle Beispiele, aus denen eine KI lernt, heissen <b>Trainingsdaten</b>. Sie sind das Futter der KI.',
+   ex:'<b class="l">Je nach KI</b>Eine Bild-KI lernt aus Fotos. Eine Sprach-KI lernt aus Texten. Eine Spracherkennung lernt aus Tonaufnahmen.'},
+  {h:'Woher kommen sie?',html:'Chatbots haben aus riesig vielen Texten gelernt: aus dem <b>Internet</b>, aus <b>Büchern</b> und aus <b>Zeitungen</b>. Ein Mensch bräuchte Tausende Jahre, um das alles zu lesen.'},
+  {h:'Die wichtigste Regel',html:'<span class="hl">Was die KI nie gesehen hat, kann sie nicht gut erkennen.</span> Eine KI, die nie ein Zebra gesehen hat, hält ein Zebra vielleicht für ein seltsames Pferd.'}]},
+ {type:'trainer'},
+ {type:'info',title:'Gute und schlechte Trainingsdaten',cards:[
+  {h:'Verschieden statt gleich',html:'Das hast du beim Velo-Training gesehen: Hundert gleiche Fotos bringen nicht mehr als eines. Die KI braucht <b>Abwechslung</b>: andere Farben, Grössen, Orte, Wetter, Licht.'},
+  {h:'Einseitige Daten',html:'Sind sich alle Beispiele zu ähnlich, nennt man die Daten <b>einseitig</b>. Dann lernt die KI falsche Muster, zum Beispiel «Velos sind rot».'},
+  {h:'Fehler in den Daten',html:'Steht in den Trainingsdaten etwas Falsches, übernimmt die KI es, <span class="hl">ohne es zu merken</span>. Sie kann ihre Daten nicht selber prüfen.'},
+  {h:'Beispiel Mundart',html:'Viele Spracherkennungen verstehen Hochdeutsch gut, Mundart aber schlecht. Der Grund: In ihren Trainingsdaten gab es viel mehr Hochdeutsch als Mundart.'}],
+  wort:[['einseitig','Die Beispiele sind sich zu ähnlich. Es fehlt Abwechslung.']],
+  merke:'Trainingsdaten sind die Beispiele, aus denen eine KI lernt. Schlechte oder einseitige Daten führen zu schlechten oder einseitigen Antworten.'},
+ {type:'sort',q:'Eine KI soll Äpfel erkennen. Sind diese Trainingsdaten gut oder einseitig?',cats:['gut','einseitig'],items:[
+  {t:'500 Fotos von roten Äpfeln auf einem weissen Teller',c:1,why:'Immer die gleiche Farbe, immer der gleiche Hintergrund. Die KI lernt vielleicht: «Apfel heisst rot auf weiss.»'},
+  {t:'Fotos von roten, grünen und gelben Äpfeln – am Baum, im Korb und angebissen',c:0,why:'Viel Abwechslung bei Farbe, Ort und Form. So lernt die KI, was alle Äpfel gemeinsam haben.'},
+  {t:'Nur Fotos von Äpfeln im Supermarkt-Regal',c:1,why:'Äpfel am Baum oder im Znünisäckli hat die KI dann nie gesehen.'},
+  {t:'Fotos von Äpfeln bei Sonne, im Schatten und bei Lampenlicht',c:0,why:'Verschiedenes Licht – so erkennt sie Äpfel auch, wenn es dunkler ist.'}]},
+ {type:'mc',q:'Womit wurden Sprach-KIs wie Chatbots trainiert?',options:[
+  ['Mit riesig vielen Texten aus dem Internet, aus Büchern und aus Zeitungen.','Richtig. Daraus hat sie gelernt, welche Wörter zusammenpassen.'],
+  ['Mit einem einzigen, sehr dicken Lexikon.','Ein Lexikon wäre viel zu wenig. Eine Sprach-KI braucht riesig viele, verschiedene Texte.'],
+  ['Mit Fragen, die Kinder im Unterricht gestellt haben.','Das wären viel zu wenige und zu ähnliche Beispiele – also einseitige Daten.'],
+  ['Mit Wörtern, die sich Programmierer ausgedacht haben.','Programmierer bauen die KI, aber die Beispiele schreiben sie nicht selber. Die Texte stammen aus dem Internet, aus Büchern und Zeitungen.']],correct:0},
+ {type:'mc',q:'Eine KI soll Menschen auf Fotos erkennen. Sie hat nur Fotos aus dem Sommer gesehen. Was passiert im Winter?',options:[
+  ['Sie erkennt Menschen mit Mütze, Schal und dickem Mantel schlechter.','Genau. Mützen und Schals kamen in ihren Trainingsdaten nie vor – die Daten waren einseitig.'],
+  ['Sie erkennt Menschen besser, weil der Schnee hell ist.','Helles Licht hilft nicht, wenn die KI Wintersachen nie gesehen hat. Was sie nie gesehen hat, erkennt sie schlecht.'],
+  ['Nichts – die Jahreszeit spielt keine Rolle.','Doch: Im Winter sehen Menschen anders aus. Die KI kennt aber nur Sommerbilder.'],
+  ['Sie lernt im Winter von selber die neuen Kleider kennen.','Eine KI lernt nicht von selber dazu. Sie kann nur, was sie im Training gesehen hat.']],correct:0}
+]},
+{id:'k4',nr:4,title:'Wie KI ein Bild sieht',
+ icon:["11111111","10000001","10000101","10010001","10111001","11111101","11111111","00000000"],
+ steps:[
+ {type:'hook',q:'Wie viele Pixel hat ein Foto von einer Handykamera ungefähr?',o:['etwa 100','etwa 10 000','viele Millionen'],a:2,
+  reveal:'Viele Millionen – bei vielen Handys sind es 12 Millionen oder mehr! Was ist ein Pixel überhaupt? Und wie findet eine KI darin einen Hund?'},
+ {type:'info',title:'Ein Bild ist eine Zahlentabelle',cards:[
+  {h:'Pixel',html:'Zoomst du ganz nah in ein Foto hinein, siehst du kleine farbige Quadrate. Das sind <b>Pixel</b>, also Bildpunkte.'},
+  {h:'Für den Computer: Zahlen',html:'Ein Computer sieht kein Bild. Für jeden Pixel speichert er <b>Zahlen</b>, zum Beispiel für Farbe und Helligkeit. Ein Foto ist für ihn eine riesige Tabelle voller Zahlen.'},
+  {h:'Ein ganz einfaches Beispiel',html:'Hier hat jeder Pixel nur eine Zahl: <b>1 = ausgemalt, 0 = leer</b>. Links das Bild, rechts das, was der Computer speichert. Siehst du das Gesicht in den Zahlen?<div class="mini-ill" id="ill"></div>'}],
+  after:(root)=>{const ill=root.querySelector('#ill');if(!ill)return;ill.innerHTML=pix(SMILE);ill.append(numTable(SMILE));}},
+ {type:'pixel'},
+ {type:'mc',q:'Jetzt umgekehrt: Ein Computer hat dieses Bild gespeichert. Was ist darauf? Suche die Einsen!',
+  lead:()=>h('div',{style:'margin-bottom:14px'},numTable(HEART)),
+  options:[
+   ['ein Herz','Richtig! Oben zwei Bögen, unten eine Spitze. So sieht es ausgemalt aus:<div style="width:88px;margin-top:8px">'+pix(HEART)+'</div>'],
+   ['ein Haus','Ein Haus hätte oben ein spitzes Dach und unten gerade Wände. Hier ist es umgekehrt: Die Spitze ist unten.'],
+   ['ein Pfeil nach oben','Ein Pfeil nach oben hätte die Spitze oben. Schau, wo die Einsen ganz unten sind.'],
+   ['eine Katze','Eine Katze hätte oben zwei spitze Ohren. Hier sind oben zwei runde Bögen.']],correct:0},
+ {type:'info',title:'Wie findet eine KI darin ein Tier?',cards:[
+  {h:'Schritt 1: Kanten',html:'Die KI sucht zuerst Stellen, an denen die Zahlen plötzlich wechseln, also von hell zu dunkel. Dort ist eine <b>Kante</b> oder eine Linie.'},
+  {h:'Schritt 2: Formen',html:'Aus vielen Kanten setzt sie grössere <b>Formen</b> zusammen: einen Kreis, eine Spitze. Daraus wird vielleicht ein Auge oder ein Ohr.'},
+  {h:'Schritt 3: Schätzen',html:'Am Schluss vergleicht sie mit ihren Beispielen und <b>schätzt</b>, was es sein könnte. Zusammen ergibt das immer 100 %. Sie wählt den <span class="hl">grössten Wert</span>.',
+   ex:'<b class="l">So könnte es aussehen</b>87 % Hund · 9 % Katze · 4 % Fuchs → Die KI sagt «Hund».'},
+  {h:'Warum nie ganz sicher?',html:'Sie vergleicht nur, wie gut das Bild zu ihren Beispielen passt. Ist das Foto dunkel oder unscharf oder sieht man nur einen Teil des Tieres, findet sie weniger Kanten und Formen. Dann wird sie unsicher.'}],
+  wort:[['Wahrscheinlichkeit','Wie sicher sich die KI ist. Man gibt sie in Prozent (%) an. 100 % wäre ganz sicher.']],
+  merke:'Für den Computer besteht ein Bild aus Pixeln und Zahlen. Eine Bild-KI gibt immer eine Wahrscheinlichkeit an, nie eine sichere Antwort.'},
+ {type:'mc',q:'Eine Bild-KI meldet diese Werte. Was stimmt?',
+  lead:()=>bars([{w:'Katze',p:62},{w:'Hund',p:30},{w:'Hase',p:8}],{markTop:true}),
+  options:[
+   ['Sie wählt «Katze», ist sich aber nicht ganz sicher.','Genau. 62 % ist der grösste Wert, also wählt sie «Katze». Bis 100 % fehlt aber viel, und «Hund» hat auch 30 %.'],
+   ['Sie wählt «Katze» und ist sich ganz sicher.','Sie wählt zwar «Katze». Aber ganz sicher wäre sie nur bei 100 %. Bei 62 % bleibt viel Unsicherheit.'],
+   ['Sie wählt «Hase», weil das der kleinste Wert ist.','Die KI wählt immer den grössten Wert, nicht den kleinsten.'],
+   ['Sie wählt «Hund», weil Hunde häufiger sind.','Die KI wählt den grössten Wert in ihrer Schätzung. Der ist hier bei «Katze».']],correct:0},
+ {type:'mc',q:'In welcher Situation erkennt eine Bild-KI ein Tier am ehesten falsch?',options:[
+  ['Das Foto ist sehr dunkel, und man sieht nur den Schwanz.','Richtig. Im Dunkeln und mit nur einem Teil des Tieres findet die KI zu wenige Kanten und Formen.'],
+  ['Das Tier steht hell beleuchtet mitten im Bild.','Hier findet die KI viele klare Kanten und Formen. Sie wird das Tier gut erkennen.'],
+  ['Das Foto ist scharf, und das ganze Tier ist zu sehen.','Ein scharfes Foto vom ganzen Tier ist ideal für die KI.'],
+  ['Die KI hat schon Tausende Fotos dieser Tierart gesehen.','Viele Beispiele helfen der KI. Dann erkennt sie das Tier eher richtig.']],correct:0}
+]},
+{id:'k5',nr:5,title:'Wort für Wort',
+ icon:["01111110","11111111","11111111","10101011","11111111","01111110","00110000","00100000"],
+ steps:[
+ {type:'hook',q:'Ergänze den Märchenanfang: «Es war einmal ein …»',o:['König','Velo','Kühlschrank'],a:0,
+  reveal:'Die meisten wählen «König». Warum? Weil du viele Märchen kennst, die so anfangen. Eine Sprach-KI rechnet genau so – nur mit viel mehr Text.'},
+ {type:'info',title:'Das Wort-für-Wort-Spiel',cards:[
+  {h:'Wort für Wort',html:'Chatbots sind <b>Sprach-KIs</b>. Sie rechnen aus, welches Wort als Nächstes am besten passt. Dann hängen sie es an und rechnen wieder. Wort für Wort, bis die Antwort fertig ist.'},
+  {h:'Kennst du schon',html:'Dein Handy macht etwas Ähnliches, wenn es dir beim Tippen Wörter vorschlägt:<div class="phone"><div class="typed">Ich gehe heute ins |</div><div class="sugg"><span>Kino</span><span>Bett</span><span>Training</span></div></div>'},
+  {h:'Woher weiss sie, was passt?',html:'Aus ihren Trainingsdaten. Nach «Am Morgen putze ich mir die» kam in Millionen Texten fast immer «Zähne». Darum rechnet sie: «Zähne» ist <span class="hl">am wahrscheinlichsten</span>.'}]},
+ {type:'nextword'},
+ {type:'info',title:'Klingt gut – stimmt aber?',cards:[
+  {h:'Flüssig',html:'Weil die KI immer passende Wörter aneinanderreiht, klingen ihre Antworten flüssig und wie von einem Menschen geschrieben.'},
+  {h:'Kein Lexikon im Kopf',html:'Aber die KI hat kein Lexikon, in dem sie nachschauen kann. Sie weiss nur, welche Wörter oft zusammen vorkommen. <span class="hl">Ob der Satz wahr ist, prüft sie nicht.</span>',
+   ex:'<b class="l">Beispiel</b>«Der Mond ist aus Käse» ist ein Satz, der in Kinderbüchern vorkommt. Die KI weiss nicht, dass er nicht stimmt – sie kennt nur die Wörter.'},
+  {h:'Nie ganz gleich',html:'Die KI nimmt nicht immer das allerwahrscheinlichste Wort. Darum kommt bei derselben Frage nicht jedes Mal genau dieselbe Antwort.'}],
+  merke:'Eine Sprach-KI schreibt Wort für Wort das wahrscheinlichste nächste Wort. Sie klingt sicher, auch wenn sie sich irrt.'},
+ {type:'mc',q:'Warum klingt eine Sprach-KI auch dann sicher, wenn ihre Antwort falsch ist?',options:[
+  ['Sie reiht passende Wörter aneinander, prüft aber nicht, ob es stimmt.','Genau. Flüssig heisst nicht richtig. Die KI rechnet, welche Wörter passen, nicht, was wahr ist.'],
+  ['Sie hat vorher im Internet nachgeschaut.','Eine Sprach-KI schaut nicht nach. Sie rechnet nur mit dem, was sie im Training gelernt hat.'],
+  ['Sie weiss alles und ist darum immer sicher.','Eine KI weiss nicht alles. Sie klingt nur immer gleich sicher – egal, ob es stimmt.'],
+  ['Ein Mensch kontrolliert jede Antwort vorher.','Niemand liest die Antworten, bevor du sie siehst. Darum musst du sie selber prüfen.']],correct:0},
+ {type:'sort',q:'Stimmt das oder stimmt das nicht?',cats:['stimmt','stimmt nicht'],items:[
+  {t:'Eine Sprach-KI schreibt Wort für Wort.',c:0,why:'Sie rechnet immer das nächste Wort aus und hängt es an.'},
+  {t:'Eine Sprach-KI hat ein Lexikon im Kopf.',c:1,why:'Sie hat kein Lexikon. Sie weiss nur, welche Wörter oft zusammen vorkommen.'},
+  {t:'Bei derselben Frage kommt nicht immer genau dieselbe Antwort.',c:0,why:'Sie nimmt nicht immer das allerwahrscheinlichste Wort. Darum ändert sich die Antwort ein bisschen.'},
+  {t:'Die Wortvorschläge auf dem Handy funktionieren ähnlich.',c:0,why:'Auch das Handy rechnet aus, welches Wort am wahrscheinlichsten folgt.'},
+  {t:'Wenn eine Antwort flüssig klingt, stimmt sie auch.',c:1,why:'Flüssig klingt sie immer. Ob sie stimmt, sagt der Klang nicht.'}]}
+]},
+{id:'k6',nr:6,title:'Wenn KI Unsinn erzählt',
+ icon:["00111100","01100110","00000110","00001100","00011000","00011000","00000000","00011000"],
+ steps:[
+ {type:'hook',q:'Ein Chatbot empfiehlt dir drei Bücher über «Pinguine in der Wüste» – mit Titel und Autorin. Gibt es diese Bücher?',o:['Ja, sonst würde er sie nicht nennen','Wahrscheinlich nicht','Nur in der Bibliothek'],a:1,
+  reveal:'Wahrscheinlich nicht! Chatbots erfinden manchmal Bücher, die es gar nicht gibt. Wie kann das passieren?'},
+ {type:'info',title:'Halluzinationen',cards:[
+  {h:'Erfunden, aber überzeugend',html:'Manchmal erfindet eine KI etwas. Es klingt richtig, ist aber falsch: erfundene Bücher, Zahlen, Personen oder Tiere. Das nennt man eine <b>Halluzination</b>.'},
+  {h:'Grund 1: Sie prüft nicht',html:'Du weisst schon aus Kapitel 5: Die KI rechnet nur aus, welche Wörter passen. Fragst du nach Büchern, schreibt sie Wörter, die nach Buchtiteln klingen – <span class="hl">ob es das Buch gibt, prüft sie nicht</span>.'},
+  {h:'Grund 2: Fehler in den Daten',html:'In ihren Trainingsdaten standen auch Fehler. Die hat sie mitgelernt.'},
+  {h:'Grund 3: Altes Wissen',html:'Ihr Training wurde irgendwann abgeschlossen. Was danach passiert ist, kennt sie nicht.'},
+  {h:'Das Gemeine daran',html:'Die KI schreibt Fehler im <b>gleichen sicheren Ton</b> wie richtige Antworten. Am Tonfall merkst du nichts.'}],
+  wort:[['Halluzination','Eine erfundene Antwort, die richtig klingt, aber falsch ist.']]},
+ {type:'mc',q:'Diese Antwort klingt sehr überzeugend. Was ist hier los?',
+  lead:()=>h('div',{class:'chat'},h('div',{class:'bubble me'},h('small',{},'Frage'),'Was frisst der Blauschwanzmarder?'),
+   h('div',{class:'bubble ai'},h('small',{},'Chatbot'),'Der Blauschwanzmarder frisst vor allem Beeren, Insekten und kleine Fische. Er lebt in den Bergwäldern der Alpen und zieht seine Jungen in hohlen Baumstämmen auf.')),
+  options:[
+   ['Die KI hat alles erfunden – dieses Tier gibt es gar nicht.','Richtig, das ist eine Halluzination. Die KI hat Wörter aneinandergereiht, die gut zu einem Tier passen. Am sicheren Ton merkst du es nicht.'],
+   ['Alles stimmt, denn die Antwort ist sehr genau.','Genau klingen heisst nicht wahr sein. Einen Blauschwanzmarder gibt es nicht – die KI hat ihn erfunden.'],
+   ['Der Text stimmt, man sieht das Tier nur selten.','Das Tier gibt es gar nicht. Die KI hat passende Wörter aneinandergereiht.'],
+   ['Nur die Beeren sind falsch, der Rest stimmt.','Nicht nur die Beeren: Das ganze Tier ist erfunden.']],correct:0},
+ {type:'mc',q:'Warum erfindet eine KI manchmal etwas? Welcher Grund ist FALSCH?',options:[
+  ['Sie will dich absichtlich anlügen.','Richtig, dieser Grund ist falsch. Eine KI hat keinen Willen und keine Absicht. Sie lügt nicht – sie rechnet nur.'],
+  ['Sie prüft nicht, ob etwas wahr ist.','Dieser Grund stimmt (Grund 1). Gesucht ist der falsche Grund.'],
+  ['In ihren Trainingsdaten standen auch Fehler.','Dieser Grund stimmt (Grund 2). Gesucht ist der falsche Grund.'],
+  ['Ihr Wissen ist nicht immer aktuell.','Dieser Grund stimmt (Grund 3). Gesucht ist der falsche Grund.']],correct:0},
+ {type:'info',title:'Werde KI-Detektiv',cards:[
+  {h:'Was meistens stimmt',html:'Ganz bekannte Tatsachen, die überall gleich stehen. Zum Beispiel: Eine Woche hat sieben Tage. Solche Sätze kamen in den Trainingsdaten tausendfach richtig vor.'},
+  {h:'Was du prüfen musst',html:'<b>Zahlen</b> (Höhen, Jahreszahlen, Preise), <b>seltene Dinge</b> und alles über <b>dich oder deinen Ort</b>. Darüber stand in den Trainingsdaten wenig oder gar nichts.'},
+  {h:'So prüfst du',html:'Mit einer <span class="hl">zweiten Quelle</span>: in einem Buch, auf einer verlässlichen Website oder bei einer Person, die sich auskennt. Die KI nochmals zu fragen, hilft nicht – sie kann sich nicht selber prüfen.'}],
+  merke:'Eine KI kann überzeugend klingen und trotzdem falsch liegen. Wichtige Angaben prüfe ich immer mit einer zweiten Quelle.'},
+ {type:'sort',q:'Eine KI hat diese Sätze geschrieben. Kannst du ihnen vertrauen?',cats:['vertrauenswürdig','unbedingt prüfen'],items:[
+  {t:'«Bern ist die Hauptstadt der Schweiz.»',c:0,why:'Eine ganz bekannte Tatsache, die überall gleich steht.'},
+  {t:'«Der Mount Everest ist 7842 Meter hoch.»',c:1,why:'Eine Zahl – also prüfen! Und tatsächlich: Er ist rund 8849 Meter hoch.'},
+  {t:'«In deinem Schulhaus gibt es 14 Klassenzimmer.»',c:1,why:'Etwas über deinen Ort. Dein Schulhaus kennt die KI gar nicht.'},
+  {t:'«Wasser gefriert bei 0 Grad Celsius.»',c:0,why:'Eine bekannte Tatsache, die in jedem Schulbuch steht.'},
+  {t:'«Der Blauschwanzmarder lebt in den Alpen.»',c:1,why:'Ein seltenes Ding – und tatsächlich erfunden. Dieses Tier gibt es nicht.'}]},
+ {type:'sort',q:'Detektiv-Auftrag: Prüfe jeden Satz des Chatbots mit dem Lexikon. Was stimmt, was ist erfunden?',
+  lead:()=>h('div',{},
+   h('div',{class:'chat'},h('div',{class:'bubble me'},h('small',{},'Frage'),'Erzähl mir etwas über das Matterhorn.'),
+    h('div',{class:'bubble ai'},h('small',{},'Chatbot'),'Das Matterhorn ist 4478 Meter hoch. Es steht an der Grenze zwischen der Schweiz und Österreich. Zum ersten Mal bestiegen wurde es im Jahr 1865. Oben auf dem Gipfel gibt es ein kleines Restaurant.')),
+   h('div',{class:'lex'},h('div',{class:'kick'},'Zweite Quelle: Lexikon'),
+    h('p',{},h('b',{},'Matterhorn: '),'Berg in den Walliser Alpen, an der Grenze zwischen der Schweiz und Italien. Höhe: 4478 m. Erste Besteigung: 1865. Der Gipfel ist ein schmaler Grat aus Fels, Schnee und Eis. Nur geübte Bergsteigerinnen und Bergsteiger erreichen ihn.'))),
+  cats:['stimmt','erfunden'],items:[
+  {t:'Das Matterhorn ist 4478 Meter hoch.',c:0,why:'Im Lexikon steht auch 4478 m.'},
+  {t:'Es steht an der Grenze zur Schweiz und Österreich.',c:1,why:'Laut Lexikon liegt es an der Grenze zu Italien, nicht zu Österreich.'},
+  {t:'Es wurde 1865 zum ersten Mal bestiegen.',c:0,why:'Im Lexikon steht auch 1865.'},
+  {t:'Auf dem Gipfel gibt es ein kleines Restaurant.',c:1,why:'Laut Lexikon ist der Gipfel ein schmaler Grat aus Fels, Schnee und Eis. Ein Restaurant hat dort keinen Platz.'}]},
+ {type:'mc',q:'Du brauchst für einen Vortrag eine wichtige Zahl von der KI. Was machst du?',options:[
+  ['Ich prüfe sie in einem Buch oder auf einer verlässlichen Website.','Genau. Eine zweite Quelle ist der beste Schutz gegen Halluzinationen.'],
+  ['Ich frage die KI, ob sie ganz sicher ist.','Die KI kann sich nicht selber prüfen. Sie antwortet wieder im gleichen sicheren Ton.'],
+  ['Ich schaue, ob die Antwort sicher klingt.','Die KI klingt immer sicher – auch bei Fehlern. Am Tonfall merkst du nichts.'],
+  ['Ich frage die KI dieselbe Frage nochmals.','Die gleiche Quelle zweimal zu fragen, ist keine zweite Quelle. Du brauchst ein Buch, eine Website oder eine Fachperson.']],correct:0}
+]},
+{id:'k7',nr:7,title:'Gute Prompts',
+ icon:["00000000","01000000","00100000","00010000","00100000","01000000","00001111","00000000"],
+ steps:[
+ {type:'hook',q:'Bit sagt beim Beck: «Ich will etwas.» Was bekommt er?',o:['Genau sein Lieblingsgipfeli','Irgendetwas','Einen Kuchen mit seinem Namen'],a:1,
+  reveal:'Irgendetwas – vielleicht ein Brot, das er gar nicht mag. Wer unklar fragt, bekommt eine unklare Antwort. Bei einer KI ist es genauso.'},
+ {type:'info',title:'Die vier Bausteine',cards:[
+  {h:'Was ist ein Prompt?',html:'Ein <b>Prompt</b> ist der Auftrag, den du einer KI gibst.'},
+  {h:'Die KI kann nicht Gedanken lesen',html:'Alles, was du nicht sagst, muss die KI <b>raten</b>: Für wen ist die Antwort? Wie lang? Wie schwierig? Bei «Schreib etwas über Rom» weiss sie nicht einmal, ob du die Stadt von heute oder die alten Römer meinst.'},
+  {h:'Vier Bausteine',html:`Ein guter Prompt beantwortet vier Fragen:<div class="tbl"><table><thead><tr><th>Baustein</th><th>Frage dazu</th><th>Beispiel</th></tr></thead><tbody>
+   <tr><td><span class="bb b1">Rolle</span></td><td>Wer soll antworten?</td><td>Du bist eine Lehrerin für die 5. Klasse.</td></tr>
+   <tr><td><span class="bb b2">Auftrag</span></td><td>Was genau soll die KI tun?</td><td>Erkläre mir, wie ein Vulkan entsteht.</td></tr>
+   <tr><td><span class="bb b3">Details</span></td><td>Was muss sie über dich wissen?</td><td>Ich bin 11 Jahre alt, bitte einfache Sprache.</td></tr>
+   <tr><td><span class="bb b4">Form</span></td><td>Wie soll die Antwort aussehen?</td><td>In fünf kurzen Sätzen.</td></tr></tbody></table></div>`},
+  {h:'Woran du sie erkennst',html:'<span class="bb b1">Rolle</span> beginnt oft mit «Du bist …». <span class="bb b2">Auftrag</span> ist ein Befehl wie «Erkläre …», «Beschreibe …». <span class="bb b3">Details</span> erzählen etwas über dich: «Ich bin …», «Ich brauche …». <span class="bb b4">Form</span> sagt, wie lang oder in welcher Art: Liste, Sätze, Tabelle.'}],
+  merke:'Rolle, Auftrag, Details, Form – wer alle vier Bausteine nennt, bekommt eine bessere Antwort.'},
+ {type:'sort',q:'Welcher Baustein ist das? Ordne jeden Satz zu.',cats:['Rolle','Auftrag','Details','Form'],items:[
+  {t:'«Du bist ein Sachbuchautor für Kinder.»',c:0,why:'«Du bist …» sagt, wer antworten soll.'},
+  {t:'«Erkläre mir den Wasserkreislauf.»',c:1,why:'«Erkläre …» ist der Befehl: Das soll die KI tun.'},
+  {t:'«Ich bin in der 5. Klasse und brauche es für einen Vortrag.»',c:2,why:'«Ich bin … ich brauche …» erzählt der KI etwas über dich.'},
+  {t:'«Schreibe fünf kurze Abschnitte mit je einem Titel.»',c:3,why:'Das sagt, wie die Antwort aussehen soll.'},
+  {t:'«Du bist eine Sportreporterin.»',c:0,why:'«Du bist …» sagt, wer antworten soll.'},
+  {t:'«Beschreibe die Regeln von Unihockey.»',c:1,why:'«Beschreibe …» ist der Befehl: Das soll die KI tun.'},
+  {t:'«Ich kenne das Spiel noch gar nicht.»',c:2,why:'Das erzählt der KI etwas über dich. So weiss sie, dass sie bei null anfangen muss.'},
+  {t:'«Als Liste mit höchstens sechs Punkten.»',c:3,why:'Liste und Länge – das ist die Form der Antwort.'}]},
+ {type:'mc',q:'Welcher Prompt bringt die beste Antwort?',options:[
+  ['«Du bist eine Geschichtslehrerin. Erkläre mir, wie die Römer gelebt haben. Ich bin 11 Jahre alt. Schreibe fünf kurze Sätze.»','Genau. Nur dieser Prompt hat alle vier Bausteine: Rolle, Auftrag, Details und Form.'],
+  ['«Erzähl mir alles über die Römer, über ihre Strassen, Städte, Kaiser, Soldaten, Spiele und Götter.»','Lang heisst nicht gut. Hier fehlen Rolle, Details und Form – und «alles» ist viel zu viel.'],
+  ['«Du bist eine Geschichtslehrerin. Ich bin 11 Jahre alt. Schreibe fünf kurze Sätze.»','Hier fehlt das Wichtigste: der Auftrag. Die KI weiss gar nicht, worüber sie schreiben soll.'],
+  ['«Schreib etwas über Rom.»','Hier muss die KI fast alles raten: die heutige Stadt oder die alten Römer? Für wen? Wie lang?']],correct:0},
+ {type:'builder'},
+ {type:'info',title:'Nachfragen',cards:[
+  {h:'Die erste Antwort ist selten die beste',html:'Profis geben sich nicht mit der ersten Antwort zufrieden. Sie lesen sie und sagen dann <b>genau</b>, was fehlt oder stört.'},
+  {h:'Gute Nachfragen',html:'Eine gute Nachfrage sagt genau, was anders werden soll:',
+   ex:'<b class="l">Beispiele</b>Zu lang? «Fasse es in drei Sätzen zusammen.»<br>Zu schwierig? «Nimm einfachere Wörter, ich bin 11.»<br>Zu allgemein? «Gib mir zwei Beispiele aus der Schweiz.»'},
+  {h:'Schlechte Nachfragen',html:'«Nochmals!» oder «Das ist nicht gut» helfen kaum. Die KI weiss dann immer noch nicht, <span class="hl">was</span> sie ändern soll.'}],
+  merke:'Ein Prompt ist ein Gespräch, kein einzelner Knopfdruck. Gezieltes Nachfragen macht die Antwort besser.'},
+ {type:'mc',q:'Die Antwort der KI ist viel zu lang. Was fragst du nach?',options:[
+  ['«Fasse das bitte in drei Sätzen zusammen.»','Genau. Die Nachfrage sagt klar, was anders werden soll: kürzer, drei Sätze.'],
+  ['«Nochmals, bitte.»','Die KI weiss nicht, was sie ändern soll. Vielleicht wird die Antwort sogar wieder gleich lang.'],
+  ['«Das ist leider nicht gut.»','Die KI erfährt nicht, was schlecht war. Sag genau, was anders werden soll.'],
+  ['«Erkläre es noch genauer.»','Genauer heisst meistens: noch länger. Du wolltest aber eine kürzere Antwort.']],correct:0}
+]},
+{id:'k8',nr:8,title:'Sicher und fair',
+ icon:["00111100","01000010","01000010","11111111","11100111","11100111","11111111","00000000"],
+ steps:[
+ {type:'hook',q:'Eine App verspricht: «Lade ein Foto deiner Freundin hoch, und wir machen sie zur Superheldin!» Machst du mit?',o:['Klar, das ist lustig','Nein','Nur wenn das Bild schön wird'],a:1,
+  reveal:'Nein! Das Foto landet auf fremden Computern, und deine Freundin hat nicht zugestimmt. Was du einer KI anvertrauen darfst, lernst du jetzt.'},
+ {type:'info',title:'Deine Daten gehören dir',cards:[
+  {h:'Wohin geht dein Prompt?',html:'Alles, was du in ein KI-Fenster tippst, verlässt dein Gerät. Es wird über das Internet zu den Computern einer Firma geschickt.'},
+  {h:'Was passiert dort?',html:'Manche Firmen speichern die Eingaben und trainieren damit ihre KI weiter. <span class="hl">Was einmal dort ist, bekommst du nicht mehr zurück.</span>'},
+  {h:'Das gehört nie in einen Prompt',html:'Dein voller Name, deine Adresse, Telefonnummern, Passwörter, Fotos von dir oder anderen, Geheimnisse von Freundinnen und Freunden.',
+   ex:'<b class="l">Das ist in Ordnung</b>Fragen zum Schulstoff, ein Übungstext ohne Namen, «Wie kürzt man Brüche?»'},
+  {h:'Deepfakes',html:'Über andere Menschen bestimmst du nicht. Ein KI-Bild von einer Mitschülerin oder einem Mitschüler zu machen, ist verletzend und verboten – auch wenn es lustig gemeint ist. Solche täuschend echten, künstlich gemachten Bilder, Videos oder Tonaufnahmen heissen <b>Deepfakes</b>.'}],
+  merke:'Keine persönlichen Daten in den Prompt. Über andere Menschen mache ich keine KI-Bilder.'},
+ {type:'sort',q:'Darfst du das einer KI eingeben?',cats:['erlaubt','nicht erlaubt'],items:[
+  {t:'Eine Frage zum Thema Vulkane',c:0,why:'Eine Frage zum Schulstoff verrät nichts über dich.'},
+  {t:'Meine Wohnadresse',c:1,why:'Damit weiss jemand Fremdes, wo du wohnst.'},
+  {t:'Ein Foto meiner Kollegin',c:1,why:'Über ihr Foto bestimmt deine Kollegin selber. Und es landet auf fremden Computern.'},
+  {t:'Mein Übungstext ohne Namen',c:0,why:'Ohne Namen führt der Text nicht zu dir.'},
+  {t:'Das Passwort meines Accounts',c:1,why:'Ein Passwort gibst du nie weiter – keinem Menschen und keiner KI.'},
+  {t:'Die Telefonnummer meiner Mutter',c:1,why:'Persönliche Angaben von anderen Menschen gehören ihnen.'},
+  {t:'Eine Frage, wie man Brüche kürzt',c:0,why:'Eine Frage zum Schulstoff verrät nichts über dich.'}]},
+ {type:'mc',q:'Ein Kind will mit einer KI ein lustiges Bild von einem Mitschüler machen. Was stimmt?',options:[
+  ['Das ist verletzend und verboten.','Richtig. So ein Bild ist ein Deepfake. Über andere Menschen bestimmst du nicht.'],
+  ['Das ist in Ordnung, wenn es lustig gemeint ist.','Was für dich lustig ist, kann den anderen sehr verletzen. Und er hat nicht zugestimmt.'],
+  ['Das ist erlaubt, wenn man es nur der Klasse zeigt.','Gerade vor der Klasse kann so ein Bild besonders verletzen. Es bleibt verboten.'],
+  ['Das ist erlaubt, weil das Bild ja nicht echt ist.','Genau das macht Deepfakes gefährlich: Sie sehen echt aus, obwohl sie es nicht sind.']],correct:0},
+ {type:'info',title:'Ehrlich arbeiten',cards:[
+  {h:'Ein Werkzeug',html:'Eine KI ist ein Werkzeug, wie ein Taschenrechner oder ein Wörterbuch. Sie darf dir helfen. Aber sie darf dir das Lernen nicht abnehmen.'},
+  {h:'Die wichtigste Frage',html:'Frag dich immer: <span class="hl">Habe ich dabei selber etwas gelernt?</span>',
+   ex:'<b class="l">Zwei Beispiele</b>Ein schwieriges Wort erklären lassen: Ja, du verstehst danach mehr.<br>Einen Aufsatz schreiben lassen und abgeben: Nein. Du lernst nichts, und es ist eine Täuschung.'},
+  {h:'Offen sagen',html:'Wenn dir eine KI geholfen hat, schreibst du dazu, <b>wobei</b> sie geholfen hat. Zum Beispiel: «Eine KI hat mir geholfen, Ideen zu sammeln.»'}],
+  merke:'KI hilft beim Lernen, sie ersetzt es nicht. Ich sage ehrlich, wobei mir eine KI geholfen hat.'},
+ {type:'sort',q:'Ist das ein fairer Einsatz von KI?',cats:['in Ordnung','nicht in Ordnung'],items:[
+  {t:'Lea lässt die KI ihren Aufsatz schreiben und gibt ihn ab.',c:1,why:'Lea lernt nichts und gibt fremde Arbeit als ihre eigene aus. Das ist eine Täuschung.'},
+  {t:'Tim lässt sich ein schwieriges Wort erklären.',c:0,why:'Tim versteht danach mehr. Er lernt selber etwas.'},
+  {t:'Mia lässt ihren fertigen Text auf Fehler prüfen.',c:0,why:'Den Text hat Mia selber geschrieben. Die KI hilft nur beim Verbessern.'},
+  {t:'Nino lässt sich Übungsaufgaben zum Üben erstellen.',c:0,why:'Lösen muss Nino die Aufgaben selber. So übt er.'},
+  {t:'Sara lässt die Rechnungen der Mathe-Hausaufgaben lösen.',c:1,why:'Sara übt das Rechnen nicht selber. Bei der Prüfung kann sie es dann nicht.'}]},
+ {type:'mc',q:'Mia hat eine KI benutzt, um Rechtschreibfehler in ihrem Text zu finden. Was schreibt sie unter ihre Arbeit?',options:[
+  ['«Eine KI hat mir geholfen, Rechtschreibfehler zu finden.»','Genau. Ehrlich, und es sagt genau, wobei die KI geholfen hat.'],
+  ['Nichts – das muss niemand wissen.','Wenn eine KI geholfen hat, sagst du es offen. Das gehört zum ehrlichen Arbeiten.'],
+  ['«Diesen Text hat eine KI geschrieben.»','Das stimmt nicht: Mia hat den Text selber geschrieben. Die KI hat nur Fehler gefunden.'],
+  ['«Ich habe für diesen Text das Internet benutzt.»','Das ist zu ungenau. Sag genau, dass eine KI geholfen hat und wobei.']],correct:0}
+]}
+];
+
+/* ---------- Lernstand-Check: 8 Lernziele × 4 Fragen; jeder Durchgang zieht 2 pro Lernziel.
+   Neue Beispiele – keine Wiederholung der Kapitelübungen. o = [Text, Begründung]; die erste Option ist richtig. */
+const GOALS=[
+ {ch:1,t:'Erklären, was KI ist',qs:[
+  {q:'Ein Staubsauger-Roboter fährt immer zwei Meter geradeaus und dreht dann nach rechts. Ist das KI?',o:[
+   ['Nein, er folgt einer festen Regel.','Er macht immer genau das, was ein Mensch ihm einprogrammiert hat. Er lernt nichts aus Beispielen.'],
+   ['Ja, weil er sich selber bewegt.','Bewegen allein macht noch keine KI. Entscheidend ist, ob er aus Beispielen lernt – das tut er nicht.'],
+   ['Ja, weil er einen Motor hat.','Ein Motor hat nichts mit KI zu tun. Es geht darum, ob ein Programm aus Beispielen lernt.'],
+   ['Nein, weil er zu klein dafür ist.','Die Grösse spielt keine Rolle. Er ist keine KI, weil er nur einer festen Regel folgt.']]},
+  {q:'Eine App erkennt Pflanzen auf Fotos. Sie wurde mit Millionen Pflanzenbildern trainiert. Ist das KI?',o:[
+   ['Ja, sie hat aus vielen Beispielen gelernt.','Aus vielen Beispielen lernen – genau das macht eine KI aus.'],
+   ['Nein, Fotos haben nichts mit KI zu tun.','Viele KIs arbeiten mit Fotos, zum Beispiel die Gesichtserkennung.'],
+   ['Ja, weil sie auf dem Handy läuft.','Auf dem Handy laufen auch Programme ohne KI, zum Beispiel der Wecker. Entscheidend ist das Lernen aus Beispielen.'],
+   ['Nein, weil Pflanzen sich nicht bewegen.','Ob sich etwas bewegt, spielt keine Rolle. Die App hat aus Beispielen gelernt – also ist es KI.']]},
+  {q:'Welcher Satz über KI stimmt?',o:[
+   ['Eine KI rechnet, aber sie versteht nicht, was sie tut.','Eine KI ist ein Programm. Sie rechnet sehr schnell, aber sie denkt und fühlt nicht.'],
+   ['Eine KI freut sich, wenn man sie lobt.','Eine KI hat keine Gefühle. Sie kann höchstens Wörter schreiben, die nach Freude klingen.'],
+   ['Eine KI weiss immer, ob ihre Antwort stimmt.','Eine KI prüft nicht, ob etwas stimmt. Darum macht sie auch Fehler.'],
+   ['Eine KI braucht keine Beispiele.','Im Gegenteil: Eine KI braucht sehr viele Beispiele, um zu lernen.']]},
+  {q:'Was ist der Unterschied zwischen einem Wecker und einem Sprachassistenten?',o:[
+   ['Der Wecker folgt einer festen Regel, der Sprachassistent hat aus Beispielen gelernt.','Feste Regel = normales Programm. Aus Beispielen gelernt = KI.'],
+   ['Der Wecker ist eine KI, der Sprachassistent nicht.','Umgekehrt: Der Wecker folgt einer festen Regel. Der Sprachassistent hat aus vielen Sprachaufnahmen gelernt.'],
+   ['Beide denken mit, der Sprachassistent nur schneller.','Keiner von beiden denkt. Der Sprachassistent rechnet mit dem, was er aus Beispielen gelernt hat.'],
+   ['Es gibt keinen Unterschied, beide sind Computer.','Beide sind Computerprogramme, aber nur eines hat aus Beispielen gelernt.']]}]},
+ {ch:2,t:'Erklären, wie eine KI lernt',qs:[
+  {q:'Eine KI soll Äpfel und Birnen unterscheiden. Was braucht sie dafür?',o:[
+   ['Sehr viele Bilder von Äpfeln und Birnen, jeweils mit dem richtigen Namen.','Aus vielen beschrifteten Beispielen sucht sie die Muster.'],
+   ['Eine genaue Beschreibung, wie ein Apfel schmeckt.','Eine KI kann nicht schmecken. Sie lernt aus Beispielen, zum Beispiel aus Bildern.'],
+   ['Ein einziges, besonders schönes Foto von jeder Frucht.','Ein Foto ist viel zu wenig. Erst aus vielen Beispielen findet sie, was immer gleich ist.'],
+   ['Eine Liste aller Obstsorten der Welt.','Eine Liste mit Namen zeigt ihr nicht, wie die Früchte aussehen. Sie braucht Beispielbilder.']]},
+  {q:'Am Anfang des Trainings macht eine KI viele Fehler. Was passiert nach jedem Fehler?',o:[
+   ['Sie wird ein winziges bisschen angepasst.','Raten, Fehler, anpassen – Millionen Mal. So wird sie besser.'],
+   ['Sie wird gelöscht und ganz neu gebaut.','Dann würde sie nie besser. Sie wird nach jedem Fehler nur ein bisschen angepasst.'],
+   ['Ein Mensch erklärt ihr den Fehler in Worten.','Eine KI versteht keine Erklärungen. Sie wird rechnerisch ein bisschen verändert.'],
+   ['Nichts – die Fehler bleiben einfach.','Dann würde sie nie besser. Gerade aus den Fehlern wird sie angepasst.']]},
+  {q:'Was bedeutet: «Eine KI erkennt Muster, aber sie versteht sie nicht»?',o:[
+   ['Sie findet Gemeinsamkeiten, weiss aber nicht, was die Dinge wirklich sind.','Sie kennt nur, was in vielen Beispielen gleich ist. Was eine Katze wirklich ist, weiss sie nie.'],
+   ['Sie kann nur Muster auf Stoffen und Kleidern erkennen.','Mit «Muster» ist hier etwas anderes gemeint: das, was bei vielen Beispielen gleich ist.'],
+   ['Sie versteht alles, will es aber nicht sagen.','Eine KI hat keinen Willen. Sie versteht wirklich nicht, was sie erkennt.'],
+   ['Sie erkennt Muster nur, wenn man sie ihr erklärt.','Niemand erklärt ihr die Muster. Sie findet sie selber in den Beispielen.']]},
+  {q:'Eine KI hat nur Bilder von grossen Hunden gesehen. Nun sieht sie einen sehr kleinen Hund. Was passiert wohl?',o:[
+   ['Sie ist unsicher, weil für sie Hunde immer gross sind.','Hat sie nur ähnliche Beispiele gesehen, glaubt sie, «gross» gehöre zum Muster.'],
+   ['Sie erkennt ihn sicher, weil sie weiss, was ein Hund ist.','Sie weiss nicht, was ein Hund ist. Sie kennt nur die Muster aus ihren Beispielen.'],
+   ['Sie lernt sofort, dass es auch kleine Hunde gibt.','Eine KI lernt nur im Training, nicht beim Anschauen eines neuen Bildes.'],
+   ['Sie erkennt ihn sicher, weil er vier Beine hat.','Vier Beine haben auch Katzen und Füchse. Und «gross» hat sie als Teil des Musters gelernt.']]}]},
+ {ch:3,t:'Trainingsdaten beurteilen',qs:[
+  {q:'Eine KI soll Vögel erkennen. Welche Trainingsdaten sind am besten?',o:[
+   ['Viele verschiedene Vögel: gross, klein, bunt, im Flug und auf dem Ast.','Abwechslung ist das Wichtigste. So findet die KI, was alle Vögel gemeinsam haben.'],
+   ['Tausend Fotos von derselben Amsel.','Tausend gleiche Fotos bringen nicht mehr als eines. Die Daten wären einseitig.'],
+   ['Nur Fotos von Vögeln bei Sonnenschein.','Dann erkennt sie Vögel bei Regen oder in der Dämmerung schlecht. Die Daten wären einseitig.'],
+   ['Nur die schönsten Vogelbilder aus einem Buch.','Schön ist nicht wichtig. Wichtig ist Abwechslung – auch unscharfe und alltägliche Fotos.']]},
+  {q:'Eine Spracherkennung versteht Mundart schlechter als Hochdeutsch. Warum?',o:[
+   ['In ihren Trainingsdaten gab es viel weniger Mundart.','Was in den Trainingsdaten fehlt, kann die KI schlecht.'],
+   ['Mundart ist eine falsche Sprache.','Mundart ist nicht falsch. Die KI hat nur zu wenige Beispiele davon gehört.'],
+   ['Die KI mag Mundart nicht.','Eine KI mag nichts und hat keine Gefühle. Es fehlten einfach Beispiele.'],
+   ['Mundart spricht man immer zu schnell.','Am Tempo liegt es nicht. Die KI hat zu wenige Mundart-Beispiele gehört.']]},
+  {q:'Was passiert, wenn in den Trainingsdaten Fehler stecken?',o:[
+   ['Die KI übernimmt die Fehler, ohne es zu merken.','Die KI kann ihre Daten nicht selber prüfen. Fehler lernt sie einfach mit.'],
+   ['Die KI findet die Fehler und löscht sie.','Dafür müsste sie wissen, was richtig ist. Das kann sie nicht.'],
+   ['Die Fehler spielen keine Rolle.','Doch: Was die KI lernt, hängt direkt von ihren Daten ab.'],
+   ['Die KI wird dadurch vorsichtiger.','Eine KI wird nicht vorsichtig. Sie übernimmt die Fehler einfach.']]},
+  {q:'Eine KI soll ein gesundes Znüni erkennen. Als gesundes Beispiel hat sie nur Äpfel gesehen. Was passiert bei einem Rüebli?',o:[
+   ['Sie ist unsicher, weil sie nie ein Rüebli als Beispiel gesehen hat.','Was die KI nie gesehen hat, kann sie nicht gut erkennen. Ihre Daten waren einseitig.'],
+   ['Sie weiss sofort, dass Rüebli gesund sind.','Woher? In ihren Beispielen kamen keine Rüebli vor.'],
+   ['Sie erkennt es sicher, weil Rüebli Gemüse sind.','Das weisst du – die KI nicht. Sie kennt nur Äpfel als gesundes Beispiel.'],
+   ['Sie schaut im Internet nach, was ein Rüebli ist.','Sie schaut nicht nach. Sie kann nur, was sie im Training gelernt hat.']]}]},
+ {ch:4,t:'Wie eine Bild-KI arbeitet',qs:[
+  {q:'Was ist ein Pixel?',o:[
+   ['Ein kleiner Bildpunkt, für den der Computer Zahlen speichert.','Ein Bild besteht für den Computer aus vielen Pixeln – also aus Zahlen.'],
+   ['Ein kleines Programm, das Fotos macht.','Ein Pixel ist kein Programm, sondern ein einzelner Bildpunkt.'],
+   ['Ein Fehler in einem Bild.','Ein Pixel ist kein Fehler. Jedes digitale Bild besteht aus Pixeln.'],
+   ['Ein besonders scharfes Foto.','Ein Pixel ist kein ganzes Foto, sondern ein winziger Punkt davon.']]},
+  {q:'Eine Bild-KI meldet: 48 % Wolf, 45 % Hund, 7 % Fuchs. Was stimmt?',o:[
+   ['Sie wählt «Wolf», ist aber sehr unsicher.','Sie nimmt den grössten Wert. Aber «Hund» hat fast gleich viel – darum ist sie sehr unsicher.'],
+   ['Sie wählt «Wolf» und ist sich ganz sicher.','Ganz sicher wäre sie nur bei 100 %. Und «Hund» liegt nur knapp dahinter.'],
+   ['Sie wählt «Hund», weil Hunde häufiger sind.','Die KI wählt immer den grössten Wert. Der ist hier bei «Wolf».'],
+   ['Sie wählt «Fuchs», weil das am kleinsten ist.','Die KI wählt immer den grössten Wert, nie den kleinsten.']]},
+  {q:'Was sucht eine Bild-KI in den Zahlen eines Bildes zuerst?',o:[
+   ['Einfache Dinge wie Kanten, Linien und Übergänge von hell zu dunkel.','Zuerst Kanten und Linien, dann grössere Formen, am Schluss die Schätzung.'],
+   ['Den Namen der Person, die das Foto gemacht hat.','Der steht nicht in den Pixeln. Die KI sucht nach Kanten und Formen.'],
+   ['Das Datum, an dem das Foto gemacht wurde.','Das Datum hilft nicht beim Erkennen. Die KI sucht nach Kanten und Formen.'],
+   ['Gleich das ganze Tier auf einmal.','Das geht nicht. Sie baut es Schritt für Schritt auf: Kanten, dann Formen, dann die Schätzung.']]},
+  {q:'Warum gibt eine Bild-KI nie eine hundertprozentig sichere Antwort?',o:[
+   ['Weil sie nur schätzt, wie gut das Bild zu ihren Beispielen passt.','Sie arbeitet mit Wahrscheinlichkeiten. Eine Schätzung ist nie ganz sicher.'],
+   ['Weil sie nicht lügen darf.','Mit Lügen hat das nichts zu tun. Sie vergleicht nur und schätzt.'],
+   ['Weil 100 % nicht auf den Bildschirm passen.','Platz ist nicht das Problem. Sie kann nur schätzen, nicht sicher wissen.'],
+   ['Weil alle Fotos ein bisschen unscharf sind.','Auch bei scharfen Fotos schätzt sie nur. Sie vergleicht mit ihren Beispielen.']]}]},
+ {ch:5,t:'Das Wort-für-Wort-Prinzip',qs:[
+  {q:'Wie schreibt eine Sprach-KI eine Antwort?',o:[
+   ['Wort für Wort: Sie berechnet immer, welches Wort als Nächstes passt.','Wort für Wort, bis die Antwort fertig ist.'],
+   ['Sie sucht die fertige Antwort in einer grossen Liste.','Es gibt keine Liste mit fertigen Antworten. Sie baut jede Antwort Wort für Wort neu.'],
+   ['Sie denkt zuerst nach und schreibt dann alles auf einmal.','Sie denkt nicht nach. Sie rechnet ein Wort nach dem anderen aus.'],
+   ['Ein Mensch tippt die Antwort sehr schnell.','Kein Mensch tippt mit. Die KI rechnet die Wörter selber aus.']]},
+  {q:'«Die Kuh steht auf der …» Welches Wort wählt eine Sprach-KI am ehesten?',o:[
+   ['Weide','«Weide» kam nach diesem Satzanfang in den Trainingsdaten am häufigsten vor.'],
+   ['Treppe','Möglich, aber selten. In Texten steht nach «Die Kuh steht auf der» viel öfter «Weide».'],
+   ['Bühne','Das kommt in Texten kaum vor. Die KI wählt das häufigste Wort: «Weide».'],
+   ['Waage','Möglich, aber selten. Die KI wählt das Wort, das am häufigsten folgt: «Weide».']]},
+  {q:'Du stellst einer Sprach-KI zweimal genau dieselbe Frage. Was passiert?',o:[
+   ['Die Antworten können ein bisschen verschieden sein.','Sie nimmt nicht immer das allerwahrscheinlichste Wort. Darum ändert sich die Antwort etwas.'],
+   ['Es kommt immer genau Wort für Wort dasselbe.','Nicht unbedingt: Sie nimmt nicht immer das allerwahrscheinlichste Wort.'],
+   ['Beim zweiten Mal antwortet sie nicht mehr.','Doch, sie antwortet – nur vielleicht ein bisschen anders.'],
+   ['Die zweite Antwort ist immer falsch.','Die zweite Antwort ist nicht automatisch falsch. Sie kann einfach etwas anders klingen.']]},
+  {q:'Was hat eine Sprach-KI NICHT?',o:[
+   ['Ein Lexikon im Kopf, mit dem sie prüfen kann, ob etwas stimmt.','Richtig, das hat sie nicht. Sie weiss, welche Wörter zusammenpassen – aber nicht, was wahr ist.'],
+   ['Eine Rechnung, welche Wörter oft zusammen vorkommen.','Doch, genau das hat sie. Gesucht ist, was sie NICHT hat.'],
+   ['Sehr viele Texte im Hintergrund.','Doch, aus riesig vielen Texten hat sie gelernt. Gesucht ist, was sie NICHT hat.'],
+   ['Die Fähigkeit, flüssige Sätze zu schreiben.','Doch, flüssig schreiben kann sie sehr gut. Gesucht ist, was sie NICHT hat.']]}]},
+ {ch:6,t:'Halluzinationen erkennen und prüfen',qs:[
+  {q:'Ein Chatbot sagt dir, deine Lieblingssängerin habe 2019 in Zürich ein Konzert gegeben. Was tust du?',o:[
+   ['Ich prüfe es mit einer zweiten Quelle, bevor ich es glaube.','Eine Jahreszahl und ein seltenes Ereignis – das prüfst du mit einer zweiten Quelle.'],
+   ['Ich glaube es, weil der Chatbot sicher klingt.','Ein Chatbot klingt immer sicher, auch bei Fehlern.'],
+   ['Ich frage den Chatbot, ob er ganz sicher ist.','Der Chatbot kann sich nicht selber prüfen. Du brauchst eine zweite Quelle.'],
+   ['Ich glaube es, weil Zürich eine grosse Stadt ist.','Dass Zürich gross ist, beweist nicht, dass das Konzert stattfand.']]},
+  {q:'Welche Antwort einer KI musst du am ehesten prüfen?',o:[
+   ['«Das Schulhaus an deiner Strasse wurde 1957 gebaut.»','Eine Zahl über deinen Ort – das kann die KI gar nicht sicher wissen.'],
+   ['«Ein Jahr hat zwölf Monate.»','Das ist eine bekannte Tatsache, die überall gleich steht.'],
+   ['«Die Erde dreht sich um die Sonne.»','Das ist eine bekannte Tatsache, die in jedem Schulbuch steht.'],
+   ['«Eine Woche hat sieben Tage.»','Das ist eine bekannte Tatsache, die überall gleich steht.']]},
+  {q:'Warum ist das Wissen einer KI manchmal veraltet?',o:[
+   ['Weil ihr Training zu einem bestimmten Zeitpunkt abgeschlossen wurde.','Was nach dem Training passiert ist, kennt sie nicht.'],
+   ['Weil sie zu wenig liest.','Sie hat riesig viel gelesen – aber nur bis zum Ende ihres Trainings.'],
+   ['Weil sie auf alten Computern läuft.','Mit den Computern hat das nichts zu tun. Ihr Training wurde irgendwann abgeschlossen.'],
+   ['Weil sie nur alte Bücher mag.','Eine KI mag nichts. Ihr Training endete einfach zu einem bestimmten Zeitpunkt.']]},
+  {q:'Woran erkennst du eine Halluzination?',o:[
+   ['Nicht am Tonfall – nur durch Nachprüfen.','Die KI schreibt Fehler im gleichen sicheren Ton wie richtige Antworten.'],
+   ['Die KI schreibt dann sehr unsicher.','Leider nicht. Sie klingt bei Fehlern genauso sicher.'],
+   ['Die falsche Stelle ist rot markiert.','Nichts wird markiert. Die KI weiss ja selber nicht, dass es falsch ist.'],
+   ['Die KI entschuldigt sich vorher.','Sie merkt den Fehler nicht – darum entschuldigt sie sich auch nicht.']]}]},
+ {ch:7,t:'Einen guten Prompt schreiben',qs:[
+  {q:'«Erkläre mir, wie Bienen Honig machen.» Welcher Baustein ist das?',o:[
+   ['Auftrag','«Erkläre …» ist ein Befehl. Der Auftrag sagt, was die KI tun soll.'],
+   ['Rolle','Eine Rolle beginnt meist mit «Du bist …». Hier steht ein Befehl.'],
+   ['Details','Details erzählen etwas über dich. Hier steht ein Befehl.'],
+   ['Form','Die Form sagt, wie die Antwort aussehen soll. Hier steht, was die KI tun soll.']]},
+  {q:'«Antworte in einer Tabelle mit zwei Spalten.» Welcher Baustein ist das?',o:[
+   ['Form','Tabelle mit zwei Spalten – das sagt, wie die Antwort aussehen soll.'],
+   ['Auftrag','Der Auftrag sagt, worüber die KI schreiben soll. Hier geht es nur ums Aussehen.'],
+   ['Details','Details erzählen etwas über dich. Hier geht es ums Aussehen der Antwort.'],
+   ['Rolle','Eine Rolle sagt, wer antworten soll. Hier geht es ums Aussehen der Antwort.']]},
+  {q:'Welcher Prompt ist am besten?',o:[
+   ['«Du bist ein Imker. Erkläre mir, wie Bienen Honig machen. Ich bin in der 6. Klasse. Antworte in fünf Sätzen.»','Nur dieser Prompt hat Rolle, Auftrag, Details und Form.'],
+   ['«Erzähl mir alles über Bienen, über Honig, Blumen, Waben, Königinnen und Imker.»','Lang heisst nicht gut. Es fehlen Rolle, Details und Form.'],
+   ['«Du bist ein Imker. Ich bin in der 6. Klasse. Antworte in fünf Sätzen.»','Hier fehlt der Auftrag. Die KI weiss nicht, was sie erklären soll.'],
+   ['«Bienen»','Ein einzelnes Wort – die KI muss alles raten.']]},
+  {q:'Die KI benutzt viele Wörter, die du nicht verstehst. Was schreibst du?',o:[
+   ['«Erkläre es bitte mit einfacheren Wörtern, ich bin 12.»','Die Nachfrage sagt genau, was anders werden soll.'],
+   ['«Das ist falsch.»','Die Antwort ist nicht falsch, nur zu schwierig. Und die KI erfährt nicht, was sie ändern soll.'],
+   ['«Nochmals, bitte.»','Die KI weiss nicht, was sie ändern soll. Die Wörter bleiben vielleicht gleich schwierig.'],
+   ['«Schreib bitte mehr Fachwörter.»','Dann wird es noch schwieriger. Du brauchst einfachere Wörter.']]}]},
+ {ch:8,t:'Datenschutz und ehrliches Arbeiten',qs:[
+  {q:'Was darfst du in einen Prompt schreiben?',o:[
+   ['Eine Frage zu den Römern','Fragen zum Schulstoff verraten nichts über dich.'],
+   ['Den vollen Namen deines Freundes','Persönliche Angaben von anderen gehören nicht in einen Prompt.'],
+   ['Deine Handynummer','Telefonnummern sind persönliche Daten. Sie bleiben draussen.'],
+   ['Ein Foto deiner Klasse','Fotos von anderen Menschen gehören nicht in eine KI. Sie haben nicht zugestimmt.']]},
+  {q:'Warum gibst du keine persönlichen Daten in eine KI ein?',o:[
+   ['Sie landen auf fremden Computern, und du bekommst sie nicht zurück.','Was einmal dort ist, bekommst du nicht mehr zurück.'],
+   ['Die KI wird sonst langsamer.','Mit der Geschwindigkeit hat das nichts zu tun. Es geht um deine Daten.'],
+   ['Persönliche Daten machen die Antworten falsch.','Die Antworten werden nicht falsch. Aber deine Daten landen auf fremden Computern.'],
+   ['Die KI kann keine Namen lesen.','Doch, sie kann. Gerade darum gibst du sie nicht ein.']]},
+  {q:'Was ist ein Deepfake?',o:[
+   ['Ein täuschend echtes, aber künstlich gemachtes Bild, Video oder Tondokument.','Deepfakes sehen echt aus, sind aber künstlich gemacht.'],
+   ['Ein Foto, das tief unter Wasser gemacht wurde.','«Deep» heisst zwar «tief», aber ein Deepfake ist eine täuschend echte Fälschung.'],
+   ['Ein Fehler in einer Rechnung.','Ein Deepfake ist ein künstlich gemachtes Bild, Video oder Tondokument.'],
+   ['Ein besonders gut geschützter Prompt.','Ein Deepfake ist eine täuschend echte Fälschung, kein Prompt.']]},
+  {q:'Welcher Einsatz von KI ist fair?',o:[
+   ['Ich lasse mir Übungsaufgaben für die Prüfung erstellen.','Lösen musst du die Aufgaben selber. Dabei lernst du.'],
+   ['Ich lasse meinen Vortrag schreiben und sage, er sei von mir.','Das ist eine Täuschung, und du lernst nichts.'],
+   ['Ich lasse die Aufgaben lösen und schreibe sie ab.','Abschreiben heisst: nichts lernen. Das ist nicht fair.'],
+   ['Ich mache ein lustiges KI-Bild von meiner Lehrperson.','Über andere Menschen machst du keine KI-Bilder – auch nicht über Erwachsene.']]}]}
+];
+
+/* ---------- Übersicht ---------- */
+function renderHome(){
+  const app=$('#app');app.replaceChildren();
+  const done=CH.filter(c=>P.ch[c.id]&&P.ch[c.id].done).length;
+  app.append(
+    h('header',{class:'hero'},bit(),h('div',{},h('h1',{},h('span',{class:'hl'},'KI'),'-Lernwerkstatt'),
+      h('p',{},'Acht Kapitel zum Üben – und am Schluss der Lernstand-Check. Arbeite in deinem Tempo. Du kannst jedes Kapitel so oft machen, wie du willst.'))),
+    h('div',{class:'overall'},h('span',{},`${done} von ${CH.length} Kapiteln geschafft`),h('div',{class:'meter'},h('i',{style:`width:${done/CH.length*100}%`})))
+  );
+  const g=h('div',{class:'chgrid'});
+  CH.forEach(c=>{
+    const st=P.ch[c.id];
+    g.append(h('button',{class:'ch-card'+(st&&st.done?' done':''),onclick:()=>go(c.id),'aria-label':`Kapitel ${c.nr}: ${c.title}`},
+      h('div',{class:'ch-top'},h('div',{class:'icobox',html:pix(c.icon)}),
+        h('div',{class:'status'},st&&st.done?starRow(st.stars):'neu')),
+      h('div',{},h('div',{class:'kick'},`Kapitel ${c.nr}`),h('h3',{},c.title))));
+  });
+  app.append(g);
+  app.append(h('button',{class:'quiz-card',onclick:()=>go('quiz')},
+    h('div',{html:pix(TROPHY)}),
+    h('div',{},h('h3',{},'Lernstand-Check'),h('span',{},P.quiz!=null?`Wie gut kannst du es schon? · letztes Ergebnis: ${P.quiz} von 16`:'Wie gut kannst du es schon? · 16 Fragen, jedes Mal andere')),
+    h('span',{class:'go','aria-hidden':'true'},'→')));
+  const reset=h('span',{});
+  const askReset=()=>{reset.replaceChildren(h('span',{class:'confirm'},'Wirklich alles löschen?',
+    h('button',{class:'btn small',onclick:()=>{P={ch:{}};save();renderHome();}},'Ja, löschen'),
+    h('button',{class:'btn small ghost',onclick:()=>{reset.replaceChildren(rb());}},'Abbrechen')));};
+  const rb=()=>h('button',{class:'linkbtn',onclick:askReset},'Fortschritt löschen');
+  reset.append(rb());
+  app.append(h('footer',{class:'foot'},
+    h('p',{},h('b',{},'Für Lehrpersonen: '),'Die Kapitel 1–6 entsprechen den Lektionen 1–6 im Dossier «Künstliche Intelligenz», Kapitel 7 den Lektionen 8–9 und Kapitel 8 den Lektionen 10–11. Ein Kapitel dauert etwa 10–15 Minuten. Der Lernstand-Check zieht bei jedem Durchgang 16 von 32 Fragen (2 pro Lernziel), wiederholt keine Kapitelübungen und zeigt am Schluss, welche Lernziele sitzen.'),
+    h('p',{},'Der Fortschritt wird nur in diesem Browser auf diesem Gerät gespeichert. ',reset)));
+}
+
+/* ---------- Kapitel-Ablauf ---------- */
+let S=null;
+function startChapter(c){S={c,i:0,done:{},first:{}};renderStep();}
+function renderStep(){
+  const app=$('#app');app.replaceChildren();
+  const c=S.c,i=S.i,s=c.steps[i],last=i===c.steps.length-1;
+  const dots=h('div',{class:'dots','aria-label':`Schritt ${i+1} von ${c.steps.length}`});
+  c.steps.forEach((_,k)=>dots.append(h('span',{class:k<i?'past':k===i?'now':''})));
+  app.append(h('div',{class:'ch-head'},
+    h('button',{class:'back',onclick:()=>go('start')},'← Übersicht'),
+    h('div',{class:'kick'},`Kapitel ${c.nr} · Schritt ${i+1} von ${c.steps.length}`),
+    h('h2',{},c.title),dots));
+  const next=h('button',{class:'btn',disabled:!S.done[i],onclick:()=>{if(last)finishChapter();else{S.i++;renderStep();scrollTo(0,0);}}},last?'Kapitel abschliessen ✓':'Weiter →');
+  const api={
+    seen:!!S.done[i],
+    complete(){S.done[i]=true;next.disabled=false;},
+    hit(){if(S.first[i]===undefined)S.first[i]=true;},
+    miss(){if(S.first[i]===undefined)S.first[i]=false;}
+  };
+  app.append(h('section',{class:'panel'},R[s.type](s,api)));
+  app.append(h('div',{class:'nav'},
+    i>0?h('button',{class:'btn ghost',onclick:()=>{S.i--;renderStep();scrollTo(0,0);}},'← Zurück'):h('span'),next));
+}
+const SCORED=['mc','sort','gap'];
+function finishChapter(){
+  const c=S.c;const idx=c.steps.map((s,k)=>SCORED.includes(s.type)?k:-1).filter(k=>k>=0);
+  const right=idx.filter(k=>S.first[k]===true).length;
+  const ratio=idx.length?right/idx.length:1;
+  const stars=ratio===1?3:ratio>=.5?2:1;
+  const prev=P.ch[c.id];
+  P.ch[c.id]={done:true,stars:Math.max(stars,prev&&prev.stars||0)};save();
+  const app=$('#app');app.replaceChildren();
+  const nxt=CH[CH.indexOf(c)+1];
+  app.append(h('section',{class:'panel center end'},bit(),
+    h('div',{class:'kick'},`Kapitel ${c.nr}`),h('h2',{},'Kapitel geschafft!'),
+    starRow(stars,'bigstars'),
+    h('p',{},`Beim ersten Versuch richtig: ${right} von ${idx.length} Aufgaben.`),
+    h('p',{class:'hint'},stars===3?'Perfekt! Du hast alles beim ersten Mal gelöst.':'Du kannst das Kapitel jederzeit wiederholen und mehr Sterne holen.'),
+    h('div',{class:'btnrow'},
+      h('button',{class:'btn ghost',onclick:()=>go('start')},'Zur Übersicht'),
+      nxt?h('button',{class:'btn',onclick:()=>go(nxt.id)},`Kapitel ${nxt.nr}: ${nxt.title} →`)
+         :h('button',{class:'btn',onclick:()=>go('quiz')},'Zum Lernstand-Check →'))));
+  scrollTo(0,0);
+}
+
+/* ---------- Aufgabentypen ---------- */
+const R={};
+R.hook=(s,api)=>{
+  const out=h('div',{});const g=h('div',{class:'guess'});
+  s.o.forEach((t,k)=>{const b=h('button',{onclick:()=>{
+    g.querySelectorAll('button').forEach(x=>x.disabled=true);
+    b.classList.add('picked');g.children[s.a].classList.add('right');
+    out.replaceChildren(fb('info',k===s.a?'Gut geschätzt!':'Überraschung!',s.reveal));api.complete();
+  }},t);g.append(b);});
+  return h('div',{},h('div',{class:'hook'},bit(),h('div',{class:'speech'},h('small',{},'Bit fragt'),h('p',{},s.q))),
+    h('p',{class:'hint',style:'margin:0 0 8px'},'Schätze einfach – hier gibt es keine Punkte.'),g,out);
+};
+R.info=(s,api)=>{
+  const d=h('div',{},h('h3',{},s.title));
+  const wrap=h('div',{class:'cards'});d.append(wrap);
+  const tail=h('div',{});
+  const counter=h('div',{class:'cardcount'});
+  const more=h('button',{class:'morebtn'},'Weiter erklären ▾');
+  let shown=0;
+  const addCard=(c)=>{
+    const el=h('div',{class:'lk'},c.h?h('h4',{},c.h):null,h('div',{html:c.html}),c.ex?h('div',{class:'ex',html:c.ex}):null);
+    wrap.append(el);
+    if(s.after)s.after(el);
+  };
+  const finish=()=>{
+    more.remove();counter.remove();
+    if(s.wort)tail.append(h('div',{class:'wort'},h('div',{class:'kick'},'Wort-Erklärung'),
+      h('dl',{},s.wort.map(([w,e])=>h('div',{},h('dt',{},w+': '),h('dd',{},e))))));
+    if(s.merke)tail.append(h('div',{class:'merke'},h('span',{class:'tag'},'Merke'),h('div',{},s.merke)));
+    api.complete();
+  };
+  const step=()=>{
+    addCard(s.cards[shown]);shown++;
+    counter.textContent=`${shown} von ${s.cards.length}`;
+    if(shown>=s.cards.length)finish();
+  };
+  more.addEventListener('click',()=>{step();more.scrollIntoView({block:'nearest',behavior:'smooth'});});
+  d.append(tail,more,counter);
+  if(api.seen){s.cards.forEach(addCard);shown=s.cards.length;finish();}
+  else step();
+  return d;
+};
+R.mc=(s,api)=>{
+  const d=h('div',{});
+  if(s.lead)d.append(s.lead());
+  d.append(h('p',{class:'q'},s.q));
+  const order=shuffle(s.options.map((o,k)=>({t:o[0],why:o[1],k})));
+  const box=h('div',{class:'opts'}),out=h('div',{});
+  let solved=false;
+  order.forEach(o=>{
+    const b=h('button',{class:'opt',onclick:()=>{
+      if(solved)return;
+      if(o.k===s.correct){solved=true;b.classList.add('ok');api.hit();api.complete();
+        box.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+        out.replaceChildren(fb('good',praise(),o.why));}
+      else{b.classList.add('no');b.disabled=true;api.miss();
+        out.replaceChildren(fb('bad','Noch nicht ganz – warum?',o.why+'<br><br>Versuch es nochmals.'));}
+    }},o.t);
+    box.append(b);
+  });
+  d.append(box,out);return d;
+};
+R.sort=(s,api)=>{
+  const d=h('div',{});
+  d.append(h('p',{class:'q'},s.q));
+  if(s.lead)d.append(s.lead());
+  const list=h('div',{class:'sort-list'}),out=h('div',{});
+  const pick=new Array(s.items.length).fill(null);const locked=new Array(s.items.length).fill(false);
+  const rows=[];
+  const check=h('button',{class:'btn',disabled:true},'Überprüfen');
+  const upd=()=>{check.disabled=pick.some((p,k)=>p===null&&!locked[k]);};
+  shuffle(s.items.map((it,k)=>({it,k}))).forEach(({it,k})=>{
+    const seg=h('div',{class:'seg',role:'group'});
+    const why=h('div',{class:'why',hidden:true},it.why||'');
+    const row=h('div',{class:'sort-item'},
+      it.html?h('div',{class:'txt',html:it.html,'aria-label':it.label||''}):h('div',{class:'txt'},it.t),seg,why);
+    s.cats.forEach((cat,ci)=>seg.append(h('button',{'aria-pressed':'false',onclick:(ev)=>{
+      if(locked[k])return;pick[k]=ci;row.classList.remove('no');
+      seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));
+      ev.currentTarget.setAttribute('aria-pressed','true');upd();
+    }},cat)));
+    rows[k]={row,seg,why};list.append(row);
+  });
+  check.addEventListener('click',()=>{
+    let ok=0;
+    s.items.forEach((it,k)=>{
+      const r=rows[k];
+      if(pick[k]===it.c){ok++;locked[k]=true;r.row.classList.add('ok');r.row.classList.remove('no');r.seg.querySelectorAll('button').forEach(b=>b.disabled=true);}
+      else{r.row.classList.add('no');pick[k]=null;r.seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));}
+      r.why.hidden=!it.why;
+    });
+    upd();
+    if(ok===s.items.length){api.hit();api.complete();check.hidden=true;out.replaceChildren(fb('good',praise()+' Alles richtig.','Unter jedem Beispiel steht, warum es so ist. Lies die Begründungen nochmals durch.'));}
+    else{api.miss();out.replaceChildren(fb('bad',`${ok} von ${s.items.length} richtig.`,'Bei den rot markierten steht, warum deine Antwort nicht passt. Lies es und wähle neu.'));}
+  });
+  d.append(list,h('div',{class:'check-row'},check),out);return d;
+};
+R.gap=(s,api)=>{
+  const d=h('div',{},h('p',{class:'q'},s.q));const sels=[];const out=h('div',{});
+  const check=h('button',{class:'btn',disabled:true},'Überprüfen');
+  const upd=()=>{check.disabled=sels.some(x=>!x.el.value);};
+  const rowEls=[];
+  s.rows.forEach((r,ri)=>{
+    const row=h('div',{class:'gap-row'});const mine=[];
+    r.parts.forEach((p,pi)=>{
+      if(typeof p==='string')row.append(h('span',{},p));
+      else if(p.lbl)row.append(h('span',{class:'lbl'},p.lbl));
+      else{const el=h('select',{id:`gap-${ri}-${pi}`,'aria-label':'Lücke',onchange:()=>{el.classList.remove('no');upd();}},
+        h('option',{value:''},'?'),p.o.map(o=>h('option',{value:o},o)));
+        const x={el,a:p.a};sels.push(x);mine.push(x);row.append(el);}
+    });
+    const why=h('div',{class:'why',hidden:true},r.why);row.append(why);
+    rowEls.push({row,why,mine});d.append(row);
+  });
+  check.addEventListener('click',()=>{
+    let ok=0;sels.forEach(x=>{if(x.el.value===x.a){ok++;x.el.classList.add('ok');x.el.disabled=true;}else x.el.classList.add('no');});
+    rowEls.forEach(r=>{r.why.hidden=false;r.row.classList.toggle('no',r.mine.some(x=>x.el.value!==x.a));});
+    if(ok===sels.length){api.hit();api.complete();check.hidden=true;out.replaceChildren(fb('good',praise(),'Du hast die Regeln aus Beispielen gefunden, ohne dass sie dir jemand verraten hat. Genau das macht eine KI.'));}
+    else{api.miss();out.replaceChildren(fb('bad',`${ok} von ${sels.length} richtig.`,'Lies den Tipp bei der Reihe und ändere die rot markierten Felder.'));}
+  });
+  d.append(h('div',{class:'check-row'},check),out);return d;
+};
+R.trainer=(s,api)=>{
+  const pool=[
+    {id:'A',label:'rotes Rennvelo bei Sonne',col:'bad',tags:['rot','Rennvelo','Sonne'],fixed:true},
+    {id:'F',label:'noch ein rotes Rennvelo bei Sonne',col:'bad',tags:['rot','Rennvelo','Sonne']},
+    {id:'B',label:'grünes Mountainbike bei Sonne',col:'cr2',tags:['grün','Mountainbike','Sonne']},
+    {id:'D',label:'rotes Rennvelo im Regen',col:'bad',tags:['rot','Rennvelo','Regen']},
+    {id:'C',label:'blaues Kindervelo bei Sonne',col:'cr3',tags:['blau','Kindervelo','Sonne']},
+    {id:'E',label:'blaues Mountainbike im Schnee',col:'cr3',tags:['blau','Mountainbike','Schnee']}];
+  const tests=[
+    {w:'grünes Mountainbike im Regen',tags:['grün','Mountainbike','Regen']},
+    {w:'blaues Kindervelo im Schnee',tags:['blau','Kindervelo','Schnee']},
+    {w:'rotes Rennvelo bei Sonne',tags:['rot','Rennvelo','Sonne']}];
+  const on=new Set(['A']);const out=h('div',{});const barBox=h('div',{});const count=h('p',{class:'hint'});
+  let finished=false;
+  const calc=()=>{
+    const have=new Set([...on].flatMap(id=>pool.find(p=>p.id===id).tags));
+    const res=tests.map(t=>({w:t.w,p:20+25*t.tags.filter(x=>have.has(x)).length}));
+    barBox.replaceChildren(bars(res,{}));
+    count.textContent=`Trainingsbilder: ${on.size}`;
+    if(!finished&&res.every(r=>r.p>=95)){finished=true;api.complete();
+      out.replaceChildren(fb('good','Geschafft!','Jetzt erkennt die KI alle drei Velos sicher. Sie brauchte <b>verschiedene</b> Beispiele: andere Farben, andere Velo-Arten, anderes Wetter.'));}
+  };
+  const chips=h('div',{class:'chips'});
+  pool.forEach(p=>{
+    const b=h('button',{class:'chip','aria-pressed':on.has(p.id)?'true':'false',disabled:!!p.fixed,onclick:()=>{
+      if(on.has(p.id)){on.delete(p.id);b.setAttribute('aria-pressed','false');}
+      else{on.add(p.id);b.setAttribute('aria-pressed','true');
+        if(p.id==='F'&&!finished)out.replaceChildren(fb('info','Hilft das?','Schau auf die Balken: Ein weiteres gleiches Bild bringt der KI nichts Neues bei. Sie braucht <b>andere</b> Beispiele.'));}
+      calc();
+    }},h('span',{class:'dot',style:`background:var(--${p.col})`}),p.label+(p.fixed?' (schon drin)':''));
+    chips.append(b);
+  });
+  const d=h('div',{},h('h3',{},'Trainiere eine Velo-KI'),
+    h('p',{},'Die KI kennt bis jetzt nur ein Bild: ein rotes Rennvelo bei Sonne. Unten siehst du, wie sicher sie drei Test-Velos erkennt.'),
+    h('p',{class:'q'},'Tippe weitere Trainingsbilder an, bis die KI alle drei Test-Velos sicher erkennt (95 %).'),
+    h('div',{class:'sub'},'Trainingsbilder'),chips,count,
+    h('div',{class:'sub'},'Test: Wie sicher erkennt die KI ein Velo?'),barBox,out);
+  calc();return d;
+};
+R.pixel=(s,api)=>{
+  api.complete();
+  const cells=new Array(64).fill(0);
+  const grid=h('div',{class:'pgrid',role:'grid','aria-label':'Pixel-Raster 8 mal 8'});
+  const nums=h('div',{class:'numgrid'});
+  const draw=()=>{nums.replaceChildren(...cells.map(v=>h('span',{class:v?'one':''},String(v))));};
+  cells.forEach((_,k)=>{const b=h('button',{'aria-label':`Pixel ${k+1}`,onclick:()=>{cells[k]^=1;b.classList.toggle('on',!!cells[k]);draw();}});grid.append(b);});
+  draw();
+  return h('div',{},h('h3',{},'Werde selber zum Computer'),
+    h('p',{},'Tippe auf die Kästchen und male ein einfaches Zeichen: ein Herz, einen Blitz oder einen Buchstaben. Daneben siehst du, was der Computer davon speichert: ',h('b',{},'1 = ausgemalt, 0 = leer'),'.'),
+    h('div',{class:'pixwork'},grid,h('div',{},h('div',{class:'numlbl'},'Das speichert der Computer:'),nums)),
+    h('div',{class:'check-row'},h('button',{class:'btn ghost small',onclick:()=>{cells.fill(0);grid.querySelectorAll('button').forEach(b=>b.classList.remove('on'));draw();}},'Alles löschen')),
+    fb('info','Partnerspiel','Schreib nur die Zahlen auf ein Blatt und gib es deiner Banknachbarin oder deinem Banknachbarn. Kann sie oder er dein Zeichen erraten?'));
+};
+R.nextword=(s,api)=>{
+  const rounds=[
+    {start:'Am Morgen putze ich mir die',o:[{w:'Zähne',p:81},{w:'Schuhe',p:9},{w:'Haare',p:7},{w:'Banane',p:3}]},
+    {start:'In den Sommerferien fahren wir ans',o:[{w:'Meer',p:64},{w:'Ufer',p:15},{w:'Ende',p:12},{w:'Telefon',p:9}]},
+    {start:'Der Hund bellt laut im',o:[{w:'Garten',p:58},{w:'Treppenhaus',p:22},{w:'Wald',p:14},{w:'Kühlschrank',p:6}]},
+    {start:'Die Hauptstadt der Schweiz ist',o:[{w:'Bern',p:71},{w:'Zürich',p:18},{w:'Genf',p:7},{w:'gross',p:4}],
+     note:'Achtung: Auch «Zürich» hat 18 %. Manchmal nimmt eine KI nicht das wahrscheinlichste Wort – und schon steht ein Fehler da, im gleichen sicheren Ton.'}];
+  let r=0;const box=h('div',{});
+  const show=()=>{
+    const cur=rounds[r];const blank=h('span',{class:'blank'},'…');
+    const opts=h('div',{class:'wordopts'});const res=h('div',{});
+    shuffle(cur.o).forEach(o=>opts.append(h('button',{onclick:()=>{
+      opts.querySelectorAll('button').forEach(b=>b.disabled=true);blank.textContent=o.w;
+      const top=cur.o[0];const same=o.w===top.w;
+      res.replaceChildren(h('div',{class:'sub'},'So hat die KI gerechnet:'),bars(cur.o,{markTop:true,mine:o.w}),
+        fb(same?'good':'info',same?'Genau wie die KI!':'Möglich!',(same?`Die KI nimmt auch «${top.w}», weil dieses Wort nach dem Satzanfang am häufigsten vorkommt.`:`Die KI hätte «${top.w}» gewählt, weil dieses Wort nach dem Satzanfang am häufigsten vorkommt.`)+(cur.note?'<br><br>'+cur.note:'')),
+        h('div',{class:'check-row'},r<rounds.length-1?h('button',{class:'btn small',onclick:()=>{r++;show();}},'Nächster Satz →')
+          :h('span',{class:'hint'},'Fertig! Du hast vier Mal wie eine Sprach-KI gerechnet.')));
+      if(r===rounds.length-1)api.complete();
+    }},o.w)));
+    box.replaceChildren(h('div',{class:'kick'},`Satz ${r+1} von ${rounds.length}`),
+      h('div',{class:'sentence'},cur.start+' ',blank),opts,res);
+  };
+  show();
+  return h('div',{},h('h3',{},'Rechne wie eine Sprach-KI'),
+    h('p',{class:'q'},'Welches Wort kommt als Nächstes? Wähle zuerst selber – dann siehst du, wie die KI gerechnet hat.'),
+    h('p',{class:'hint',style:'margin:-6px 0 12px'},'Die Prozentzahlen sind ausgedachte Beispiele. Echte KIs rechnen ähnlich.'),box);
+};
+R.builder=(s,api)=>{
+  const parts=[
+    {n:'Rolle',cls:'b1',o:['Du bist eine Vulkanforscherin.','Du bist ein Lehrer für die 5. Klasse.','Du bist ein Reporter für eine Kinderzeitung.']},
+    {n:'Auftrag',cls:'b2',o:['Erkläre mir, wie ein Vulkan ausbricht.','Erkläre mir, was Lava ist.','Beschreibe, wie ein Vulkan entsteht.']},
+    {n:'Details',cls:'b3',o:['Ich bin 11 Jahre alt, bitte einfache Sprache.','Ich brauche es für einen Vortrag in der Klasse.','Ich weiss noch fast nichts über Vulkane.']},
+    {n:'Form',cls:'b4',o:['Schreibe fünf kurze Sätze.','Als Liste mit drei Punkten.','Mit drei Fachbegriffen am Schluss.']}];
+  const val=['','','',''];const preview=h('div',{});const out=h('div',{});let done=false;
+  const upd=()=>{
+    const filled=val.map((v,k)=>v?h('span',{class:'part bb '+parts[k].cls},v):null).filter(Boolean);
+    preview.replaceChildren(...(filled.length?filled.flatMap((x,k)=>k?[' ',x]:[x]):[h('span',{class:'hint'},'Wähle oben deine Bausteine aus.')]));
+    const miss=parts.filter((p,k)=>!val[k]).map(p=>p.n);
+    if(!miss.length&&!done){done=true;api.complete();out.replaceChildren(fb('good','Alle vier Bausteine sind drin!','Mit diesem Prompt muss die KI nicht raten. Probiere auch andere Kombinationen aus.'));}
+    else if(miss.length&&!done) out.replaceChildren(h('p',{class:'hint'},'Es fehlt noch: '+miss.join(', ')));
+  };
+  const form=h('div',{class:'builder'});
+  parts.forEach((p,k)=>{const sel=h('select',{id:'bau-'+k,onchange:()=>{val[k]=sel.value;upd();}},h('option',{value:''},'– wählen –'),p.o.map(o=>h('option',{value:o},o)));
+    form.append(h('label',{for:'bau-'+k},h('span',{class:'bb '+p.cls},p.n),sel));});
+  upd();
+  return h('div',{},h('h3',{},'Bau deinen eigenen Prompt'),
+    h('p',{class:'q'},'Du willst etwas über Vulkane wissen. Wähle für jeden Baustein einen Satz aus.'),
+    form,h('div',{class:'promptbox'},h('div',{class:'lbl'},'Dein Prompt'),preview),out);
+};
+
+/* ---------- Lernstand-Check ---------- */
+let Q=null;
+function startQuiz(){
+  const items=[];
+  GOALS.forEach((g,gi)=>shuffle(g.qs).slice(0,2).forEach(q=>items.push({...q,gi,order:shuffle(q.o.map((o,k)=>({t:o[0],why:o[1],k})))})));
+  Q={i:0,score:0,per:GOALS.map(()=>0),items};renderQ();
+}
+function quizHead(){return h('div',{class:'ch-head'},h('button',{class:'back',onclick:()=>go('start')},'← Übersicht'),h('h2',{},'Lernstand-Check'));}
+function renderQ(){
+  const app=$('#app');app.replaceChildren();
+  const q=Q.items[Q.i];
+  app.append(quizHead());
+  const box=h('div',{class:'opts'}),out=h('div',{});
+  const nextB=h('button',{class:'btn',hidden:true,onclick:()=>{Q.i++;if(Q.i<Q.items.length)renderQ();else renderQuizEnd();scrollTo(0,0);}},Q.i<Q.items.length-1?'Nächste Frage →':'Ergebnis anzeigen →');
+  q.order.forEach(o=>{
+    const b=h('button',{class:'opt',onclick:()=>{
+      box.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+      if(o.k===0){Q.score++;Q.per[q.gi]++;b.classList.add('ok');out.replaceChildren(fb('good',praise(),o.why));}
+      else{b.classList.add('no');
+        [...box.children].forEach((x,idx)=>{if(q.order[idx].k===0)x.classList.add('ok');});
+        const right=q.order.find(x=>x.k===0);out.replaceChildren(fb('bad','Leider falsch – warum?',o.why+'<br><br><b>Richtig ist:</b> «'+right.t+'». '+right.why));}
+      nextB.hidden=false;
+    }},o.t);box.append(b);
+  });
+  app.append(h('section',{class:'panel'},
+    h('div',{class:'kick'},`Frage ${Q.i+1} von ${Q.items.length} · ${GOALS[q.gi].t}`),
+    h('div',{class:'qbar'},h('i',{style:`width:${Q.i/Q.items.length*100}%`})),
+    h('p',{class:'q'},q.q),box,out),
+    h('div',{class:'nav'},h('span'),nextB));
+}
+function renderQuizEnd(){
+  const n=Q.items.length,sc=Q.score;
+  P.quiz=sc;save();
+  const msg=sc>=15?'Ausgezeichnet – du bist bereit!':sc>=11?'Gut gemacht! Fast alles sitzt schon.':sc>=7?'Du bist auf gutem Weg.':'Übe noch ein bisschen – du schaffst das!';
+  const stars=sc>=15?3:sc>=11?2:1;
+  const LBL=['nochmals üben','fast','sitzt'];
+  const app=$('#app');app.replaceChildren(quizHead());
+  app.append(h('section',{class:'panel center end'},bit(),
+    h('div',{class:'score'},String(sc),h('small',{},` / ${n}`)),
+    starRow(stars,'bigstars'),h('h3',{},msg),
+    h('div',{class:'goals'},h('div',{class:'kick',style:'margin-bottom:4px'},'Dein Lernstand'),
+      GOALS.map((g,gi)=>{const v=Q.per[gi];return h('div',{class:'goal'},
+        h('div',{class:'gl'},h('b',{},g.t),h('span',{},`Kapitel ${g.ch} · ${v} von 2 richtig`)),
+        h('span',{class:'st s'+v},LBL[v]),
+        v<2?h('button',{class:'btn ghost small',onclick:()=>go(CH[g.ch-1].id)},`Kapitel ${g.ch} wiederholen`):null);})),
+    h('div',{class:'proof'},h('p',{style:'margin:0'},`${sc} von ${n} Fragen richtig`),
+      h('p',{class:'hint',style:'margin:4px 0 0'},new Date().toLocaleDateString('de-CH',{day:'numeric',month:'long',year:'numeric'})+' · Zeig dieses Ergebnis deiner Lehrperson.')),
+    h('div',{class:'btnrow'},h('button',{class:'btn ghost',onclick:()=>go('start')},'Zur Übersicht'),h('button',{class:'btn',onclick:()=>{startQuiz();scrollTo(0,0);}},'Neuer Check mit anderen Fragen'))));
+}
+
+/* ---------- Navigation ---------- */
+function route(){
+  const t=(location.hash||'').slice(1);
+  if(t==='quiz')startQuiz();
+  else{const c=CH.find(c=>c.id===t);if(c)startChapter(c);else renderHome();}
+  scrollTo(0,0);
+}
+function go(t){if(location.hash.slice(1)===t)route();else location.hash=t;}
+window.addEventListener('hashchange',route);
+route();
+</script>
+
+</body></html>
