@@ -84,6 +84,7 @@ h1{font-family:var(--display); font-weight:600; font-size:clamp(28px, 6vw, 38px)
 .trainer.zu:hover{transform:none; border-color:var(--line)}
 .trainer.zu .pfeil{background:var(--line); color:var(--muted)}
 .trainer .zu-satz{display:block; margin-top:6px; font-size:14px; font-weight:700; color:var(--c)}
+.trainer .zu-notiz{display:inline-block; margin-top:6px; font-size:14px; font-weight:700; padding:3px 10px; border-radius:8px; background:#ffe27a; color:#2b2100}
 
 /* Fachansicht */
 .ansicht{display:flex; flex-direction:column; gap:18px}
@@ -259,7 +260,7 @@ const FAECHER = [
     trainer:[
       /* ab: Erst ab diesem Zeitpunkt anklickbar (der Test selbst ist bis dahin auch auf dem Server gesperrt). */
       { name:'KI-Test', text:'Lernzielkontrolle «Künstliche Intelligenz».', zeichen:'KI', url:'https://script.google.com/macros/s/AKfycbzCgeEM0MkaJv9LTmw849YvxM4CWkRtHluxmOvm_lZclG1_ODIoqO8k6QRLMiyVM-06/exec', chips:['Lernzielkontrolle'],
-        ab:'2026-11-13T10:00:00+01:00', abText:'Freitag, 13. November, um 10 Uhr' }
+        ab:'2026-11-20T10:00:00+01:00', abText:'Freitag, 20. November, um 10 Uhr', notiz:'Wir verschieben den Test um 1 Woche.' }
     ]}
 ];
 const gesperrt = t => t.ab && Date.now() < Date.parse(t.ab);
@@ -303,6 +304,7 @@ function fachseite(f){
                 <span class="chips">${t.chips.map(c => `<span class="chip">${c}</span>`).join('')}</span>
                 ${t.beta ? `<span class="beta-satz">Noch in der Probephase – es kann Fehler geben.</span>` : ''}
                 ${gesperrt(t) ? `<span class="zu-satz">Noch gesperrt – ab ${esc(t.abText)}</span>` : ''}
+                ${gesperrt(t) && t.notiz ? `<span class="zu-notiz">${esc(t.notiz)}</span>` : ''}
                 ${f.id === 'mathe' ? `<span class="u-status" data-plan="${esc(t.name)}"></span>` : ''}
               </span>
               <span class="pfeil">${gesperrt(t) ? ICONS.schloss : ICONS.pfeil}</span>
