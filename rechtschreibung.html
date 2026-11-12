@@ -1196,6 +1196,12 @@ function zaehle(res, acc){
   const so = acc.SO || (acc.SO={n:0,f:0}); so.n++; if(res.zusatz.some(z=>z.c==="SO")) so.f++;
   return acc;
 }
+/* Eigene Statistik eines Kindes: Wird ein Bereich zu gross, zählen ältere Versuche nur noch halb.
+   So merkt das Programm, wenn ein Kind besser geworden ist (die Auswertung der Lehrperson zählt separat). */
+function kappe(acc){
+  for(const c in acc){ const x = acc[c]; if(x.n > STAT_FENSTER){ const k = STAT_FENSTER/2/x.n; x.n = STAT_FENSTER/2; x.f = Math.round(x.f*k*100)/100; } }
+  return acc;
+}
 function fehlerBereiche(res){
   const f = res.stellen.filter(s=>s.f).map(s=>s.c).concat(res.zusatz.map(z=>z.c));
   return [...new Set(f)];
@@ -1208,6 +1214,10 @@ const SAETZE_PRO_ETAPPE = 2;
 const BESTANDEN_AB = 0.8;
 const SB_NACH_ETAPPEN = 8;     // neue Standortbestimmung nach so vielen Etappen
 const KISTE_RAUS = 2;          // so oft richtig, dann verlässt ein Wort die Fehlerkiste
+const FOERDER_WOERTER = 4;     // so viele der neuen Wörter einer Etappe kommen aus den schwächsten Bereichen
+const SCHWACH_AB = 0.15;       // ab diesem Fehleranteil gilt ein Bereich als schwach
+const SCHWACH_MIN = 8;         // so viele Stellen braucht ein Bereich, bevor er zählt
+const STAT_FENSTER = 60;       // die eigene Statistik zählt vor allem die letzten Versuche (ältere werden halbiert)
 const STUFEN = {1:"Kurze, häufige Wörter",2:"Grundwortschatz mit Regelwörtern",3:"Längere Wörter und Zusammensetzungen",4:"Anspruchsvolle Wörter",5:"Schwierige Wörter"};
 
 /* ===== Hilfsfunktionen ===== */
@@ -1406,13 +1416,45 @@ function kisteItems(n, ausser){
     .filter(([k,v])=>{ if(schon.has(v.w)) return false; schon.add(v.w); return true; }).slice(0,n)
     .map(([k,v])=>({typ:"W", w:v.w, x:v.x, s:v.s, q:"K", ims:!!v.ims, pos:v.pos, lw:v.lw, kk:k}));
 }
+/* ===== Gezielt fördern: Die schwächsten Bereiche eines Kindes kommen in den Etappen häufiger vor ===== */
+const SATZ_REGEL = {NG: x=>x.t.includes("^"), DS: x=>/\bdass\b|, das\b/.test(x.t)};   // diese Bereiche übt man in Sätzen
+const wortPasst = (c, w) => c==="SO" ? rein(w.w).length>=9 : c==="GKg" ? /^[A-ZÄÖÜ]/.test(w.w) : c==="GKk" ? !/^[A-ZÄÖÜ]/.test(w.w) : stellen(w.w,false).some(o=>o.c===c);
+/* Aufgaben aus der eigenen und der nächsttieferen Stufe; reicht das nicht, auch aus der nächsthöheren und den übrigen tieferen */
+function foerderKandidaten(pools, passt, st, ausser){
+  const aus = ss => ss.filter(s=>s>=1 && s<=5).flatMap(s=>pools[s].filter(x=>!ausser.has(x.id) && passt(x)));
+  const k = aus([st, st-1]);
+  return k.length >= 8 ? k : k.concat(aus([st+1, st-2, st-3, st-4]));
+}
+/* Die (höchstens) zwei Bereiche mit dem grössten Fehleranteil – nur solche, zu denen es auf dieser Stufe Aufgaben gibt */
+function foerderBereiche(st){
+  st = st || P.stufe || 1;
+  const a = P.stat || {}, keine = new Set(), q = c => a[c].f/a[c].n;
+  return CAT_ORDER.filter(c=>a[c] && a[c].n >= SCHWACH_MIN && q(c) > SCHWACH_AB)
+    .sort((x,y)=>q(y)-q(x))
+    .filter(c=>c==="GK" || (SATZ_REGEL[c] ? foerderKandidaten(POOL_S, SATZ_REGEL[c], st, keine) : foerderKandidaten(POOL_W, w=>wortPasst(c,w), st, keine)).length > 0)
+    .slice(0,2);
+}
 function starteEtappe(){
   const st = P.stufe || 1;
-  const neu = nimm(POOL_W[st], NEUE_WOERTER).map(w=>({typ:"W", w:w.w, x:w.x, s:w.s, q:"E", id:w.id}));
   const ki = kisteItems(KISTE_PRO_ETAPPE, Date.now()-60000);
-  const sa = nimm(POOL_S[st], SAETZE_PRO_ETAPPE).map(x=>({typ:"S", w:x.t, s:x.s, q:"E", id:x.id}));
+  const fb = foerderBereiche(st);
+  // Förderwörter: nicht doppelt und nicht, was ohnehin in der Fehlerkiste liegt
+  const ausser = new Set(Object.values(P.kiste).map(v=>WORT[v.w] && WORT[v.w].id).filter(Boolean));
+  const fw = [], wortCats = fb.filter(c=>!SATZ_REGEL[c]);
+  wortCats.forEach((c,i)=>{
+    const n = Math.floor(FOERDER_WOERTER/wortCats.length) + (i < FOERDER_WOERTER % wortCats.length ? 1 : 0);
+    const teile = c==="GK" ? [["GKg", Math.ceil(n/2)], ["GKk", Math.floor(n/2)]] : [[c, n]];   // Gross/klein: Nomen und andere Wörter gemischt
+    for(const [k, m] of teile) nimm(foerderKandidaten(POOL_W, w=>wortPasst(k,w), st, ausser), m)
+      .forEach(w=>{ ausser.add(w.id); fw.push({typ:"W", w:w.w, x:w.x, s:w.s, q:"E", id:w.id, fd:c}); });
+  });
+  const neu = fw.concat(nimm(POOL_W[st].filter(w=>!ausser.has(w.id)), NEUE_WOERTER - fw.length).map(w=>({typ:"W", w:w.w, x:w.x, s:w.s, q:"E", id:w.id})));
+  const ausserS = new Set(), fsa = [];
+  fb.filter(c=>SATZ_REGEL[c]).forEach(c=>{ const x = nimm(foerderKandidaten(POOL_S, SATZ_REGEL[c], st, ausserS), 1)[0];
+    if(x){ ausserS.add(x.id); fsa.push({typ:"S", w:x.t, s:x.s, q:"E", id:x.id, fd:c}); } });
+  const sa = shuffle(fsa.concat(nimm(POOL_S[st].filter(x=>!ausserS.has(x.id)), SAETZE_PRO_ETAPPE - fsa.length).map(x=>({typ:"S", w:x.t, s:x.s, q:"E", id:x.id}))));
+  const foerder = fb.filter(c=>fw.some(x=>x.fd===c) || fsa.some(x=>x.fd===c));
   const nr = P.etappe + 1;
-  S = {art:"etappe", sid:uid(), thema: st===5 && nr>ETAPPEN_PRO_STUFE ? `Stufe 5 · Meisterrunde ${nr-ETAPPEN_PRO_STUFE}` : `Stufe ${st} · Etappe ${nr}`,
+  S = {art:"etappe", sid:uid(), thema: st===5 && nr>ETAPPEN_PRO_STUFE ? `Stufe 5 · Meisterrunde ${nr-ETAPPEN_PRO_STUFE}` : `Stufe ${st} · Etappe ${nr}`, foerder,
        items: shuffle(neu.concat(ki)).concat(sa), i:0, log:[], pending:[], z:0, start:Date.now()};
   speichereS(); zeigeAufgabe(true);
 }
@@ -1611,10 +1653,10 @@ function meinStand(){
   if(P.worte < 30 || !liste.length) return "";
   const rows = liste.map(c=>{ const p = Math.round((1-st[c].f/st[c].n)*100);
     return `<div class="mrow"><span>${esc(CATS[c].kurz)}</span><div class="bar"><i style="width:${p}%;background:${p>=90?"#3fbf6f":p>=75?"#f5c04a":"#ef7b6f"}"></i></div><b>${p}%</b></div>`; }).join("");
-  const schwach = liste.slice().sort((a,b)=>st[b].f/st[b].n - st[a].f/st[a].n).filter(c=>st[c].f/st[c].n>0.15).slice(0,2);
+  const schwach = foerderBereiche();
   return `<details class="mine"><summary>📊 Meine Rechtschreibung · ${P.worte} Wörter geschrieben</summary>
     <div class="mlist">${rows}</div>
-    ${schwach.length?`<p class="sub" style="margin-top:12px">Darauf solltest du besonders achten: <b>${schwach.map(c=>esc(CATS[c].kurz)).join("</b> und <b>")}</b>. Im Regeltraining kannst du das gezielt üben.</p>`:""}
+    ${schwach.length?`<p class="sub" style="margin-top:12px">Darauf solltest du besonders achten: <b>${schwach.map(c=>esc(CATS[c].kurz)).join("</b> und <b>")}</b>. In deinen Etappen bekommst du dazu extra Aufgaben. Im Regeltraining kannst du es zusätzlich gezielt üben.</p>`:""}
   </details>`;
 }
 function regelWahl(){
@@ -1624,7 +1666,7 @@ function regelWahl(){
     ${(()=>{ const o = ladeS("regel"); return o ? `<div class="resume" style="margin:6px 0 14px"><button class="btn big-btn" id="regelWeiter">▶ Weitermachen<small>${esc(o.thema)} · ${weiterTxt(o)}</small></button></div>` : ""; })()}
     <p class="sub">Wähle eine Regel. Du bekommst Wörter oder Sätze, in denen genau diese Regel wichtig ist.</p>
     <div class="topics">${CAT_ORDER.map(c=>{ const x=st[c], p = x&&x.n>=5 ? Math.round((1-x.f/x.n)*100) : null;
-      return `<button class="topic" data-c="${c}" style="--c:${CATS[c].farbe}"><span><b>${esc(CATS[c].name)}</b><span>${p===null?"noch wenig geübt":`bisher ${p}% richtig`}</span></span></button>`; }).join("")}</div>
+      return `<button class="topic" data-c="${c}" style="--c:${CATS[c].farbe}"><span><b>${esc(CATS[c].name)}</b><span>${p===null?"noch wenig geübt":`zuletzt ${p}% richtig`}</span></span></button>`; }).join("")}</div>
     <div class="actions"><button class="btn ghost" id="zur">Zurück</button></div>
   </div>`;
   app.querySelectorAll(".topic").forEach(b=>b.onclick=()=>regelIntro(b.dataset.c));
@@ -1691,6 +1733,7 @@ function zeigeAufgabe(vorlesenJetzt){
   const sb = S.art==="sb";
   app.innerHTML = `<div class="card task">
     <div class="sesshead"><span class="qtype">${istSatz?"💬 Satz":"✏️ Wort"} ${S.i+1} von ${n}</span><span class="grow sub" style="margin:0">${esc(S.thema)}</span><button class="btn ghost small" id="pause">Pause</button></div>
+    ${S.foerder && S.foerder.length ? `<p class="sub" style="margin:-4px 0 10px;font-size:.85rem">🎯 Extra-Übung: ${S.foerder.map(c=>esc(CATS[c].kurz)).join(" und ")}</p>` : ""}
     <div class="progress">${prog}</div>
     ${HOEREN ? `<div class="hear">
       <button class="btn hearbtn" id="h1">🔊 ${istSatz||istLuecke(it)?"Satz anhören":"Anhören"}</button>
@@ -1732,7 +1775,7 @@ function protokolliere(it, eintraege){
     S.pending.push(rec);
     // Statistik und Fehlerkiste
     if(e.w){
-      const r = e.res; zaehle(r, P.stat); P.worte++;
+      const r = e.res; zaehle(r, P.stat); kappe(P.stat); P.worte++;
       const key = (it.typ==="W" && it.kk) || e.w;   // Eintrag der Fehlerkiste, aus dem die Aufgabe kommt
       const nurSatzanfang = e.erstes && fehlerBereiche(r).every(c=>c==="GK");
       if(!e.ok && !nurSatzanfang){ P.kiste[key] = {w:e.w, x: it.typ==="S" ? it.w : it.x, s:it.s, ims: it.typ==="S" || !!it.ims, pos: Number.isInteger(e.idx) ? e.idx : undefined, n:0, t:Date.now(), lw: it.lw || (P.kiste[key] && P.kiste[key].lw) || undefined, lk: (P.kiste[key] && P.kiste[key].lk) || undefined}; }
