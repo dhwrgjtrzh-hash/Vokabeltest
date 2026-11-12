@@ -1,162 +1,142 @@
-/* Lernziele der drei Mathepläne mit den Erklärungen («So geht's») – wörtlich aus den Mathe-Trainern übernommen.
+/* Lernziele der drei Mathepläne mit den Erklärungen («So geht's») – automatisch aus den Mathe-Trainern übernommen.
    Wird vom Lernportal (index.html) gebraucht, um den Kindern zu zeigen, was sie noch üben sollten.
-   Ändert sich ein Lernziel oder eine Erklärung in einem Mathe-Trainer, muss diese Datei nachgeführt werden. */
+   Mathepläne: Proportionalität · Umgekehrte Proportionalität · Wertepaare und Wertetabellen (LZK 6.4).
+   Ändert sich ein Lernziel oder eine Erklärung in einem Mathe-Trainer, muss diese Datei neu erzeugt werden. */
 window.MATHE_PLAENE = [
  {
-  "plan": "Dezimalzahlen",
-  "url": "dezimalzahlen.html",
+  "plan": "Proportionalität",
+  "url": "proportionalitaet.html",
   "ziele": [
    {
-    "id": "A1",
-    "titel": "Zahlenstrahl",
-    "info": "Dezimalzahlen ablesen und eintragen",
+    "id": "WT",
+    "titel": "Wertetabelle ergänzen",
+    "info": "Fehlende Werte in einer proportionalen Tabelle bestimmen",
     "erw": false,
-    "hilfe": "<p>1. Schau die beschrifteten Zahlen an.<br>2. Zähle, in wie viele gleiche Abschnitte die Strecke geteilt ist.<br>3. Abstand : Anzahl Abschnitte = Wert von <b>einem</b> Abschnitt.</p> <p>Beispiel: Von 4 bis 5 sind es 100 kleine Abschnitte → ein kleiner Strich = 0.01. Die langen Striche sind die Zehntel 4.1, 4.2, …</p>"
+    "hilfe": "<p><b>Proportional</b> heisst: Rechnest du den einen Wert <b>mal</b> oder <b>durch</b> eine Zahl, rechnest du den anderen Wert genau gleich.</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Zeit</th><th></th><th>Strecke</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">60 min</td><td class=\"sep\">–</td><td class=\"w \">54 km</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">: 3</td><td class=\"w \">20 min</td><td class=\"sep\">–</td><td class=\"w \">18 km</td><td class=\"op\">: 3</td></tr><tr class=\" \"><td class=\"op\">· 2</td><td class=\"w \">40 min</td><td class=\"sep\">–</td><td class=\"w \">36 km</td><td class=\"op\">· 2</td></tr></table></div> <p>Ein Bus fährt 54 km/h. In 20 min fährt er 18 km, in 40 min doppelt so weit: 36 km.</p>"
    },
    {
-    "id": "A2",
-    "titel": "In Schritten zählen",
-    "info": "Zahlenfolgen vorwärts und rückwärts",
+    "id": "SZ",
+    "titel": "Strecke und Zeit",
+    "info": "Wie weit? Wie lange? Mit der Geschwindigkeit rechnen",
     "erw": false,
-    "hilfe": "<p>1. Finde den Schritt: Rechne die Differenz von zwei Nachbarzahlen aus.<br>2. Vorwärts: + Schritt. Rückwärts: − Schritt.</p> <p>Beispiel: 6.07, 6.11, 6.15 → Schritt 0.04. Vorwärts: 6.19, 6.23. Rückwärts: 6.03, 5.99.<br>Achtung beim Übergang: 0.85 + 0.15 = <b>1</b> · 6.03 − 0.04 = <b>5.99</b></p>"
+    "hilfe": "<p>1. Schreibe das bekannte Wertepaar oben hin, zum Beispiel <b>60 min – 66 km</b> (66 km/h).<br>2. Darunter, was gesucht ist: <b>50 min – ?</b><br>3. Suche einen Zwischenschritt, mit dem du gut rechnen kannst, zum Beispiel 10 min.<br>4. Rechne links und rechts gleich.</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Zeit</th><th></th><th>Strecke</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">60 min</td><td class=\"sep\">–</td><td class=\"w \">66 km</td><td class=\"op\"></td></tr><tr class=\"strich \"><td class=\"op\"></td><td class=\"w \">50 min</td><td class=\"sep\">–</td><td class=\"w frage \">?</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">60 min</td><td class=\"sep\">–</td><td class=\"w \">66 km</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">: 6</td><td class=\"w \">10 min</td><td class=\"sep\">–</td><td class=\"w \">11 km</td><td class=\"op\">: 6</td></tr><tr class=\" fett\"><td class=\"op\">· 5</td><td class=\"w \">50 min</td><td class=\"sep\">–</td><td class=\"w ziel\">55 km</td><td class=\"op\">· 5</td></tr></table></div> <p>Für eine Zeitdauer gehst du gleich vor – nur rechnest du dann die Strecke um und schaust, wie sich die Zeit verändert.</p>"
    },
    {
-    "id": "A3",
-    "titel": "Nachbarzahlen",
-    "info": "Nachbar-Tausender bis Nachbar-Tausendstel",
+    "id": "GS",
+    "titel": "Geschwindigkeit in km/h",
+    "info": "Die durchschnittliche Geschwindigkeit berechnen",
     "erw": false,
-    "hilfe": "<p><b>Nachbar-Zehntel</b> = das nächstkleinere und das nächstgrössere Zehntel (eine Stelle nach dem Punkt).</p> <p>4.37 → <b>4.3</b> und <b>4.4</b> · 6.418 → Nachbar-Tausendstel? 6.418 ist selbst ein Tausendstel → <b>6.417</b> und <b>6.419</b><br> 5.2 ist selbst ein Zehntel → Nachbar-Zehntel <b>5.1</b> und <b>5.3</b> · 317.48 → Nachbar-Hunderter <b>300</b> und <b>400</b></p>"
+    "hilfe": "<p>Die Geschwindigkeit in <b>km/h</b> sagt, wie weit man in <b>1 Stunde</b> kommt. Rechne die Strecke auf 60 min hoch.</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Zeit</th><th></th><th>Strecke</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">10 min</td><td class=\"sep\">–</td><td class=\"w \">4 km</td><td class=\"op\"></td></tr><tr class=\" fett\"><td class=\"op\">· 6</td><td class=\"w \">60 min</td><td class=\"sep\">–</td><td class=\"w ziel\">24 km</td><td class=\"op\">· 6</td></tr></table></div> <p>4 km in 10 min → <b>24 km/h</b>.</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Zeit</th><th></th><th>Strecke</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">15 s</td><td class=\"sep\">–</td><td class=\"w \">100 m</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">· 4</td><td class=\"w \">1 min</td><td class=\"sep\">–</td><td class=\"w \">400 m</td><td class=\"op\">· 4</td></tr><tr class=\" fett\"><td class=\"op\">· 60</td><td class=\"w \">60 min</td><td class=\"sep\">–</td><td class=\"w ziel\">24’000 m = 24 km</td><td class=\"op\">· 60</td></tr></table></div> <p>100 m in 15 s → ebenfalls <b>24 km/h</b>.</p>"
    },
    {
-    "id": "A4",
-    "titel": "· und : 10, 100, 1000",
-    "info": "Multiplizieren und dividieren mit Stufenzahlen",
+    "id": "PN",
+    "titel": "Proportional oder nicht?",
+    "info": "Prüfen, ob Wertepaare proportional zueinander sind",
     "erw": false,
-    "hilfe": "<p><b>· 10 / · 100 / · 1000:</b> Jede Ziffer wird 10/100/1000-mal so viel wert. Der Punkt rutscht 1/2/3 Stellen nach <b>rechts</b>.<br>0.75 · 10 = 7.5 · 0.06 · 100 = 6 · 3.48 · 1000 = 3’480</p> <p><b>: 10 / : 100 / : 1000:</b> Der Punkt rutscht 1/2/3 Stellen nach <b>links</b>. Fehlende Stellen mit 0 auffüllen.<br>415.2 : 10 = 41.52 · 58 : 1000 = 0.058</p>"
+    "hilfe": "<p>Rechne bei jedem Wertepaar aus, wie viel es für <b>1</b> gibt (zum Beispiel für 1 h, 1 min oder 100 g). Ist es überall gleich viel, sind die Wertepaare proportional.</p> <p>In 2 h verdient Tom 30 Fr., in 5 h verdient er 75 Fr.<br>→ 30 Fr. : 2 = <b>15 Fr.</b> pro Stunde und 75 Fr. : 5 = <b>15 Fr.</b> pro Stunde → <b>proportional</b> ✓</p> <p>In 3 h verdient Lea 42 Fr., in 4 h verdient sie 60 Fr.<br>→ 14 Fr. und 15 Fr. pro Stunde → <b>nicht proportional</b></p>"
    },
    {
-    "id": "ST",
-    "titel": "Stellenwerte",
-    "info": "Stellenwerttafel lesen und schreiben",
+    "id": "DM",
+    "titel": "Preis, Menge und Durchfluss",
+    "info": "Mit proportionalen Wertepaaren im Alltag rechnen",
     "erw": false,
-    "hilfe": "<p>Nach dem Punkt kommen <b>Zehntel (z)</b>, <b>Hundertstel (h)</b> und <b>Tausendstel (t)</b>.</p><div style=\"overflow-x:auto\"><table class=\"svt\"><tr><th class=\" \"><b>Z</b>Zehner</th><th class=\" \"><b>E</b>Einer</th><th class=\"dec dot\"><b>z</b>Zehntel</th><th class=\"dec \"><b>h</b>Hundertstel</th><th class=\"dec \"><b>t</b>Tausendstel</th></tr><tr><td class=\" \">3</td><td class=\" \">4</td><td class=\"dec dot\">7</td><td class=\"dec \">1</td><td class=\"dec \">8</td></tr></table></div> <p>34.718 = 3 Zehner + 4 Einer + 7 Zehntel + 1 Hundertstel + 8 Tausendstel.<br>Fehlt eine Stelle, schreibst du eine <b>0</b>: 2 Einer + 5 Hundertstel = 2.05<br>10 Hundertstel = 1 Zehntel · 10 Zehntel = 1 Einer</p>"
+    "hilfe": "<p>Gleich wie bei Strecke und Zeit: das bekannte Wertepaar oben, das Gesuchte darunter, dann über einen Zwischenschritt rechnen.</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Gewicht</th><th></th><th>Preis</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">200 g</td><td class=\"sep\">–</td><td class=\"w \">5.20 Fr.</td><td class=\"op\"></td></tr><tr class=\"strich \"><td class=\"op\"></td><td class=\"w \">500 g</td><td class=\"sep\">–</td><td class=\"w frage \">?</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">200 g</td><td class=\"sep\">–</td><td class=\"w \">5.20 Fr.</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">: 2</td><td class=\"w \">100 g</td><td class=\"sep\">–</td><td class=\"w \">2.60 Fr.</td><td class=\"op\">: 2</td></tr><tr class=\" fett\"><td class=\"op\">· 5</td><td class=\"w \">500 g</td><td class=\"sep\">–</td><td class=\"w ziel\">13.00 Fr.</td><td class=\"op\">· 5</td></tr></table></div> <p>Beim Durchfluss gibt die Zahl an, wie viel Wasser in <b>1 Minute</b> fliesst: 8 l/min heisst 8 l in 1 min, also 40 l in 5 min.</p>"
    },
    {
-    "id": "VG",
-    "titel": "Grösser oder kleiner?",
-    "info": "Dezimalzahlen vergleichen",
-    "erw": false,
-    "hilfe": "<p>1. Zuerst die <b>Ganzen</b> vergleichen.<br>2. Sind sie gleich: Zehntel, dann Hundertstel, dann Tausendstel.</p><p>Tipp: Schreibe beide Zahlen mit gleich vielen Stellen: 0.8 = 0.80 &gt; 0.75 · 15.7 = 15.70 &gt; 15.07</p>"
-   },
-   {
-    "id": "E1",
-    "titel": "Die Mitte finden",
-    "info": "Welche Zahl liegt genau dazwischen?",
+    "id": "ZW",
+    "titel": "Mit Zwischenschritten",
+    "info": "Bei schwierigen Zahlen einen geschickten Zwischenschritt finden",
     "erw": true,
-    "hilfe": "<p>1. Abstand: grössere Zahl − kleinere Zahl.<br>2. Abstand halbieren.<br>3. Die Hälfte zur kleineren Zahl dazuzählen.</p><p>6 und 6.8 → Abstand 0.8 → Hälfte 0.4 → <b>6.4</b><br>Achtung: Welche Zahl ist wirklich kleiner? 0.5 ist grösser als 0.05!</p>"
+    "hilfe": "<p>Bei schwierigen Zahlen hilft ein geschickter Zwischenschritt. Oft geht es gut über <b>1 Minute</b>.</p> <p>Eine Anlage füllt in 1 h 1500 l Saft ab. Wie lange braucht sie für 2350 l?</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Saft</th><th></th><th>Zeit</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">1500 l</td><td class=\"sep\">–</td><td class=\"w \">60 min</td><td class=\"op\"></td></tr><tr class=\"strich \"><td class=\"op\"></td><td class=\"w \">2350 l</td><td class=\"sep\">–</td><td class=\"w frage \">?</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">1500 l</td><td class=\"sep\">–</td><td class=\"w \">60 min</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">: 60</td><td class=\"w \">25 l</td><td class=\"sep\">–</td><td class=\"w \">1 min</td><td class=\"op\">: 60</td></tr><tr class=\" fett\"><td class=\"op\">· 94</td><td class=\"w \">2350 l</td><td class=\"sep\">–</td><td class=\"w ziel\">94 min</td><td class=\"op\">· 94</td></tr></table></div> <p>2350 : 25 = 94 → 94 min = <b>1 h 34 min</b>.</p>"
    },
    {
-    "id": "E2",
-    "titel": "Start, Ziel und Schritte",
-    "info": "Gleich grosse Schritte zwischen Start- und Zielzahl",
+    "id": "TR",
+    "titel": "Treffpunkt",
+    "info": "Zwei kommen sich entgegen: Wann und wo treffen sie sich?",
     "erw": true,
-    "hilfe": "<p>1. Abstand: Zielzahl − Startzahl.<br>2. Abstand : Anzahl Schritte = ein Schritt.<br>3. Von der Startzahl aus Schritt für Schritt weiterzählen.</p><p>Start 2.2, Ziel 3.2, 4 Schritte → Abstand 1 → Schritt 0.25 → 2.45, 2.7, 2.95</p>"
+    "hilfe": "<p>Kommen zwei einander entgegen, rückt jede und jeder ein Stück näher. Darum zählst du die beiden Geschwindigkeiten <b>zusammen</b>.</p> <p>Sara fährt mit 16 km/h Velo, Ben geht mit 4 km/h zu Fuss. Sie sind 5 km voneinander entfernt.<br>Zusammen: 16 + 4 = <b>20 km pro Stunde</b>.</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Strecke</th><th></th><th>Zeit</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">20 km</td><td class=\"sep\">–</td><td class=\"w \">60 min</td><td class=\"op\"></td></tr><tr class=\" fett\"><td class=\"op\">: 4</td><td class=\"w \">5 km</td><td class=\"sep\">–</td><td class=\"w ziel\">15 min</td><td class=\"op\">: 4</td></tr></table></div> <p>Sie treffen sich nach 15 min. Sara ist dann 4 km gefahren (16 km : 4), Ben 1 km gegangen (4 km : 4).</p>"
    }
   ]
  },
  {
-  "plan": "Brüche und Dezimalzahlen",
-  "url": "brueche-dezimalzahlen.html",
+  "plan": "Umgekehrte Proportionalität",
+  "url": "umgekehrte-proportionalitaet.html",
   "ziele": [
    {
-    "id": "B2",
-    "titel": "Bruch → Dezimalzahl",
-    "info": "Brüche in Dezimalzahlen umwandeln",
+    "id": "UT",
+    "titel": "Wertetabelle ergänzen",
+    "info": "Umgekehrt proportionale Tabellen ergänzen",
     "erw": false,
-    "hilfe": "<p><b>Erweitern:</b> Erweitere den Bruch so, dass im Nenner 10, 100 oder 1000 steht.<br><span class=\"fr\"><span>3</span><span>25</span></span> = <span class=\"fr\"><span>12</span><span>100</span></span> = 12 Hundertstel = <b>0.12</b> · <span class=\"fr\"><span>3</span><span>40</span></span> = <span class=\"fr\"><span>75</span><span>1000</span></span> = <b>0.075</b></p> <p><b>Oder dividieren:</b> <span class=\"fr\"><span>11</span><span>4</span></span> = 11 : 4 = <b>2.75</b></p>"
+    "hilfe": "<p><b>Umgekehrt proportional</b> heisst: Wird der eine Wert <b>doppelt</b> so gross, wird der andere Wert <b>halb</b> so gross.</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Anzahl Kinder</th><th></th><th>Sticker pro Kind</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">3</td><td class=\"sep\">–</td><td class=\"w \">20</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">· 2</td><td class=\"w \">6</td><td class=\"sep\">–</td><td class=\"w \">10</td><td class=\"op\">: 2</td></tr><tr class=\" \"><td class=\"op\">: 3</td><td class=\"w \">2</td><td class=\"sep\">–</td><td class=\"w \">30</td><td class=\"op\">· 3</td></tr></table></div> <p>60 Sticker werden verteilt. Bei 3 Kindern bekommt jedes 20 Sticker, bei 6 Kindern nur noch 10.<br><b>Kontrolle:</b> Anzahl Kinder · Sticker pro Kind gibt immer 60.</p>"
    },
    {
-    "id": "B1",
-    "titel": "Dezimalzahl → Bruch",
-    "info": "Als Bruch schreiben und so weit wie möglich kürzen",
+    "id": "AN",
+    "titel": "Doppelte, Hälfte, Drittel …",
+    "info": "Die passende Angabe finden: das Doppelte, die Hälfte, ein Drittel …",
     "erw": false,
-    "hilfe": "<p>1. Lies die Dezimalzahl in Zehnteln, Hundertsteln oder Tausendsteln.<br>2. Schreibe sie als Bruch.<br>3. Kürze, so weit es geht.</p> <p>0.36 = 36 Hundertstel = <span class=\"fr\"><span>36</span><span>100</span></span> = <span class=\"fr\"><span>18</span><span>50</span></span> = <b><span class=\"fr\"><span>9</span><span>25</span></span></b><br>0.05 = <span class=\"fr\"><span>5</span><span>100</span></span> = <b><span class=\"fr\"><span>1</span><span>20</span></span></b> · 2.25 = <span class=\"fr\"><span>225</span><span>100</span></span> = <b><span class=\"fr\"><span>9</span><span>4</span></span></b></p>"
+    "hilfe": "<p>Überlege zuerst: Wird es <b>mehr</b> oder <b>weniger</b>?</p> <p>4 Kinder räumen den Werkraum in 30 min auf. 8 Kinder sind doppelt so viele → sie brauchen <b>die Hälfte</b> der Zeit.<br>2 Kinder sind halb so viele → sie brauchen <b>das Doppelte</b> der Zeit.</p> <p>· 2 → das Doppelte<br>· 3 → das Dreifache<br>· 4 → das Vierfache<br>: 2 → die Hälfte<br>: 3 → ein Drittel<br>: 4 → ein Viertel</p>"
    },
    {
-    "id": "DV",
-    "titel": "Division → Bruch und Dezimalzahl",
-    "info": "Resultat als gekürzten Bruch und als Dezimalzahl",
+    "id": "BE",
+    "titel": "Stimmt die Aussage?",
+    "info": "Behauptungen zur umgekehrten Proportionalität beurteilen",
     "erw": false,
-    "hilfe": "<p>Eine Division kannst du als Bruch schreiben: 18 : 40 = <span class=\"fr\"><span>18</span><span>40</span></span></p><p>Kürzen: <span class=\"fr\"><span>18</span><span>40</span></span> = <b><span class=\"fr\"><span>9</span><span>20</span></span></b> · Dezimalzahl: <span class=\"fr\"><span>9</span><span>20</span></span> = <span class=\"fr\"><span>45</span><span>100</span></span> = <b>0.45</b></p>"
+    "hilfe": "<p>1. Überlege: Was passiert mit dem zweiten Wert, wenn der erste grösser wird – wird er grösser oder kleiner?<br>2. Bei Zahlen: Rechne nach.</p> <p>«3 Maschinen brauchen 8 Tage. 6 Maschinen brauchen 16 Tage.»<br>Doppelt so viele Maschinen brauchen nur <b>die Hälfte</b> der Zeit: 8 Tage : 2 = 4 Tage. → Die Aussage <b>stimmt nicht</b>.</p>"
    },
    {
-    "id": "ZS",
-    "titel": "Zahlenstrahl",
-    "info": "Brüche und Dezimalzahlen am Zahlenstrahl",
+    "id": "UR",
+    "titel": "Sachaufgaben rechnen",
+    "info": "Mit umgekehrt proportionalen Wertepaaren rechnen",
     "erw": false,
-    "hilfe": "<p>1. In wie viele gleiche Abschnitte ist die Strecke von 0 bis 1 geteilt? Das ist der <b>Nenner</b>.<br>2. Wie viele Abschnitte sind es bis zum Pfeil? Das ist der <b>Zähler</b>.</p> <p>20 Abschnitte, Pfeil beim 11. → <span class=\"fr\"><span>11</span><span>20</span></span> = <span class=\"fr\"><span>55</span><span>100</span></span> = <b>0.55</b></p>"
+    "hilfe": "<p>1. Schreibe das bekannte Wertepaar oben hin.<br>2. Darunter, was gesucht ist.<br>3. Rechne links und rechts <b>umgekehrt</b>: links · 2 → rechts : 2.</p> <p>Ein Futtervorrat reicht für 4 Ziegen 15 Tage. Wie lange reicht er für 6 Ziegen?</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Ziegen</th><th></th><th>Tage</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">4</td><td class=\"sep\">–</td><td class=\"w \">15</td><td class=\"op\"></td></tr><tr class=\"strich \"><td class=\"op\"></td><td class=\"w \">6</td><td class=\"sep\">–</td><td class=\"w frage \">?</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">4</td><td class=\"sep\">–</td><td class=\"w \">15</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">: 2</td><td class=\"w \">2</td><td class=\"sep\">–</td><td class=\"w \">30</td><td class=\"op\">· 2</td></tr><tr class=\" fett\"><td class=\"op\">· 3</td><td class=\"w \">6</td><td class=\"sep\">–</td><td class=\"w ziel\">10</td><td class=\"op\">: 3</td></tr></table></div> <p>Er reicht <b>10 Tage</b>. Kontrolle: 4 · 15 = 60 und 6 · 10 = 60.</p>"
    },
    {
-    "id": "SD",
-    "titel": "Stimmt das?",
-    "info": "Haben Bruch und Dezimalzahl den gleichen Wert?",
-    "erw": false,
-    "hilfe": "<p>Rechne den Bruch selber in eine Dezimalzahl um und vergleiche.</p><p><span class=\"fr\"><span>1</span><span>5</span></span> = 0.2 ✓ – aber <b>nicht</b> 0.5! Der Nenner ist nicht die Dezimalzahl.<br><span class=\"fr\"><span>4</span><span>25</span></span> = <span class=\"fr\"><span>16</span><span>100</span></span> = 0.16 – <b>nicht</b> 0.425</p>"
-   },
-   {
-    "id": "UE",
-    "titel": "Unendlich viele Dezimalen",
-    "info": "Periodische Dezimalzahlen wie 0.333…",
+    "id": "UZ",
+    "titel": "Mit Zwischenschritten",
+    "info": "Schwierige Zahlen: über einen Zwischenwert oder das Ganze rechnen",
     "erw": true,
-    "hilfe": "<p>Manche Divisionen hören nie auf: 1 : 3 = 0.333… · 5 : 6 = 0.8333…<br>Bei Neuntel wiederholt sich der Zähler: <span class=\"fr\"><span>1</span><span>9</span></span> = 0.111… · <span class=\"fr\"><span>4</span><span>9</span></span> = 0.444…<br>Bei 99-stel wiederholen sich zwei Ziffern: <span class=\"fr\"><span>5</span><span>99</span></span> = 0.0505… · <span class=\"fr\"><span>25</span><span>99</span></span> = 0.2525…</p>"
+    "hilfe": "<p>Bei schwierigen Zahlen hilft ein Zwischenschritt – oder du rechnest zuerst <b>das Ganze</b> aus.</p> <p>Bei 16 l/min ist ein Becken in 1 h 30 min voll. Wie lange dauert es bei 20 l/min?</p> <div class=\"tabwrap\"><table class=\"wp\"><tr><th></th><th>Zufluss</th><th></th><th>Zeit</th><th></th></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">16 l/min</td><td class=\"sep\">–</td><td class=\"w \">90 min</td><td class=\"op\"></td></tr><tr class=\"strich \"><td class=\"op\"></td><td class=\"w \">20 l/min</td><td class=\"sep\">–</td><td class=\"w frage \">?</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\"></td><td class=\"w \">16 l/min</td><td class=\"sep\">–</td><td class=\"w \">90 min</td><td class=\"op\"></td></tr><tr class=\" \"><td class=\"op\">: 4</td><td class=\"w \">4 l/min</td><td class=\"sep\">–</td><td class=\"w \">360 min</td><td class=\"op\">· 4</td></tr><tr class=\" fett\"><td class=\"op\">· 5</td><td class=\"w \">20 l/min</td><td class=\"sep\">–</td><td class=\"w ziel\">72 min</td><td class=\"op\">: 5</td></tr></table></div> <p>72 min = <b>1 h 12 min</b>. Oder: Das Becken fasst 16 · 90 = 1440 l. 1440 : 20 = 72 min.</p>"
    }
   ]
  },
  {
-  "plan": "Zahlen ordnen",
-  "url": "zahlen-ordnen.html",
+  "plan": "Wertepaare und Wertetabellen",
+  "url": "wertetabellen.html",
   "ziele": [
    {
-    "id": "C1",
-    "titel": "Brüche vergleichen",
-    "info": "Brüche mit unterschiedlichen Nennern vergleichen",
+    "id": "PU",
+    "titel": "Proportional oder umgekehrt?",
+    "info": "Erkennen: proportional, umgekehrt proportional oder weder noch",
     "erw": false,
-    "hilfe": "<p><b>Gleicher Nenner:</b> Der grössere Zähler gewinnt. <span class=\"fr\"><span>5</span><span>7</span></span> &gt; <span class=\"fr\"><span>2</span><span>7</span></span><br><b>Gleicher Zähler:</b> Der kleinere Nenner gewinnt. <span class=\"fr\"><span>5</span><span>7</span></span> &gt; <span class=\"fr\"><span>5</span><span>12</span></span></p> <p><b>Sonst:</b> Gemeinsamen Nenner suchen und erweitern. <span class=\"fr\"><span>3</span><span>4</span></span> = <span class=\"fr\"><span>9</span><span>12</span></span>, <span class=\"fr\"><span>4</span><span>6</span></span> = <span class=\"fr\"><span>8</span><span>12</span></span> → <span class=\"fr\"><span>3</span><span>4</span></span> &gt; <span class=\"fr\"><span>4</span><span>6</span></span></p>"
+    "hilfe": "<p>Prüfe jedes Wertepaar:</p> <p>• Gibt <b>rechts : links</b> immer das Gleiche? → <b>proportional</b><br>• Gibt <b>links · rechts</b> immer das Gleiche? → <b>umgekehrt proportional</b><br>• Beides nicht? → <b>weder noch</b></p> <div class=\"tabwrap\"><table class=\"wtab\"><tr><th>Anzahl Hefte</th><th class=\"strich\"></th><th>Preis in Fr.</th></tr><tr><td>2</td><td class=\"strich\">–</td><td>5</td></tr><tr><td>4</td><td class=\"strich\">–</td><td>10</td></tr><tr><td>6</td><td class=\"strich\">–</td><td>15</td></tr></table></div> <p>5 : 2 = 2.5, 10 : 4 = 2.5, 15 : 6 = 2.5 → immer gleich → <b>proportional</b>.</p>"
    },
    {
-    "id": "BD",
-    "titel": "Bruch und Dezimalzahl",
-    "info": "Bruch und Dezimalzahl vergleichen",
+    "id": "DH",
+    "titel": "Doppelt, halb oder weder noch?",
+    "info": "Was passiert, wenn sich ein Wert verdoppelt oder halbiert?",
     "erw": false,
-    "hilfe": "<p>Schreibe den Bruch als Dezimalzahl, dann kannst du gut vergleichen.</p><p><span class=\"fr\"><span>7</span><span>25</span></span> = <span class=\"fr\"><span>28</span><span>100</span></span> = 0.28 → <span class=\"fr\"><span>7</span><span>25</span></span> &gt; 0.2<br><span class=\"fr\"><span>5</span><span>6</span></span> = 5 : 6 = 0.833… → 0.8 &lt; <span class=\"fr\"><span>5</span><span>6</span></span></p>"
+    "hilfe": "<p>• <b>Proportional:</b> doppelt so viel → doppelt so viel<br>• <b>Umgekehrt proportional:</b> doppelt so viel → halb so viel<br>• <b>Weder noch:</b> Rechne nach – es ist weder das Doppelte noch die Hälfte.</p> <p>Beispiel: Tim ist 10 Jahre alt, sein Bruder 13. Wenn Tim doppelt so alt ist (20), ist sein Bruder 23 – das ist <b>weder doppelt noch halb</b> so alt wie 13.</p>"
    },
    {
-    "id": "OR",
-    "titel": "Der Grösse nach ordnen",
-    "info": "Brüche und Dezimalzahlen ordnen",
+    "id": "WE",
+    "titel": "Wertetabellen ergänzen",
+    "info": "Den Zusammenhang erkennen und fehlende Werte ergänzen",
     "erw": false,
-    "hilfe": "<p>1. Schreibe alle Zahlen als Dezimalzahlen.<br>2. Vergleiche und ordne – beginne mit der kleinsten Zahl.</p><p><span class=\"fr\"><span>1</span><span>2</span></span>, 0.3, <span class=\"fr\"><span>1</span><span>6</span></span>, <span class=\"fr\"><span>4</span><span>5</span></span> → 0.5, 0.3, 0.166…, 0.8 → <b><span class=\"fr\"><span>1</span><span>6</span></span> &lt; 0.3 &lt; <span class=\"fr\"><span>1</span><span>2</span></span> &lt; <span class=\"fr\"><span>4</span><span>5</span></span></b></p>"
+    "hilfe": "<p>1. Lies die Situation genau.<br>2. Schau die vollständigen Wertepaare an: Wie hängen sie zusammen?<br>3. Rechne die fehlenden Werte mit der gleichen Regel aus.</p> <div class=\"tabwrap\"><table class=\"wtab\"><tr><th>Gelesene Seiten</th><th class=\"strich\"></th><th>Seiten noch zu lesen</th></tr><tr><td>20</td><td class=\"strich\">–</td><td>130</td></tr><tr><td>50</td><td class=\"strich\">–</td><td>100</td></tr><tr><td>70</td><td class=\"strich\">–</td><td>?</td></tr></table></div> <p>Das Buch hat 150 Seiten: links + rechts gibt immer 150. Also 150 − 70 = <b>80</b>.</p>"
    },
    {
-    "id": "ZS",
-    "titel": "Zahlenstrahl",
-    "info": "Brüche und Dezimalzahlen auf dem Zahlenstrahl",
+    "id": "SA",
+    "titel": "Sachaufgaben",
+    "info": "Zuerst den Zusammenhang erkennen, dann rechnen",
     "erw": false,
-    "hilfe": "<p>1. Schreibe die Zahl als Dezimalzahl (oder als Hundertstel).<br>2. Zähle auf dem Zahlenstrahl ab: Wie viele Abschnitte hat die Strecke von 0 bis 1?</p><p><span class=\"fr\"><span>17</span><span>20</span></span> = <span class=\"fr\"><span>85</span><span>100</span></span> = 0.85 → nach dem langen Strich 0.8 noch 5 kleine Striche.</p>"
+    "hilfe": "<p>1. Überlege zuerst: <b>proportional</b>, <b>umgekehrt proportional</b> oder <b>weder noch</b>?<br>2. Erstelle eine kleine Tabelle mit dem bekannten Wertepaar.<br>3. Rechne mit der passenden Regel.</p> <p>Tim ist 8, seine Tante 31. Wie alt ist die Tante, wenn Tim 16 ist?<br>→ Nicht proportional! Der Unterschied bleibt immer 23 Jahre: 16 + 23 = <b>39</b>.</p>"
    },
    {
-    "id": "KZ",
-    "titel": "Kürzen",
-    "info": "Brüche so weit wie möglich kürzen",
-    "erw": false,
-    "hilfe": "<p>Teile Zähler und Nenner durch dieselbe Zahl. Mach weiter, bis es nicht mehr geht.</p><p><span class=\"fr\"><span>50</span><span>60</span></span> = <span class=\"fr\"><span>5</span><span>6</span></span> (durch 10) · <span class=\"fr\"><span>6</span><span>9</span></span> = <span class=\"fr\"><span>2</span><span>3</span></span> (durch 3) · <span class=\"fr\"><span>45</span><span>100</span></span> = <span class=\"fr\"><span>9</span><span>20</span></span> (durch 5)</p>"
-   },
-   {
-    "id": "MB",
-    "titel": "Bruch in der Mitte",
-    "info": "Den Bruch genau zwischen zwei Brüchen finden",
+    "id": "MU",
+    "titel": "Muster in Tabellen",
+    "info": "Verdoppeln, Halbieren und andere Muster fortsetzen",
     "erw": true,
-    "hilfe": "<p>1. Mache die Brüche gleichnamig (gleicher Nenner).<br>2. Liegt zwischen den Zählern keine ganze Zahl in der Mitte, erweitere beide noch mit 2.<br>3. Der Zähler in der Mitte ergibt den Bruch in der Mitte.</p> <p><span class=\"fr\"><span>2</span><span>7</span></span> und <span class=\"fr\"><span>6</span><span>7</span></span> → <b><span class=\"fr\"><span>4</span><span>7</span></span></b> · <span class=\"fr\"><span>1</span><span>7</span></span> und <span class=\"fr\"><span>1</span><span>14</span></span> → <span class=\"fr\"><span>2</span><span>14</span></span> und <span class=\"fr\"><span>1</span><span>14</span></span> → <span class=\"fr\"><span>4</span><span>28</span></span> und <span class=\"fr\"><span>2</span><span>28</span></span> → <b><span class=\"fr\"><span>3</span><span>28</span></span></b></p>"
+    "hilfe": "<p>Schau, wie sich der Wert von Zeile zu Zeile verändert: Kommt immer gleich viel dazu? Wird er jedes Mal verdoppelt? Wird er halbiert?</p> <div class=\"tabwrap\"><table class=\"wtab\"><tr><th>Anzahl Faltungen</th><th class=\"strich\"></th><th>Anzahl Teile</th></tr><tr><td>1</td><td class=\"strich\">–</td><td>2</td></tr><tr><td>2</td><td class=\"strich\">–</td><td>4</td></tr><tr><td>3</td><td class=\"strich\">–</td><td>8</td></tr><tr><td>4</td><td class=\"strich\">–</td><td>?</td></tr></table></div> <p>Bei jeder Faltung verdoppelt sich die Anzahl Teile: 8 · 2 = <b>16</b>.</p>"
    }
   ]
  }

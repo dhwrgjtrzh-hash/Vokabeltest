@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="de-CH" data-fach="mathe" data-trainer="mathe">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proportionalität</title>
+<link rel="icon" type="image/png" href="icons/icon-proportionalitaet-64.png">
+<link rel="apple-touch-icon" href="icons/icon-proportionalitaet-180.png">
+<link rel="stylesheet" href="mathe-trainer.css">
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="back lp-zurueck" href="./#mathe">‹ Lernportal</a>
+    <div class="logo lp-logo">km/h</div>
+    <h1 class="grow lp-titel"><small>Mathe</small>Proportionalität</h1>
+    <button class="pill" id="pill" type="button" title="Andere Glückszahl eingeben" hidden></button>
+  </header>
+  <main id="app"></main>
+</div>
+<script src="tipp-schutz.js" data-knoepfe=".cmpbtns button"></script>
+<script src="mathe-trainer.js"></script>
+<script>
+const UEBUNG = "Proportionalität";
+const START_NOTE = "Schreibe nur Zahlen in die Felder – die Einheit steht schon daneben. Dezimalzahlen mit Punkt oder Komma, zum Beispiel 7.5 oder 7,5.";
+
+/* ===== Bausteine ===== */
+/* Wer ist unterwegs – mit passenden Geschwindigkeiten (km/h). 80 km/h kommt nie vor (Lernzielkontrolle). */
+const UNTERWEGS = [
+  {n:"Eine Wanderin", p:"sie", v:[4,5,6]},
+  {n:"Ein Läufer", p:"er", v:[9,10,12,15]},
+  {n:"Eine Velofahrerin", p:"sie", v:[15,16,18,20,24,27,30]},
+  {n:"Ein Schiff", p:"es", v:[18,20,24,30]},
+  {n:"Ein Bus", p:"er", v:[36,40,45,48,54,60]},
+  {n:"Ein Auto", p:"es", v:[50,60,72,90,100,120]},
+  {n:"Ein Zug", p:"er", v:[90,96,108,120,140,160,180,200]},
+  {n:"Ein Flugzeug", p:"es", v:[600,720,750,840,900]},
+];
+const wer = v => pick(UNTERWEGS.filter(u=>u.v.includes(v)));
+const ALLE_V = [...new Set(UNTERWEGS.flatMap(u=>u.v))];
+/* Zeit in Minuten als Text («1 h 20 min»), Strecke als Text */
+const minTxt = m => zeit(m*60);
+/* Strecke in Metern als Text: unter 1 km in m, sonst in km */
+const meter = m => m < 1000 ? zahl(m)+" m" : zahl(m/1000)+" km";
+/* Felder für eine Zeitdauer: nur so viele wie nötig */
+function zeitFelder(sec){ if(sec % 60) return sec >= 3600 ? ["h","min","s"] : ["min","s"]; return sec >= 3600 ? ["h","min"] : ["min"]; }
+function zeitAufgabe(html, sec, extra){ return Object.assign({type:"time", html, sec, units:zeitFelder(sec), show:zeit(sec)}, extra); }
+
+/* Rechenweg Zeit → Strecke (proportional), Zeit in Sekunden, Strecke in einer beliebigen Einheit */
+function wegZeit(t0, s0, t1, sFmt, tFmt=minT){
+  const rows = [{l:tFmt(t0), r:sFmt(s0)}];
+  propWeg(t0, t1).forEach((w,i,a)=>rows.push({l:tFmt(w.x), r:sFmt(s0*w.x/t0), op:w.op, fett:i===a.length-1}));
+  return rows;
+}
+
+/* Sperrliste: Aufgaben aus der Lernzielkontrolle LZK 6.4 (und den Beweisen) kommen nie vor */
+const SPERR_K = new Set(["v80","v30t2400","v150s200","gs600m60s","gs5500m720s","gs3000m1200s","r24","x4000y6500","tr7-25-10","tr7-10-25"]);
+const SPERR_TEXT = /Löwe|Krokodil|Elefant|Karotten|Alina|Barbara|Gummibärchen|Spaghetti|Coca|Sirup|Luzern|Manuela|Schnecke|Maismehl|\b80 km\/h/;
+function SPERRE(t){
+  if((t.k||[]).some(k=>SPERR_K.has(k))) return true;
+  return SPERR_TEXT.test(String(t.html||"")+String(t.text||""));
+}
+
+/* ===== Lernziele ===== */
+const GOALS = [
+/* ---------- Wertetabelle ergänzen ---------- */
+{id:"WT", code:"", title:"Wertetabelle ergänzen", ic:"📋", c:"#2f5bea", info:"Fehlende Werte in einer proportionalen Tabelle bestimmen", tb:"TB S. 32, 35 · AH S. 3",
+ help:()=>`<p><b>Proportional</b> heisst: Rechnest du den einen Wert <b>mal</b> oder <b>durch</b> eine Zahl, rechnest du den anderen Wert genau gleich.</p>
+   ${wpTab(["Zeit","Strecke"],[{l:"60 min",r:"54 km"},{l:"20 min",r:"18 km",op:": 3"},{l:"40 min",r:"36 km",op:"· 2"}])}
+   <p>Ein Bus fährt 54 km/h. In 20 min fährt er 18 km, in 40 min doppelt so weit: 36 km.</p>`,
+ gen(lv){
+   let kopf, rows, known, txt, fmtL=zahl, fmtR=zahl, lab, k=[], sit;
+   if(lv===1){
+     /* Anzahl – Preis */
+     const ware = pick([["Hefte","Heft"],["Stifte","Stift"],["Kinoeintritte","Kinoeintritt"],["Glacen","Glace"],["Bälle","Ball"]]);
+     const p = pick([2,3,4,5,6,8,9,1.5,2.5,3.5]);
+     const xs = shuffle([1,2,3,4,5,6,8,10]).slice(0,4).sort((a,b)=>a-b);
+     known = pick(xs.filter(x=>x>1));
+     kopf = [`Anzahl ${ware[0]}`, "Preis in Fr."]; sit = `Alle ${ware[0]} kosten gleich viel.`;
+     rows = xs.map(x=>({l:x, r:rund(x*p,2)}));
+     fmtR = x => chfZahl(x); lab = ["Anzahl","Preis"];
+     k.push("p"+p);
+   } else if(lv===2){
+     const art = pick(["weg","weg","wasser"]);
+     if(art==="weg"){
+       let v, xs; do{ v = pick(ALLE_V.filter(v=>v<=200)); xs = [10,15,20,30,40,45,90,120,180].filter(t=>v*t%60===0); }while(xs.length<4);
+       const u = wer(v);
+       kopf = ["Zeit in min","Strecke in km"]; sit = `${u.n} ist mit einer Geschwindigkeit von <b>${v} km/h</b> unterwegs.`;
+       rows = [{l:60, r:v}].concat(shuffle(xs.filter(t=>t!==60)).slice(0,3).map(t=>({l:t, r:v*t/60}))).sort((a,b)=>a.l-b.l);
+       known = 60; lab = ["Zeit","Strecke"]; k.push("v"+v);
+     } else {
+       const r = pick([6,8,12,15,18,25]);
+       const xs = shuffle([2,3,4,5,8,12,15,20].filter(x=>x!==10)).slice(0,3);
+       kopf = ["Zeit in min","Wasser in l"]; sit = `Aus einem Schlauch fliesst gleichmässig Wasser: in 10 min <b>${10*r} l</b>.`;
+       rows = [{l:10, r:10*r}].concat(xs.map(t=>({l:t, r:r*t}))).sort((a,b)=>a.l-b.l);
+       known = 10; lab = ["Zeit","Wasser"]; k.push("r"+r);
+     }
+   } else {
+     const art = pick(["weg","preis"]);
+     if(art==="weg"){
+       let v, t0, xs;
+       do{ v = pick(ALLE_V.filter(v=>v>=15 && v<=200)); t0 = pick([12,18,24,36,40,45,48]); xs = [6,10,15,20,30,50,60,75,90].filter(t=>v*t%60===0 && t!==t0 && gcd(t,t0)<Math.min(t,t0)); }while(v*t0%60 || xs.length<3);
+       const u = wer(v);
+       kopf = ["Zeit in min","Strecke in km"]; sit = `${u.n} fährt immer gleich schnell: in <b>${t0} min</b> legt ${u.p} <b>${v*t0/60} km</b> zurück.`;
+       rows = [{l:t0, r:v*t0/60}].concat(shuffle(xs).slice(0,3).map(t=>({l:t, r:v*t/60}))).sort((a,b)=>a.l-b.l);
+       known = t0; lab = ["Zeit","Strecke"]; k.push("v"+v);
+     } else {
+       const ware = pick(["Käse","Schinken","Nüsse","Oliven","Bündnerfleisch"]);
+       const p50 = pick([0.6,0.75,0.8,0.9,1.1,1.2,1.4,1.6]);
+       const a = pick([150,200,250,300,350,400]);
+       const xs = shuffle([50,100,250,500,600,750,1000].filter(x=>x!==a && !(x%a===0 && x/a<=2))).slice(0,3);
+       kopf = ["Gewicht in g","Preis in Fr."]; sit = `${a} g ${ware} kosten <b>${chf(p50*a/50)}</b>`;
+       rows = [{l:a, r:rund(p50*a/50,2)}].concat(xs.map(x=>({l:x, r:rund(p50*x/50,2)}))).sort((a,b)=>a.l-b.l);
+       known = a; fmtR = x=>chfZahl(x); lab = ["Gewicht","Preis"];
+     }
+   }
+   /* welche Felder leer sind: die bekannte Zeile bleibt, sonst meist rechts, einmal links */
+   const kr = rows.find(r=>r.l===known);
+   const andere = rows.filter(r=>r!==kr);
+   const links = lv===1 || Math.random()<.7 ? pick(andere) : null;
+   const blanks = [];
+   const zeilen = rows.map(r=>{
+     if(r===kr) return {l:fmtL(r.l), r:fmtR(r.r)};
+     if(r===links){ blanks.push({r, seite:"l"}); return {l:null, r:fmtR(r.r)}; }
+     blanks.push({r, seite:"r"}); return {l:fmtL(r.l), r:null};
+   });
+   /* Reihenfolge der Antworten = Reihenfolge der Felder in der Tabelle (zeilenweise) */
+   const answers = blanks.map(b=>b.seite==="l" ? b.r.l : b.r.r);
+   const schritte = blanks.map(b=>{
+     const rowsE = [{l:fmtL(kr.l), r:fmtR(kr.r)}];
+     if(b.seite==="r") propWeg(kr.l, b.r.l).forEach((s,i,a)=>rowsE.push({l:fmtL(s.x), r:fmtR(rund(kr.r*s.x/kr.l,3)), op:s.op, fett:i===a.length-1}));
+     else {
+       const sk = 100; const a0 = Math.round(kr.r*sk), a1 = Math.round(b.r.r*sk);
+       propWeg(a0, a1).forEach((s,i,a)=>rowsE.push({l:fmtL(rund(kr.l*s.x/a0,3)), r:fmtR(s.x/sk), op:s.op, fett:i===a.length-1, zielL:i===a.length-1}));
+     }
+     return wpTab([lab[0],lab[1]], rowsE);
+   });
+   const pretty = blanks.map(b=>b.seite==="l" ? `${fmtL(b.r.l)} – ${fmtR(b.r.r)}` : `${fmtL(b.r.l)} – ${fmtR(b.r.r)}`).join("; ");
+   return {type:"tab", html:situation(sit)+frage(`Die Wertepaare sind proportional. Ergänze die fehlenden Werte.`), kopf, zeilen, answers, k,
+     text:`Tabelle: ${kopf[0]} – ${kopf[1]} · bekannt ${fmtL(kr.l)} – ${fmtR(kr.r)} · gesucht ${blanks.map(b=>b.seite==="l"?"? – "+fmtR(b.r.r):fmtL(b.r.l)+" – ?").join(", ")}`,
+     show:pretty,
+     explain: `<p>Gehe immer vom bekannten Wertepaar aus: <b>${fmtL(kr.l)} – ${fmtR(kr.r)}</b>. Links und rechts rechnest du gleich.</p>${schritte.join("")}`};
+ }},
+
+/* ---------- Strecke und Zeit ---------- */
+{id:"SZ", code:"", title:"Strecke und Zeit", ic:"🚲", c:"#0b8ec2", info:"Wie weit? Wie lange? Mit der Geschwindigkeit rechnen", tb:"TB S. 32 · AH S. 3–4",
+ help:()=>`<p>1. Schreibe das bekannte Wertepaar oben hin, zum Beispiel <b>60 min – 66 km</b> (66 km/h).<br>2. Darunter, was gesucht ist: <b>50 min – ?</b><br>3. Suche einen Zwischenschritt, mit dem du gut rechnen kannst, zum Beispiel 10 min.<br>4. Rechne links und rechts gleich.</p>
+   ${wpTab(["Zeit","Strecke"],[{l:"60 min",r:"66 km"},{l:"50 min",r:"?",frage:true,strich:true},{l:"60 min",r:"66 km"},{l:"10 min",r:"11 km",op:": 6"},{l:"50 min",r:"55 km",op:"· 5",fett:true}])}
+   <p>Für eine Zeitdauer gehst du gleich vor – nur rechnest du dann die Strecke um und schaust, wie sich die Zeit verändert.</p>`,
+ gen(lv){
+   for(let tries=0; tries<400; tries++){
+     const v = pick(ALLE_V), u = wer(v);
+     const frageZeit = Math.random()<.45;
+     let tsec;
+     if(lv===1) tsec = 60*pick([15,20,30,90,120,180]);
+     else if(lv===2) tsec = 60*pick([10,20,25,35,40,45,50,75,80,100,150]);
+     else tsec = frageZeit ? 30*rnd(9,190) : 60*pick([5,10,12,15,25,35,40,45,50,75]);
+     const s = rund(v*tsec/3600,3);
+     if(s<1 || s>1500) continue;
+     if(v>=600 && tsec<1800) continue;
+     if(v<=6 && tsec>3*3600) continue;
+     const k = ["v"+v, "v"+v+"t"+tsec, "v"+v+"s"+s];
+     if(!frageZeit){
+       if(lv<3 && !ganz(s)) continue;
+       if(lv===3 && (ganz(s) || !ganz(s*10))) continue;
+       const html = situation(`${u.n} ist mit einer Geschwindigkeit von <b>${v} km/h</b> unterwegs.`) + frage(`Wie weit kommt ${u.p} in <b>${zeit(tsec)}</b>?`);
+       return {type:"input", html, answer:s, unit:"km", k, text:`${v} km/h: Strecke in ${zeit(tsec)}`, show:km(s),
+         explain: wpTab(["Zeit","Strecke"],[{l:"60 min",r:km(v)},{l:minT(tsec),r:"?",frage:true,strich:true}].concat(wegZeit(3600, v, tsec, km))) + `<p>${u.p[0].toUpperCase()+u.p.slice(1)} kommt <b>${km(s)}</b> weit.</p>`};
+     } else {
+       if(!ganz(s)) continue;
+       if(lv<3 && tsec%60) continue;
+       if(lv===3 && !(tsec%60)) continue;
+       const rows = [{l:"60 min",r:km(v)},{l:"?",r:km(s),frage:true,strich:true},{l:"60 min",r:km(v)}];
+       propWeg(v, s).forEach((w,i,a)=>rows.push({l:minT(3600*w.x/v), r:km(w.x), op:w.op, fett:i===a.length-1, zielL:i===a.length-1}));
+       const html = situation(`${u.n} ist mit einer Geschwindigkeit von <b>${v} km/h</b> unterwegs.`) + frage(`Wie lange braucht ${u.p} für <b>${km(s)}</b>?`);
+       return zeitAufgabe(html, tsec, {k, text:`${v} km/h: Zeit für ${km(s)}`,
+         explain: wpTab(["Zeit","Strecke"], rows) + `<p>${u.p[0].toUpperCase()+u.p.slice(1)} braucht <b>${zeit(tsec)}</b>${tsec>=3600 && tsec%3600 ? ` (${minT(tsec)} = ${zeit(tsec)})` : ""}.</p>`});
+     }
+   }
+ }},
+
+/* ---------- Geschwindigkeit in km/h ---------- */
+{id:"GS", code:"", title:"Geschwindigkeit in km/h", ic:"🐆", c:"#e0732b", info:"Die durchschnittliche Geschwindigkeit berechnen", tb:"TB S. 33 · AH S. 4",
+ help:()=>`<p>Die Geschwindigkeit in <b>km/h</b> sagt, wie weit man in <b>1 Stunde</b> kommt. Rechne die Strecke auf 60 min hoch.</p>
+   ${wpTab(["Zeit","Strecke"],[{l:"10 min",r:"4 km"},{l:"60 min",r:"24 km",op:"· 6",fett:true}])}
+   <p>4 km in 10 min → <b>24 km/h</b>.</p>
+   ${wpTab(["Zeit","Strecke"],[{l:"15 s",r:"100 m"},{l:"1 min",r:"400 m",op:"· 4"},{l:"60 min",r:"24’000 m = 24 km",op:"· 60",fett:true}])}
+   <p>100 m in 15 s → ebenfalls <b>24 km/h</b>.</p>`,
+ gen(lv){
+   const WER = [["Ein Pedalo",3,8],["Ein Ruderboot",6,12],["Eine Läuferin",8,20],["Ein Inline-Skater",10,25],["Eine Velofahrerin",12,40],["Ein Hund",15,40],
+     ["Ein Pferd",18,60],["Ein Hase",20,60],["Ein Strauss",30,70],["Ein Delfin",20,45],["Ein Skifahrer",30,100],["Ein Gepard",60,110],["Ein Zug",60,220]];
+   for(let tries=0; tries<500; tries++){
+     let d, T;    // d in m, T in s
+     if(lv===1){ T = 60*pick([10,15,20,30]); d = rund(pick([12,16,18,20,24,30,36,40,48,60,72,90,120])*T/3.6); }
+     else if(lv===2){
+       const f = rnd(1,3);
+       if(f===1){ T = 60; d = pick([9,12,15,18,21,24,27,30,36,45])*50/3; }
+       else if(f===2){ T = pick([10,12,15,20,30]); d = pick([18,27,36,45,54,72,90])*T/3.6; }
+       else { T = 60*pick([3,4,5,6,12]); d = pick([15,20,24,30,40,45,50,60,75,90,100,120])*T/3.6; }
+       d = rund(d,3); if(!ganz(d) || (d>=1000 && !ganz(d/100))) continue;
+     } else {
+       const f = rnd(1,3);
+       if(f===1){ T = pick([24,40,45,50,75,90]); d = 50*rnd(2,40); }
+       else if(f===2){ T = 60*pick([7,8,9,14,16,18,24,28,32,35,36,42]); d = 500*rnd(1,40); }
+       else { T = 60*pick([70,75,80,84,100,105,110,135,150]); d = 1000*rnd(5,200); }
+     }
+     if(!ganz(d) || (lv===1 && d%1000) || (d>=1000 && d%100)) continue;
+     const v = rund(d/T*3.6,3);
+     if(!ganz(v*2)) continue;
+     if(lv<3 && !ganz(v)) continue;
+     if(lv===3 && ganz(v) && Math.random()<.4) continue;
+     const kand = WER.filter(w=>v>=w[1] && v<=w[2]);
+     if(!kand.length) continue;
+     const subj = pick(kand)[0];
+     const k = ["gs"+d+"m"+T+"s"];
+     const dTxt = meter(d);
+     const html = situation(`${subj} legt <b>${dTxt}</b> in <b>${zeit(T)}</b> zurück.`) + frage(`Wie gross ist die durchschnittliche Geschwindigkeit in km/h?`);
+     /* Rechenweg: Zeit auf 60 min hochrechnen */
+     const rows = [{l:zeitKurz(T), r:dTxt},{l:"60 min",r:"?",frage:true,strich:true},{l:zeitKurz(T), r:dTxt}];
+     propWeg(T, 3600).forEach((w,i,a)=>{ const dd = d*w.x/T; rows.push({l:zeitKurz(w.x), r: i===a.length-1 && dd>=1000 && d<1000 ? `${zahl(dd)} m = ${km(dd/1000)}` : meter(dd), op:w.op, fett:i===a.length-1}); });
+     return {type:"input", html, answer:v, unit:"km/h", k, text:`${dTxt} in ${zeit(T)} → km/h`, show:zahl(v)+" km/h",
+       explain: wpTab(["Zeit","Strecke"], rows) + `<p>In 60 min wären das ${meter(v*1000)} → <b>${zahl(v)} km/h</b>.</p>`};
+   }
+ }},
+
+/* ---------- Proportional oder nicht? ---------- */
+{id:"PN", code:"", title:"Proportional oder nicht?", ic:"🔍", c:"#7c4dff", info:"Prüfen, ob Wertepaare proportional zueinander sind", tb:"TB S. 33 · AH S. 5–6",
+ help:()=>`<p>Rechne bei jedem Wertepaar aus, wie viel es für <b>1</b> gibt (zum Beispiel für 1 h, 1 min oder 100 g). Ist es überall gleich viel, sind die Wertepaare proportional.</p>
+   <p>In 2 h verdient Tom 30 Fr., in 5 h verdient er 75 Fr.<br>→ 30 Fr. : 2 = <b>15 Fr.</b> pro Stunde und 75 Fr. : 5 = <b>15 Fr.</b> pro Stunde → <b>proportional</b> ✓</p>
+   <p>In 3 h verdient Lea 42 Fr., in 4 h verdient sie 60 Fr.<br>→ 14 Fr. und 15 Fr. pro Stunde → <b>nicht proportional</b></p>`,
+ gen(lv){
+   /* Zusammenhänge: Grundmenge a (in Grundeinheiten) → Wert b = rate · a */
+   const KONT = [
+     {id:"lohn", a:()=>30*pick([2,3,4,5,6,8,10,12]), rate:()=>pick([12,14,15,16,18,13.5]), per:60, aTxt:zeit60, bTxt:chf, satz:(a,b)=>`In ${a} verdient ein Babysitter ${b}`, kurz:(a,b)=>`${a} – ${b}`, einheit:"pro Stunde", dr:[1,1.5,2]},
+     {id:"wandern", a:()=>30*pick([1,2,3,4,5,6,8]), rate:()=>pick([4,5,6]), per:60, aTxt:zeit60, bTxt:km, satz:(a,b)=>`In ${a} geht eine Wandergruppe ${b} weit.`, kurz:(a,b)=>`${a} – ${b}`, einheit:"pro Stunde", dr:[1]},
+     {id:"schlauch", a:()=>pick([2,3,4,5,6,8,10,12,15]), rate:()=>pick([6,8,12,15,18]), per:1, aTxt:m=>m+" min", bTxt:l=>zahl(l)+" l", satz:(a,b)=>`In ${a} fliessen ${b} Wasser aus einem Schlauch.`, kurz:(a,b)=>`${a} – ${b}`, einheit:"pro Minute", dr:[1,2]},
+     {id:"kaese", a:()=>100*pick([2,3,4,5,6,8]), rate:()=>pick([2.4,2.8,3.2,3.5,4.5]), per:100, aTxt:g=>g+" g", bTxt:chf, satz:(a,b)=>`${a} Bergkäse kosten ${b}`, kurz:(a,b)=>`${a} – ${b}`, einheit:"pro 100 g", dr:[0.2,0.3,0.5]},
+     {id:"maschine", a:()=>pick([2,3,4,5,6,8,10]), rate:()=>pick([12,15,25,40]), per:1, aTxt:m=>m+" min", bTxt:n=>zahl(n)+" Schrauben", satz:(a,b)=>`In ${a} stellt eine Maschine ${b} her.`, kurz:(a,b)=>`${a} – ${b}`, einheit:"pro Minute", dr:[1,2,5]},
+   ];
+   const K = pick(KONT), rate = K.rate();
+   const wert = (a, r=rate) => rund(r*a/K.per, 2);
+   /* falscher Wert: gleiche Menge, aber eine etwas andere (genaue) Rate */
+   const falsch = a => { for(let i=0;i<30;i++){ const r2 = rate + pick(K.dr)*pick([-1,1]); if(r2<=0) continue; const b = r2*a/K.per; if(ganz(b*100)) return rund(b,2); } return rund((rate+K.dr[0])*a/K.per,2); };
+   const proRate = (a,b) => rund(b*K.per/a, 2);
+   const rateTxt = x => K.bTxt(x).replace(" Schrauben"," Schrauben");
+   if(lv<3){
+     let a1 = K.a(), a2;
+     for(let i=0;i<50;i++){ a2 = K.a(); if(a2!==a1 && (lv===1 ? (a2%a1===0 || a1%a2===0) : (a2%a1!==0 && a1%a2!==0))) break; }
+     if(a2===a1) a2 = a1*2;
+     const prop = Math.random()<.5;
+     let b2 = wert(a2);
+     if(!prop) b2 = falsch(a2);
+     const b1 = wert(a1);
+     const r1 = proRate(a1,b1), r2 = proRate(a2,b2);
+     const ja = Math.abs(r1-r2)<1e-9;
+     const html = situation(`${K.satz(K.aTxt(a1), K.bTxt(b1))}<br>${K.satz(K.aTxt(a2), K.bTxt(b2))}`) + frage(`Sind die beiden Wertepaare proportional zueinander?`);
+     const opts = [{label:"Ja, proportional"},{label:"Nein, nicht proportional"}];
+     return {type:"choice", words:true, html, options:opts, answer: ja?0:1, k:[K.id+a1+"-"+b1, K.id+a2+"-"+b2],
+       text:`${K.kurz(K.aTxt(a1),K.bTxt(b1))} und ${K.kurz(K.aTxt(a2),K.bTxt(b2))} proportional?`, show: ja?"proportional":"nicht proportional",
+       explain: ol([`Erstes Wertepaar: ${K.bTxt(b1)} für ${K.aTxt(a1)} → ${K.einheit} <b>${rateTxt(r1)}</b>`, `Zweites Wertepaar: ${K.bTxt(b2)} für ${K.aTxt(a2)} → ${K.einheit} <b>${rateTxt(r2)}</b>`,
+         ja ? `Beide Male gleich viel ${K.einheit} → <b>proportional</b>.` : `${K.einheit[0].toUpperCase()+K.einheit.slice(1)} ist es nicht gleich viel → <b>nicht proportional</b>.`])};
+   }
+   /* Stufe 3: Welches der drei Wertepaare ist proportional zum Wertepaar im Text? */
+   const a1 = K.a(), b1 = wert(a1);
+   const as = []; for(let i=0;i<80 && as.length<3;i++){ const a = K.a(); if(a!==a1 && !as.includes(a)) as.push(a); }
+   const richtig = rnd(0,2);
+   const opts = as.map((a,i)=>{ const b = i===richtig ? wert(a) : falsch(a); return {a,b,ok:i===richtig, label:K.kurz(K.aTxt(a),K.bTxt(b))}; });
+   const r1 = proRate(a1,b1);
+   return {type:"choice", words:true, html: situation(K.satz(K.aTxt(a1), K.bTxt(b1))) + frage(`Nur eines dieser Wertepaare ist proportional zum Wertepaar im Text. Welches?`),
+     options:opts.map(o=>({label:o.label})), answer:richtig, k:[K.id+a1+"-"+b1],
+     text:`${K.kurz(K.aTxt(a1),K.bTxt(b1))}: welches ist proportional? ${opts.map(o=>o.label).join(" / ")}`, show:opts[richtig].label,
+     explain: ol([`Im Text: ${K.bTxt(b1)} für ${K.aTxt(a1)} → ${K.einheit} <b>${rateTxt(r1)}</b>`, ...opts.map(o=>`${o.label} → ${K.einheit} ${rateTxt(proRate(o.a,o.b))} ${o.ok?"✓":"✗"}`), `Proportional ist <b>${opts[richtig].label}</b>.`])};
+ }},
+
+/* ---------- Preis, Menge und Durchfluss ---------- */
+{id:"DM", code:"", title:"Preis, Menge und Durchfluss", ic:"💧", c:"#13a36b", info:"Mit proportionalen Wertepaaren im Alltag rechnen", tb:"TB S. 34–35 · AH S. 3, 6",
+ help:()=>`<p>Gleich wie bei Strecke und Zeit: das bekannte Wertepaar oben, das Gesuchte darunter, dann über einen Zwischenschritt rechnen.</p>
+   ${wpTab(["Gewicht","Preis"],[{l:"200 g",r:"5.20 Fr."},{l:"500 g",r:"?",frage:true,strich:true},{l:"200 g",r:"5.20 Fr."},{l:"100 g",r:"2.60 Fr.",op:": 2"},{l:"500 g",r:"13.00 Fr.",op:"· 5",fett:true}])}
+   <p>Beim Durchfluss gibt die Zahl an, wie viel Wasser in <b>1 Minute</b> fliesst: 8 l/min heisst 8 l in 1 min, also 40 l in 5 min.</p>`,
+ gen(lv){
+   const art = pick(lv===1 ? ["preis","fluss","maschine"] : ["preis","fluss","maschine","menge"]);
+   if(art==="preis"){
+     const ware = pick(["Käse","Schinken","Nüsse","Oliven","Pilze","Bündnerfleisch","Erdbeeren"]);
+     let a, b, p50;
+     for(let i=0;i<200;i++){
+       if(lv===1){ a = 100; b = pick([200,300,400,500,700,1000]); p50 = pick([0.9,1.2,1.25,1.4,1.6,1.75]); }
+       else if(lv===2){ a = pick([150,200,250,300,400]); b = 50*rnd(2,20); p50 = pick([0.6,0.75,0.8,0.9,1.1,1.25,1.4,1.6]); }
+       else { a = pick([600,750,800,1200,1500]); b = pick([150,250,350,450,900,1100]); p50 = pick([0.6,0.75,0.8,0.9,1.1,1.25,1.4]); }
+       if(b!==a && (lv===1 || (b%a!==0 && a%b!==0))) break;
+     }
+     const pa = rund(p50*a/50,2), pb = rund(p50*b/50,2);
+     const gTxt = g => g>=1000 ? zahl(g/1000)+" kg" : g+" g";
+     const rows = [{l:gTxt(a), r:chf(pa)},{l:gTxt(b), r:"?",frage:true,strich:true},{l:a+" g", r:chf(pa)}];
+     propWeg(a, b).forEach((w,i,arr)=>rows.push({l:w.x+" g", r:chf(p50*w.x/50), op:w.op, fett:i===arr.length-1}));
+     return {type:"input", html:situation(`<b>${gTxt(a)}</b> ${ware} kosten <b>${chf(pa)}</b>`)+frage(`Wie viel kosten <b>${gTxt(b)}</b> ${ware}?`), answer:pb, unit:"Fr.", k:["preis"+a+"-"+pa],
+       text:`${gTxt(a)} ${ware} kosten ${chf(pa)}: Preis für ${gTxt(b)}`, show:chf(pb), explain: wpTab(["Gewicht","Preis"], rows) + `<p>${gTxt(b)} ${ware} kosten <b>${chf(pb)}</b></p>`};
+   }
+   if(art==="fluss"){
+     const GEF = [["einen Eimer",8,20],["eine Giesskanne",6,14],["ein Aquarium",40,240],["eine Badewanne",100,220],["ein Planschbecken",200,900],["ein Fass",100,400]];
+     for(let i=0;i<400;i++){
+       let r, sec;
+       if(lv===1){ r = pick([5,6,8,10,12,15,20]); sec = 60*rnd(2,25); }
+       else if(lv===2){ r = pick([4,6,8,10,12,14,16,20]); sec = Math.random()<.5 ? 60*rnd(2,40)+30 : 60*rnd(61,100); }
+       else { r = pick([2.5,7.5,1.5,4.5,3,6,9]); sec = 20*rnd(6,180); }
+       const V = r*sec/60;
+       if(!ganz(V)) continue;
+       if(lv===3 && sec%60===0) continue;
+       const g = pick(GEF.filter(x=>V>=x[1] && V<=x[2]));
+       if(!g || r===24) continue;
+       const html = situation(`Aus einem Wasserhahn fliessen <b>${zahl(r)} l pro Minute</b>.`) + frage(`Wie lange dauert es, bis ${g[0]} mit <b>${V} l</b> gefüllt ist?`);
+       const rows = [{l:zahl(r)+" l", r:"1 min"},{l:V+" l", r:"?",frage:true,strich:true}];
+       const sk = ganz(r) ? 1 : 10;
+       rows.push({l:zahl(r)+" l", r:"1 min"});
+       propWeg(r*sk, V*sk).forEach((w,j,a)=>rows.push({l:zahl(w.x/sk)+" l", r:zeit(60*w.x/(r*sk)), op:w.op, fett:j===a.length-1}));
+       return zeitAufgabe(html, sec, {k:["r"+r], text:`${zahl(r)} l/min: Zeit für ${V} l`, explain: wpTab(["Wasser","Zeit"], rows)+`<p>Es dauert <b>${zeit(sec)}</b>.</p>`});
+     }
+   }
+   if(art==="maschine"){
+     const ding = pick([["Flaschen","füllt","ab"],["Joghurtbecher","füllt","ab"],["Briefe","frankiert",""],["Brote","schneidet",""]]);
+     for(let i=0;i<300;i++){
+       let t, rate, t2;
+       if(lv===1){ t = 1; rate = pick([15,20,24,30,45,60]); t2 = pick([3,5,8,10,12,20]); }
+       else if(lv===2){ t = pick([3,4,5,6,8]); rate = pick([12,15,18,20,25,30,35,45]); t2 = rnd(2,30); if(t2%t===0 || t%t2===0) continue; }
+       else { t = pick([4,6,8,12,15]); rate = pick([12,15,18,25,35]); t2 = 60*pick([1,2]) + pick([0,15,30,45,20,40]); if(t2%t===0) continue; }
+       if(t2===t) continue;
+       const n = rate*t, n2 = rate*t2;
+       const html = situation(`Eine Maschine ${ding[1]} in <b>${t===1?"1 Minute":t+" min"}</b> <b>${n} ${ding[0]}</b>${ding[2]?" "+ding[2]:""}.`) + frage(`Wie viele ${ding[0]} sind es in <b>${zeit(t2*60)}</b>?`);
+       const rows = [{l:t+" min", r:zahl(n)},{l:minTxt(t2)+(t2>=60?` = ${t2} min`:""), r:"?",frage:true,strich:true},{l:t+" min", r:zahl(n)}];
+       propWeg(t, t2).forEach((w,j,a)=>rows.push({l:w.x+" min", r:zahl(rate*w.x), op:w.op, fett:j===a.length-1}));
+       return {type:"input", html, answer:n2, unit:ding[0], k:["m"+t+"-"+n], text:`${n} ${ding[0]} in ${t} min: Anzahl in ${zeit(t2*60)}`, show:zahl(n2)+" "+ding[0],
+         explain: wpTab(["Zeit", ding[0]], rows) + `<p>In ${zeit(t2*60)} sind es <b>${zahl(n2)} ${ding[0]}</b>.</p>`};
+     }
+   }
+   /* Menge in einer Zeit */
+   for(let i=0;i<300;i++){
+     let t, x, t2;    // Sekunden, Liter
+     if(lv===2){ t = 60*pick([2,3,4,5,6]); const r = pick([3,4,5,6,8,9,12]); x = r*t/60; t2 = 60*rnd(2,20); if(t2%t===0 || t%t2===0) continue; }
+     else { t = pick([20,30,40,45]); const rs = pick([0.1,0.2,0.3,0.5]); x = rund(rs*t,2); t2 = 60*pick([1,2,3,4,5]) + pick([0,30]); if(t2%t===0) continue; }
+     const x2 = rund(x*t2/t,3);
+     if(!ganz(x2*10)) continue;
+     const html = situation(`Durch eine Leitung fliessen in <b>${zeit(t)}</b> genau <b>${zahl(x)} l</b> Wasser.`) + frage(`Wie viele Liter fliessen in <b>${zeit(t2)}</b>?`);
+     const rows = [{l:zeitKurz(t), r:zahl(x)+" l"},{l:zeitKurz(t2), r:"?",frage:true,strich:true},{l:zeitKurz(t), r:zahl(x)+" l"}];
+     propWeg(t, t2).forEach((w,j,a)=>rows.push({l:zeitKurz(w.x), r:zahl(x*w.x/t)+" l", op:w.op, fett:j===a.length-1}));
+     return {type:"input", html, answer:x2, unit:"l", k:["menge"+t+"-"+x], text:`${zahl(x)} l in ${zeit(t)}: Menge in ${zeit(t2)}`, show:zahl(x2)+" l",
+       explain: wpTab(["Zeit","Wasser"], rows) + `<p>In ${zeit(t2)} fliessen <b>${zahl(x2)} l</b>.</p>`};
+   }
+ }},
+
+/* ---------- Mit Zwischenschritten (erweitert) ---------- */
+{id:"ZW", code:"", erw:true, title:"Mit Zwischenschritten", ic:"🪜", c:"#a05a00", info:"Bei schwierigen Zahlen einen geschickten Zwischenschritt finden", tb:"TB S. 35 · AH S. 4",
+ help:()=>`<p>Bei schwierigen Zahlen hilft ein geschickter Zwischenschritt. Oft geht es gut über <b>1 Minute</b>.</p>
+   <p>Eine Anlage füllt in 1 h 1500 l Saft ab. Wie lange braucht sie für 2350 l?</p>
+   ${wpTab(["Saft","Zeit"],[{l:"1500 l",r:"60 min"},{l:"2350 l",r:"?",frage:true,strich:true},{l:"1500 l",r:"60 min"},{l:"25 l",r:"1 min",op:": 60"},{l:"2350 l",r:"94 min",op:"· 94",fett:true}])}
+   <p>2350 : 25 = 94 → 94 min = <b>1 h 34 min</b>.</p>`,
+ gen(lv){
+   const art = pick(lv===3 ? ["anlage","anlage","schiff"] : ["anlage","anlage","schiff","menge"]);
+   for(let i=0;i<500;i++){
+     if(art==="anlage" || art==="menge"){
+       const X = pick([1200,1800,2400,3000,3600,4200,4800,5400,6000]), r = X/60;
+       let t;   // Sekunden
+       if(lv===1) t = 60*pick([75,90,105,120,135,150,165]);
+       else if(lv===2) t = 60*rnd(62,178);
+       else t = 60*rnd(62,178) + 30;
+       if(lv===2 && (t/60)%15===0) continue;
+       const Y = r*t/60;
+       if(!ganz(Y)) continue;
+       const ware = pick(["Milch","Apfelsaft","Mineralwasser","Sirup"].filter(w=>w!=="Sirup"));
+       const k = ["x"+X+"y"+Y];
+       const g = gcd(X, Y), tg = 3600*g/X;
+       const rows = [{l:zahl(X)+" l", r:"60 min"}];
+       if(art==="anlage"){
+         rows.push({l:zahl(Y)+" l", r:"?", frage:true, strich:true}, {l:zahl(X)+" l", r:"60 min"});
+         if(t%60) rows.push({l:zahl(r)+" l", r:"1 min", op:durch(60)}, {l:zahl(r/2)+" l", r:"30 s", op:durch(2)}, {l:zahl(Y)+" l", r:zeit(t), op:mal(Y/(r/2)), fett:true});
+         else if(ganz(tg) && tg%60===0 && X/g<=30 && Y/g<=60) rows.push({l:zahl(g)+" l", r:zeit(tg), op:durch(X/g)}, {l:zahl(Y)+" l", r:zeit(t), op:mal(Y/g), fett:true});
+         else rows.push({l:zahl(r)+" l", r:"1 min", op:durch(60)}, {l:zahl(Y)+" l", r:zeit(t), op:mal(Y/r), fett:true});
+         const html = situation(`Eine Abfüllanlage füllt in <b>1 Stunde ${zahl(X)} l</b> ${ware} ab.`) + frage(`Wie lange braucht sie für <b>${zahl(Y)} l</b>?`);
+         return zeitAufgabe(html, t, {k, text:`${zahl(X)} l in 1 h: Zeit für ${zahl(Y)} l`, explain: wpTab(["Menge","Zeit"], rows) + `<p>Sie braucht <b>${zeit(t)}</b>${t>=3600?` (${minT(t)})`:""}.</p>`});
+       }
+       rows.length = 0;
+       rows.push({l:"60 min", r:zahl(X)+" l"},{l:minT(t), r:"?", frage:true, strich:true},{l:"60 min", r:zahl(X)+" l"});
+       const gt = gcd(60, t/60);
+       if(gt>1) rows.push({l:gt+" min", r:zahl(X*gt/60)+" l", op:durch(60/gt)}, {l:minT(t), r:zahl(Y)+" l", op:mal(t/60/gt), fett:true});
+       else rows.push({l:"1 min", r:zahl(r)+" l", op:durch(60)}, {l:minT(t), r:zahl(Y)+" l", op:mal(t/60), fett:true});
+       const html = situation(`Eine Abfüllanlage füllt in <b>1 Stunde ${zahl(X)} l</b> ${ware} ab.`) + frage(`Wie viele Liter füllt sie in <b>${zeit(t)}</b> ab?`);
+       return {type:"input", html, answer:Y, unit:"l", k, text:`${zahl(X)} l in 1 h: Menge in ${zeit(t)}`, show:zahl(Y)+" l", explain: wpTab(["Zeit","Menge"], rows) + `<p>Sie füllt <b>${zahl(Y)} l</b> ab.</p>`};
+     }
+     /* Schiff */
+     const v = pick([12,15,16,18,20,24,30,36]);
+     let s = lv===1 ? v*pick([1.25,1.5,1.75,2.5]) : rnd(Math.ceil(v*1.05), Math.floor(v*2.9));
+     const t = 3600*s/v;
+     if(!ganz(s) || !ganz(t) || (lv>=2 && (t%900===0)) || (lv<3 && t%60)) continue;
+     const rows = [{l:km(v), r:"60 min"},{l:km(s), r:"?",frage:true,strich:true},{l:km(v), r:"60 min"}];
+     propWeg(v, s).forEach((w,j,a)=>rows.push({l:km(w.x), r:zeit(3600*w.x/v), op:w.op, fett:j===a.length-1}));
+     const html = situation(`Ein Kursschiff fährt in <b>1 Stunde ${v} km</b> weit.`) + frage(`Wie lange braucht es für <b>${km(s)}</b>?`);
+     return zeitAufgabe(html, t, {k:["v"+v], text:`Schiff ${v} km/h: Zeit für ${km(s)}`, explain: wpTab(["Strecke","Zeit"], rows) + `<p>Das Schiff braucht <b>${zeit(t)}</b>.</p>`});
+   }
+ }},
+
+/* ---------- Treffpunkt (erweitert) ---------- */
+{id:"TR", code:"", erw:true, title:"Treffpunkt", ic:"🤝", c:"#5b6b8a", info:"Zwei kommen sich entgegen: Wann und wo treffen sie sich?", tb:"TB S. 174",
+ help:()=>`<p>Kommen zwei einander entgegen, rückt jede und jeder ein Stück näher. Darum zählst du die beiden Geschwindigkeiten <b>zusammen</b>.</p>
+   <p>Sara fährt mit 16 km/h Velo, Ben geht mit 4 km/h zu Fuss. Sie sind 5 km voneinander entfernt.<br>Zusammen: 16 + 4 = <b>20 km pro Stunde</b>.</p>
+   ${wpTab(["Strecke","Zeit"],[{l:"20 km",r:"60 min"},{l:"5 km",r:"15 min",op:": 4",fett:true}])}
+   <p>Sie treffen sich nach 15 min. Sara ist dann 4 km gefahren (16 km : 4), Ben 1 km gegangen (4 km : 4).</p>`,
+ gen(lv){
+   const NAMEN = [["Lea","sie"],["Tim","er"],["Noah","er"],["Mia","sie"],["Elif","sie"],["Luca","er"],["Sara","sie"],["Ben","er"],["Aylin","sie"],["Jan","er"],["Nora","sie"],["Leon","er"]];
+   for(let i=0;i<600;i++){
+     const [A, B] = shuffle(NAMEN.slice()).slice(0,2);
+     const d = pick([2,3,4,5,6,8,9,10,12,14,15]);
+     const va = pick([12,14,15,16,18,20,24]), vb = pick([3,4,5,6,8,10,12]);
+     if(vb>=va) continue;
+     const S = va+vb, t = 3600*d/S;
+     if(!ganz(t) || t%60) continue;
+     const tmin = t/60, sa = rund(va*tmin/60,3), sb = rund(vb*tmin/60,3);
+     if(!ganz(sa*10) || !ganz(sb*10)) continue;
+     if(lv===2 && (!ganz(sa) || !ganz(sb)) && Math.random()<.7) continue;
+     if(lv===1 && (!ganz(sa) || tmin>60)) continue;
+     if(d===7 && ((va===25&&vb===10)||(va===10&&vb===25))) continue;
+     const vbWie = vb<=6 ? "geht zu Fuss" : "fährt Trottinett";
+     const sit = `${A[0]} und ${B[0]} wohnen <b>${km(d)}</b> voneinander entfernt. Sie machen sich gleichzeitig auf den Weg zueinander. ${A[0]} fährt mit dem Velo <b>${va} km/h</b>, ${B[0]} ${vbWie} mit <b>${vb} km/h</b>.`;
+     const base = [`Zusammen kommen sie sich in einer Stunde ${va} km + ${vb} km = <b>${S} km</b> näher.`];
+     const rowsT = [{l:km(S), r:"60 min"},{l:km(d), r:"?",frage:true,strich:true},{l:km(S), r:"60 min"}];
+     propWeg(S, d).forEach((w,j,a)=>rowsT.push({l:km(w.x), r:zeit(3600*w.x/S), op:w.op, fett:j===a.length-1}));
+     const k = ["tr"+d+"-"+va+"-"+vb];
+     if(lv===1 || (lv===2 && Math.random()<.4)){
+       return {type:"input", html:situation(sit)+frage(`Nach wie vielen Minuten treffen sie sich?`), answer:tmin, unit:"min", k, text:`Treffpunkt ${d} km, ${va} und ${vb} km/h: nach wie vielen Minuten?`, show:tmin+" min",
+         explain: `<p>${base[0]}</p>`+wpTab(["Strecke","Zeit"], rowsT)+`<p>Sie treffen sich nach <b>${tmin} min</b>.</p>`};
+     }
+     const wen = Math.random()<.6 ? [A, va, sa] : [B, vb, sb];
+     const rowsS = [{l:"60 min", r:km(wen[1])},{l:tmin+" min", r:"?",frage:true,strich:true},{l:"60 min", r:km(wen[1])}];
+     propWeg(60, tmin).forEach((w,j,a)=>rowsS.push({l:w.x+" min", r:km(wen[1]*w.x/60), op:w.op, fett:j===a.length-1}));
+     return {type:"input", html:situation(sit)+frage(`Wie viele Kilometer hat <b>${wen[0][0]}</b> bis zum Treffpunkt zurückgelegt?`), answer:wen[2], unit:"km", k,
+       text:`Treffpunkt ${d} km, ${va} und ${vb} km/h: Strecke von ${wen[0][0]}`, show:km(wen[2]),
+       explain: `<p>${base[0]}</p>`+wpTab(["Strecke","Zeit"], rowsT)+`<p>Sie treffen sich nach ${tmin} min. So weit kommt ${wen[0][0]} in dieser Zeit:</p>`+wpTab(["Zeit","Strecke"], rowsS)+`<p>${wen[0][0]} legt <b>${km(wen[2])}</b> zurück.</p>`};
+   }
+ }},
+];
+
+/* Hilfsfunktionen für Zeiten in den Rechenwegen */
+function zeit60(m){ return zeit(m*60); }
+function zeitKurz(sec){ return sec < 60 ? sec+" s" : (sec%60 ? zeit(sec) : minT(sec)); }
+
+trainerStart();
+</script>
+</body>
+</html>

@@ -170,6 +170,22 @@ footer{font-size:13px; color:var(--muted); text-align:center}
 .u-hilfe .svt th b{display:block; font-size:1rem; color:var(--ink)}
 .u-hilfe .svt td{font-size:1.25rem; font-weight:800; background:var(--surface)}
 .u-hilfe .svt .dot{border-left:5px solid var(--ink)}
+/* Wertepaare und Wertetabellen in den Erklärungen (ab Matheplan «Proportionalität») */
+.u-hilfe .tabwrap{overflow-x:auto}
+.u-hilfe table.wp{border-collapse:collapse; font-variant-numeric:tabular-nums; margin:4px 0 8px; font-weight:600}
+.u-hilfe table.wp th{font-size:.75rem; color:var(--muted); font-weight:700; padding:0 7px 2px; text-align:center; line-height:1.2}
+.u-hilfe table.wp td{padding:2px 7px; text-align:right; white-space:nowrap}
+.u-hilfe table.wp td.sep{color:var(--muted); padding:2px; text-align:center}
+.u-hilfe table.wp td.op{color:#b86e00; font-weight:800; font-size:.9em; text-align:center}
+.u-hilfe table.wp tr.strich td.w{border-bottom:2px solid currentColor}
+.u-hilfe table.wp tr.fett td.w{font-weight:800}
+.u-hilfe table.wp td.w.ziel{background:rgba(63,191,111,.18); border-radius:6px}
+.u-hilfe table.wp td.frage{color:var(--c, #2f5bea); font-weight:800}
+.u-hilfe table.wtab{border-collapse:collapse; font-variant-numeric:tabular-nums; margin:4px 0 8px; font-weight:700}
+.u-hilfe table.wtab th{font-size:.75rem; color:var(--muted); font-weight:700; padding:0 10px 4px; border-bottom:2px solid var(--ink); text-align:center; line-height:1.2}
+.u-hilfe table.wtab td{padding:4px 10px; text-align:center; border-bottom:1px solid var(--line)}
+.u-hilfe table.wtab td.strich{color:var(--muted); padding:4px 2px}
+@media (prefers-color-scheme: dark){ .u-hilfe table.wp td.op{color:#f2b27a} }
 @media (prefers-reduced-motion: reduce){ .fach, .trainer{transition:none} .fach:hover, .trainer:hover{transform:none} }
 </style>
 </head>
@@ -212,9 +228,9 @@ const FAECHER = [
   { id:'mathe', name:'Mathe',
     tipp:'Tippe beim Start immer <b>deine Zahl</b> ein. Dann machst du genau dort weiter, wo du aufgehört hast.',
     trainer:[
-      { name:'Dezimalzahlen', text:'Stellenwerte und Zahlenstrahl mit Zehnteln, Hundertsteln und Tausendsteln.', zeichen:'0,1', url:BASIS+'dezimalzahlen.html', chips:[] },
-      { name:'Brüche und Dezimalzahlen', text:'Brüche in Dezimalzahlen umwandeln und umgekehrt.', zeichen:'½', url:BASIS+'brueche-dezimalzahlen.html', chips:[] },
-      { name:'Zahlen ordnen', text:'Zahlen und Brüche vergleichen und der Grösse nach ordnen.', zeichen:'&lt;&gt;', url:BASIS+'zahlen-ordnen.html', chips:[] }
+      { name:'Proportionalität', text:'Wertetabellen, Strecke und Zeit, Geschwindigkeit in km/h.', zeichen:'km/h', url:BASIS+'proportionalitaet.html', chips:[] },
+      { name:'Umgekehrte Proportionalität', text:'Doppelt so viele – halb so lang: verteilen, Maschinen, Tempo.', zeichen:'·2 :2', url:BASIS+'umgekehrte-proportionalitaet.html', chips:[] },
+      { name:'Wertepaare und Wertetabellen', text:'Proportional, umgekehrt proportional oder weder noch?', zeichen:'x | y', url:BASIS+'wertetabellen.html', chips:[] }
     ]},
   { id:'deutsch', name:'Deutsch',
     tipp:'Tippe beim Start immer <b>deine Glückszahl</b> ein. Dann machst du dort weiter, wo du aufgehört hast.',
