@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="de-CH" data-fach="umfrage" data-trainer="rangliste">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unsere Filme – Rangliste</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Abstimmung als Rangliste: Die Kinder ziehen die Filme in ihre Reihenfolge und schicken sie mit ihrer Glückszahl ab.
+   Die Auswertung (Gesamtrangliste) sieht René in der Station unter «Ranglisten». */
+html[data-fach="umfrage"]{--lp-akzent:#c2410c; --lp-akzent-soft:#fdeadf}
+@media (prefers-color-scheme: dark){ html[data-fach="umfrage"]:not([data-theme="light"]){--lp-akzent:#d4561c; --lp-akzent-soft:#3d2216} }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-size:18px;line-height:1.45;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.wrap{max-width:720px;margin:0 auto;padding-block:16px 48px;padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));display:flex;flex-direction:column;gap:14px}
+.wrap > .lp-kopf{margin-bottom:0}
+.card{background:var(--lp-karte);border:2px solid var(--lp-linie);border-radius:20px;padding:16px 18px;box-shadow:var(--lp-schatten)}
+.intro h2{margin:0 0 4px;font-size:1.45rem;line-height:1.15}
+.intro p{margin:0;color:var(--lp-leise)}
+.ende{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lp-leise);margin:2px 4px}
+.ende.oben{color:var(--lp-akzent)}
+
+.liste{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.film{position:relative;display:flex;align-items:center;gap:12px;min-height:62px;padding:8px 8px 8px 10px;
+  background:var(--lp-karte);border:2px solid var(--lp-linie);border-radius:16px;box-shadow:var(--lp-schatten);
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.film:hover{border-color:color-mix(in srgb, var(--lp-akzent) 45%, var(--lp-linie))}
+.film.platz{transition:transform .18s ease}
+.film.zieht{cursor:grabbing;z-index:5;border-color:var(--lp-akzent);box-shadow:0 14px 30px rgba(15,21,34,.22)}
+.nr{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  font:600 1.2rem/1 var(--lp-titel);background:var(--lp-akzent-soft);color:var(--lp-akzent);font-variant-numeric:tabular-nums}
+.film.p1 .nr{background:#f6d365;color:#5a4300}
+.film.p2 .nr{background:#dde2ea;color:#384152}
+.film.p3 .nr{background:#efc39b;color:#5a3412}
+.titel{flex:1;min-width:0;font:600 1.18rem/1.2 var(--lp-titel);overflow-wrap:anywhere}
+.pfeile{flex:none;display:flex;gap:6px}
+.pfeile button{width:44px;height:44px;border-radius:12px;border:2px solid var(--lp-linie);background:var(--lp-bg);
+  display:grid;place-items:center;cursor:pointer;touch-action:manipulation}
+.pfeile button:hover:not(:disabled){border-color:var(--lp-akzent);color:var(--lp-akzent)}
+.pfeile button:disabled{opacity:.28;cursor:default}
+.pfeile svg{width:18px;height:18px}
+.griff{flex:none;width:22px;color:var(--lp-leise);display:grid;place-items:center}
+.griff svg{width:14px;height:22px}
+
+.knopf{display:block;width:100%;border:0;border-radius:16px;padding:15px 22px;min-height:58px;cursor:pointer;
+  background:var(--lp-akzent);color:#fff;font:700 1.1rem/1.2 var(--lp-text)}
+.knopf.leise{background:transparent;color:var(--lp-ink);border:2px solid var(--lp-linie);width:auto;display:inline-block;min-height:50px;font-size:1rem}
+.hinweis{margin:0;font-size:.9rem;color:var(--lp-leise);text-align:center}
+.vorschau{margin:0;padding:10px 14px;border-radius:14px;background:#fff4d6;color:#5c4300;font-size:.95rem}
+
+.danke{text-align:center;padding:26px 18px}
+.danke .haken{width:72px;height:72px;margin:0 auto 10px;border-radius:50%;background:var(--lp-gut-bg);color:var(--lp-gut);display:grid;place-items:center}
+.danke .haken svg{width:38px;height:38px}
+.danke h2{margin:0 0 4px;font-size:1.6rem}
+.danke p{margin:0 0 6px;color:var(--lp-leise)}
+.top3{list-style:none;margin:16px auto 18px;padding:0;max-width:420px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.top3 li{display:flex;align-items:center;gap:12px;padding:8px 10px;border:2px solid var(--lp-linie);border-radius:14px}
+.top3 .nr{width:36px;height:36px;font-size:1.05rem}
+.top3 li:nth-child(1) .nr{background:#f6d365;color:#5a4300}
+.top3 li:nth-child(2) .nr{background:#dde2ea;color:#384152}
+.top3 li:nth-child(3) .nr{background:#efc39b;color:#5a3412}
+.top3 .titel{font-size:1.08rem}
+
+:where(button,a):focus-visible{outline:3px solid var(--lp-akzent);outline-offset:2px}
+@media (max-width:460px){
+  .film{gap:9px;padding-left:8px}
+  .nr{width:36px;height:36px;font-size:1.05rem}
+  .titel{font-size:1.05rem}
+  .pfeile button{width:40px;height:40px}
+  .griff{display:none}
+}
+@media (prefers-color-scheme: dark){
+  .vorschau{background:#3a3014;color:#f3dfa2}
+  .film.zieht{box-shadow:0 14px 30px rgba(0,0,0,.5)}
+}
+@media (prefers-reduced-motion: reduce){ .film.platz{transition:none} }
+</style>
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="lp-zurueck" href="./">‹ Lernportal</a>
+    <div class="lp-logo">★</div>
+    <h1 class="lp-titel"><small>Klasse 6b · Abstimmung</small>Unsere Filme</h1>
+    <div class="lp-rechts"></div>
+  </header>
+
+  <p class="vorschau" id="vorschau" hidden><b>Vorschau:</b> Hier wird nichts abgeschickt.</p>
+
+  <!-- Sortieren -->
+  <section id="sortieren">
+    <div class="card intro">
+      <h2>Welchen Film möchtest du am liebsten schauen?</h2>
+      <p>Zieh die Filme in deine Reihenfolge: <b>ganz oben</b> dein Lieblingsfilm, <b>ganz unten</b> der Film, den du am wenigsten schauen möchtest. Du kannst auch die Pfeile benutzen.</p>
+    </div>
+    <p class="ende oben" style="margin-top:14px">★ Am liebsten</p>
+    <ol class="liste" id="liste" aria-label="Deine Rangliste"></ol>
+    <p class="ende" style="margin-bottom:14px">Am wenigsten</p>
+    <button class="knopf" id="senden" type="button">Fertig – Rangliste abschicken</button>
+    <p class="hinweis" style="margin-top:10px">Abgeschickt wird nur deine Glückszahl, nie dein Name.</p>
+  </section>
+
+  <!-- Danke -->
+  <section id="danke" hidden>
+    <div class="card danke">
+      <div class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>Danke!</h2>
+      <p id="dankeText">Deine Rangliste ist abgeschickt.</p>
+      <ol class="top3" id="top3"></ol>
+      <p style="font-size:.95rem">Du kannst sie noch ändern. Dann zählt nur deine neue Rangliste.</p>
+      <p style="margin-top:12px"><button class="knopf leise" id="aendern" type="button">Rangliste ändern</button></p>
+    </div>
+  </section>
+</div>
+
+<script src="lp-ergebnisse.js"></script>
+<script>
+/* ---------- Die Abstimmung ---------- */
+const UEBUNG = "Filmrangliste";        // Name in der Tabelle «Übungen – Resultate» und in der Station
+const THEMA  = "Unsere Filme";
+const FILME = [
+  "Ice Age",
+  "Nachts im Museum",
+  "Charlie und die Schokoladenfabrik",
+  "Momo (2025)",
+  "Vaiana",
+  "Mufasa",
+  "Arielle",
+  "Cruella",
+  "Rango",
+  "Lichter der Grossstadt"
+];
+
+const VORSCHAU = /[?&]vorschau/.test(location.search);
+const KEY = "rl.filme.v1";
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(KEY) || "null"); }catch(e){ return null; } },
+  set(v){ try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){} }
+};
+const gleicheFilme = l => Array.isArray(l) && l.length === FILME.length && FILME.every(f => l.includes(f));
+function mischen(l){ l = l.slice(); for(let i = l.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; } return l; }
+
+/* Zustand: Reihenfolge (am Anfang zufällig, damit niemand bevorzugt wird), ob schon verschoben, ob abgeschickt */
+let S = store.get() || {};
+if(!gleicheFilme(S.order)) S = {order: mischen(FILME), bewegt: false, gesendet: false};
+const speichern = () => store.set(S);
+speichern();
+
+const ICON = {
+  hoch: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l6-6 6 6"/></svg>',
+  runter: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5l6 6 6-6"/></svg>',
+  griff: '<svg viewBox="0 0 14 22" fill="currentColor"><circle cx="4" cy="4" r="1.9"/><circle cx="10" cy="4" r="1.9"/><circle cx="4" cy="11" r="1.9"/><circle cx="10" cy="11" r="1.9"/><circle cx="4" cy="18" r="1.9"/><circle cx="10" cy="18" r="1.9"/></svg>'
+};
+
+/* ---------- Liste zeichnen ---------- */
+const liste = $("#liste");
+function zeile(f){
+  const li = document.createElement("li");
+  li.className = "film"; li.dataset.film = f;
+  li.innerHTML = `<span class="nr"></span><span class="titel">${esc(f)}</span>
+    <span class="pfeile"><button type="button" data-r="-1">${ICON.hoch}</button><button type="button" data-r="1">${ICON.runter}</button></span>
+    <span class="griff" aria-hidden="true">${ICON.griff}</span>`;
+  return li;
+}
+function nummern(els){
+  els.forEach((li, i) => {
+    li.querySelector(".nr").textContent = i + 1;
+    li.classList.toggle("p1", i === 0); li.classList.toggle("p2", i === 1); li.classList.toggle("p3", i === 2);
+  });
+}
+/* Reihenfolge übernehmen; vorher = Positionen vor der Änderung → sanft an den neuen Platz gleiten */
+function zeichnen(vorher){
+  const da = new Map([...liste.children].map(li => [li.dataset.film, li]));
+  S.order.forEach(f => liste.appendChild(da.get(f) || zeile(f)));
+  const els = [...liste.children];
+  nummern(els);
+  els.forEach((li, i) => {
+    const f = li.dataset.film;
+    const [h, r] = li.querySelectorAll(".pfeile button");
+    h.disabled = i === 0; r.disabled = i === els.length - 1;
+    h.setAttribute("aria-label", `${f} nach oben (jetzt Platz ${i + 1})`);
+    r.setAttribute("aria-label", `${f} nach unten (jetzt Platz ${i + 1})`);
+  });
+  if(vorher && !matchMedia("(prefers-reduced-motion: reduce)").matches){
+    els.forEach(li => {
+      const alt = vorher.get(li.dataset.film); if(alt == null) return;
+      const d = alt - li.getBoundingClientRect().top; if(Math.abs(d) < 1) return;
+      li.style.transition = "none"; li.style.transform = `translateY(${d}px)`;
+      li.getBoundingClientRect();
+      li.style.transition = "transform .2s ease"; li.style.transform = "";
+      li.addEventListener("transitionend", () => { li.style.transition = ""; }, {once: true});
+    });
+  }
+}
+const positionen = () => new Map([...liste.children].map(li => [li.dataset.film, li.getBoundingClientRect().top]));
+function verschieben(von, nach){
+  if(nach < 0 || nach >= S.order.length || von === nach) return;
+  const vorher = positionen();
+  const [f] = S.order.splice(von, 1); S.order.splice(nach, 0, f);
+  S.bewegt = true; speichern();
+  zeichnen(vorher);
+}
+
+/* Pfeile */
+liste.addEventListener("click", e => {
+  const b = e.target.closest(".pfeile button"); if(!b || b.disabled) return;
+  const i = S.order.indexOf(b.closest(".film").dataset.film);
+  verschieben(i, i + (+b.dataset.r));
+});
+
+/* ---------- Ziehen (Maus, Finger, Stift) ---------- */
+let zug = null;
+liste.addEventListener("pointerdown", e => {
+  const li = e.target.closest(".film");
+  if(!li || e.target.closest("button") || zug) return;
+  if(e.pointerType === "mouse" && e.button !== 0) return;
+  e.preventDefault();
+  const els = [...liste.children];
+  const r = els.map(x => x.getBoundingClientRect());
+  zug = {li, els, von: els.indexOf(li), nach: els.indexOf(li), id: e.pointerId,
+    schritt: els.length > 1 ? r[1].top - r[0].top : r[0].height + 8,
+    y0: e.clientY, s0: window.scrollY, y: e.clientY};
+  try{ li.setPointerCapture(e.pointerId); }catch(x){}
+  li.classList.add("zieht");
+  els.forEach(x => { if(x !== li) x.classList.add("platz"); });
+  requestAnimationFrame(rollen);
+});
+function bewegen(){
+  const n = zug.els.length;
+  const roh = zug.y - zug.y0 + (window.scrollY - zug.s0);
+  const d = Math.max(-zug.von * zug.schritt - 24, Math.min((n - 1 - zug.von) * zug.schritt + 24, roh));
+  zug.li.style.transform = `translateY(${d}px) scale(1.02)`;
+  const nach = Math.max(0, Math.min(n - 1, zug.von + Math.round(d / zug.schritt)));
+  if(nach === zug.nach) return;
+  zug.nach = nach;
+  zug.els.forEach((x, i) => {
+    if(x === zug.li) return;
+    let s = 0;
+    if(zug.von < nach && i > zug.von && i <= nach) s = -zug.schritt;
+    if(zug.von > nach && i < zug.von && i >= nach) s = zug.schritt;
+    x.style.transform = s ? `translateY(${s}px)` : "";
+  });
+  const neu = zug.els.filter(x => x !== zug.li); neu.splice(nach, 0, zug.li);
+  nummern(neu);
+  try{ if(navigator.vibrate) navigator.vibrate(6); }catch(x){}
+}
+/* am oberen/unteren Rand des Bildschirms mitrollen */
+function rollen(){
+  if(!zug) return;
+  const rand = 80, h = window.innerHeight;
+  let v = 0;
+  if(zug.y < rand) v = -Math.ceil((rand - zug.y) / 5);
+  else if(zug.y > h - rand) v = Math.ceil((zug.y - (h - rand)) / 5);
+  if(v){ const vor = window.scrollY; window.scrollBy(0, v); if(window.scrollY !== vor) bewegen(); }
+  requestAnimationFrame(rollen);
+}
+liste.addEventListener("pointermove", e => { if(!zug || e.pointerId !== zug.id) return; zug.y = e.clientY; bewegen(); });
+function loslassen(e){
+  if(!zug || (e && e.pointerId !== zug.id)) return;
+  const {li, els, von, nach} = zug; zug = null;
+  const vorher = positionen();
+  els.forEach(x => { x.classList.remove("platz", "zieht"); x.style.transform = ""; x.style.transition = ""; });
+  if(nach !== von){ const [f] = S.order.splice(von, 1); S.order.splice(nach, 0, f); S.bewegt = true; speichern(); }
+  zeichnen(vorher);
+  try{ li.releasePointerCapture(e.pointerId); }catch(x){}
+}
+liste.addEventListener("pointerup", loslassen);
+liste.addEventListener("pointercancel", loslassen);
+liste.addEventListener("lostpointercapture", loslassen);
+
+/* ---------- Abschicken ---------- */
+function zeigeDanke(){
+  $("#sortieren").hidden = true; $("#danke").hidden = false;
+  const gz = window.LP && LP.glueckszahl();
+  $("#dankeText").textContent = VORSCHAU ? "Vorschau – es wurde nichts abgeschickt." : `Deine Rangliste ist abgeschickt${gz ? " (Glückszahl " + gz + ")" : ""}.`;
+  $("#top3").innerHTML = (S.gesendetOrder || S.order).slice(0, 3)
+    .map((f, i) => `<li><span class="nr">${i + 1}</span><span class="titel">${esc(f)}</span></li>`).join("");
+  window.scrollTo(0, 0);
+}
+function zeigeListe(){
+  $("#danke").hidden = true; $("#sortieren").hidden = false;
+  zeichnen();
+}
+$("#senden").addEventListener("click", () => {
+  if(!S.bewegt && !confirm("Du hast noch nichts verschoben – die Filme stehen noch in zufälliger Reihenfolge.\n\nIst das wirklich deine Rangliste?")) return;
+  if(!VORSCHAU && !(window.LP && LP.glueckszahl())){ location.reload(); return; }   // ohne Glückszahl: Seite fragt beim Neuladen danach
+  if(window.LP) LP.runde(UEBUNG, THEMA,
+    S.order.map((f, i) => ({frage: f, antwort: i + 1, loesung: "", punkte: 0, t: Date.now()})),
+    {art: "rangliste", rangliste: S.order.slice()});
+  S.gesendet = true; S.gesendetOrder = S.order.slice(); speichern();
+  zeigeDanke();
+});
+$("#aendern").addEventListener("click", zeigeListe);
+
+/* ---------- Start ---------- */
+$("#vorschau").hidden = !VORSCHAU;
+if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
+if(S.gesendet) zeigeDanke(); else zeigeListe();
+</script>
+</body>
+</html>
