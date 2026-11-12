@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="de-CH" data-fach="mathe" data-trainer="mathe">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umgekehrte Proportionalität</title>
+<link rel="icon" type="image/png" href="icons/icon-umgekehrte-proportionalitaet-64.png">
+<link rel="apple-touch-icon" href="icons/icon-umgekehrte-proportionalitaet-180.png">
+<link rel="stylesheet" href="mathe-trainer.css">
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="back lp-zurueck" href="./#mathe">‹ Lernportal</a>
+    <div class="logo lp-logo">·2 :2</div>
+    <h1 class="grow lp-titel"><small>Mathe</small>Umgekehrte Proportionalität</h1>
+    <button class="pill" id="pill" type="button" title="Andere Glückszahl eingeben" hidden></button>
+  </header>
+  <main id="app"></main>
+</div>
+<script src="tipp-schutz.js" data-knoepfe=".cmpbtns button"></script>
+<script src="mathe-trainer.js"></script>
+<script>
+const UEBUNG = "Umgekehrte Proportionalität";
+const START_NOTE = "Schreibe nur Zahlen in die Felder – die Einheit steht schon daneben. Dezimalzahlen mit Punkt oder Komma, zum Beispiel 22.5 oder 22,5.";
+
+/* ===== Bausteine ===== */
+const gross = s => s[0].toUpperCase()+s.slice(1);
+const inv = op => op.startsWith("·") ? op.replace("·",":") : op.replace(":","·");
+/* Umgekehrt proportionaler Weg von a nach c: links wie proportional, rechts die Gegenrechnung */
+function umgWeg(a, c){ return propWeg(a, c).map(w=>({x:w.x, op:w.op, opR:inv(w.op)})); }
+function umgRows(a, b, c, fL, fR, zielLinks){
+  const P = a*b, rows = [{l:fL(a), r:fR(b)}];
+  umgWeg(a, c).forEach((w,i,arr)=>rows.push({l:fL(w.x), r:fR(rund(P/w.x,3)), op:w.op, opR:w.opR, fett:i===arr.length-1, zielL:zielLinks && i===arr.length-1}));
+  return rows;
+}
+function zeitFelder(sec){ if(sec % 60) return sec >= 3600 ? ["h","min","s"] : ["min","s"]; return sec >= 3600 ? ["h","min"] : ["min"]; }
+function zeitAufgabe(html, sec, extra){ return Object.assign({type:"time", html, sec, units:zeitFelder(sec), show:zeit(sec)}, extra); }
+const teiler = (P, kand) => kand.filter(x=>P%x===0);
+const REGEL = `<p class="merke">Umgekehrt proportional: Rechnest du links <b>· 2</b>, rechnest du rechts <b>: 2</b> – und umgekehrt.</p>`;
+
+/* Sperrliste: Aufgaben aus der Lernzielkontrolle LZK 6.4 (und den Beweisen) kommen nie vor */
+const SPERR_K = new Set(["p72","p480","pool25-180-30","pool30-180-25","sp50-45-30","sp45-240-15","sp15-240-45","streifen45x4","karten96"]);
+const SPERR_TEXT = /Löwe|Krokodil|Elefant|Karotten|Alina|Barbara|Gummibärchen|Spaghetti|Coca|Sirup|Luzern|Moor|Holzlatten|Schnur|\b80 km\/h/;
+function SPERRE(t){
+  if((t.k||[]).some(k=>SPERR_K.has(k))) return true;
+  return SPERR_TEXT.test(String(t.html||"")+String(t.text||""));
+}
+
+/* ===== Lernziele ===== */
+const GOALS = [
+/* ---------- Wertetabelle ergänzen ---------- */
+{id:"UT", code:"", title:"Wertetabelle ergänzen", ic:"📋", c:"#2f5bea", info:"Umgekehrt proportionale Tabellen ergänzen", tb:"TB S. 36, 38 · AH S. 7, 9",
+ help:()=>`<p><b>Umgekehrt proportional</b> heisst: Wird der eine Wert <b>doppelt</b> so gross, wird der andere Wert <b>halb</b> so gross.</p>
+   ${wpTab(["Anzahl Kinder","Sticker pro Kind"],[{l:"3",r:"20"},{l:"6",r:"10",op:"· 2",opR:": 2"},{l:"2",r:"30",op:": 3",opR:"· 3"}])}
+   <p>60 Sticker werden verteilt. Bei 3 Kindern bekommt jedes 20 Sticker, bei 6 Kindern nur noch 10.<br><b>Kontrolle:</b> Anzahl Kinder · Sticker pro Kind gibt immer 60.</p>`,
+ gen(lv){
+   const KONT = {
+     verteilen: P => { const it = pick(["Sticker","Murmeln","Nüsse","Glasperlen"]); return {sit:`<b>${P} ${it}</b> werden gleichmässig an Kinder verteilt.`, kopf:["Anzahl Kinder", `${it} pro Kind`], lab:["Kinder", it], ganzR:true}; },
+     brett: P => ({sit:`Ein <b>${P} cm</b> langes Brett wird in gleich lange Stücke gesägt.`, kopf:["Anzahl Stücke","Länge pro Stück in cm"], lab:["Stücke","Länge"], ganzR:false}),
+     maschinen: P => ({sit:`Für einen Auftrag braucht eine einzige Maschine <b>${P} Arbeitstage</b>. Es können mehrere gleiche Maschinen eingesetzt werden.`, kopf:["Anzahl Maschinen","Arbeitstage"], lab:["Maschinen","Tage"], ganzR:true}),
+     tempo: P => ({sit:`Eine Strecke ist <b>${P} km</b> lang.`, kopf:["Geschwindigkeit in km/h","Zeit in h"], lab:["km/h","Zeit"], ganzR:true, links:[20,30,40,50,60,75,90,100,120]}),
+     saecke: P => ({sit:`<b>${P} kg</b> Mehl werden in gleich grosse Säcke abgefüllt.`, kopf:["Anzahl Säcke","kg pro Sack"], lab:["Säcke","kg"], ganzR:false}),
+     flaschen: P => ({sit:`<b>${P} l</b> Apfelsaft werden in gleich grosse Flaschen abgefüllt.`, kopf:["Anzahl Flaschen","Liter pro Flasche"], lab:["Flaschen","Liter"], ganzR:false, links:[6,8,10,12,15,16,20,24,30,40,48]}),
+   };
+   for(let tries=0; tries<400; tries++){
+     let art, P;
+     if(lv===1){ art = pick(["verteilen","brett","maschinen","saecke"]); P = pick([60,120,180,240,360]); if(art==="maschinen" && P===240) continue; }
+     else if(lv===2){ art = pick(["verteilen","brett","maschinen","tempo","saecke"]); P = art==="tempo" ? pick([120,180,240,300]) : pick([36,48,60,84,90,120,144,168,180,240,360]); }
+     else { art = pick(["brett","saecke","flaschen"]); P = art==="flaschen" ? pick([12,15,18,24,30,36]) : pick([45,75,90,135,150,210,270]); }
+     const K = KONT[art](P);
+     const kand = K.links || [1,2,3,4,5,6,8,9,10,12,15,16,18,20,24,30];
+     const xs = kand.filter(x=>{ const y = P/x; if(art==="flaschen") return [0.25,0.3,0.5,0.75,1,1.5,2].includes(rund(y,3)); return ganz(K.ganzR || lv<3 ? y : y*10) && y>=1; });
+     let a = lv===1 ? 1 : pick(xs.filter(x=>x!==1 && x!==P));
+     if(art==="tempo" || art==="flaschen") a = pick(xs);
+     const andere = shuffle(xs.filter(x=>x!==a && (lv>1 || x<=12))).slice(0,3).sort((p,q)=>p-q);
+     if(andere.length<3 || !a) continue;
+     if(lv===3 && andere.every(x=>ganz(P/x))) continue;
+     if(art==="maschinen" && a===6 && P===90) continue;
+     const rows = [{x:a, y:P/a}].concat(andere.map(x=>({x, y:P/x}))).sort((p,q)=>p.x-q.x);
+     const known = rows.find(r=>r.x===a);
+     const linksLeer = lv>1 && Math.random()<.6 ? pick(rows.filter(r=>r!==known && ganz(r.y))) : null;
+     const blanks = [];
+     const zeilen = rows.map(r=>{
+       if(r===known) return {l:zahl(r.x), r:zahl(r.y)};
+       if(r===linksLeer){ blanks.push({r, seite:"l"}); return {l:null, r:zahl(r.y)}; }
+       blanks.push({r, seite:"r"}); return {l:zahl(r.x), r:null};
+     });
+     const answers = blanks.map(b=>b.seite==="l" ? b.r.x : b.r.y);
+     const erkl = blanks.map(b=>{
+       if(b.seite==="r") return wpTab(K.lab, umgRows(known.x, known.y, b.r.x, zahl, zahl, false));
+       /* links gesucht: über das Ganze rechnen */
+       return `<p>Links gesucht: Das Ganze ist ${zahl(known.x)} · ${zahl(known.y)} = ${zahl(P)}.<br>${zahl(P)} : ${zahl(b.r.y)} = <b>${zahl(b.r.x)}</b></p>`;
+     });
+     return {type:"tab", html:situation(K.sit)+frage(`Die Wertepaare sind umgekehrt proportional. Ergänze die fehlenden Werte.`), kopf:K.kopf, zeilen, answers, k:["p"+P],
+       text:`Tabelle: ${K.kopf[0]} – ${K.kopf[1]} · bekannt ${zahl(known.x)} – ${zahl(known.y)} · gesucht ${blanks.map(b=>b.seite==="l"?"? – "+zahl(b.r.y):zahl(b.r.x)+" – ?").join(", ")}`,
+       show: blanks.map(b=>`${zahl(b.r.x)} – ${zahl(b.r.y)}`).join("; "),
+       explain:`<p>Gehe vom bekannten Wertepaar aus: <b>${zahl(known.x)} – ${zahl(known.y)}</b>. Links und rechts rechnest du <b>umgekehrt</b>.</p>${erkl.join("")}<p><b>Kontrolle:</b> In jeder Zeile gibt links · rechts immer <b>${zahl(P)}</b>.</p>`};
+   }
+ }},
+
+/* ---------- Doppelte, Hälfte, Drittel … ---------- */
+{id:"AN", code:"", title:"Doppelte, Hälfte, Drittel …", ic:"🔁", c:"#d6336c", info:"Die passende Angabe finden: das Doppelte, die Hälfte, ein Drittel …", tb:"TB S. 37 · AH S. 8",
+ help:()=>`<p>Überlege zuerst: Wird es <b>mehr</b> oder <b>weniger</b>?</p>
+   <p>4 Kinder räumen den Werkraum in 30 min auf. 8 Kinder sind doppelt so viele → sie brauchen <b>die Hälfte</b> der Zeit.<br>2 Kinder sind halb so viele → sie brauchen <b>das Doppelte</b> der Zeit.</p>
+   <p>· 2 → das Doppelte<br>· 3 → das Dreifache<br>· 4 → das Vierfache<br>: 2 → die Hälfte<br>: 3 → ein Drittel<br>: 4 → ein Viertel</p>`,
+ gen(lv){
+   const MEHR = {2:"das Doppelte",3:"das Dreifache",4:"das Vierfache",5:"das Fünffache"}, WENIGER = {2:"die Hälfte",3:"ein Drittel",4:"ein Viertel",5:"ein Fünftel"};
+   const fs = lv===1 ? [2] : lv===2 ? [2,3,4] : [3,4,5];
+   for(let tries=0; tries<300; tries++){
+     const f = pick(fs), hoch = Math.random()<.5;    // hoch: die bekannte Grösse wird f-mal so gross
+     const frames = lv===1 ? ["masch","kinder","tempo","hahn"] : ["masch","kinder","tempo","hahn","flaschen","strecke","preis"];
+     const fr0 = pick(frames);
+     let sit, q, von, nach, ziel, gross_, prop = false, k = [];   // gross_: das Gesuchte wird grösser
+     if(fr0==="masch"){ const a = hoch ? pick([2,3,4,5,6]) : f*pick([2,3,4]); const b = hoch ? a*f : a/f; const d = f*pick([2,3,4,5,6]);
+       sit = `${a} gleiche Maschinen erledigen einen Auftrag in ${d} Tagen.`; q = `${b} Maschinen brauchen für den gleichen Auftrag ____ der Zeit.`; von = `${a} Maschinen`; nach = `${b} Maschinen`; ziel = "der Zeit"; gross_ = !hoch; }
+     else if(fr0==="kinder"){ const a = hoch ? pick([2,3,4,5,6]) : f*pick([2,3]); const b = hoch ? a*f : a/f; const t = f*pick([5,8,10,12]);
+       sit = `${a} Kinder räumen zusammen den Werkraum in ${t} min auf.`; q = `${b} Kinder brauchen dafür ____ der Zeit.`; von = `${a} Kinder`; nach = `${b} Kinder`; ziel = "der Zeit"; gross_ = !hoch; }
+     else if(fr0==="tempo"){ const v = hoch ? pick([10,15,20,30]) : f*pick([10,15,20,30]); const v2 = hoch ? v*f : v/f; if(v2>150) continue; const t = f*pick([10,15,20]);
+       if((v===45&&v2===15)||(v===15&&v2===45)) continue;
+       sit = `Mit ${v} km/h braucht Frau Keller ${t} min zu ihrer Schwester.`; q = `Mit ${v2} km/h braucht sie für dieselbe Strecke ____ der Zeit.`; von = `${v} km/h`; nach = `${v2} km/h`; ziel = "der Zeit"; gross_ = !hoch; k.push("sp"+v+"-"+v2); }
+     else if(fr0==="hahn"){ const r = hoch ? pick([4,5,6,8,10]) : f*pick([4,5,6]); const r2 = hoch ? r*f : r/f; const t = f*pick([4,5,6,8,10]);
+       if(r===16 && t===8) continue;
+       sit = `Bei ${r} l pro Minute ist die Badewanne in ${t} min voll.`; q = `Bei ${r2} l pro Minute dauert es ____ der Zeit.`; von = `${r} l pro Minute`; nach = `${r2} l pro Minute`; ziel = "der Zeit"; gross_ = !hoch; }
+     else if(fr0==="flaschen"){ const paare = [[1.5,0.5],[2,0.5],[3,1],[1.5,0.75],[3,0.75],[2,1],[0.75,0.25],[1,0.25],[1.5,0.3]].filter(p=>rund(p[0]/p[1])===f);
+       if(!paare.length) continue; let [x,y] = pick(paare); if(Math.random()<.5) [x,y] = [y,x];
+       sit = `Apfelsaft wird in Flaschen zu ${zahl(x)} l abgefüllt.`; q = `Nimmt man stattdessen Flaschen zu ${zahl(y)} l, braucht man ____ der Flaschen.`;
+       von = `Flaschen zu ${zahl(x)} l`; nach = `Flaschen zu ${zahl(y)} l`; ziel = "der Anzahl Flaschen"; gross_ = x>y; }
+     else if(fr0==="strecke"){ const t = f*pick([4,5,6,8,10]); const s = pick([2,3,4,6]); const t2 = hoch ? t*f : t/f;
+       sit = `Eine Läuferin läuft ${s} km in ${t} min.`; q = `____ der Strecke läuft sie im gleichen Tempo in ${t2} min.`; von = `${t} min`; nach = `${t2} min`; ziel = "der Strecke"; gross_ = hoch; prop = true; }
+     else { const n = hoch ? pick([2,3,4,5]) : f*pick([2,3]); const n2 = hoch ? n*f : n/f; const p = pick([2.5,3,4,4.5,6]);
+       sit = `${n} Hefte kosten ${chf(n*p)}`; q = `Für ${n2} Hefte bezahlt man ____ des Preises.`; von = `${n} Hefte`; nach = `${n2} Hefte`; ziel = "beim Preis"; gross_ = hoch; prop = true; }
+     const richtig = gross_ ? MEHR[f] : WENIGER[f];
+     const gegen = gross_ ? WENIGER[f] : MEHR[f];
+     const rest = shuffle(Object.values(MEHR).concat(Object.values(WENIGER)).filter(x=>x!==richtig && x!==gegen)).slice(0,2);
+     const opts = shuffle([richtig, gegen, ...rest]);
+     let satz = q.replace("____", `<b>${richtig}</b>`);
+     if(q.startsWith("____")) satz = `<b>${gross(richtig)}</b>` + q.slice(4);
+     const erstGross = fr0==="flaschen" ? (von.match(/[\d.]+/)[0] < nach.match(/[\d.]+/)[0]) : hoch;
+     return {type:"choice", words:true, html:situation(sit)+frage(`Welche Angabe passt in die Lücke?<br>${q.replace("____",'<span style="color:var(--accent)">______</span>')}`),
+       options:opts.map(o=>({label:o})), answer:opts.indexOf(richtig), k,
+       text:`${sit} ${q}`.replace(/<[^>]+>/g,""), show:richtig,
+       explain: ol([prop ? `Hier ist es <b>proportional</b>: Beide Werte verändern sich gleich.` : `Hier ist es <b>umgekehrt proportional</b>: Wird das eine grösser, wird das andere kleiner.`,
+         `${von} → ${nach}: das ist <b>${erstGross ? "· "+f : ": "+f}</b>.`,
+         `Also rechnest du ${ziel==="beim Preis"?"beim Preis":"bei "+ziel.replace(/^der /,"der ")} <b>${gross_ ? "· "+f : ": "+f}</b>: ${gross_ ? MEHR[f] : WENIGER[f]}.`,
+         satz])};
+   }
+ }},
+
+/* ---------- Stimmt die Aussage? ---------- */
+{id:"BE", code:"", title:"Stimmt die Aussage?", ic:"🤔", c:"#7c4dff", info:"Behauptungen zur umgekehrten Proportionalität beurteilen", tb:"TB S. 37",
+ help:()=>`<p>1. Überlege: Was passiert mit dem zweiten Wert, wenn der erste grösser wird – wird er grösser oder kleiner?<br>2. Bei Zahlen: Rechne nach.</p>
+   <p>«3 Maschinen brauchen 8 Tage. 6 Maschinen brauchen 16 Tage.»<br>Doppelt so viele Maschinen brauchen nur <b>die Hälfte</b> der Zeit: 8 Tage : 2 = 4 Tage. → Die Aussage <b>stimmt nicht</b>.</p>`,
+ gen(lv){
+   const KONT = [
+     {id:"masch", a:[2,3,4,5,6,8,9,10,12], b:[2,3,4,5,6,8,9,10,12,15,18,20], s:(a,b)=>`${a} gleiche Maschinen erledigen einen Auftrag in ${b} Tagen.`, s2:(a,b)=>`Mit ${a} Maschinen dauert es ${b} Tage.`,
+       mehr:"Mit mehr Maschinen", weniger:"Mit weniger Maschinen", gr:"dauert es länger", kl:"geht es schneller", aE:"Maschinen", bE:"Tage"},
+     {id:"kinder", a:[2,3,4,5,6,8,10,12], b:[6,8,10,12,15,20,24,30,40], s:(a,b)=>`${a} Kinder räumen zusammen das Schulzimmer in ${b} min auf.`, s2:(a,b)=>`${a} Kinder brauchen ${b} min.`,
+       mehr:"Mit mehr Kindern", weniger:"Mit weniger Kindern", gr:"dauert das Aufräumen länger", kl:"geht das Aufräumen schneller", aE:"Kinder", bE:"min"},
+     {id:"stufen", a:[15,16,17,18,20], b:[12,15,16,18,20,24], s:(a,b)=>`Eine Treppe hat ${b} Stufen, jede ist ${a} cm hoch.`, s2:(a,b)=>`Mit ${a} cm hohen Stufen wären es ${b} Stufen.`,
+       mehr:"Mit höheren Stufen", weniger:"Mit niedrigeren Stufen", gr:"braucht es mehr Stufen", kl:"braucht es weniger Stufen", aE:"cm", bE:"Stufen"},
+     {id:"tempo", a:[20,30,40,50,60,90,100,120], b:[1,2,3,4,5,6], s:(a,b)=>`Mit ${a} km/h ist Herr Brunner in ${b} h am Ziel.`, s2:(a,b)=>`Mit ${a} km/h braucht er ${b} h.`,
+       mehr:"Wer schneller fährt,", weniger:"Wer langsamer fährt,", gr:"braucht mehr Zeit", kl:"ist früher am Ziel", aE:"km/h", bE:"h"},
+     {id:"hahn", a:[4,5,6,8,10,12,15], b:[6,8,10,12,15,20,24,30], s:(a,b)=>`Bei ${a} l pro Minute ist ein Becken in ${b} min voll.`, s2:(a,b)=>`Bei ${a} l pro Minute dauert es ${b} min.`,
+       mehr:"Fliesst mehr Wasser pro Minute, dann", weniger:"Fliesst weniger Wasser pro Minute, dann", gr:"dauert es länger", kl:"ist das Becken schneller voll", aE:"l pro Minute", bE:"min"},
+   ];
+   for(let tries=0; tries<400; tries++){
+     const K = pick(KONT), a = pick(K.a), b = pick(K.b), P = a*b;
+     if(K.id==="stufen" && a===20 && b===18) continue;
+     if(lv===1){
+       const mehr = Math.random()<.5, sagtGroesser = Math.random()<.5;
+       const stimmt = mehr ? !sagtGroesser : sagtGroesser;
+       const behauptung = `${mehr?K.mehr:K.weniger} ${sagtGroesser?K.gr:K.kl}.`;
+       return {type:"choice", words:true, html:situation(K.s(a,b))+frage(`Stimmt diese Aussage?<br>«${behauptung}»`), options:[{label:"Stimmt"},{label:"Stimmt nicht"}], answer: stimmt?0:1, k:[K.id+a+"-"+b],
+         text:`${K.s(a,b)} «${behauptung}»`, show: stimmt?"stimmt":"stimmt nicht",
+         explain: ol([`Das ist <b>umgekehrt proportional</b>: Wird das eine grösser, wird das andere kleiner.`, `${mehr?K.mehr:K.weniger} ${mehr?K.kl:K.gr}.`, `Die Aussage <b>${stimmt?"stimmt":"stimmt nicht"}</b>.`])};
+     }
+     /* Stufe 2 und 3: Aussage mit Zahlen */
+     let a2;
+     if(lv===2){ const f = pick([2,3]); a2 = Math.random()<.5 ? a*f : a/f; if(!ganz(a2)) continue; }
+     else { a2 = pick(K.a.concat([a+1,a+2,a*3/2,a*2/3])); if(!ganz(a2) || a2===a || (a2%a===0) || (a%a2===0)) continue; }
+     if(a2<=0) continue;
+     const b2r = P/a2;
+     if(!ganz(b2r) || b2r<1) continue;
+     const art = pick(["richtig","prop","falsch"]);
+     let b2 = art==="richtig" ? b2r : art==="prop" ? b*a2/a : b2r + pick([-2,-1,1,2])*Math.max(1, Math.round(b2r/6));
+     if(!ganz(b2) || b2<=0 || (art!=="richtig" && b2===b2r)) continue;
+     if(K.id==="tempo" && ((a===50 && a2===75) || (a===45))) continue;
+     const stimmt = b2===b2r;
+     const aussage = `${K.s(a,b)} ${K.s2(a2,b2)}`;
+     return {type:"choice", words:true, html:situation(`«${aussage}»`)+frage(`Stimmt die Aussage?`), options:[{label:"Stimmt"},{label:"Stimmt nicht"}], answer: stimmt?0:1, k:[K.id+a+"-"+b+"-"+a2],
+       text:`«${aussage}»`, show: stimmt?"stimmt":"stimmt nicht",
+       explain: wpTab([K.aE, K.bE], umgRows(a, b, a2, zahl, zahl, false)) + `<p>Richtig wäre <b>${zahl(b2r)} ${K.bE}</b> (Kontrolle: ${a} · ${b} = ${a2} · ${zahl(b2r)} = ${P}). Die Aussage <b>${stimmt?"stimmt":"stimmt nicht"}</b>.</p>${!stimmt && art==="prop" ? `<p>Achtung: Hier wurde proportional gerechnet – es ist aber <b>umgekehrt</b> proportional.</p>` : ""}`};
+   }
+ }},
+
+/* ---------- Sachaufgaben rechnen ---------- */
+{id:"UR", code:"", title:"Sachaufgaben rechnen", ic:"🧮", c:"#13a36b", info:"Mit umgekehrt proportionalen Wertepaaren rechnen", tb:"TB S. 37–39 · AH S. 8, 10",
+ help:()=>`<p>1. Schreibe das bekannte Wertepaar oben hin.<br>2. Darunter, was gesucht ist.<br>3. Rechne links und rechts <b>umgekehrt</b>: links · 2 → rechts : 2.</p>
+   <p>Ein Futtervorrat reicht für 4 Ziegen 15 Tage. Wie lange reicht er für 6 Ziegen?</p>
+   ${wpTab(["Ziegen","Tage"],[{l:"4",r:"15"},{l:"6",r:"?",frage:true,strich:true},{l:"4",r:"15"},{l:"2",r:"30",op:": 2",opR:"· 2"},{l:"6",r:"10",op:"· 3",opR:": 3",fett:true}])}
+   <p>Er reicht <b>10 Tage</b>. Kontrolle: 4 · 15 = 60 und 6 · 10 = 60.</p>`,
+ gen(lv){
+   for(let tries=0; tries<500; tries++){
+     const art = pick(lv===1 ? ["futter","treppe","umpacken","gaertner"] : ["futter","treppe","umpacken","tempo","tempoV","gaertner"]);
+     let a, b, c;
+     const ok = (a,c) => lv===1 ? (c%a===0 || a%c===0) && c!==a : (c%a!==0 && a%c!==0);
+     if(art==="futter"){
+       const tier = pick([["Hasen","Hasen"],["Ziegen","Ziegen"],["Meerschweinchen","Meerschweinchen"],["Schafe","Schafe"]]);
+       a = pick([2,3,4,5,6,8,9,10,12]); b = pick([4,6,8,9,10,12,15,18,20,24]); c = pick([2,3,4,5,6,8,9,10,12,15,16,18]);
+       if(!ok(a,c) || !ganz(a*b/c)) continue;
+       const y = a*b/c;
+       return {type:"input", html:situation(`Ein Futtervorrat reicht für <b>${a} ${tier[0]}</b> genau <b>${b} Tage</b>.`)+frage(`Wie lange reicht der gleiche Vorrat für <b>${c} ${tier[1]}</b>?`), answer:y, unit:"Tage", k:["futter"+a+"-"+b+"-"+c],
+         text:`Futter: ${a} ${tier[0]} ${b} Tage → ${c} ${tier[1]}`, show:zahl(y)+" Tage",
+         explain: wpTab([tier[0],"Tage"], [{l:a,r:b},{l:c,r:"?",frage:true,strich:true}].concat(umgRows(a,b,c,zahl,zahl,false))) + `<p>Der Vorrat reicht <b>${zahl(y)} Tage</b>. Kontrolle: ${a} · ${b} = ${c} · ${zahl(y)} = ${a*b}.</p>`};
+     }
+     if(art==="treppe"){
+       a = pick([14,15,16,17,18,19,20]); b = pick([12,14,15,16,18,20,21,24]); c = pick([14,15,16,17,18,19,20,21]);
+       if(c===a || (lv===1 ? false : (c%a===0 || a%c===0)) || !ganz(a*b/c) || (a===18 && b===20 && c===15)) continue;
+       const y = a*b/c;
+       return {type:"input", html:situation(`Eine Treppe hat <b>${b} Stufen</b>, jede ist <b>${a} cm</b> hoch.`)+frage(`Wie viele Stufen braucht es für die gleiche Treppe, wenn jede Stufe <b>${c} cm</b> hoch ist?`), answer:y, unit:"Stufen", k:["treppe"+a+"-"+b+"-"+c],
+         text:`Treppe: ${b} Stufen à ${a} cm → Stufen à ${c} cm`, show:zahl(y)+" Stufen",
+         explain: `<p>Die ganze Treppe ist ${b} · ${a} cm = <b>${a*b} cm</b> hoch.</p><p>${a*b} cm : ${c} cm = <b>${zahl(y)} Stufen</b></p>` + wpTab(["Stufenhöhe","Stufen"], umgRows(a,b,c,x=>x+" cm",zahl,false))};
+     }
+     if(art==="umpacken"){
+       const ware = pick(["Kartoffeln","Zwiebeln","Mehl","Reis"]);
+       a = pick([2,3,4,5,6,8,10,12,15,20,25]); b = pick([12,15,18,20,24,30,36,40,45,48,60]); c = pick([2,3,4,5,6,8,10,12,15,20,25]);
+       if(!ok(a,c) || !ganz(a*b/c)) continue;
+       const y = a*b/c;
+       return {type:"input", html:situation(`<b>${b} Säcke</b> mit je <b>${a} kg</b> ${ware} werden in Säcke zu <b>${c} kg</b> umgepackt.`)+frage(`Wie viele Säcke gibt es jetzt?`), answer:y, unit:"Säcke", k:["um"+a+"-"+b+"-"+c],
+         text:`Umpacken: ${b} Säcke à ${a} kg → Säcke à ${c} kg`, show:zahl(y)+" Säcke",
+         explain: `<p>Zusammen sind es ${b} · ${a} kg = <b>${a*b} kg</b>.</p><p>${a*b} kg : ${c} kg = <b>${zahl(y)} Säcke</b></p>` + wpTab(["kg pro Sack","Säcke"], umgRows(a,b,c,zahl,zahl,false))};
+     }
+     if(art==="gaertner"){
+       a = pick([2,3,4,5,6,8]); const T = 30*pick([2,3,4,6,8,10,12]); c = pick([2,3,4,5,6,8,10,12]);
+       if(!ok(a,c)) continue;
+       const sec = a*T*60/c;
+       if(!ganz(sec) || sec%60 || (lv<3 && sec%600 && sec>=3600)) continue;
+       const html = situation(`<b>${a} Gärtnerinnen</b> schneiden zusammen eine lange Hecke in <b>${zeit(T*60)}</b>.`)+frage(`Wie lange brauchen <b>${c} Gärtnerinnen</b> für die gleiche Hecke?`);
+       return zeitAufgabe(html, sec, {k:["g"+a+"-"+T+"-"+c], text:`Hecke: ${a} Gärtnerinnen ${zeit(T*60)} → ${c} Gärtnerinnen`,
+         explain: wpTab(["Gärtnerinnen","Zeit"], [{l:a,r:zeit(T*60)},{l:c,r:"?",frage:true,strich:true}].concat(umgRows(a,T*60,c,zahl,x=>minT(x),false))) + `<p>Sie brauchen <b>${zeit(sec)}</b>.</p>`});
+     }
+     if(art==="tempo"){
+       const v = pick([20,30,40,45,50,60,72,75,90,100,120]); const T = pick([12,15,20,24,30,36,40,45,60,90,120,180]); const v2 = pick([20,30,40,45,50,60,72,75,90,100,120]);
+       if(v2===v) continue;
+       const sec = v*T*60/v2;
+       if(!ganz(sec) || (lv<3 && sec%60) || (v===45&&T===240&&v2===15) || (v===75&&T===180&&v2===60) || (v===50&&T===15)) continue;
+       if(lv===2 && (v2%v===0 || v%v2===0) && Math.random()<.6) continue;
+       const html = situation(`Mit durchschnittlich <b>${v} km/h</b> braucht Familie Meier <b>${zeit(T*60)}</b> bis zu den Grosseltern.`)+frage(`Wie lange braucht sie mit durchschnittlich <b>${v2} km/h</b>?`);
+       return zeitAufgabe(html, sec, {k:["sp"+v+"-"+T+"-"+v2], text:`${v} km/h in ${zeit(T*60)} → Zeit mit ${v2} km/h`,
+         explain: wpTab(["Geschwindigkeit","Zeit"], [{l:v+" km/h",r:zeit(T*60)},{l:v2+" km/h",r:"?",frage:true,strich:true}].concat(umgRows(v,T*60,v2,x=>x+" km/h",x=>minT(x),false))) + `<p>Schneller fahren → weniger Zeit; langsamer → mehr Zeit. Sie braucht <b>${zeit(sec)}</b>.</p>`});
+     }
+     if(art==="tempoV"){
+       const v = pick([30,40,45,48,50,60,72,90]); const T = pick([12,15,20,24,30,36,40,45,60,90]); const T2 = pick([10,12,15,18,20,24,30,36,40,45,60,72,90]);
+       if(T2===T) continue;
+       const v2 = v*T/T2;
+       if(!ganz(v2) || v2>130 || v2<10 || (v===50&&T===45&&T2===30)) continue;
+       if(lv===2 && (T2%T===0 || T%T2===0) && Math.random()<.6) continue;
+       const rows = [{l:minT(T*60), r:v+" km/h"},{l:minT(T2*60), r:"?",frage:true,strich:true},{l:minT(T*60), r:v+" km/h"}];
+       umgWeg(T, T2).forEach((w,i,arr)=>rows.push({l:minT(w.x*60), r:zahl(rund(v*T/w.x,3))+" km/h", op:w.op, opR:w.opR, fett:i===arr.length-1}));
+       return {type:"input", html:situation(`Herr Brunner fährt mit durchschnittlich <b>${v} km/h</b> und ist nach <b>${zeit(T*60)}</b> am Ziel.`)+frage(`Wie schnell müsste er im Durchschnitt fahren, um nach <b>${zeit(T2*60)}</b> am Ziel zu sein?`), answer:v2, unit:"km/h", k:["sp"+v+"-"+T+"-"+T2],
+         text:`${v} km/h in ${zeit(T*60)} → Tempo für ${zeit(T2*60)}`, show:zahl(v2)+" km/h",
+         explain: wpTab(["Zeit","Geschwindigkeit"], rows) + `<p>Weniger Zeit → schneller fahren. Er müsste <b>${zahl(v2)} km/h</b> fahren.</p>`};
+     }
+   }
+ }},
+
+/* ---------- Mit Zwischenschritten (erweitert) ---------- */
+{id:"UZ", code:"", erw:true, title:"Mit Zwischenschritten", ic:"🪜", c:"#a05a00", info:"Schwierige Zahlen: über einen Zwischenwert oder das Ganze rechnen", tb:"TB S. 39 · S. 174",
+ help:()=>`<p>Bei schwierigen Zahlen hilft ein Zwischenschritt – oder du rechnest zuerst <b>das Ganze</b> aus.</p>
+   <p>Bei 16 l/min ist ein Becken in 1 h 30 min voll. Wie lange dauert es bei 20 l/min?</p>
+   ${wpTab(["Zufluss","Zeit"],[{l:"16 l/min",r:"90 min"},{l:"20 l/min",r:"?",frage:true,strich:true},{l:"16 l/min",r:"90 min"},{l:"4 l/min",r:"360 min",op:": 4",opR:"· 4"},{l:"20 l/min",r:"72 min",op:"· 5",opR:": 5",fett:true}])}
+   <p>72 min = <b>1 h 12 min</b>. Oder: Das Becken fasst 16 · 90 = 1440 l. 1440 : 20 = 72 min.</p>`,
+ gen(lv){
+   for(let tries=0; tries<500; tries++){
+     const art = pick(["becken","becken","masch","laster","tempo"]);
+     if(art==="becken"){
+       const r1 = pick([12,15,16,18,20,24,30,32,36,40,45]), T1 = pick([40,45,60,75,80,90,120,150,180,240]), r2 = pick([12,15,16,18,20,24,30,32,36,40,45]);
+       if(r1===r2 || r2%r1===0 || r1%r2===0) continue;
+       if((r1===25&&T1===180&&r2===30)) continue;
+       const sec = r1*T1*60/r2;
+       if(!ganz(sec) || (lv<3 && sec%60) || (lv===3 && !(sec%60)) || sec>8*3600) continue;
+       const html = situation(`Bei einem Zufluss von <b>${r1} l pro Minute</b> ist ein Schwimmbecken nach <b>${zeit(T1*60)}</b> voll.`)+frage(`Wie lange dauert es bei einem Zufluss von <b>${r2} l pro Minute</b>?`);
+       const rows = [{l:r1+" l/min", r:zeit(T1*60)},{l:r2+" l/min", r:"?",frage:true,strich:true}].concat(umgRows(r1, T1*60, r2, x=>zahl(x)+" l/min", x=>minT(x), false));
+       return zeitAufgabe(html, sec, {k:["pool"+r1+"-"+T1+"-"+r2], text:`Becken: ${r1} l/min in ${zeit(T1*60)} → ${r2} l/min`,
+         explain: wpTab(["Zufluss","Zeit"], rows) + `<p>Oder über das Ganze: Das Becken fasst ${r1} · ${T1} = ${zahl(r1*T1)} l. ${zahl(r1*T1)} l : ${r2} l pro Minute = ${Math.floor(sec/60)} min${sec%60?` ${sec%60} s`:""}${sec>=3600?` = <b>${zeit(sec)}</b>`:""}.</p>`});
+     }
+     if(art==="masch"){
+       const a = pick([3,4,5,6,8,9,10,12,15]), d = pick([6,8,9,10,12,14,15,16,18,20,24]), c = pick([3,4,5,6,8,9,10,12,15,16,18,20]);
+       if(c===a || c%a===0 || a%c===0) continue;
+       const y = a*d/c; if(!ganz(y) || (lv===3 && y<3)) continue;
+       return {type:"input", html:situation(`<b>${a} gleiche Maschinen</b> erledigen einen Auftrag in <b>${d} Arbeitstagen</b>.`)+frage(`Wie lange brauchen <b>${c} Maschinen</b> für den gleichen Auftrag?`), answer:y, unit:"Tage", k:["m"+a+"-"+d+"-"+c],
+         text:`${a} Maschinen ${d} Tage → ${c} Maschinen`, show:zahl(y)+" Tage",
+         explain: wpTab(["Maschinen","Tage"], [{l:a,r:d},{l:c,r:"?",frage:true,strich:true}].concat(umgRows(a,d,c,zahl,zahl,false))) + `<p>Oder über das Ganze: ${a} · ${d} = ${a*d} Maschinentage. ${a*d} : ${c} = <b>${zahl(y)} Tage</b>.</p>`};
+     }
+     if(art==="laster"){
+       const x = pick([4,6,8,10,12,15,16,20,24]), n = pick([6,8,9,10,12,15,18,20,24,30]), y = pick([4,6,8,10,12,15,16,20,24]);
+       if(y===x || y%x===0 || x%y===0 || (x===18||y===18)) continue;
+       const m = x*n/y; if(!ganz(m)) continue;
+       return {type:"input", html:situation(`Ein Lastwagen kann <b>${x} t</b> Kies laden. Um einen Kieshaufen wegzuführen, muss er <b>${n} Mal</b> fahren.`)+frage(`Wie oft muss ein Lastwagen fahren, der nur <b>${y} t</b> laden kann?`), answer:m, unit:"Mal", k:["l"+x+"-"+n+"-"+y],
+         text:`Lastwagen ${x} t, ${n} Fahrten → ${y} t`, show:zahl(m)+" Mal",
+         explain: wpTab(["Ladung","Fahrten"], [{l:x+" t",r:n},{l:y+" t",r:"?",frage:true,strich:true}].concat(umgRows(x,n,y,v=>v+" t",zahl,false))) + `<p>Oder über das Ganze: Der Kieshaufen wiegt ${x} · ${n} = ${x*n} t. ${x*n} : ${y} = <b>${zahl(m)} Fahrten</b>.</p>`};
+     }
+     /* tempo */
+     const v = pick([36,40,48,54,60,64,72,75,84,90,96]), T = pick([40,45,50,75,80,90,100,105,120,135,150]), v2 = pick([36,40,48,54,60,64,72,75,84,90,96,100,120]);
+     if(v2===v || v2%v===0 || v%v2===0) continue;
+     const sec = v*T*60/v2;
+     if(!ganz(sec) || (lv<3 && sec%60) || (lv===3 && !(sec%60)) || (v===75&&T===180)) continue;
+     const html = situation(`Ein Car fährt mit durchschnittlich <b>${v} km/h</b> und braucht für eine Reise <b>${zeit(T*60)}</b>.`)+frage(`Wie lange würde er mit durchschnittlich <b>${v2} km/h</b> brauchen?`);
+     const rows = [{l:v+" km/h", r:zeit(T*60)},{l:v2+" km/h", r:"?",frage:true,strich:true}].concat(umgRows(v, T*60, v2, x=>zahl(x)+" km/h", x=>minT(x), false));
+     return zeitAufgabe(html, sec, {k:["sp"+v+"-"+T+"-"+v2], text:`Car ${v} km/h in ${zeit(T*60)} → ${v2} km/h`,
+       explain: wpTab(["Geschwindigkeit","Zeit"], rows) + (ganz(v*T/60*10) ? `<p>Oder über das Ganze: In ${zeit(T*60)} legt der Car mit ${v} km/h <b>${zahl(rund(v*T/60,3))} km</b> zurück. Für ${zahl(rund(v*T/60,3))} km braucht er mit ${v2} km/h <b>${zeit(sec)}</b>.</p>` : `<p>Er braucht <b>${zeit(sec)}</b>.</p>`)});
+   }
+ }},
+];
+
+trainerStart();
+</script>
+</body>
+</html>

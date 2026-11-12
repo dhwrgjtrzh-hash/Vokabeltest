@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="de-CH" data-fach="mathe" data-trainer="mathe">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wertepaare und Wertetabellen</title>
+<link rel="icon" type="image/png" href="icons/icon-wertetabellen-64.png">
+<link rel="apple-touch-icon" href="icons/icon-wertetabellen-180.png">
+<link rel="stylesheet" href="mathe-trainer.css">
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="back lp-zurueck" href="./#mathe">‹ Lernportal</a>
+    <div class="logo lp-logo">x | y</div>
+    <h1 class="grow lp-titel"><small>Mathe</small>Wertepaare und Wertetabellen</h1>
+    <button class="pill" id="pill" type="button" title="Andere Glückszahl eingeben" hidden></button>
+  </header>
+  <main id="app"></main>
+</div>
+<script src="tipp-schutz.js" data-knoepfe=".cmpbtns button"></script>
+<script src="mathe-trainer.js"></script>
+<script>
+const UEBUNG = "Wertepaare und Wertetabellen";
+const START_NOTE = "Überlege bei jeder Aufgabe zuerst: proportional, umgekehrt proportional oder weder noch? Schreibe nur Zahlen in die Felder.";
+
+/* ===== Bausteine ===== */
+const gross = s => s[0].toUpperCase()+s.slice(1);
+const OPT3 = ["proportional","umgekehrt proportional","weder noch"];
+const statTab = (kopf, rows) => `<div class="tabwrap"><table class="wtab"><tr><th>${kopf[0]}</th><th class="strich"></th><th>${kopf[1]}</th></tr>${rows.map(r=>`<tr><td>${r[0]}</td><td class="strich">–</td><td>${r[1]}</td></tr>`).join("")}</table></div>`;
+/* Zusammenhänge (x → y) */
+const ART = {
+  prop: (k)=>({f:x=>k*x, typ:"proportional", regel:`Rechts ist immer <b>${zahl(k)}-mal</b> so viel wie links.`}),
+  umg:  (P)=>({f:x=>P/x, typ:"umgekehrt proportional", regel:`Links · rechts gibt immer <b>${zahl(P)}</b>.`}),
+  summe:(N)=>({f:x=>N-x, typ:"weder noch", regel:`Links + rechts gibt immer <b>${zahl(N)}</b>.`}),
+  diff: (d)=>({f:x=>x+d, typ:"weder noch", regel:`Rechts ist immer <b>${zahl(d)} mehr</b> als links.`}),
+  lin:  (g,k)=>({f:x=>g+k*x, typ:"weder noch", regel:`Zuerst <b>${zahl(g)}</b>, dann pro Schritt <b>${zahl(k)}</b> dazu.`}),
+  ab:   (L,k)=>({f:x=>L-k*x, typ:"weder noch", regel:`Am Anfang <b>${zahl(L)}</b>, pro Schritt <b>${zahl(k)}</b> weniger.`}),
+};
+function pruefZeilen(rows){
+  const q = (y,x) => `${zahl(y)} : ${zahl(x)} = ${zahl(rund(y/x,2))}${ganz(y/x*100)?"":"…"}`;
+  return `<div class="tabwrap"><table class="wp"><tr><th>rechts : links</th><th></th><th>links · rechts</th></tr>${rows.map(([x,y])=>`<tr><td style="text-align:left">${q(y,x)}</td><td></td><td style="text-align:left">${zahl(x)} · ${zahl(y)} = ${zahl(rund(x*y,3))}</td></tr>`).join("")}</table></div>`;
+}
+const satzEnde = s => s.endsWith(".") ? s : s+".";
+
+/* Sperrliste: Aufgaben aus der Lernzielkontrolle LZK 6.4 (und den Beweisen) kommen nie vor */
+const SPERR_TEXT = /Löwe|Krokodil|Elefant|Karotten|Alina|Barbara|Gummibärchen|Spaghetti|Coca|Sirup|Luzern|Kirschen|Schnur|Äpfel|\b80 km\/h/;
+const SPERR_K = new Set(["alter9-36","stock5.5-3.5","schritt45-0.8"]);
+function SPERRE(t){
+  if((t.k||[]).some(k=>SPERR_K.has(k))) return true;
+  return SPERR_TEXT.test(String(t.html||"")+String(t.text||""));
+}
+
+/* ===== Lernziele ===== */
+const GOALS = [
+/* ---------- Proportional, umgekehrt oder weder noch? ---------- */
+{id:"PU", code:"", title:"Proportional oder umgekehrt?", ic:"🔎", c:"#2f5bea", info:"Erkennen: proportional, umgekehrt proportional oder weder noch", tb:"TB S. 40–41 · AH S. 11–12",
+ help:()=>`<p>Prüfe jedes Wertepaar:</p>
+   <p>• Gibt <b>rechts : links</b> immer das Gleiche? → <b>proportional</b><br>• Gibt <b>links · rechts</b> immer das Gleiche? → <b>umgekehrt proportional</b><br>• Beides nicht? → <b>weder noch</b></p>
+   ${statTab(["Anzahl Hefte","Preis in Fr."],[["2","5"],["4","10"],["6","15"]])}
+   <p>5 : 2 = 2.5, 10 : 4 = 2.5, 15 : 6 = 2.5 → immer gleich → <b>proportional</b>.</p>`,
+ gen(lv){
+   for(let tries=0; tries<300; tries++){
+     if(lv===2){
+       /* zwei Wertepaare im Text */
+       const art = pick(["prop","umg","weder"]);
+       let s1, s2, x1, y1, x2, y2, kopf;
+       if(art==="prop"){ const k = pick([1.5,2.5,3.2,4.5,6]); x1 = pick([2,3,4,5]); x2 = pick([6,8,10,12,15]); y1 = rund(k*x1,2); y2 = rund(k*x2,2);
+         s1 = `${x1} kg Tomaten kosten ${chf(y1)}`; s2 = `${x2} kg Tomaten kosten ${chf(y2)}`; kopf = ["kg","Fr."]; }
+       else if(art==="umg"){ const P = pick([12,18,24,30,36,40,48,60]); const xs = [2,3,4,5,6,8,10,12].filter(x=>P%x===0 && P/x>1); if(xs.length<2) continue; [x1,x2] = shuffle(xs).slice(0,2); y1 = P/x1; y2 = P/x2;
+         if((x1===3&&y1===5)||(x1===5&&y1===3)) continue;
+         s1 = `${x1} Katzen haben genug Futter für ${y1} Tage.`; s2 = `${x2} Katzen haben mit dem gleichen Futter genug für ${y2} Tage.`; kopf = ["Katzen","Tage"]; }
+       else { const sub = pick(["preis","hunde","katzen"]);
+         if(sub==="preis"){ x1 = pick([2,3,4,5]); x2 = pick([10,12,15,20]); const k = pick([1.5,2,2.5,3]); y1 = rund(k*x1,2); y2 = rund(k*x2 - pick([2,3,5,6]),2);
+           s1 = `${x1} kg Kartoffeln kosten ${chf(y1)}`; s2 = `Im Sack mit ${x2} kg kosten sie zusammen ${chf(y2)}`; kopf = ["kg","Fr."]; }
+         else if(sub==="hunde"){ x1 = pick([2,3,4]); x2 = x1+pick([1,2,3]); y1 = pick([300,400,450,500]); y2 = y1+pick([100,150,200]);
+           s1 = `${x1} Hunde fressen am Tag ${y1} g Futter.`; s2 = `${x2} Hunde fressen am Tag ${y2} g Futter.`; kopf = ["Hunde","g"]; }
+         else { x1 = pick([2,3,4]); x2 = x1+pick([1,2]); y1 = pick([8,10,12]); y2 = y1-pick([1,2,3]);
+           s1 = `${x1} Katzen haben genug Futter für ${y1} Tage.`; s2 = `${x2} Katzen haben mit dem gleichen Futter genug für ${y2} Tage.`; kopf = ["Katzen","Tage"]; }
+       }
+       const q1 = y1/x1, q2 = y2/x2, p1 = x1*y1, p2 = x2*y2;
+       const typ = Math.abs(q1-q2)<1e-9 ? 0 : Math.abs(p1-p2)<1e-9 ? 1 : 2;
+       if(art==="weder" && typ!==2) continue;
+       return {type:"choice", words:true, html:situation(`${s1}${s1.endsWith(".")?"":"."}<br>${s2}${s2.endsWith(".")?"":"."}`)+frage(`Wie hängen die beiden Wertepaare zusammen?`), options:OPT3.map(l=>({label:l})), answer:typ, k:["pu"+x1+"-"+y1+"-"+x2+"-"+y2],
+         text:`${s1}; ${s2}`, show:OPT3[typ],
+         explain: ol([`rechts : links → ${zahl(y1)} : ${zahl(x1)} = ${zahl(rund(q1,2))}${ganz(q1*100)?"":"…"} und ${zahl(y2)} : ${zahl(x2)} = ${zahl(rund(q2,2))}${ganz(q2*100)?"":"…"} ${typ===0?"→ gleich ✓":"→ nicht gleich"}`,
+           `links · rechts → ${zahl(x1)} · ${zahl(y1)} = ${zahl(p1)} und ${zahl(x2)} · ${zahl(y2)} = ${zahl(p2)} ${typ===1?"→ gleich ✓":"→ nicht gleich"}`, `Also: <b>${OPT3[typ]}</b>.`])};
+     }
+     /* Tabellen */
+     const arten = lv===1 ? ["prop","umg","summe","diff"] : ["prop","umg","summe","lin","ab","diff"];
+     const a = pick(arten);
+     let A, kopf, xs;
+     if(a==="prop"){ const k = pick(lv===1?[2,3,4,5,10]:[1.5,2.5,4,6,12]); A = ART.prop(k); kopf = pick([["Anzahl Gipfeli","Preis in Fr."],["Anzahl Pakete","Gewicht in kg"],["Zeit in min","Strecke in km"]]); xs = shuffle([1,2,3,4,5,6,8,10]).slice(0,lv===1?3:4); }
+     else if(a==="umg"){ const P = pick([24,36,48,60,72,120].filter(p=>p!==72)); A = ART.umg(P); kopf = pick([["Anzahl Kinder","Sticker pro Kind"],["Anzahl Maschinen","Arbeitstage"]]); xs = shuffle([1,2,3,4,6,8,12].filter(x=>P%x===0)).slice(0,lv===1?3:4); }
+     else if(a==="summe"){ const N = pick([24,30,36,40,48,60,100,120]); A = ART.summe(N); kopf = pick([["Gelesene Seiten","Seiten noch zu lesen"],["Besetzte Plätze","Freie Plätze"]]); xs = shuffle([2,4,6,8,10,12,15,20].filter(x=>x<N)).slice(0,lv===1?3:4); }
+     else if(a==="diff"){ const d = pick([3,4,5,6,7,25,26,28,30]); A = ART.diff(d); kopf = ["Alter von Jan","Alter von seiner Schwester"]; if(d>20) kopf = ["Alter von Jan","Alter von seiner Mutter"]; xs = shuffle([2,3,4,5,6,8,10,12]).slice(0,lv===1?3:4); }
+     else if(a==="lin"){ const g = pick([4,5,6,8]), k = pick([2,3,4]); A = ART.lin(g,k); kopf = ["Strecke in km","Taxipreis in Fr."]; xs = shuffle([1,2,3,4,5,6,8,10]).slice(0,4); }
+     else { const k = pick([2,3]), L = pick([24,30,36].filter(l=>l>k*10)); A = ART.ab(L,k); kopf = ["Brenndauer in h","Länge der Kerze in cm"]; xs = shuffle([1,2,3,4,5,6]).slice(0,4); }
+     xs.sort((p,q)=>p-q);
+     const rows = xs.map(x=>[x, rund(A.f(x),3)]);
+     if(rows.some(r=>r[1]<=0 || !ganz(r[1]*100))) continue;
+     const typ = OPT3.indexOf(A.typ);
+     const fR = kopf[1].includes("Fr.") ? chfZahl : zahl;
+     return {type:"choice", words:true, html:frage(`Wie hängen die Werte in dieser Tabelle zusammen?`)+statTab(kopf, rows.map(r=>[zahl(r[0]), fR(r[1])])), options:OPT3.map(l=>({label:l})), answer:typ, k:[],
+       text:`Tabelle ${kopf[0]} – ${kopf[1]}: ${rows.map(r=>zahl(r[0])+"–"+zahl(r[1])).join(", ")}`, show:A.typ,
+       explain: `<p>Prüfe jede Zeile:</p>${pruefZeilen(rows)}<p>${A.regel}</p><p>Also: <b>${A.typ}</b>.</p>`};
+   }
+ }},
+
+/* ---------- Doppelt, halb oder weder noch? ---------- */
+{id:"DH", code:"", title:"Doppelt, halb oder weder noch?", ic:"⚖️", c:"#d6336c", info:"Was passiert, wenn sich ein Wert verdoppelt oder halbiert?", tb:"TB S. 40 · AH S. 12",
+ help:()=>`<p>• <b>Proportional:</b> doppelt so viel → doppelt so viel<br>• <b>Umgekehrt proportional:</b> doppelt so viel → halb so viel<br>• <b>Weder noch:</b> Rechne nach – es ist weder das Doppelte noch die Hälfte.</p>
+   <p>Beispiel: Tim ist 10 Jahre alt, sein Bruder 13. Wenn Tim doppelt so alt ist (20), ist sein Bruder 23 – das ist <b>weder doppelt noch halb</b> so alt wie 13.</p>`,
+ gen(lv){
+   const O = ["doppelt","halb","weder doppelt noch halb"];
+   for(let tries=0; tries<300; tries++){
+     const frames = lv===1 ? ["gipfeli","velo","murmeln","helfer"] : ["gipfeli","velo","murmeln","helfer","futter","kino","alter","kerze"];
+     const fr0 = pick(frames);
+     const halbiert = lv===3 && Math.random()<.5;   // «halb so viele …»
+     const wort = halbiert ? "Halb" : "Doppelt";
+     let sit, q, ans, erk, k = [];
+     if(fr0==="gipfeli"){ const n = halbiert ? pick([4,6,8,10]) : pick([3,4,5,6]); const p = pick([1.2,1.5,1.8,2.2]);
+       sit = `${n} Gipfeli kosten ${chf(n*p)}`; q = `${wort} so viele Gipfeli kosten ______ so viel.`; ans = halbiert?1:0;
+       erk = `Proportional: ${halbiert?n/2:n*2} Gipfeli kosten ${chf((halbiert?n/2:n*2)*p)} – das ist ${halbiert?"halb":"doppelt"} so viel wie ${chf(n*p)}`; }
+     else if(fr0==="velo"){ const t = halbiert ? pick([20,30,40]) : pick([10,15,20]); const v = pick([12,15,18]); const s = v*t/60;
+       if(!ganz(s*10)) continue;
+       sit = `Lena fährt mit dem Velo in ${t} min ${km(s)}.`; q = `In ${wort.toLowerCase()} so viel Zeit fährt sie im gleichen Tempo ______ so weit.`; ans = halbiert?1:0;
+       erk = `Proportional: In ${halbiert?t/2:t*2} min fährt sie ${km(halbiert?s/2:s*2)} – das ist ${halbiert?"halb":"doppelt"} so weit`; }
+     else if(fr0==="murmeln"){ const a = halbiert ? pick([4,6,8]) : pick([2,3,4]); const per = pick([6,8,10,12]); const N = a*per;
+       sit = `${a} Kinder teilen ${N} Murmeln gerecht. Jedes bekommt ${per} Murmeln.`; q = `Wenn ${wort.toLowerCase()} so viele Kinder teilen, bekommt jedes Kind ______ so viele Murmeln.`; ans = halbiert?0:1;
+       erk = `Umgekehrt proportional: ${N} Murmeln für ${halbiert?a/2:a*2} Kinder → ${N/(halbiert?a/2:a*2)} Murmeln pro Kind – das ist ${halbiert?"doppelt":"halb"} so viel wie ${per}`; }
+     else if(fr0==="helfer"){ const a = halbiert ? pick([4,6,8]) : pick([2,3,4,5]); const t = pick([20,30,40,60]);
+       sit = `${a} Kinder stellen die Stühle für das Schulfest in ${t} min auf.`; q = `${wort} so viele Kinder brauchen dafür ______ so lange.`; ans = halbiert?0:1;
+       erk = `Umgekehrt proportional: ${halbiert?a/2:a*2} Kinder brauchen ${halbiert?t*2:t/2} min – das ist ${halbiert?"doppelt":"halb"} so lange`; }
+     else if(fr0==="futter"){ const a = halbiert ? pick([4,6]) : pick([2,3]); const d = pick([6,8,10,12]);
+       sit = `Ein Futtervorrat reicht für ${a} Hasen ${d} Tage.`; q = `Für ${wort.toLowerCase()} so viele Hasen reicht er ______ so lange.`; ans = halbiert?0:1;
+       erk = `Umgekehrt proportional: Für ${halbiert?a/2:a*2} Hasen reicht er ${halbiert?d*2:d/2} Tage – das ist ${halbiert?"doppelt":"halb"} so lange`; }
+     else if(fr0==="kino"){ const N = pick([80,96,120,150,180]); const a = pick([20,24,30,36,40]); if(2*a>=N) continue;
+       const frei = N-a, frei2 = halbiert ? N-a/2 : N-2*a;
+       if(frei2===frei*2 || frei2*2===frei || !ganz(frei2)) continue;
+       sit = `Ein Kino hat ${N} Plätze. Es sitzen ${a} Personen darin, ${frei} Plätze sind frei.`; q = `Wenn ${wort.toLowerCase()} so viele Personen darin sitzen, sind ______ so viele Plätze frei.`; ans = 2;
+       erk = `${halbiert?a/2:a*2} Personen → ${N} − ${halbiert?a/2:a*2} = ${frei2} freie Plätze. Das ist weder das Doppelte (${frei*2}) noch die Hälfte (${frei/2}) von ${frei}`; }
+     else if(fr0==="alter"){ const x = halbiert ? pick([10,12,14,16]) : pick([5,6,7,8,10]);
+       const n = pick([["Nina","ihre Mutter","sie",[26,28,30]],["Jonas","sein Onkel","er",[24,26,30]],["Elif","ihre Cousine","sie",[3,4,5]]]);
+       const y = x + pick(n[3]);
+       if(x===9 && y===36) continue;
+       const x2 = halbiert ? x/2 : x*2, y2 = y + (x2-x);
+       if(!ganz(x2) || y2===2*y || y2*2===y) continue;
+       sit = `${n[0]} ist ${x} Jahre alt, ${n[1]} ist ${y}.`; q = halbiert ? `Als ${n[0]} halb so alt war, war ${n[1]} ______ so alt wie heute.` : `Wenn ${n[0]} doppelt so alt ist, ist ${n[1]} ______ so alt wie heute.`; ans = 2;
+       erk = `${n[0]}: ${x} → ${x2} Jahre. Der Unterschied bleibt immer ${y-x} Jahre, also ist ${n[1]} dann ${y2}. Das ist weder das Doppelte (${2*y}) noch die Hälfte (${zahl(y/2)}) von ${y}`; k.push("alter"+x+"-"+y); }
+     else { const L = pick([20,24,30,36]); const kk = pick([2,3]); const t = pick([1,2,3]); if(L<=2*kk*t+2 || L===3*kk*t) continue;
+       const l1 = L-kk*t, l2 = halbiert ? L-kk*t/2 : L-kk*2*t;
+       if(!ganz(l2) || l2===l1*2 || l2*2===l1) continue;
+       sit = `Eine Kerze ist ${L} cm lang. Nach ${t} h Brenndauer ist sie noch ${l1} cm lang.`; q = `Nach ${wort.toLowerCase()} so langer Brenndauer ist sie ______ so lang.`; ans = 2;
+       erk = `Pro Stunde wird sie ${kk} cm kürzer. Nach ${zahl(halbiert?t/2:t*2)} h ist sie noch ${zahl(l2)} cm lang. Das ist weder das Doppelte (${l1*2} cm) noch die Hälfte (${zahl(l1/2)} cm) von ${l1} cm`; }
+     return {type:"choice", words:true, html:situation(sit)+frage(q.replace("______",'<span style="color:var(--accent)">______</span>')), options:O.map(l=>({label:l})), answer:ans, k,
+       text:`${sit} ${q}`, show:O[ans],
+       explain: `<p>${satzEnde(erk)}</p><p><b>${q.replace("______", "<u>"+O[ans].replace("weder doppelt noch halb","weder doppelt noch halb")+"</u>")}</b></p>`};
+   }
+ }},
+
+/* ---------- Wertetabellen ergänzen ---------- */
+{id:"WE", code:"", title:"Wertetabellen ergänzen", ic:"📋", c:"#13a36b", info:"Den Zusammenhang erkennen und fehlende Werte ergänzen", tb:"TB S. 40–42 · AH S. 11",
+ help:()=>`<p>1. Lies die Situation genau.<br>2. Schau die vollständigen Wertepaare an: Wie hängen sie zusammen?<br>3. Rechne die fehlenden Werte mit der gleichen Regel aus.</p>
+   ${statTab(["Gelesene Seiten","Seiten noch zu lesen"],[["20","130"],["50","100"],["70","?"]])}
+   <p>Das Buch hat 150 Seiten: links + rechts gibt immer 150. Also 150 − 70 = <b>80</b>.</p>`,
+ gen(lv){
+   for(let tries=0; tries<300; tries++){
+     const arten = lv===1 ? ["prop","summe","prop","summe","diff"] : lv===2 ? ["prop","umg","summe","diff"] : ["umg","summe","diff","lin","ab","stock"];
+     const a = pick(arten);
+     let A, kopf, sit, xs, lab;
+     if(a==="prop"){ const p = pick([0.8,1.2,1.5,2.5,3.5,4]); A = ART.prop(p); kopf = ["Anzahl Brötli","Preis in Fr."]; sit = `In der Bäckerei kosten alle Brötli gleich viel.`; xs = [1,2,3,4,5,6,8,10,12]; }
+     else if(a==="umg"){ const P = pick([36,48,60,90,120]); A = ART.umg(P); kopf = ["Anzahl Kinder","Murmeln pro Kind"]; sit = `Ein Sack Murmeln wird gerecht unter Kindern verteilt.`; xs = [1,2,3,4,5,6,8,10,12].filter(x=>P%x===0); }
+     else if(a==="summe"){ const N = pick([120,150,180,200,240,250]); A = ART.summe(N); kopf = ["Gelesene Seiten","Seiten noch zu lesen"]; sit = `Mia liest ein Buch.`; xs = [10,20,25,30,40,50,60,75,80,100].filter(x=>x<N); }
+     else if(a==="diff"){ const d = pick([3,4,5,6,7,8]); A = ART.diff(d); kopf = ["Alter von Jan","Alter von Lea"]; sit = `Lea ist die ältere Schwester von Jan.`; xs = [1,2,3,4,5,6,8,10,12,15,20]; }
+     else if(a==="lin"){ const g = pick([5,6,7,8]), kk = pick([2,2.5,3,3.5]); A = ART.lin(g,kk); kopf = ["Strecke in km","Taxipreis in Fr."]; sit = `Eine Taxifahrt kostet eine Grundtaxe und dazu einen festen Betrag pro Kilometer.`; xs = [1,2,3,4,5,6,8,10,12,15]; }
+     else if(a==="ab"){ const kk = pick([1.5,2,3]), L = pick([24,30,36]); A = ART.ab(L,kk); kopf = ["Brenndauer in h","Länge der Kerze in cm"]; sit = `Eine Kerze brennt gleichmässig ab.`; xs = [1,2,3,4,5,6,8]; }
+     else { const u = pick([4,4.5,5]), sh = pick([3,3.2,2.8]); if(u===5.5&&sh===3.5) continue; A = {f:n=>rund(u+(n-1)*sh,3), typ:"weder noch", regel:`Das unterste Stockwerk ist <b>${zahl(u)} m</b> hoch, jedes weitere <b>${zahl(sh)} m</b>.`}; kopf = ["Anzahl Stockwerke","Höhe des Hauses in m"]; sit = `In einer Siedlung haben alle Häuser ein gleich hohes unterstes Stockwerk. Alle anderen Stockwerke sind ebenfalls gleich hoch, aber weniger hoch als das unterste.`; xs = [1,2,3,4,5,6,8,10]; }
+     const n = 5;
+     const wahl = shuffle(xs.slice()).slice(0,n).sort((p,q)=>p-q);
+     const rows = wahl.map(x=>({x, y:rund(A.f(x),3)}));
+     if(rows.some(r=>r.y<=0 || !ganz(r.y*100))) continue;
+     if(a==="umg" && rows.some(r=>!ganz(r.y))) continue;
+     /* 2 bis 3 Zeilen bleiben ganz stehen, sonst je ein Feld leer */
+     const nVoll = lv===1 ? 3 : pick([2,3]);
+     const voll = shuffle(rows.slice()).slice(0,nVoll);
+     if(a==="lin" || a==="stock" || a==="ab"){ if(nVoll<2) continue; }
+     const blanks = [];
+     const zeilen = rows.map(r=>{
+       if(voll.includes(r)) return {l:zahl(r.x), r:zahl(r.y)};
+       const links = lv>1 && Math.random()<.3 && (a==="prop"||a==="umg"||a==="summe"||a==="diff");
+       blanks.push({r, seite:links?"l":"r"});
+       return links ? {l:null, r:zahl(r.y)} : {l:zahl(r.x), r:null};
+     });
+     if(!blanks.length) continue;
+     const answers = blanks.map(b=>b.seite==="l" ? b.r.x : b.r.y);
+     const fR = kopf[1].includes("Fr.") ? chfZahl : zahl;
+     zeilen.forEach((z,i)=>{ if(z.r!==null) z.r = fR(rows[i].y); });
+     return {type:"tab", html:situation(sit)+frage(`Ergänze die fehlenden Werte.`), kopf, zeilen, answers, k:[],
+       text:`Tabelle ${kopf[0]} – ${kopf[1]}: ${zeilen.map(z=>(z.l===null?"?":z.l)+"–"+(z.r===null?"?":z.r)).join(", ")}`,
+       show: blanks.map(b=>`${zahl(b.r.x)} – ${zahl(b.r.y)}`).join("; "),
+       explain: `<p>${A.regel} ${A.typ==="weder noch" ? "Das ist <b>weder proportional noch umgekehrt proportional</b>." : `Das ist <b>${A.typ}</b>.`}</p>${statTab(kopf, rows.map(r=>[ blanks.some(b=>b.r===r && b.seite==="l") ? `<b>${zahl(r.x)}</b>` : zahl(r.x), blanks.some(b=>b.r===r && b.seite==="r") ? `<b>${fR(r.y)}</b>` : fR(r.y)]))}`};
+   }
+ }},
+
+/* ---------- Sachaufgaben ---------- */
+{id:"SA", code:"", title:"Sachaufgaben", ic:"📝", c:"#e0732b", info:"Zuerst den Zusammenhang erkennen, dann rechnen", tb:"TB S. 42 · AH S. 13",
+ help:()=>`<p>1. Überlege zuerst: <b>proportional</b>, <b>umgekehrt proportional</b> oder <b>weder noch</b>?<br>2. Erstelle eine kleine Tabelle mit dem bekannten Wertepaar.<br>3. Rechne mit der passenden Regel.</p>
+   <p>Tim ist 8, seine Tante 31. Wie alt ist die Tante, wenn Tim 16 ist?<br>→ Nicht proportional! Der Unterschied bleibt immer 23 Jahre: 16 + 23 = <b>39</b>.</p>`,
+ gen(lv){
+   for(let tries=0; tries<400; tries++){
+     const art = pick(lv===1 ? ["saft","schritte","teilen","saft"] : lv===2 ? ["saft","schritte","teilen","alter","buch"] : ["schritte","teilen","alter","buch","stock","papa"]);
+     if(art==="saft"){ const a = pick([2,3,4,5,6]), p = pick([1.2,1.5,1.8,2.4,2.5]), b = pick([3,5,7,8,9,10,12,15]);
+       if(b===a || (lv>1 && (b%a===0))) continue; if(a===4 && p===2.15) continue;
+       const pa = rund(a*p,2), pb = rund(b*p,2);
+       const rows = [{l:a+" l", r:chf(pa)},{l:b+" l", r:"?",frage:true,strich:true},{l:a+" l", r:chf(pa)}];
+       propWeg(a,b).forEach((w,i,arr)=>rows.push({l:w.x+" l", r:chf(p*w.x), op:w.op, fett:i===arr.length-1}));
+       return {type:"input", html:situation(`<b>${a} l</b> Orangensaft kosten <b>${chf(pa)}</b>`)+frage(`Wie viel kosten <b>${b} l</b>?`), answer:pb, unit:"Fr.", k:[],
+         text:`${a} l Saft kosten ${chf(pa)}: Preis für ${b} l`, show:chf(pb),
+         explain:`<p>Doppelt so viel Saft kostet doppelt so viel → <b>proportional</b>.</p>${wpTab(["Menge","Preis"], rows)}`};
+     }
+     if(art==="schritte"){ const n = pick([24,30,36,40,48,60]), x = pick([0.5,0.6,0.75,0.8,0.9,1.2]), y = pick([0.5,0.6,0.75,0.8,0.9,1.2]);
+       if(x===y || (n===45 && x===0.8)) continue;
+       const L = rund(n*x,3), m = rund(L/y,3); if(!ganz(m) || !ganz(L*10)) continue;
+       return {type:"input", html:situation(`Lara misst den Pausenplatz ab: Sie braucht <b>${n} Schritte</b> zu je <b>${zahl(x)} m</b>.`)+frage(`Wie viele Schritte braucht Jonas, wenn jeder seiner Schritte <b>${zahl(y)} m</b> lang ist?`), answer:m, unit:"Schritte", k:["schritt"+n+"-"+x],
+         text:`${n} Schritte à ${zahl(x)} m → Schritte à ${zahl(y)} m`, show:zahl(m)+" Schritte",
+         explain:`<p>Längere Schritte → weniger Schritte → <b>umgekehrt proportional</b>.</p><p>Der Platz ist ${n} · ${zahl(x)} m = <b>${zahl(L)} m</b> lang.<br>${zahl(L)} m : ${zahl(y)} m = <b>${zahl(m)} Schritte</b></p>`};
+     }
+     if(art==="teilen"){ const a = pick([3,4,5,6,8]), x = pick([6,7.5,8,9,10,12,15]), b = pick([3,4,5,6,8,10,12]);
+       if(b===a) continue; const y = rund(a*x/b,2); if(!ganz(y*20)) continue;
+       if(lv===1 && !(b%a===0 || a%b===0)) continue;
+       return {type:"input", html:situation(`${a} Freundinnen kaufen zusammen ein Geschenk. Jede bezahlt <b>${chf(x)}</b>`)+frage(`Wie viel bezahlt jede, wenn <b>${b} Freundinnen</b> mitmachen?`), answer:y, unit:"Fr.", k:[],
+         text:`${a} Freundinnen à ${chf(x)} → ${b} Freundinnen`, show:chf(y),
+         explain:`<p>Mehr Personen → jede bezahlt weniger → <b>umgekehrt proportional</b>.</p><p>Das Geschenk kostet ${a} · ${chf(x)} = <b>${chf(a*x)}</b><br>${chf(a*x)} : ${b} = <b>${chf(y)}</b></p>`};
+     }
+     if(art==="alter"){ const n = pick([["Tim","sein Vater","er"],["Mia","ihre Grossmutter","sie"],["Noah","seine Schwester","er"],["Sara","ihr Onkel","sie"]]);
+       const x = pick([6,7,8,10,11,12]), d = n[1].includes("Schwester") ? pick([3,4,5]) : n[1].includes("Grossmutter") ? pick([55,58,60]) : pick([26,28,30,32]); const c = x + pick([3,4,5,6,8,10,20]);
+       const y = x+d; if(x===9 && y===36) continue;
+       return {type:"input", html:situation(`${n[0]} ist <b>${x} Jahre</b> alt, ${n[1]} ist <b>${y} Jahre</b> alt.`)+frage(`Wie alt ist ${n[1]}, wenn ${n[0]} <b>${c} Jahre</b> alt ist?`), answer:c+d, unit:"Jahre", k:["alter"+x+"-"+y],
+         text:`${n[0]} ${x}, ${n[1]} ${y} → wenn ${n[0]} ${c} ist`, show:(c+d)+" Jahre",
+         explain:`<p>Achtung: Das ist <b>weder proportional noch umgekehrt proportional</b>! Beide werden jedes Jahr 1 Jahr älter – der Unterschied bleibt immer gleich.</p><p>Unterschied: ${y} − ${x} = <b>${d} Jahre</b><br>${c} + ${d} = <b>${c+d} Jahre</b></p>`};
+     }
+     if(art==="buch"){ const S = pick([120,144,160,180,200,240]), a = pick([20,30,40,50,60]), c = a + pick([10,15,20,25,30,40]);
+       if(c>=S) continue;
+       return {type:"input", html:situation(`Mia hat in ihrem Buch <b>${a} Seiten</b> gelesen. Sie hat noch <b>${S-a} Seiten</b> vor sich.`)+frage(`Wie viele Seiten hat sie noch vor sich, wenn sie <b>${c} Seiten</b> gelesen hat?`), answer:S-c, unit:"Seiten", k:[],
+         text:`${a} gelesen, ${S-a} noch → bei ${c} gelesen`, show:(S-c)+" Seiten",
+         explain:`<p>Das ist <b>weder noch</b>: Gelesene Seiten + Seiten noch zu lesen = immer das ganze Buch.</p><p>Das Buch hat ${a} + ${S-a} = <b>${S} Seiten</b>.<br>${S} − ${c} = <b>${S-c} Seiten</b></p>`};
+     }
+     if(art==="stock"){ const u = pick([4,4.5,5]), sh = pick([3,3.2,2.8]), n = pick([3,4,5,6,8,10,12]);
+       if(u===5.5 && sh===3.5) continue;
+       const h = rund(u+(n-1)*sh,3);
+       return {type:"input", html:situation(`In einer Siedlung ist das unterste Stockwerk aller Häuser <b>${zahl(u)} m</b> hoch. Alle anderen Stockwerke sind <b>${zahl(sh)} m</b> hoch.`)+frage(`Wie hoch ist ein Haus mit <b>${n} Stockwerken</b>?`), answer:h, unit:"m", k:["stock"+u+"-"+sh],
+         text:`Stockwerke ${zahl(u)} m + je ${zahl(sh)} m: Haus mit ${n} Stockwerken`, show:zahl(h)+" m",
+         explain:`<p>Das ist <b>weder noch</b>: Das unterste Stockwerk ist anders hoch als die übrigen.</p><p>1 unterstes Stockwerk: ${zahl(u)} m<br>${n-1} weitere Stockwerke: ${n-1} · ${zahl(sh)} m = ${zahl(rund((n-1)*sh,3))} m<br>Zusammen: <b>${zahl(h)} m</b></p>`};
+     }
+     /* papa: Schritte von Vater und Kind (proportional) */
+     const p = pick([3,4,5]), kk = pick([5,6,7,8]); if(kk<=p) continue;
+     const P2 = p*pick([6,8,10,12,15]), K2 = P2/p*kk;
+     const rows = [{l:p, r:kk},{l:P2, r:"?",frage:true,strich:true},{l:p, r:kk}];
+     propWeg(p,P2).forEach((w,i,arr)=>rows.push({l:w.x, r:zahl(kk*w.x/p), op:w.op, fett:i===arr.length-1}));
+     return {type:"input", html:situation(`Während Papa <b>${p} Schritte</b> macht, braucht Elin für die gleiche Strecke <b>${kk} Schritte</b>.`)+frage(`Wie viele Schritte macht Elin, wenn Papa <b>${P2} Schritte</b> macht?`), answer:K2, unit:"Schritte", k:["papa"+p+"-"+kk],
+       text:`Papa ${p}, Elin ${kk} Schritte → Papa ${P2}`, show:zahl(K2)+" Schritte",
+       explain:`<p>Macht Papa doppelt so viele Schritte, macht auch Elin doppelt so viele → <b>proportional</b>.</p>${wpTab(["Papa","Elin"], rows)}`};
+   }
+ }},
+
+/* ---------- Muster in Tabellen (erweitert) ---------- */
+{id:"MU", code:"", erw:true, title:"Muster in Tabellen", ic:"🧩", c:"#a05a00", info:"Verdoppeln, Halbieren und andere Muster fortsetzen", tb:"TB S. 40–41",
+ help:()=>`<p>Schau, wie sich der Wert von Zeile zu Zeile verändert: Kommt immer gleich viel dazu? Wird er jedes Mal verdoppelt? Wird er halbiert?</p>
+   ${statTab(["Anzahl Faltungen","Anzahl Teile"],[["1","2"],["2","4"],["3","8"],["4","?"]])}
+   <p>Bei jeder Faltung verdoppelt sich die Anzahl Teile: 8 · 2 = <b>16</b>.</p>`,
+ gen(lv){
+   for(let tries=0; tries<200; tries++){
+     const art = pick(lv===1 ? ["falten","seerose"] : lv===2 ? ["falten","bruch","punkt","seerose"] : ["bruch","punkt","abschneiden","seerose"]);
+     if(art==="falten"){ const n = lv===1 ? pick([4,5]) : pick([5,6,7]);
+       const rows = [[1,2],[2,4],[3,8]];
+       return {type:"input", html:situation(`Ein Blatt Papier wird immer wieder in der Hälfte gefaltet.`)+statTab(["Anzahl Faltungen","Anzahl Teile"], rows.map(r=>r.map(String)))+frage(`Wie viele Teile gibt es nach <b>${n} Faltungen</b>?`), answer:2**n, unit:"Teile", k:[],
+         text:`Falten: Teile nach ${n} Faltungen`, show:2**n+" Teile",
+         explain:`<p>Bei jeder Faltung <b>verdoppelt</b> sich die Anzahl Teile.</p><p>${Array.from({length:n},(_,i)=>`${i+1} → ${2**(i+1)}`).join("; ")}</p>`};
+     }
+     if(art==="bruch"){ const n = pick(lv===2?[3,4]:[4,5,6]);
+       return {type:"frac", html:situation(`Ein Blatt Papier wird immer wieder in der Hälfte gefaltet. Nach 1 Faltung ist jeder Teil ${fr(1,2)} des Blattes, nach 2 Faltungen ${fr(1,4)}.`)+frage(`Welcher Bruchteil des ganzen Blattes ist ein Teil nach <b>${n} Faltungen</b>?`), answer:{n:1,d:2**n}, reduced:false, k:[],
+         text:`Falten: Bruchteil nach ${n} Faltungen`, show:`1/${2**n}`, showHtml:fr(1,2**n),
+         explain:`<p>Bei jeder Faltung wird jeder Teil <b>halbiert</b>, der Nenner verdoppelt sich.</p><p>${Array.from({length:n},(_,i)=>`${i+1} → ${fr(1,2**(i+1))}`).join("; ")}</p>`};
+     }
+     if(art==="punkt"){ const n = pick([5,6,7,8,10]);
+       return {type:"input", html:situation(`Ein Blatt wird so gefaltet, dass jede Faltlinie durch denselben Punkt in der Mitte geht. Nach jeder Faltung wird es wieder geöffnet.`)+statTab(["Anzahl Faltungen","Anzahl Teile"],[["1","2"],["2","4"],["3","6"]])+frage(`Wie viele Teile gibt es nach <b>${n} Faltungen</b>?`), answer:2*n, unit:"Teile", k:[],
+         text:`Falten durch einen Punkt: Teile nach ${n} Faltungen`, show:2*n+" Teile",
+         explain:`<p>Hier verdoppelt sich die Anzahl <b>nicht</b>: Mit jeder Faltung kommen <b>2 Teile</b> dazu (Anzahl Teile = 2 · Anzahl Faltungen).</p><p>${n} · 2 = <b>${2*n} Teile</b></p>`};
+     }
+     if(art==="abschneiden"){ const t = pick([8,12,16]), w = rnd(1,t-2);
+       const r = red(t-w,t);
+       return {type:"frac", html:situation(`Ein Blatt wird in <b>${t} gleiche Teile</b> gefaltet. Dann werden <b>${w}</b> dieser Teile weggeschnitten.`)+frage(`Welcher Bruchteil des ganzen Blattes bleibt übrig?`), answer:{n:t-w,d:t}, reduced:false, k:[],
+         text:`${t} Teile, ${w} weggeschnitten: Bruchteil übrig`, show:`${t-w}/${t}`, showHtml:fr(t-w,t),
+         explain:`<p>Übrig bleiben ${t} − ${w} = ${t-w} von ${t} Teilen: <b>${fr(t-w,t)}</b>${r.d!==t?` = ${fr(r.n,r.d)}`:""}.</p>`};
+     }
+     /* seerose */
+     const a = pick([1,2,3,5]), n = lv===1 ? pick([3,4]) : pick([4,5,6]);
+     return {type:"input", html:situation(`Eine Seerose bedeckt auf einem Teich <b>${a} m²</b>. Jede Woche verdoppelt sich die bedeckte Fläche.`)+frage(`Wie viele m² bedeckt sie nach <b>${n} Wochen</b>?`), answer:a*2**n, unit:"m²", k:[],
+       text:`Seerose ${a} m², verdoppelt: nach ${n} Wochen`, show:a*2**n+" m²",
+       explain:`<p>Jede Woche <b>· 2</b>:</p><p>${a} m²${Array.from({length:n},(_,i)=>` → ${a*2**(i+1)}`).join("")} m²</p><p>Nach ${n} Wochen: <b>${a*2**n} m²</b> (das ist weder proportional noch umgekehrt proportional).</p>`};
+   }
+ }},
+];
+
+trainerStart();
+</script>
+</body>
+</html>

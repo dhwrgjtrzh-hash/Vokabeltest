@@ -1,0 +1,316 @@
+/* Lernportal 6b – Aussehen der Mathe-Trainer (gemeinsam für alle Trainer ab «Proportionalität») */
+:root{
+  --bg:#f3f6fb; --card:#ffffff; --ink:#1b2433; --mute:#64708a; --line:#dfe5ef;
+  --accent:#2f5bea; --accent-soft:#e8eeff; --good:#127a3c; --good-bg:#dcf5e4; --bad:#b42318; --bad-bg:#fde4e1;
+  --sol:#8a3c06; --sol-bg:#fff1e3; --star:#f5a400;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;padding:18px 16px 48px}
+button{font:inherit;color:inherit}
+.wrap{max-width:860px;margin:0 auto}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.logo{min-width:48px;height:48px;padding:0 8px;border-radius:14px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.05rem;letter-spacing:-.02em;flex:none}
+header h1{font-size:1.5rem;margin:0;line-height:1.15}
+header h1 small{display:block;font-size:.8rem;font-weight:600;color:var(--mute)}
+header .grow{flex:1}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 2px 8px rgba(27,36,51,.05)}
+.sub{color:var(--mute);margin:0 0 16px}
+h2{font-size:1.2rem;margin:0 0 6px}
+
+/* Brüche */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .08em;font-size:.82em;font-weight:inherit}
+.fr>span{display:block;padding:0 .14em;text-align:center}
+.fr>span:first-child{border-bottom:.09em solid currentColor;padding-bottom:.07em}
+.fr>span:last-child{padding-top:.07em}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:6px;vertical-align:middle}
+.fin i{display:block;width:100%;height:4px;border-radius:2px;background:var(--ink)}
+.fin input.ans{width:3.6em;padding:6px 8px}
+.eq{font-size:1.8rem;font-weight:800;color:#a3adbf;margin:0 4px}
+.fd{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.fd .lab{display:block;font-size:.8rem;color:var(--mute);font-weight:700;text-align:center;margin-bottom:4px}
+
+/* Start */
+.who{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:22px}
+.who label{font-weight:700}
+.who .ans{width:6.5em}
+.who .note{color:var(--mute);font-size:.88rem;flex-basis:100%;margin:0}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.topic{--c:#2f5bea;display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fff;border:2px solid var(--line);border-left:8px solid var(--c);border-radius:16px;padding:14px 14px;cursor:pointer;min-height:92px}
+.topic .ic{font-size:1.6rem;line-height:1}
+.topic b{display:block;font-size:1.05rem;margin-bottom:2px}
+.topic span{display:block;color:var(--mute);font-size:.85rem;line-height:1.3}
+.topic:active{transform:scale(.98)}
+.topic.mix{background:var(--accent-soft)}
+.teacher{margin-top:22px;text-align:right}
+.linkish{background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;font-size:.85rem;padding:4px}
+
+/* Aufgaben */
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font-weight:700;border:0;border-radius:14px;padding:14px 26px;background:var(--accent);color:#fff;cursor:pointer;min-height:54px;font-size:1.05rem}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.small{padding:8px 14px;min-height:40px;font-size:.9rem}
+.btn:disabled{opacity:.4}
+.progress{display:flex;gap:6px;margin:0 0 16px}
+.progress i{flex:1;height:10px;border-radius:999px;background:var(--line)}
+.progress i.ok{background:#3fbf6f}.progress i.half{background:#f5c04a}.progress i.no{background:#ef7b6f}.progress i.now{background:var(--accent)}
+.qtype{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:700;margin-bottom:12px;background:var(--accent-soft);color:#24439e}
+.q{font-size:1.3rem;margin:0 0 14px;font-weight:600}
+.big{font-size:2.3rem;font-weight:800;letter-spacing:.01em;font-variant-numeric:tabular-nums;margin:4px 0 20px}
+.big.words{font-size:1.4rem;line-height:1.5}
+input.ans{font:inherit;font-size:1.6rem;font-weight:800;width:9em;max-width:100%;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums;-webkit-appearance:none}
+input.ans.small{width:5.2em}
+input.ans:focus{outline:none;border-color:var(--accent)}
+input.ans.ok{border-color:#3fbf6f;background:var(--good-bg)}
+input.ans.no{border-color:#ef7b6f;background:var(--bad-bg)}
+.two{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums}
+.two .x{color:var(--accent)}
+.seq{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:1.55rem;font-weight:800;font-variant-numeric:tabular-nums;margin-bottom:6px}
+.seq .given{padding:8px 4px}
+.seq .arr{color:#a3adbf;font-weight:400}
+.cmp{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:2.3rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 20px}
+.cmp .slot{color:#a3adbf;min-width:1.2em;text-align:center}
+.cmpbtns{display:flex;gap:12px;flex-wrap:wrap}
+.cmpbtns button{font-size:2rem;font-weight:800;min-width:84px;height:72px;padding:0 14px;border-radius:16px;border:3px solid var(--line);background:#fff;cursor:pointer;font-variant-numeric:tabular-nums}
+.cmpbtns.words button{font-size:1.25rem}
+.cmpbtns button.ok{border-color:#3fbf6f;background:var(--good-bg)}
+.cmpbtns button.no{border-color:#ef7b6f;background:var(--bad-bg)}
+.order .lbl{font-size:.85rem;font-weight:700;color:var(--mute);margin:0 0 6px}
+.slots{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:84px;padding:10px;border:3px dashed var(--line);border-radius:16px;margin-bottom:14px}
+.slots .lt{color:#a3adbf;font-weight:800;font-size:1.4rem}
+.slots .ph{color:#a3adbf;font-size:.95rem}
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:76px}
+.tok{font-size:1.7rem;font-weight:800;min-width:76px;height:68px;padding:0 14px;border-radius:14px;border:3px solid var(--line);background:#fff;cursor:pointer;font-variant-numeric:tabular-nums}
+.tok.ok{border-color:#3fbf6f;background:var(--good-bg)}
+.tok.no{border-color:#ef7b6f;background:var(--bad-bg)}
+.fb{margin-top:18px;border-radius:14px;padding:14px 18px;font-weight:600;display:none;font-size:1.05rem}
+.fb.show{display:block}
+.fb.good{background:var(--good-bg);color:var(--good)}
+.fb.bad{background:var(--bad-bg);color:var(--bad)}
+.fb.sol{background:var(--sol-bg);color:var(--sol)}
+.actions{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+svg.nl{width:100%;height:auto;display:block;margin:8px 0 18px;overflow:visible}
+
+/* Stellenwerttafel */
+.svt{border-collapse:separate;border-spacing:0;margin:6px 0 20px;font-variant-numeric:tabular-nums;border:2px solid #b9c3d6;border-radius:12px;overflow:hidden}
+.svt th,.svt td{border-right:2px solid #dfe5ef;padding:8px 6px;text-align:center;min-width:56px}
+.svt th:last-child,.svt td:last-child{border-right:0}
+.svt th{background:#eef2fa;font-size:.8rem;color:#45506a;line-height:1.15;border-bottom:2px solid #b9c3d6}
+.svt th b{display:block;font-size:1.05rem;color:var(--ink)}
+.svt td{font-size:1.7rem;font-weight:800;height:56px;background:#fff}
+.svt .dot{border-left:5px solid var(--ink)}
+.svt .dec{background:#fbfcff}
+.svt th.dec{background:#e6f4ea}
+
+/* Hilfe */
+details.help{margin-top:22px;border:2px dashed #c9d3e6;border-radius:14px;padding:4px 16px;background:#fafcff}
+details.help summary{cursor:pointer;font-weight:700;padding:10px 0;list-style:none;color:#24439e}
+details.help summary::-webkit-details-marker{display:none}
+details.help p{margin:4px 0 12px}
+details.help .svt{margin:6px 0 12px}
+details.help .svt td{font-size:1.2rem;height:auto}
+
+/* Resultat */
+.result{text-align:center}
+.result .score{font-size:3.4rem;font-weight:800;margin:4px 0}
+.stars{font-size:2.6rem;letter-spacing:.12em;margin:2px 0 8px}
+.sent{display:inline-block;margin-top:6px;font-size:.9rem;color:var(--mute)}
+.sent.ok{color:var(--good)}
+.list{text-align:left;margin:18px auto 0;max-width:600px;padding:0;list-style:none}
+.list li{padding:9px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:baseline}
+.list li b{min-width:26px}
+
+/* Lehrperson */
+table.t{width:100%;border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums}
+table.t th,table.t td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.t th{color:var(--mute);font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em}
+table.t tr.klick{cursor:pointer}
+table.t tr.klick:hover td{background:#f6f8fd}
+.num{text-align:right!important}
+.tag{display:inline-block;border-radius:999px;padding:1px 9px;font-size:.8rem;font-weight:700}
+.tag.ok{background:var(--good-bg);color:var(--good)}.tag.half{background:#fff3cd;color:#8a6100}.tag.no{background:var(--bad-bg);color:var(--bad)}
+.bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:#3fbf6f}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+@media (min-width:900px){.grid2{grid-template-columns:1.2fr 1fr}}
+
+@media (max-width:560px){
+  body{font-size:17px;padding:12px}
+  .card{padding:16px;border-radius:18px}
+  .big,.cmp{font-size:1.8rem}
+  .svt th,.svt td{min-width:38px;padding:6px 3px}
+  .svt td{font-size:1.3rem}
+  .cmpbtns button{min-width:70px;height:62px}
+  .tok{font-size:1.4rem;min-width:64px;height:60px}
+}
+@media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;border:0;padding:0}}
+
+/* Lernpfad */
+.resume{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+.resume .btn{display:flex;flex-direction:column;align-items:flex-start;text-align:left;line-height:1.25}
+.resume .btn small{font-weight:600;opacity:.85;font-size:.8rem}
+.goal{position:relative}
+.goal .tag2{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;border-radius:6px;padding:1px 6px;margin:0 0 4px;background:#eef2fa;color:#45506a}
+.goal .tag2.erw{background:#e6f4ea;color:#127a3c}
+.lv{display:flex;align-items:center;gap:6px;margin-top:8px}
+.lv .st{display:flex;gap:3px}
+.lv .st i{width:22px;height:8px;border-radius:4px;background:var(--line)}
+.lv .st i.on{background:var(--c)}
+.lv .st i.part{background:linear-gradient(90deg,var(--c) var(--p),var(--line) var(--p))}
+.lv b{font-size:.78rem;color:var(--mute);font-weight:700;margin:0}
+.goal.mastered{background:#fbfffc}
+.sesshead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.sesshead .grow{flex:1}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--line);display:inline-block}
+.dots i.on{background:#3fbf6f}
+.dots span{font-size:.85rem;font-weight:700;color:var(--mute);margin-left:4px}
+.explain{margin-top:16px;border-radius:16px;background:#fff8ec;border:2px solid #f6d39b;padding:14px 18px}
+.explain h3{margin:0 0 8px;font-size:1.05rem;color:#8a3c06}
+.explain ol{margin:0;padding-left:1.3em}
+.explain li{margin:4px 0}
+.explain .ans{display:inline-block;margin-top:8px;font-weight:800;font-size:1.15rem}
+.explain.ok{background:#f2fbf5;border-color:#bfe8cc}
+.explain.ok h3{color:var(--good)}
+details.way{margin-top:12px}
+details.way summary{cursor:pointer;color:#24439e;font-weight:700}
+.toast{margin-top:16px;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,#fff4cc,#ffe2f0);font-weight:700;font-size:1.1rem;text-align:center}
+svg.nl .hit{cursor:pointer}
+.placehint{color:var(--mute);font-size:.9rem;margin:-6px 0 12px}
+.lzkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.lzkgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.lzkgrid .topic{min-height:0;padding:10px 12px;align-items:center}
+.lzkgrid .topic b{margin:0}
+
+.topic.goal{min-height:0;padding:12px 14px;align-items:center;gap:12px}
+.topic.goal .ic{font-size:1.7rem}
+.topic.goal .gbody{display:flex;flex-direction:column;gap:2px;min-width:0}
+.topic.goal b{font-size:1.05rem;line-height:1.25;margin:0}
+.topic.goal .lv{margin-top:4px}
+.topics{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.topic.goal .gbody > b{color:var(--ink)}
+.topic.goal .lv{display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
+.topic.goal .lv .st{display:flex;gap:3px;flex:none}
+.topic.goal .lv .st i{width:16px;height:7px}
+.topic.goal .lv b{display:inline;white-space:nowrap;font-size:.78rem;color:var(--mute)}
+.topics{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+
+/* Lernportal, Direktstart, iPhone */
+header{flex-wrap:nowrap}
+.back{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--accent);font-weight:700;font-size:.95rem;padding:8px 12px 8px 8px;border:2px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap;flex:none}
+.back:active{transform:scale(.97)}
+button.pill{cursor:pointer;color:var(--ink)}
+.start h2{font-size:1.35rem}
+.startrow{gap:12px}
+.startrow .ans{width:5.2em}
+.start .hint{margin:16px 0 0;font-size:.9rem}
+@media (max-width:560px){
+  body{padding:10px max(10px, env(safe-area-inset-right)) 32px max(10px, env(safe-area-inset-left))}
+  header{gap:8px;margin-bottom:10px}
+  header .logo{display:none}
+  header h1{font-size:1.15rem}
+  .back{font-size:.85rem;padding:6px 10px 6px 6px}
+  .pill{font-size:.8rem;padding:5px 10px}
+  .card{padding:14px}
+  .sesshead{gap:6px;margin-bottom:10px}
+  .sesshead .qtype{font-size:.8rem}
+  .q{font-size:1.1rem}
+  .btn{padding:12px 18px;min-height:50px}
+  .actions .btn{flex:1}
+  details.help{margin-top:16px;padding:2px 12px}
+}
+
+/* Dunkelmodus (folgt der Einstellung des Geräts) */
+svg.nl{color:var(--ink)}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1522; --card:#1a2233; --ink:#e9eef8; --mute:#9aa6bd; --line:#2e3a52;
+    --accent:#5b7cfa; --accent-soft:#1f2b52; --good:#6ad895; --good-bg:#14331f; --bad:#ff9a8f; --bad-bg:#3b1c1c;
+    --sol:#f2b27a; --sol-bg:#36240f; color-scheme:dark;
+  }
+  .card{box-shadow:none}
+  .topic, input.ans, .cmpbtns button, .tok, .svt td{background:var(--card);color:var(--ink)}
+  .svt{border-color:#3a4760}
+  .svt th, .svt td{border-color:#2e3a52}
+  .svt th{background:#222d42;color:var(--mute)}
+  .svt th b{color:var(--ink)}
+  .svt .dec{background:#1d2638}
+  .svt th.dec{background:#16301f}
+  .qtype, details.help summary, details.way summary{color:#a9bbff}
+  details.help{background:#152033;border-color:#33415c}
+  .explain{background:#2b2111;border-color:#6b5022}
+  .explain h3{color:#f2b27a}
+  .explain.ok{background:#12291b;border-color:#2c5a3b}
+  .explain.ok h3{color:var(--good)}
+  .toast{background:linear-gradient(135deg,#3a3214,#3a1a2c);color:var(--ink)}
+  .goal.mastered{background:#14251b}
+  .goal .tag2{background:#222d42;color:#aab6cc}
+  .goal .tag2.erw{background:#16301f;color:var(--good)}
+  .eq, .seq .arr, .slots .lt, .slots .ph, .cmp .slot{color:#6f7b93}
+  .tag.half{background:#3a3013;color:#f0cf6a}
+  .back{color:#a9bbff}
+}
+.gzfehler{color:#c0392b;font-weight:700;margin:10px 0 0}
+.gzfrage{text-align:center}
+.gzfrage .gzgross{font-size:64px;font-weight:800;line-height:1;margin:14px 0;color:var(--accent,#2f5bea)}
+.gzfrage .gzfair{background:#fff4d6;color:#5c4300;border-radius:14px;padding:12px 14px;margin:14px auto;max-width:460px;text-align:left;font-size:.98rem;line-height:1.4}
+.gzfrage .gzknoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@media (prefers-color-scheme: dark){.gzfrage .gzfair{background:#3a3014;color:#f3dfa2}.gzfehler{color:#ff8a80}}
+
+/* =====================================================================
+   Neu ab den Matheplänen «Proportionalität», «Umgekehrte Proportionalität»,
+   «Wertepaare und Wertetabellen»: Sachsituationen, Zeitfelder, Wertetabellen
+   ===================================================================== */
+.situation{background:var(--accent-soft);border-radius:16px;padding:14px 18px;margin:0 0 14px;font-size:1.1rem;line-height:1.5}
+.situation b{white-space:nowrap}
+.q{line-height:1.4}
+.einheit{font-size:1.35rem;font-weight:800;color:var(--mute);margin-left:2px}
+.fd .ans + .einheit{margin-right:8px}
+.zeitfeld{gap:8px}
+input.ans.mittel{width:6.4em}
+.fd{flex-wrap:nowrap}
+@media (max-width:380px){.fd{flex-wrap:wrap}}
+.zeitfeld input.ans{width:3.6em}
+/* Wertetabelle zum Ausfüllen */
+.tabwrap{overflow-x:auto;margin:2px 0 6px}
+table.wtab{border-collapse:separate;border-spacing:0;font-variant-numeric:tabular-nums;font-size:1.35rem;font-weight:800}
+table.wtab th{font-size:.82rem;color:var(--mute);font-weight:700;text-align:center;padding:0 12px 8px;line-height:1.25;border-bottom:3px solid var(--ink);vertical-align:bottom;max-width:10em}
+table.wtab td{text-align:center;padding:6px 12px;border-bottom:1px solid var(--line);height:60px;white-space:nowrap}
+table.wtab td.strich{color:#a3adbf;padding:0 2px;font-weight:400}
+table.wtab th.strich{border-bottom-color:var(--ink)}
+table.wtab input.ans{width:4.4em;font-size:1.3rem;padding:6px 8px}
+table.wtab input.ans.breit{width:5.6em}
+/* Wertepaare in Erklärungen (wie im Heft: oben das bekannte Paar, unter dem Strich die Rechnung) */
+table.wp{border-collapse:collapse;font-variant-numeric:tabular-nums;margin:6px 0 4px;font-weight:600}
+table.wp th{font-size:.78rem;color:var(--mute);font-weight:700;padding:0 8px 3px;text-align:center;line-height:1.2}
+table.wp td{padding:3px 8px;text-align:right;white-space:nowrap}
+table.wp td.sep{color:#a3adbf;padding:3px 2px;text-align:center}
+table.wp td.op{color:#b86e00;font-weight:800;font-size:.92em;text-align:center;min-width:2.6em}
+table.wp tr.strich td.w{border-bottom:2px solid currentColor}
+table.wp tr.fett td.w{font-weight:800}
+table.wp tr.fett td.w.ziel{background:rgba(63,191,111,.18);border-radius:6px}
+table.wp td.frage{color:var(--accent);font-weight:800}
+.explain table.wp{margin-left:-6px}
+details.help table.wp{margin:6px 0 10px}
+.merke{display:block;margin-top:6px;font-weight:700}
+/* Antwortknöpfe mit Wörtern */
+.cmpbtns.words button{height:auto;min-height:62px;padding:10px 18px;font-size:1.1rem;line-height:1.25}
+.cmpbtns.words.lang{flex-direction:column;align-items:stretch}
+.cmpbtns.words.lang button{text-align:left}
+@media (max-width:560px){
+  .situation{font-size:1rem;padding:12px 14px}
+  .cmpbtns.words{flex-direction:column;align-items:stretch}
+  .cmpbtns.words button{width:100%;min-height:54px;font-size:1.02rem}
+  table.wtab{font-size:1.15rem}
+  table.wtab th{padding:0 8px 6px;font-size:.76rem}
+  table.wtab td{padding:5px 8px;height:54px}
+  table.wtab input.ans{width:4em;font-size:1.15rem}
+  .einheit{font-size:1.15rem}
+  table.wp{font-size:.95rem}
+  table.wp td{padding:3px 5px}
+}
+@media (prefers-color-scheme: dark){
+  table.wp td.op{color:#f2b27a}
+  table.wtab th, table.wtab th.strich{border-bottom-color:var(--mute)}
+}
