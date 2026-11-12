@@ -26,6 +26,8 @@ button{font:inherit;color:inherit}
 .intro p.erklaerung{margin:6px 0 8px;color:var(--lp-ink);font-weight:700;font-size:1.05rem}
 .ende{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lp-leise);margin:2px 4px}
 .ende.oben{color:var(--lp-akzent)}
+.neuhinweis{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:var(--lp-akzent-soft);color:var(--lp-ink);font-weight:700;line-height:1.4}
+.neu{display:inline-block;vertical-align:middle;margin-left:6px;padding:2px 8px;border-radius:999px;background:var(--lp-akzent);color:#fff;font:700 .7rem/1.3 var(--lp-text);letter-spacing:.04em;text-transform:uppercase}
 
 .liste{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .film{position:relative;display:flex;align-items:center;gap:12px;min-height:62px;padding:8px 8px 8px 10px;
@@ -99,9 +101,10 @@ button{font:inherit;color:inherit}
   <section id="sortieren">
     <div class="card intro">
       <h2>Welchen Film schauen wir morgen im Kino?</h2>
-      <p class="erklaerung">Aus den anderen Klassen gibt es insgesamt diese 10 Filmvorschläge. Erstelle deine Reihenfolge: Zuoberst steht der Film, den du am liebsten schauen möchtest, zuunterst der Film, den du am wenigsten gern schauen würdest.</p>
+      <p class="erklaerung">Aus den anderen Klassen gibt es insgesamt diese 11 Filmvorschläge. Erstelle deine Reihenfolge: Zuoberst steht der Film, den du am liebsten schauen möchtest, zuunterst der Film, den du am wenigsten gern schauen würdest.</p>
       <p>Zieh die Filme an ihren Platz oder benutze die Pfeile. Dann schickst du deine Rangliste unten ab.</p>
     </div>
+    <p class="neuhinweis" id="neuHinweis" hidden></p>
     <p class="ende oben" style="margin-top:14px">★ Am liebsten</p>
     <ol class="liste" id="liste" aria-label="Deine Rangliste"></ol>
     <p class="ende" style="margin-bottom:14px">Am wenigsten</p>
@@ -137,7 +140,8 @@ const FILME = [
   "Arielle",
   "Cruella",
   "Rango",
-  "Lichter der Grossstadt"
+  "Lichter der Grossstadt",
+  "Hot Wheels – Let's Race"
 ];
 
 const VORSCHAU = /[?&]vorschau/.test(location.search);
@@ -153,7 +157,15 @@ function mischen(l){ l = l.slice(); for(let i = l.length - 1; i > 0; i--){ const
 
 /* Zustand: Reihenfolge (am Anfang zufällig, damit niemand bevorzugt wird), ob schon verschoben, ob abgeschickt */
 let S = store.get() || {};
-if(!gleicheFilme(S.order)) S = {order: mischen(FILME), bewegt: false, gesendet: false};
+if(!gleicheFilme(S.order)){
+  /* Liste wurde nachträglich ergänzt: bisherige Reihenfolge behalten, neue Filme an zufälliger Stelle einfügen */
+  const alt = Array.isArray(S.order) ? S.order.filter(f => FILME.includes(f)) : [];
+  if(alt.length >= 2){
+    const neu = FILME.filter(f => !alt.includes(f));
+    neu.forEach(f => alt.splice(Math.floor(Math.random() * (alt.length + 1)), 0, f));
+    S = {order: alt, bewegt: !!S.bewegt, gesendet: false, neu, warGesendet: !!S.gesendet};
+  } else S = {order: mischen(FILME), bewegt: false, gesendet: false};
+}
 const speichern = () => store.set(S);
 speichern();
 
@@ -168,7 +180,7 @@ const liste = $("#liste");
 function zeile(f){
   const li = document.createElement("li");
   li.className = "film"; li.dataset.film = f;
-  li.innerHTML = `<span class="nr"></span><span class="titel">${esc(f)}</span>
+  li.innerHTML = `<span class="nr"></span><span class="titel">${esc(f)}${(S.neu || []).includes(f) ? ' <span class="neu">Neu</span>' : ""}</span>
     <span class="pfeile"><button type="button" data-r="-1">${ICON.hoch}</button><button type="button" data-r="1">${ICON.runter}</button></span>
     <span class="griff" aria-hidden="true">${ICON.griff}</span>`;
   return li;
@@ -290,6 +302,11 @@ function zeigeDanke(){
 }
 function zeigeListe(){
   $("#danke").hidden = true; $("#sortieren").hidden = false;
+  const neu = S.neu || [], h = $("#neuHinweis");
+  h.hidden = !neu.length;
+  if(neu.length) h.textContent = `Neu dazugekommen: ${neu.join(", ")}. ` + (S.warGesendet
+    ? "Schieb den Film an den richtigen Platz und schick deine Rangliste nochmals ab – sonst zählt sie nicht vollständig."
+    : "Schieb den Film an den richtigen Platz.");
   zeichnen();
 }
 $("#senden").addEventListener("click", () => {
@@ -298,7 +315,7 @@ $("#senden").addEventListener("click", () => {
   if(window.LP) LP.runde(UEBUNG, THEMA,
     S.order.map((f, i) => ({frage: f, antwort: i + 1, loesung: "", punkte: 0, t: Date.now()})),
     {art: "rangliste", rangliste: S.order.slice()});
-  S.gesendet = true; S.gesendetOrder = S.order.slice(); speichern();
+  S.gesendet = true; S.gesendetOrder = S.order.slice(); delete S.neu; delete S.warGesendet; speichern();
   zeigeDanke();
 });
 $("#aendern").addEventListener("click", zeigeListe);
