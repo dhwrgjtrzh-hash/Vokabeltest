@@ -231,7 +231,8 @@ const FAECHER = [
     trainer:[
       { name:'Proportionalität', text:'Wertetabellen, Strecke und Zeit, Geschwindigkeit in km/h.', zeichen:'km/h', url:BASIS+'proportionalitaet.html', chips:[] },
       { name:'Umgekehrte Proportionalität', text:'Doppelt so viele – halb so lang: verteilen, Maschinen, Tempo.', zeichen:'·2 :2', url:BASIS+'umgekehrte-proportionalitaet.html', chips:[] },
-      { name:'Wertepaare und Wertetabellen', text:'Proportional, umgekehrt proportional oder weder noch?', zeichen:'x | y', url:BASIS+'wertetabellen.html', chips:[] }
+      { name:'Wertepaare und Wertetabellen', text:'Proportional, umgekehrt proportional oder weder noch?', zeichen:'x | y', url:BASIS+'wertetabellen.html', chips:[] },
+      { name:'Einmaleins', text:'Kleines und grosses 1×1 – richtig und schnell.', zeichen:'1×1', url:BASIS+'einmaleins.html', chips:['Tempo'] }
     ]},
   { id:'deutsch', name:'Deutsch',
     tipp:'Tippe beim Start immer <b>deine Glückszahl</b> ein. Dann machst du dort weiter, wo du aufgehört hast.',
@@ -392,9 +393,17 @@ function matheUebenHtml(gz, staende){
     <div class="u-inhalt">${teile.join('')}</div>` : '';
   return { status, detail };
 }
+/* Einmaleins: wie viele Rechnungen sitzen (gleiche Regel wie im Trainer: zuletzt richtig und schnell, davor auch) */
+function einmaleinsStatus(gz){
+  const st = lokalerStand('Einmaleins', gz), f = (st && st.f) || {};
+  const sitzt = id => { const h = (f[id] || {}).h || ''; const z = h.slice(-1); return z === 's' && (h.length === 1 || h.slice(-2, -1) === 's'); };
+  const zaehle = (pre, n) => Object.keys(f).filter(id => id.startsWith(pre) && sitzt(id)).length + ' von ' + n;
+  if (!Object.keys(f).length) return `<span class="u-leise">Noch nicht geübt</span>`;
+  return `<span>Kleines 1×1: ${zaehle('k:', 45)} · Grosses 1×1: ${zaehle('g:', 80)} sitzen</span>`;
+}
 function matheUebenZeigen(gz, staende){
   const r = matheUebenHtml(gz, staende);
-  document.querySelectorAll('.u-status[data-plan]').forEach(el => { el.innerHTML = r.status[el.dataset.plan] || ''; });
+  document.querySelectorAll('.u-status[data-plan]').forEach(el => { el.innerHTML = r.status[el.dataset.plan] || (el.dataset.plan === 'Einmaleins' ? einmaleinsStatus(gz) : ''); });
   const d = document.getElementById('ueben');
   if (d){ const offen = d.dataset.gesetzt ? d.open : true; d.innerHTML = r.detail; d.hidden = !r.detail; d.open = offen; d.dataset.gesetzt = '1'; }
 }

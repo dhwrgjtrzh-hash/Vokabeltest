@@ -54,6 +54,15 @@ function zugang_(schluessel, einrichten) {
   } finally { lock.releaseLock(); }
 }
 
+function runde_(z) {
+  let daten = {};
+  try { daten = JSON.parse(z[7] || "{}"); } catch (x) {}
+  return Object.assign(daten, {
+    id: z[0], zeit: z[1] instanceof Date ? z[1].toISOString() : String(z[1]),
+    uebung: z[2], glueckszahl: String(z[3]).replace(/^'/, ""), thema: z[4], punkte: z[5], max: z[6]
+  });
+}
+
 function daten_(uebung) {
   const sh = blatt_();
   const n = sh.getLastRow() - 1;
@@ -61,14 +70,30 @@ function daten_(uebung) {
   const runden = [];
   zeilen.forEach(function (z) {
     if (uebung && String(z[2]) !== uebung) return;
-    let daten = {};
-    try { daten = JSON.parse(z[7] || "{}"); } catch (x) {}
-    runden.push(Object.assign(daten, {
-      id: z[0], zeit: z[1] instanceof Date ? z[1].toISOString() : String(z[1]),
-      uebung: z[2], glueckszahl: String(z[3]).replace(/^'/, ""), thema: z[4], punkte: z[5], max: z[6]
-    }));
+    runden.push(runde_(z));
   });
-  return { ok: true, tabelle: SpreadsheetApp.getActiveSpreadsheet().getUrl(), runden: runden };
+  const a = { ok: true, tabelle: SpreadsheetApp.getActiveSpreadsheet().getUrl(), runden: runden };
+  if (!uebung) { a.stand = {}; a.stand[BLATT] = [zeilen.length, zeilen.length ? String(zeilen[zeilen.length - 1][0]) : ""]; }
+  return a;
+}
+
+/* Nur die neuen Runden seit dem letzten Abruf der Station (viel schneller als alle).
+   «seit» = Stand der Station: [Anzahl Zeilen, ID der letzten Zeile].
+   Passt das nicht mehr (z. B. weil Runden gelöscht wurden), kommen wie bisher alle Runden. */
+function datenSeit_(seit) {
+  let s = null;
+  try { s = JSON.parse(seit); } catch (x) {}
+  const b = s && s[BLATT];
+  const ab = b ? Number(b[0]) || 0 : 0;
+  if (ab < 1) return daten_("");
+  const sh = blatt_();
+  const n = sh.getLastRow() - 1;
+  if (ab > n) return daten_("");
+  const w = sh.getRange(ab + 1, 1, n - ab + 1, KOPF.length).getValues();
+  if (String(w[0][0]) !== String(b[1])) return daten_("");
+  const stand = {};
+  stand[BLATT] = [n, String(w[w.length - 1][0])];
+  return { ok: true, neu: true, tabelle: SpreadsheetApp.getActiveSpreadsheet().getUrl(), runden: w.slice(1).map(runde_), stand: stand };
 }
 
 function befehle_() {
@@ -188,7 +213,7 @@ function doGet(e) {
   const z = String(p.schluessel || p.code || "") === STATION_SCHLUESSEL && STATION_SCHLUESSEL ? "ok" : zugang_(p.schluessel || p.code, false);
   if (z !== "ok") return antwort({ ok: false, grund: z, fehler: MELDUNG[z] });
   try {
-    if (aktion === "daten") { const a = daten_(String(p.uebung || "")); a.befehle = befehle_(); return antwort(a); }
+    if (aktion === "daten") { const a = p.seit ? datenSeit_(String(p.seit)) : daten_(String(p.uebung || "")); a.befehle = befehle_(); return antwort(a); }
     if (aktion === "loeschen") return antwort(loeschen_(String(p.ids || "").split(",").filter(Boolean)));
     if (aktion === "lernstand-loeschen") return antwort(lernstandLoeschen_(String(p.glueckszahl || ""), String(p.uebung || "")));
   } catch (err) { return antwort({ ok: false, fehler: String(err) }); }
