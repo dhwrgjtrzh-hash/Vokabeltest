@@ -119,6 +119,27 @@ h1{font-family:var(--display); font-weight:600; font-size:clamp(28px, 6vw, 38px)
 .trainer .pfeil{width:40px; height:40px; border-radius:50%; background:var(--c); color:var(--surface); display:grid; place-items:center}
 .trainer .pfeil svg{width:20px; height:20px}
 footer{font-size:13px; color:var(--muted); text-align:center}
+/* Hinweis neben dem Namen (z. B. Audios in Überarbeitung) – wie «Beta-Test», aber in Gelb */
+.hinweis-name{display:inline-block; vertical-align:3px; margin-left:6px; font-family:var(--body); font-size:12px; font-weight:700; letter-spacing:.03em;
+  padding:3px 9px; border-radius:999px; background:#fff4cc; color:#6b4a00; border:1.5px solid #e0a800}
+.trainer .hinweis-satz{display:block; margin-top:6px; font-size:13.5px; font-weight:700; color:#8a5a00}
+@media (prefers-color-scheme: dark){ .hinweis-name{background:#3a2d0a; color:#ffe08a; border-color:#c99a1a} .trainer .hinweis-satz{color:#ffd76a} }
+/* Mathe: Einmaleins-Trainer abgesetzt von den Matheplänen – eigener, farbiger Knopf */
+.extra-knopf{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:14px; margin-top:14px;
+  padding:18px 18px; border-radius:22px; text-decoration:none; color:#2b1600;
+  background:linear-gradient(135deg, #ffd45c 0%, #ff9a3d 100%); border:2px solid #f08a2c;
+  box-shadow:0 6px 18px rgba(240,138,44,.28); transition:transform .15s ease}
+.extra-knopf:hover{transform:translateY(-2px)}
+.extra-knopf:focus-visible{outline:3px solid #f08a2c; outline-offset:3px}
+.extra-knopf .x-ico{width:56px; height:56px; border-radius:16px; background:rgba(255,255,255,.75); color:#b34d00; display:grid; place-items:center;
+  font-family:var(--display); font-weight:700; font-size:21px}
+.extra-knopf .x-name{display:block; font-family:var(--display); font-weight:700; font-size:23px; line-height:1.15}
+.extra-knopf .x-text{display:block; margin-top:3px; font-size:15px; color:#4a2a00}
+.extra-knopf .u-status{color:#3a2000}
+.extra-knopf .u-status .u-leise{color:#5a3600}
+.extra-knopf .pfeil{width:44px; height:44px; border-radius:50%; background:#2b1600; color:#ffd45c; display:grid; place-items:center}
+.extra-knopf .pfeil svg{width:22px; height:22px}
+@media (max-width:440px){ .extra-knopf{grid-template-columns:auto minmax(0,1fr)} .extra-knopf .pfeil{display:none} }
 
 @media (max-width:440px){
   .fach{padding:16px 14px}
@@ -232,13 +253,13 @@ const FAECHER = [
       { name:'Proportionalität', text:'Wertetabellen, Strecke und Zeit, Geschwindigkeit in km/h.', zeichen:'km/h', url:BASIS+'proportionalitaet.html', chips:[] },
       { name:'Umgekehrte Proportionalität', text:'Doppelt so viele – halb so lang: verteilen, Maschinen, Tempo.', zeichen:'·2 :2', url:BASIS+'umgekehrte-proportionalitaet.html', chips:[] },
       { name:'Wertepaare und Wertetabellen', text:'Proportional, umgekehrt proportional oder weder noch?', zeichen:'x | y', url:BASIS+'wertetabellen.html', chips:[] },
-      { name:'Einmaleins', text:'Kleines und grosses 1×1 – richtig und schnell.', zeichen:'1×1', url:BASIS+'einmaleins.html', chips:['Tempo'] }
+      { name:'Einmaleins-Trainer', plan:'Einmaleins', extra:true, text:'Zuerst das kleine 1×1. Das grosse 1×1 kommt, wenn das kleine richtig gut sitzt.', zeichen:'1×1', url:BASIS+'einmaleins.html', chips:[] }
     ]},
   { id:'deutsch', name:'Deutsch',
     tipp:'Tippe beim Start immer <b>deine Glückszahl</b> ein. Dann machst du dort weiter, wo du aufgehört hast.',
     trainer:[
-      { name:'Rechtschreibung üben', text:'Du hörst Wörter und Sätze und schreibst sie auf.', zeichen:'Abc', url:BASIS+'rechtschreibung.html', chips:['Kopfhörer nötig'] },
-      { name:'Fall-Detektiv', text:'Die vier Fälle erkennen, Kapitel für Kapitel.', zeichen:'?', url:BASIS+'faelle.html', chips:['4 Fälle'] },
+      { name:'Rechtschreibung', text:'Du hörst Wörter und Sätze und schreibst sie auf.', zeichen:'Abc', url:BASIS+'rechtschreibung.html', chips:['Kopfhörer nötig'],
+        hinweis:'🎧 Audios in Überarbeitung', hinweisSatz:'Die Stimmen werden gerade verbessert. Manche Wörter klingen noch etwas komisch.' },
       { name:'Leseverstehen', text:'Texte lesen und Fragen beantworten – Stufe für Stufe.', zeichen:'Aa', url:BASIS+'lesen.html', chips:[], beta:true }
     ]},
   { id:'englisch', name:'Englisch',
@@ -296,15 +317,16 @@ function fachseite(f){
       </div>
       <p class="tipp">${f.tipp}</p>
       <ul class="liste">
-        ${f.trainer.map(t => `
+        ${f.trainer.filter(t => !t.extra).map(t => `
           <li>
             <${gesperrt(t) ? 'div class="trainer zu" aria-disabled="true"' : `a class="trainer" href="${esc(t.url)}"`}>
               <span class="t-ico">${t.zeichen}</span>
               <span>
-                <p class="t-name">${t.name}${t.beta ? '<span class="beta-name">🧪 Beta-Test</span>' : ''}</p>
+                <p class="t-name">${t.name}${t.beta ? '<span class="beta-name">🧪 Beta-Test</span>' : ''}${t.hinweis ? `<span class="hinweis-name">${t.hinweis}</span>` : ''}</p>
                 <p class="t-text">${t.text}</p>
                 <span class="chips">${t.chips.map(c => `<span class="chip">${c}</span>`).join('')}</span>
                 ${t.beta ? `<span class="beta-satz">Noch in der Probephase – es kann Fehler geben.</span>` : ''}
+                ${t.hinweisSatz ? `<span class="hinweis-satz">${t.hinweisSatz}</span>` : ''}
                 ${gesperrt(t) ? `<span class="zu-satz">Noch gesperrt – ab ${esc(t.abText)}</span>` : ''}
                 ${gesperrt(t) && t.notiz ? `<span class="zu-notiz">${esc(t.notiz)}</span>` : ''}
                 ${f.id === 'mathe' ? `<span class="u-status" data-plan="${esc(t.name)}"></span>` : ''}
@@ -314,6 +336,16 @@ function fachseite(f){
           </li>`).join('')}
       </ul>
       ${f.id === 'mathe' ? '<details class="ueben" id="ueben" hidden></details>' : ''}
+      ${f.trainer.filter(t => t.extra).map(t => `
+        <a class="extra-knopf" href="${esc(t.url)}">
+          <span class="x-ico">${t.zeichen}</span>
+          <span>
+            <span class="x-name">${t.name}</span>
+            <span class="x-text">${t.text}</span>
+            ${f.id === 'mathe' ? `<span class="u-status" data-plan="${esc(t.plan || t.name)}"></span>` : ''}
+          </span>
+          <span class="pfeil">${ICONS.pfeil}</span>
+        </a>`).join('')}
     </section>`;
   if (f.id === 'mathe' && window.MATHE_PLAENE) matheUeben();
   document.getElementById('zurueck').addEventListener('click', () => {
@@ -399,7 +431,8 @@ function einmaleinsStatus(gz){
   const sitzt = id => { const h = (f[id] || {}).h || ''; const z = h.slice(-1); return z === 's' && (h.length === 1 || h.slice(-2, -1) === 's'); };
   const zaehle = (pre, n) => Object.keys(f).filter(id => id.startsWith(pre) && sitzt(id)).length + ' von ' + n;
   if (!Object.keys(f).length) return `<span class="u-leise">Noch nicht geübt</span>`;
-  return `<span>Kleines 1×1: ${zaehle('k:', 45)} · Grosses 1×1: ${zaehle('g:', 80)} sitzen</span>`;
+  return st.grossFrei ? `<span>Kleines 1×1: ${zaehle('k:', 45)} · Grosses 1×1: ${zaehle('g:', 80)} sitzen</span>`
+    : `<span>Kleines 1×1: ${zaehle('k:', 45)} sitzen · Grosses 1×1 🔒 ab 41</span>`;
 }
 function matheUebenZeigen(gz, staende){
   const r = matheUebenHtml(gz, staende);

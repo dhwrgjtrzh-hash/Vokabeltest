@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Einmaleins</title>
+<title>Einmaleins-Trainer</title>
 <link rel="icon" type="image/png" href="icons/icon-einmaleins-64.png">
 <link rel="apple-touch-icon" href="icons/icon-einmaleins-180.png">
 <link rel="stylesheet" href="mathe-trainer.css">
@@ -43,6 +43,10 @@
 .em-zahlen div{flex:1 1 120px;background:var(--accent-soft);border-radius:16px;padding:10px 14px}
 .em-zahlen b{display:block;font-size:1.6rem;font-variant-numeric:tabular-nums}
 .em-zahlen span{font-size:.88rem;color:var(--mute);font-weight:700}
+.em-frei{background:#fff1c7;color:#5a3d00;border:2px solid #f5c04a;border-radius:14px;padding:10px 14px;font-weight:800;margin:12px 0 0}
+@media (prefers-color-scheme: dark){.em-frei{background:#3a2d0a;color:#ffe08a;border-color:#a57d12}}
+.em-tafel.em-zu{background:var(--accent-soft);border-radius:16px;padding:14px 16px;align-self:start}
+.em-tafel.em-zu .em-balken i{background:var(--accent)}
 .em-neu{background:var(--good-bg);color:var(--good);border-radius:14px;padding:10px 14px;font-weight:700;margin:12px 0 0}
 .em-tafeln{display:grid;grid-template-columns:1fr;gap:18px;margin-top:20px}
 @media (min-width:760px){.em-tafeln{grid-template-columns:1fr 1fr}}
@@ -71,7 +75,7 @@
   <header class="lp-kopf">
     <a class="back lp-zurueck" href="./#mathe">‹ Lernportal</a>
     <div class="logo lp-logo">1×1</div>
-    <h1 class="grow lp-titel"><small>Mathe</small>Einmaleins</h1>
+    <h1 class="grow lp-titel"><small>Mathe</small>Einmaleins-Trainer</h1>
     <button class="pill" id="pill" type="button" title="Andere Glückszahl eingeben" hidden></button>
   </header>
   <main id="app"></main>
@@ -87,10 +91,11 @@
      (beim ersten Mal reicht einmal richtig und schnell).
    - Schnell heisst: kleines 1×1 in höchstens 4 Sekunden, grosses 1×1 in höchstens 8 Sekunden.
    - In jeder Runde kommen vor allem Rechnungen, die noch nicht sitzen. Falsche kommen in derselben Runde nochmals.
-   - Zuerst das kleine 1×1; sitzen 80 % davon, kommt vor allem das grosse 1×1 (mit Wiederholungen).
+   - Zuerst nur das kleine 1×1. Das grosse 1×1 wird erst frei, wenn 41 von 45 Rechnungen vom kleinen sitzen (90 %);
+     dann bleibt es frei (P.grossFrei). Rutscht das kleine unter 80 %, kommen wieder nur Runden zum kleinen 1×1.
    ===================================================================== */
 const UEBUNG = "Einmaleins";
-const START_NOTE = "Rechne so schnell und so genau, wie du kannst. Tippe die Lösung mit den Zifferntasten – sie wird von selbst geprüft.";
+const START_NOTE = "Rechne so schnell und so genau, wie du kannst. Tippe die Lösung mit den Zifferntasten – sie wird von selbst geprüft. Zuerst übst du das kleine 1×1. Das grosse 1×1 kommt dazu, sobald das kleine richtig gut sitzt.";
 const GOALS = [
   {id:"klein", title:"Kleines 1×1"},
   {id:"gross", title:"Grosses 1×1"},
@@ -99,6 +104,7 @@ const GOALS = [
 function SPERRE(){ return false; }   // keine Lernzielkontrolle zum Einmaleins
 
 const RUNDE = 20;
+const FREI_AB = 41;   // grosses 1×1 erst, wenn 41 von 45 Rechnungen vom kleinen 1×1 sitzen
 const SCHNELL = {klein: 4000, gross: 8000};
 const ART_TITEL = {klein: "Kleines 1×1", gross: "Grosses 1×1"};
 const FAKTEN = [];
@@ -136,10 +142,13 @@ function auswahl(liste, n){
   const wdh = Math.min(fertig.length, Math.max(n - offen.length, Math.round(n * 0.2)));
   return offen.slice(0, n - wdh).concat(fertig.slice(0, wdh));
 }
+const grossFrei = () => !!(P && P.grossFrei);
+function freischalten(){ if (!grossFrei() && sitzen(KLEIN) >= FREI_AB){ P.grossFrei = Date.now(); saveP(); } }
 function rundePlanen(){
+  freischalten();
   const k = sitzen(KLEIN) / KLEIN.length, g = sitzen(GROSS) / GROSS.length;
   let goal, liste;
-  if (k < 0.8){ goal = "klein"; liste = auswahl(KLEIN, RUNDE); }
+  if (!grossFrei() || k < 0.8){ goal = "klein"; liste = auswahl(KLEIN, RUNDE); }
   else if (g < 0.9){ goal = "gross"; liste = auswahl(GROSS, 15).concat(auswahl(KLEIN, 5)); }
   else { goal = "mix"; liste = auswahl(GROSS, 12).concat(auswahl(KLEIN, 8)); }
   return {goal, plan: shuffle(liste).map(f => ({id: f.id, dreh: Math.random() < 0.5}))};
@@ -151,7 +160,7 @@ function startAuto(){ neueRunde(); }
 function neueRunde(){
   const r = rundePlanen();
   P.last = r.goal; saveP();
-  S = {mode:"runde", goal:r.goal, plan:r.plan, log:[], pending:[], nr:0, erg:[], wieder:{}, vorher:{}};
+  S = {mode:"runde", goal:r.goal, plan:r.plan, log:[], pending:[], nr:0, erg:[], wieder:{}, vorher:{}, warFrei: grossFrei()};
   FAKTEN.forEach(f => { S.vorher[f.id] = lage(f.id); });
   aufgabe();
 }
@@ -247,9 +256,12 @@ function tafel(art){
   const spalten = art === "klein" ? [2,3,4,5,6,7,8,9,10] : [2,3,4,5,6,7,8,9];
   const id = (r, c) => art === "klein" ? `k:${Math.min(r,c)}x${Math.max(r,c)}` : `g:${r}x${c}`;
   const liste = art === "klein" ? KLEIN : GROSS, n = sitzen(liste);
-  if (art === "gross" && liste.every(f => lage(f.id) === "neu"))
-    return `<div class="em-tafel"><h3>${ART_TITEL[art]}</h3><p class="sub">Kommt, sobald 80 % vom kleinen 1×1 sitzen. Du hast schon ${Math.round(sitzen(KLEIN) / KLEIN.length * 100)} %.</p>
-      <div class="em-balken"><i style="width:${Math.min(100, sitzen(KLEIN) / KLEIN.length / 0.8 * 100).toFixed(1)}%"></i></div></div>`;
+  if (art === "gross" && !grossFrei()){
+    const k = sitzen(KLEIN), fehlt = FREI_AB - k;
+    return `<div class="em-tafel em-zu"><h3>🔒 ${ART_TITEL[art]}</h3><p class="sub">Wird frei, wenn ${FREI_AB} von ${KLEIN.length} Rechnungen vom kleinen 1×1 sitzen.
+      ${fehlt > 0 ? `Dir ${fehlt === 1 ? "fehlt noch 1 Rechnung" : `fehlen noch ${fehlt} Rechnungen`}.` : ""}</p>
+      <div class="em-balken"><i style="width:${Math.min(100, k / FREI_AB * 100).toFixed(1)}%"></i></div></div>`;
+  }
   let html = `<span>·</span>` + spalten.map(c => `<span>${c}</span>`).join("");
   zeilen.forEach(r => { html += `<span>${r}</span>` + spalten.map(c => `<i class="${lage(id(r,c))}" title="${r} · ${c}"></i>`).join(""); });
   return `<div class="em-tafel"><h3>${ART_TITEL[art]}</h3><p class="sub">${n} von ${liste.length} Rechnungen sitzen${n === liste.length ? " 🏆" : ""}</p>
@@ -259,6 +271,8 @@ function tafel(art){
 function rundeEnde(){
   if (!S || S.mode !== "runde") return;
   sendPending();
+  freischalten();
+  const jetztFrei = !S.warFrei && grossFrei();
   const ok = S.erg.filter(x => x !== "f").length, blitz = S.erg.filter(x => x === "s").length;
   const neu = FAKTEN.filter(f => S.vorher[f.id] !== "sitzt" && lage(f.id) === "sitzt");
   const neuTxt = neu.slice(0, 12).map(f => `${f.a} · ${f.b}`).join(", ") + (neu.length > 12 ? " …" : "");
@@ -266,6 +280,7 @@ function rundeEnde(){
   app.innerHTML = `<div class="card em-ende">
     <h2>${S.erg.length ? (ok === S.erg.length ? "Runde fertig – alles richtig! 🎉" : "Runde fertig! 🎉") : "Pause"}</h2>
     ${S.erg.length ? `<div class="em-zahlen"><div><b>${ok} / ${S.erg.length}</b><span>richtig</span></div><div><b>⚡ ${blitz}</b><span>richtig und schnell</span></div></div>` : ""}
+    ${jetztFrei ? `<p class="em-frei">🎉 Super, das kleine 1×1 sitzt! Ab der nächsten Runde kommt auch das grosse 1×1 dazu.</p>` : ""}
     ${neu.length ? `<p class="em-neu">Das sitzt jetzt neu: ${esc(neuTxt)}</p>` : ""}
     <div class="actions"><button class="btn" id="weiter">Nächste Runde →</button></div>
     <div class="em-tafeln">${tafel("klein")}${tafel("gross")}</div>
