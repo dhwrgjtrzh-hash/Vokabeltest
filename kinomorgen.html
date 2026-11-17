@@ -36,6 +36,13 @@ button,input{font:inherit;color:inherit}
 .film h3{margin:0;font-size:1.3rem;line-height:1.15}
 .film .knoepfe{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:auto}
 .film .knoepfe .btn{padding:10px 8px;font-size:.95rem;gap:6px}
+.stimmen{display:flex;align-items:center;gap:8px}
+.stimmen .lbl{flex:1;font-weight:700;color:var(--lp-leise);font-size:.95rem}
+.stimmen button{width:44px;height:44px;border-radius:12px;border:2px solid var(--lp-linie);background:var(--lp-bg);font-size:1.4rem;font-weight:700;line-height:1;cursor:pointer;touch-action:manipulation}
+.stimmen button:hover{border-color:var(--lp-akzent)}
+.stimmen input{width:64px;height:44px;text-align:center;border-radius:12px;border:2px solid var(--lp-linie);background:var(--lp-karte);font:700 1.25rem/1 var(--lp-text);-moz-appearance:textfield}
+.stimmen input::-webkit-outer-spin-button,.stimmen input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stimmen input:focus{outline:none;border-color:var(--lp-akzent)}
 .film.gewaehlt{border-color:var(--lp-akzent);box-shadow:0 0 0 3px var(--lp-akzent-soft),var(--lp-schatten)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 16px;border-radius:12px;border:2px solid var(--lp-linie);background:var(--lp-bg);cursor:pointer;font-weight:700;text-decoration:none;color:var(--lp-ink)}
 .btn:hover{border-color:var(--lp-akzent)}
@@ -76,8 +83,9 @@ dialog.trailer::backdrop{background:rgba(5,8,15,.82)}
     <h2>Welchen Film möchte eure Klasse schauen?</h2>
     <ol class="schritte">
       <li>Zeigt euren Kindern die Trailer der fünf Filme.</li>
-      <li>Lasst die Klasse abstimmen.</li>
-      <li>Tragt unten eure Klasse ein, klickt den gewählten Film an und schickt die Wahl ab.</li>
+      <li>Lasst die Klasse abstimmen und tragt bei jedem Film ein, wie viele Kinder dafür gestimmt haben.</li>
+      <li>Der Film mit den meisten Stimmen ist automatisch gewählt. Bei Gleichstand klickt ihr den Film selbst an.</li>
+      <li>Tragt unten eure Klasse ein und schickt die Wahl ab.</li>
     </ol>
     <p class="leise" style="margin:10px 0 0">Ihr könnt die Wahl später noch ändern. Es zählt die zuletzt abgeschickte Wahl eurer Klasse.</p>
   </section>
@@ -127,22 +135,55 @@ const ICON = {
 };
 
 /* ---------- Filme ---------- */
+S.stimmen = S.stimmen || {};
+const zahl = f => { const n = parseInt(S.stimmen[f], 10); return isNaN(n) || n < 0 ? 0 : n; };
+const summe = () => FILME.reduce((t, f) => t + zahl(f.titel), 0);
+/* Film mit den meisten Stimmen (null bei Gleichstand oder ohne Stimmen) */
+function spitze(){
+  const max = Math.max(...FILME.map(f => zahl(f.titel)));
+  const oben = FILME.filter(f => zahl(f.titel) === max).map(f => f.titel);
+  return {max, oben, film: max > 0 && oben.length === 1 ? oben[0] : null};
+}
 function zeichnen(){
-  $("#filme").innerHTML = FILME.map(f => {
-    const g = S.film === f.titel;
-    return `<li class="film${g ? " gewaehlt" : ""}" data-film="${esc(f.titel)}">
+  $("#filme").innerHTML = FILME.map(f => `<li class="film" data-film="${esc(f.titel)}">
       <h3>${esc(f.titel)}</h3>
+      <div class="stimmen"><span class="lbl">Stimmen</span>
+        <button type="button" class="minus" aria-label="Eine Stimme weniger für ${esc(f.titel)}">−</button>
+        <input type="number" inputmode="numeric" min="0" max="99" placeholder="0" aria-label="Stimmen für ${esc(f.titel)}" value="${S.stimmen[f.titel] != null && S.stimmen[f.titel] !== "" ? esc(S.stimmen[f.titel]) : ""}">
+        <button type="button" class="plus" aria-label="Eine Stimme mehr für ${esc(f.titel)}">+</button></div>
       <div class="knoepfe">
         <button class="btn trailerknopf" type="button" data-yt="${esc(f.yt)}">${ICON.play} Trailer</button>
-        <button class="btn waehlen" type="button" aria-pressed="${g}">${g ? ICON.haken + " Gewählt" : "Wählen"}</button>
-      </div></li>`;
-  }).join("");
+        <button class="btn waehlen" type="button"></button>
+      </div></li>`).join("");
+  aktualisieren();
+}
+/* Auswahl und Anzeige nachführen, ohne die Eingabefelder neu zu zeichnen */
+function aktualisieren(){
+  if(!S.manuell) S.film = spitze().film;
+  document.querySelectorAll("#filme .film").forEach(li => {
+    const g = S.film === li.dataset.film, b = li.querySelector(".waehlen");
+    li.classList.toggle("gewaehlt", g);
+    b.setAttribute("aria-pressed", String(g));
+    b.innerHTML = g ? ICON.haken + " Gewählt" : "Wählen";
+  });
   pruefen();
+}
+function stimmeSetzen(film, wert){
+  S.stimmen[film] = wert === "" ? "" : String(Math.max(0, Math.min(99, parseInt(wert, 10) || 0)));
+  speichern(); aktualisieren(); $("#status").hidden = true;
 }
 $("#filme").addEventListener("click", e => {
   const li = e.target.closest(".film"); if(!li) return;
-  if(e.target.closest(".trailerknopf")) return trailer(li.dataset.film, e.target.closest(".trailerknopf").dataset.yt);
-  if(e.target.closest(".waehlen")){ S.film = li.dataset.film; speichern(); zeichnen(); $("#status").hidden = true; }
+  const f = li.dataset.film;
+  if(e.target.closest(".trailerknopf")) return trailer(f, e.target.closest(".trailerknopf").dataset.yt);
+  if(e.target.closest(".plus") || e.target.closest(".minus")){
+    const n = Math.max(0, zahl(f) + (e.target.closest(".plus") ? 1 : -1));
+    li.querySelector("input").value = n; stimmeSetzen(f, String(n)); return;
+  }
+  if(e.target.closest(".waehlen")){ S.film = f; S.manuell = true; speichern(); aktualisieren(); $("#status").hidden = true; }
+});
+$("#filme").addEventListener("input", e => {
+  if(e.target.matches(".stimmen input")) stimmeSetzen(e.target.closest(".film").dataset.film, e.target.value);
 });
 
 /* ---------- Trailer im eigenen Fenster (für den Beamer: im Video auf Vollbild) ---------- */
@@ -164,7 +205,14 @@ klasse.value = S.klasse || "";
 klasse.addEventListener("input", () => { S.klasse = klasse.value; speichern(); pruefen(); $("#status").hidden = true; });
 function pruefen(){
   const k = (klasse.value || "").trim();
-  $("#auswahl").textContent = S.film ? `Gewählt: ${S.film}` : "Noch kein Film gewählt – klickt bei einem Film auf «Wählen».";
+  const sp = spitze(), tot = summe();
+  let t;
+  if(S.film){
+    t = `Gewählt: ${S.film}` + (tot ? ` (${zahl(S.film)} von ${tot} Stimmen)` : "");
+    if(S.manuell && sp.film && sp.film !== S.film) t += ` – Achtung: Die meisten Stimmen hat ${sp.film}.`;
+  } else if(sp.max > 0 && sp.oben.length > 1) t = `Gleichstand zwischen ${sp.oben.join(" und ")} – klickt bei einem davon auf «Wählen».`;
+  else t = "Tragt bei jedem Film die Stimmen ein (oder klickt direkt auf «Wählen»).";
+  $("#auswahl").textContent = t;
   $("#auswahl").className = "meldung " + (S.film ? "ok" : "warten");
   $("#senden").disabled = !(k && S.film);
   $("#senden").textContent = !k && S.film ? "Bitte zuerst eure Klasse eintragen" : "Wahl abschicken";
@@ -178,8 +226,8 @@ $("#senden").addEventListener("click", async () => {
   const jetzt = Date.now();
   const rec = {typ: "uebung-runde", v: 1, id: "km" + jetzt.toString(36) + Math.random().toString(36).slice(2, 8),
     uebung: UEBUNG, glueckszahl: k, thema: THEMA, datum: new Date(jetzt).toISOString(), punkte: 0, max: 1,
-    aufgaben: [{nr: 1, thema: THEMA, frage: "Gewählter Film", antworten: [film], loesung: "", punkte: 0, t: jetzt}],
-    art: "klassenwahl", klasse: k, film};
+    aufgaben: FILME.map((f, i) => ({nr: i + 1, thema: THEMA, frage: f.titel, antworten: [String(zahl(f.titel))], loesung: "", punkte: 0, t: jetzt})),
+    art: "klassenwahl", klasse: k, film, stimmen: Object.fromEntries(FILME.map(f => [f.titel, zahl(f.titel)]))};
   $("#senden").disabled = true;
   meldung("Wird abgeschickt …", "warten");
   let ok = false;
@@ -190,8 +238,8 @@ $("#senden").addEventListener("click", async () => {
     }catch(e){}
   }
   if(ok){
-    S.gesendet = {klasse: k, film, zeit: jetzt}; speichern();
-    meldung(`✓ Angekommen – Klasse ${k}: ${film}. Vielen Dank!`, "ok");
+    S.gesendet = {klasse: k, film, zeit: jetzt, stimmen: JSON.stringify(rec.stimmen)}; speichern();
+    meldung(`✓ Angekommen – Klasse ${k}: ${film}` + (summe() ? ` (${zahl(film)} von ${summe()} Stimmen)` : "") + ". Vielen Dank!", "ok");
   } else {
     meldung("Das hat nicht geklappt. Prüft die Internetverbindung und schickt die Wahl nochmals ab.", "fehler");
   }
@@ -199,7 +247,8 @@ $("#senden").addEventListener("click", async () => {
 });
 
 zeichnen();
-if(S.gesendet && S.gesendet.klasse === (klasse.value || "").trim() && S.gesendet.film === S.film)
+if(S.gesendet && S.gesendet.klasse === (klasse.value || "").trim() && S.gesendet.film === S.film
+   && S.gesendet.stimmen === JSON.stringify(Object.fromEntries(FILME.map(f => [f.titel, zahl(f.titel)]))))
   meldung(`✓ Bereits abgeschickt – Klasse ${S.gesendet.klasse}: ${S.gesendet.film}. Ihr könnt die Wahl ändern und nochmals abschicken.`, "ok");
 </script>
 </body>
