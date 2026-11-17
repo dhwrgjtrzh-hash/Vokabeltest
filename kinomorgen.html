@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="de-CH" data-fach="umfrage" data-trainer="kinomorgen">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kinomorgen 15. Dezember – Filmwahl der Klassen</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Seite für die Lehrpersonen: Trailer der 5 Filme zeigen, Klasse abstimmen lassen, gewählten Film abschicken.
+   Die Wahl geht in die Tabelle «Rechtschreibung – Resultate» (art: "klassenwahl");
+   René sieht alle Klassen in der Station unter «Ranglisten». */
+html[data-fach="umfrage"]{--lp-akzent:#c2410c; --lp-akzent-soft:#fdeadf}
+@media (prefers-color-scheme: dark){ html[data-fach="umfrage"]:not([data-theme="light"]){--lp-akzent:#d4561c; --lp-akzent-soft:#3d2216} }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-size:18px;line-height:1.45;-webkit-text-size-adjust:100%}
+button,input{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.wrap{max-width:860px;margin:0 auto;padding-block:18px 56px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));display:flex;flex-direction:column;gap:16px}
+.wrap > .lp-kopf{margin-bottom:0}
+.card{background:var(--lp-karte);border:2px solid var(--lp-linie);border-radius:20px;padding:18px 20px;box-shadow:var(--lp-schatten)}
+.intro h2{margin:0 0 8px;font-size:1.4rem;line-height:1.2}
+.schritte{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:4px}
+.schritte li{padding-left:2px}
+.leise{color:var(--lp-leise);font-size:.92rem}
+
+.klasse label{display:block;font-weight:700;margin-bottom:6px}
+.klasse input{width:100%;max-width:340px;padding:12px 14px;border-radius:12px;border:2px solid var(--lp-linie);background:var(--lp-bg);font-size:1.1rem}
+.klasse input:focus{outline:none;border-color:var(--lp-akzent)}
+
+.filme{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.film{display:flex;flex-direction:column;gap:12px;background:var(--lp-karte);border:2px solid var(--lp-linie);border-radius:18px;padding:16px;box-shadow:var(--lp-schatten);transition:border-color .15s,box-shadow .15s}
+.film h3{margin:0;font-size:1.3rem;line-height:1.15}
+.film .knoepfe{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:auto}
+.film .knoepfe .btn{padding:10px 8px;font-size:.95rem;gap:6px}
+.film.gewaehlt{border-color:var(--lp-akzent);box-shadow:0 0 0 3px var(--lp-akzent-soft),var(--lp-schatten)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 16px;border-radius:12px;border:2px solid var(--lp-linie);background:var(--lp-bg);cursor:pointer;font-weight:700;text-decoration:none;color:var(--lp-ink)}
+.btn:hover{border-color:var(--lp-akzent)}
+.btn{white-space:nowrap}
+.film.gewaehlt .btn.waehlen{background:var(--lp-akzent);border-color:var(--lp-akzent);color:#fff}
+.btn svg{width:18px;height:18px;flex:none}
+
+.senden{display:block;width:100%;border:0;border-radius:16px;padding:16px 22px;min-height:60px;cursor:pointer;background:var(--lp-akzent);color:#fff;font:700 1.15rem/1.2 var(--lp-text)}
+.senden:disabled{opacity:.45;cursor:default}
+.meldung{margin:0;padding:12px 16px;border-radius:14px;font-weight:700}
+.meldung.ok{background:var(--lp-gut-bg);color:var(--lp-gut)}
+.meldung.fehler{background:var(--lp-falsch-bg);color:var(--lp-falsch)}
+.meldung.warten{background:var(--lp-akzent-soft);color:var(--lp-ink)}
+
+/* Trailer-Fenster */
+dialog.trailer{width:min(1100px,96vw);padding:0;border:0;border-radius:18px;background:#000;color:#fff;overflow:hidden}
+dialog.trailer::backdrop{background:rgba(5,8,15,.82)}
+.trailer .leiste{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px 10px 18px;background:#111}
+.trailer .leiste b{font:600 1.15rem/1.2 var(--lp-titel)}
+.trailer .leiste .rechts{display:flex;gap:8px;align-items:center}
+.trailer .leiste a, .trailer .leiste button{color:#fff;background:#2a2a2a;border:0;border-radius:10px;padding:8px 12px;font-weight:700;text-decoration:none;cursor:pointer;font-size:.95rem}
+.trailer .video{position:relative;aspect-ratio:16/9;background:#000}
+.trailer iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+:where(button,a,input):focus-visible{outline:3px solid var(--lp-akzent);outline-offset:2px}
+@media (max-width:520px){ .filme{grid-template-columns:1fr} }
+</style>
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <div class="lp-logo">★</div>
+    <h1 class="lp-titel"><small>Kinomorgen · 15. Dezember</small>Filmwahl der Klassen</h1>
+  </header>
+
+  <section class="card intro">
+    <h2>Welchen Film möchte eure Klasse schauen?</h2>
+    <ol class="schritte">
+      <li>Zeigt euren Kindern die Trailer der fünf Filme.</li>
+      <li>Lasst die Klasse abstimmen.</li>
+      <li>Tragt unten eure Klasse ein, klickt den gewählten Film an und schickt die Wahl ab.</li>
+    </ol>
+    <p class="leise" style="margin:10px 0 0">Ihr könnt die Wahl später noch ändern. Es zählt die zuletzt abgeschickte Wahl eurer Klasse.</p>
+  </section>
+
+  <ul class="filme" id="filme" aria-label="Die fünf Filme"></ul>
+
+  <section class="card klasse">
+    <label for="klasse">Eure Klasse</label>
+    <input id="klasse" type="text" autocomplete="off" placeholder="z. B. 5a oder 6c Muster" maxlength="40">
+  </section>
+
+  <p class="meldung warten" id="auswahl">Noch kein Film gewählt – klickt bei einem Film auf «Wählen».</p>
+  <button class="senden" id="senden" type="button" disabled>Wahl abschicken</button>
+  <p class="meldung" id="status" hidden></p>
+</div>
+
+<dialog class="trailer" id="trailer" aria-label="Trailer">
+  <div class="leiste"><b id="trailerTitel"></b>
+    <span class="rechts"><a id="trailerYT" href="#" target="_blank" rel="noopener">Auf YouTube öffnen ↗</a><button type="button" id="trailerZu">Schliessen ✕</button></span></div>
+  <div class="video" id="trailerVideo"></div>
+</dialog>
+
+<script>
+const FILME = [
+  {titel: "Cruella", yt: "KIRKfx5Cbec"},
+  {titel: "Ice Age", yt: "f83YD39xlFA"},
+  {titel: "Momo (2025)", yt: "N2_fte6w_yM"},
+  {titel: "Mufasa", yt: "2_pdEO8I06c"},
+  {titel: "Nachts im Museum", yt: "XD6I2csfGqE"}
+];
+const UEBUNG = "Kinomorgen Klassenwahl";
+const THEMA = "Kinomorgen 15. Dezember";
+/* Tabelle «Rechtschreibung – Resultate» (nimmt jede Abgabe an; die Station liest sie mit) */
+const ZIEL = "https://script.google.com/macros/s/AKfycbyk0lFil4xRSsFLkPV_RuamQ-XPSU9Hn76HxHjInfYCJyDaVxjsW1S7gQHBP1rYV5dT/exec";
+const VORSCHAU = /[?&]vorschau/.test(location.search);
+const KEY = "kinomorgen.wahl.v1";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lies = () => { try{ return JSON.parse(localStorage.getItem(KEY) || "null") || {}; }catch(e){ return {}; } };
+let S = lies();   // {klasse, film, gesendet: {klasse, film, zeit}}
+const speichern = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
+
+const ICON = {
+  play: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M6 4.5v11l9-5.5z"/></svg>',
+  haken: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>'
+};
+
+/* ---------- Filme ---------- */
+function zeichnen(){
+  $("#filme").innerHTML = FILME.map(f => {
+    const g = S.film === f.titel;
+    return `<li class="film${g ? " gewaehlt" : ""}" data-film="${esc(f.titel)}">
+      <h3>${esc(f.titel)}</h3>
+      <div class="knoepfe">
+        <button class="btn trailerknopf" type="button" data-yt="${esc(f.yt)}">${ICON.play} Trailer</button>
+        <button class="btn waehlen" type="button" aria-pressed="${g}">${g ? ICON.haken + " Gewählt" : "Wählen"}</button>
+      </div></li>`;
+  }).join("");
+  pruefen();
+}
+$("#filme").addEventListener("click", e => {
+  const li = e.target.closest(".film"); if(!li) return;
+  if(e.target.closest(".trailerknopf")) return trailer(li.dataset.film, e.target.closest(".trailerknopf").dataset.yt);
+  if(e.target.closest(".waehlen")){ S.film = li.dataset.film; speichern(); zeichnen(); $("#status").hidden = true; }
+});
+
+/* ---------- Trailer im eigenen Fenster (für den Beamer: im Video auf Vollbild) ---------- */
+const dlg = $("#trailer");
+function trailer(titel, yt){
+  $("#trailerTitel").textContent = titel;
+  $("#trailerYT").href = "https://www.youtube.com/watch?v=" + yt;
+  $("#trailerVideo").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(yt)}?autoplay=1&rel=0" title="Trailer ${esc(titel)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  if(dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+}
+function trailerZu(){ $("#trailerVideo").innerHTML = ""; if(dlg.open) dlg.close(); }
+$("#trailerZu").addEventListener("click", trailerZu);
+dlg.addEventListener("close", () => { $("#trailerVideo").innerHTML = ""; });
+dlg.addEventListener("click", e => { if(e.target === dlg) trailerZu(); });
+
+/* ---------- Klasse und Abschicken ---------- */
+const klasse = $("#klasse");
+klasse.value = S.klasse || "";
+klasse.addEventListener("input", () => { S.klasse = klasse.value; speichern(); pruefen(); $("#status").hidden = true; });
+function pruefen(){
+  const k = (klasse.value || "").trim();
+  $("#auswahl").textContent = S.film ? `Gewählt: ${S.film}` : "Noch kein Film gewählt – klickt bei einem Film auf «Wählen».";
+  $("#auswahl").className = "meldung " + (S.film ? "ok" : "warten");
+  $("#senden").disabled = !(k && S.film);
+  $("#senden").textContent = !k && S.film ? "Bitte zuerst eure Klasse eintragen" : "Wahl abschicken";
+}
+function meldung(text, art){ const m = $("#status"); m.hidden = false; m.className = "meldung " + art; m.textContent = text; }
+
+$("#senden").addEventListener("click", async () => {
+  const k = klasse.value.trim(), film = S.film;
+  if(!k || !film) return;
+  if(VORSCHAU){ meldung(`Vorschau – nichts abgeschickt (${k}: ${film}).`, "warten"); return; }
+  const jetzt = Date.now();
+  const rec = {typ: "uebung-runde", v: 1, id: "km" + jetzt.toString(36) + Math.random().toString(36).slice(2, 8),
+    uebung: UEBUNG, glueckszahl: k, thema: THEMA, datum: new Date(jetzt).toISOString(), punkte: 0, max: 1,
+    aufgaben: [{nr: 1, thema: THEMA, frage: "Gewählter Film", antworten: [film], loesung: "", punkte: 0, t: jetzt}],
+    art: "klassenwahl", klasse: k, film};
+  $("#senden").disabled = true;
+  meldung("Wird abgeschickt …", "warten");
+  let ok = false;
+  for(let versuch = 0; versuch < 2 && !ok; versuch++){
+    try{
+      const r = await fetch(ZIEL, {method: "POST", headers: {"Content-Type": "text/plain;charset=utf-8"}, body: JSON.stringify(rec)});
+      ok = /"ok"\s*:\s*true/.test(await r.text());
+    }catch(e){}
+  }
+  if(ok){
+    S.gesendet = {klasse: k, film, zeit: jetzt}; speichern();
+    meldung(`✓ Angekommen – Klasse ${k}: ${film}. Vielen Dank!`, "ok");
+  } else {
+    meldung("Das hat nicht geklappt. Prüft die Internetverbindung und schickt die Wahl nochmals ab.", "fehler");
+  }
+  pruefen();
+});
+
+zeichnen();
+if(S.gesendet && S.gesendet.klasse === (klasse.value || "").trim() && S.gesendet.film === S.film)
+  meldung(`✓ Bereits abgeschickt – Klasse ${S.gesendet.klasse}: ${S.gesendet.film}. Ihr könnt die Wahl ändern und nochmals abschicken.`, "ok");
+</script>
+</body>
+</html>
