@@ -173,6 +173,9 @@ const TRAILER = {
 const trailerLink = f => TRAILER[f] ? `<a class="trailer" href="https://www.youtube.com/watch?v=${TRAILER[f]}" target="_blank" rel="noopener">▶ Trailer</a>` : "";
 
 const VORSCHAU = /[?&]vorschau/.test(location.search);
+/* Ziel: Tabelle «Rechtschreibung – Resultate». Ihr Skript nimmt jede Übung an (das Skript von «Übungen – Resultate»
+   lehnt die Filmrangliste ab). Die Station liest beide Tabellen, die Auswertung steht unter «Ranglisten». */
+const ZIEL = "https://script.google.com/macros/s/AKfycbyk0lFil4xRSsFLkPV_RuamQ-XPSU9Hn76HxHjInfYCJyDaVxjsW1S7gQHBP1rYV5dT/exec";
 const KEY = "rl.filme.v2";      // Zustand pro Glückszahl (geteilte Geräte!)
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -374,7 +377,7 @@ async function senden(g){
   const rec = z.offen;
   z.status = "offen"; speichern(); if(g === gz) zeigeDanke();
   try{
-    const r = await fetch(LP.endpoint, {method: "POST", headers: {"Content-Type": "text/plain;charset=utf-8"}, body: JSON.stringify(z.offen)});
+    const r = await fetch(ZIEL, {method: "POST", headers: {"Content-Type": "text/plain;charset=utf-8"}, body: JSON.stringify(z.offen)});
     const t = await r.text();
     if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt");
     if(z.offen === rec){ z.status = "angekommen"; delete z.offen; }
@@ -399,8 +402,41 @@ $("#nochmals").addEventListener("click", () => senden(gz));
 $("#aendern").addEventListener("click", () => { delete S.status; delete S.offen; speichern(); zeigeListe(); });
 $("#andereZahl").addEventListener("click", () => { const k = document.querySelector(".lpgz-pill"); if(k) k.click(); });
 
+/* Abgaben der alten Version hängen in der allgemeinen Warteschlange (lp.queue) und kamen nie an:
+   herausnehmen und an die richtige Tabelle schicken (gleiche id → nie doppelt gespeichert). */
+async function warteschlangeRetten(){
+  let q = [];
+  try{ q = JSON.parse(localStorage.getItem("lp.queue") || "[]") || []; }catch(e){ return; }
+  const filme = q.filter(r => r && r.uebung === UEBUNG);
+  if(!filme.length || VORSCHAU) return;
+  try{ localStorage.setItem("lp.queue", JSON.stringify(q.filter(r => !(r && r.uebung === UEBUNG)))); }catch(e){ return; }
+  for(const rec of filme){
+    const g = String(rec.glueckszahl || "");
+    if(!g || !Array.isArray(rec.rangliste)) continue;
+    let ok = false;
+    try{
+      const r = await fetch(ZIEL, {method: "POST", headers: {"Content-Type": "text/plain;charset=utf-8"}, body: JSON.stringify(rec)});
+      ok = /"ok"\s*:\s*true/.test(await r.text());
+    }catch(e){}
+    const z = ALLE[g];
+    if(!ok){
+      /* später nochmals versuchen – ausser es gibt schon eine neuere Abgabe dieser Glückszahl */
+      if(!z) ALLE[g] = {order: rec.rangliste, bewegt: true, gesendetOrder: rec.rangliste, offen: rec, status: "fehler"};
+      else if(!z.offen && z.status !== "angekommen") { z.offen = rec; z.gesendetOrder = rec.rangliste; z.status = "fehler"; }
+      speichern(); continue;
+    }
+    if(!gleicheFilme(rec.rangliste)) continue;   // alte Liste ohne neuen Film: Kind wird gebeten, nochmals abzuschicken
+    if(z && (z.offen || z.status === "angekommen")) continue;   // neuere Abgabe vorhanden
+    ALLE[g] = Object.assign(z || {}, {order: (z && z.order) || rec.rangliste, bewegt: true, gesendetOrder: rec.rangliste, status: "angekommen"});
+    delete ALLE[g].nochmals; delete ALLE[g].neu;
+    speichern();
+    if(g === gz){ S = ALLE[g]; zeigen(); }
+  }
+}
+
 /* ---------- Start ---------- */
 $("#vorschau").hidden = !VORSCHAU;
+warteschlangeRetten();   // vor LP.start: sonst versucht LP die Filmabgaben weiter an die falsche Tabelle zu schicken
 if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
 /* Glückszahl beobachten: beim Start (nach der Abfrage) und wenn ein Kind oben eine andere Zahl wählt */
 function glueckszahlPruefen(){
