@@ -42,6 +42,10 @@ button{font:inherit;color:inherit}
 .film.p2 .nr{background:#dde2ea;color:#384152}
 .film.p3 .nr{background:#efc39b;color:#5a3412}
 .titel{flex:1;min-width:0;font:600 1.18rem/1.2 var(--lp-titel);overflow-wrap:anywhere}
+.trailer{display:inline-block;margin-top:4px;padding:3px 10px;border-radius:999px;border:1.5px solid var(--lp-linie);
+  font:700 .8rem/1.3 var(--lp-text);color:var(--lp-akzent);text-decoration:none;touch-action:manipulation}
+.trailer:hover{border-color:var(--lp-akzent)}
+.titel .trailer{display:table}
 .pfeile{flex:none;display:flex;gap:6px}
 .pfeile button{width:44px;height:44px;border-radius:12px;border:2px solid var(--lp-linie);background:var(--lp-bg);
   display:grid;place-items:center;cursor:pointer;touch-action:manipulation}
@@ -102,7 +106,7 @@ button{font:inherit;color:inherit}
     <div class="card intro">
       <h2>Welchen Film schauen wir am Kinomorgen vom 15. Dezember?</h2>
       <p class="erklaerung">Aus den anderen Klassen gibt es insgesamt diese 11 Filmvorschläge. Erstelle deine Reihenfolge: Zuoberst steht der Film, den du am liebsten schauen möchtest, zuunterst der Film, den du am wenigsten gern schauen würdest.</p>
-      <p>Zieh die Filme an ihren Platz oder benutze die Pfeile. Dann schickst du deine Rangliste unten ab.</p>
+      <p>Mit <b>▶ Trailer</b> schaust du dir zuerst die Vorschau an. Zieh die Filme dann an ihren Platz oder benutze die Pfeile und schick deine Rangliste unten ab.</p>
     </div>
     <p class="neuhinweis" id="neuHinweis" hidden></p>
     <p class="ende oben" style="margin-top:14px">★ Am liebsten</p>
@@ -144,6 +148,22 @@ const FILME = [
   "Hot Wheels – Let's Race"
 ];
 
+/* Trailer auf YouTube (deutsch, wo vorhanden; «Lichter der Grossstadt» ist ein Stummfilm) */
+const TRAILER = {
+  "Ice Age": "f83YD39xlFA",
+  "Nachts im Museum": "XD6I2csfGqE",
+  "Charlie und die Schokoladenfabrik": "9MTEFFoNdoo",
+  "Momo (2025)": "N2_fte6w_yM",
+  "Vaiana": "emub1XwwGPU",
+  "Mufasa": "2_pdEO8I06c",
+  "Arielle": "UH2knSbIQj0",
+  "Cruella": "KIRKfx5Cbec",
+  "Rango": "GqxDpoEt1uY",
+  "Lichter der Grossstadt": "mSDDylNV4tU",
+  "Hot Wheels – Let's Race": "hNzYxbFG1ks"
+};
+const trailerLink = f => TRAILER[f] ? `<a class="trailer" href="https://www.youtube.com/watch?v=${TRAILER[f]}" target="_blank" rel="noopener">▶ Trailer</a>` : "";
+
 const VORSCHAU = /[?&]vorschau/.test(location.search);
 const KEY = "rl.filme.v1";
 const $ = s => document.querySelector(s);
@@ -180,7 +200,7 @@ const liste = $("#liste");
 function zeile(f){
   const li = document.createElement("li");
   li.className = "film"; li.dataset.film = f;
-  li.innerHTML = `<span class="nr"></span><span class="titel">${esc(f)}${(S.neu || []).includes(f) ? ' <span class="neu">Neu</span>' : ""}</span>
+  li.innerHTML = `<span class="nr"></span><span class="titel">${esc(f)}${(S.neu || []).includes(f) ? ' <span class="neu">Neu</span>' : ""}${trailerLink(f)}</span>
     <span class="pfeile"><button type="button" data-r="-1">${ICON.hoch}</button><button type="button" data-r="1">${ICON.runter}</button></span>
     <span class="griff" aria-hidden="true">${ICON.griff}</span>`;
   return li;
@@ -235,7 +255,7 @@ liste.addEventListener("click", e => {
 let zug = null;
 liste.addEventListener("pointerdown", e => {
   const li = e.target.closest(".film");
-  if(!li || e.target.closest("button") || zug) return;
+  if(!li || e.target.closest("button, a") || zug) return;
   if(e.pointerType === "mouse" && e.button !== 0) return;
   e.preventDefault();
   const els = [...liste.children];
