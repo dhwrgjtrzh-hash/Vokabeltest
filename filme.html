@@ -64,6 +64,12 @@ button{font:inherit;color:inherit}
 .danke{text-align:center;padding:26px 18px}
 .danke .haken{width:72px;height:72px;margin:0 auto 10px;border-radius:50%;background:var(--lp-gut-bg);color:var(--lp-gut);display:grid;place-items:center}
 .danke .haken svg{width:38px;height:38px}
+.danke .haken.warten{background:var(--lp-akzent-soft);color:var(--lp-akzent)}
+.danke .haken.fehler{background:#fde4e1;color:#c0392b}
+.danke .gross{font-size:1.15rem;color:var(--lp-ink);font-weight:700}
+.linkknopf{border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--lp-akzent);text-decoration:underline;cursor:pointer}
+@keyframes dreh{to{transform:rotate(360deg)}}
+.danke .haken.warten svg{animation:dreh 1s linear infinite}
 .danke h2{margin:0 0 4px;font-size:1.6rem}
 .danke p{margin:0 0 6px;color:var(--lp-leise)}
 .top3{list-style:none;margin:16px auto 18px;padding:0;max-width:420px;display:flex;flex-direction:column;gap:8px;text-align:left}
@@ -119,12 +125,14 @@ button{font:inherit;color:inherit}
   <!-- Danke -->
   <section id="danke" hidden>
     <div class="card danke">
-      <div class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-      <h2>Danke!</h2>
-      <p id="dankeText">Deine Rangliste ist abgeschickt.</p>
+      <div class="haken" id="dankeIcon"></div>
+      <h2 id="dankeTitel">Danke!</h2>
+      <p id="dankeText"></p>
+      <p id="nochmalsWrap" hidden style="margin:12px 0 4px"><button class="knopf" id="nochmals" type="button" style="width:auto;display:inline-block">Nochmals senden</button></p>
       <ol class="top3" id="top3"></ol>
       <p style="font-size:.95rem">Du kannst sie noch ändern. Dann zählt nur deine neue Rangliste.</p>
       <p style="margin-top:12px"><button class="knopf leise" id="aendern" type="button">Rangliste ändern</button></p>
+      <p style="margin-top:14px;font-size:.9rem">Nicht deine Glückszahl? <button class="linkknopf" id="andereZahl" type="button">Andere Glückszahl eingeben</button></p>
     </div>
   </section>
 </div>
@@ -165,29 +173,42 @@ const TRAILER = {
 const trailerLink = f => TRAILER[f] ? `<a class="trailer" href="https://www.youtube.com/watch?v=${TRAILER[f]}" target="_blank" rel="noopener">▶ Trailer</a>` : "";
 
 const VORSCHAU = /[?&]vorschau/.test(location.search);
-const KEY = "rl.filme.v1";
+const KEY = "rl.filme.v2";      // Zustand pro Glückszahl (geteilte Geräte!)
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lies = k => { try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } };
 const store = {
-  get(){ try{ return JSON.parse(localStorage.getItem(KEY) || "null"); }catch(e){ return null; } },
+  get(){ return lies(KEY); },
   set(v){ try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){} }
 };
 const gleicheFilme = l => Array.isArray(l) && l.length === FILME.length && FILME.every(f => l.includes(f));
 function mischen(l){ l = l.slice(); for(let i = l.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; } return l; }
 
-/* Zustand: Reihenfolge (am Anfang zufällig, damit niemand bevorzugt wird), ob schon verschoben, ob abgeschickt */
-let S = store.get() || {};
-if(!gleicheFilme(S.order)){
-  /* Liste wurde nachträglich ergänzt: bisherige Reihenfolge behalten, neue Filme an zufälliger Stelle einfügen */
-  const alt = Array.isArray(S.order) ? S.order.filter(f => FILME.includes(f)) : [];
-  if(alt.length >= 2){
-    const neu = FILME.filter(f => !alt.includes(f));
-    neu.forEach(f => alt.splice(Math.floor(Math.random() * (alt.length + 1)), 0, f));
-    S = {order: alt, bewegt: !!S.bewegt, gesendet: false, neu, warGesendet: !!S.gesendet};
-  } else S = {order: mischen(FILME), bewegt: false, gesendet: false};
+/* Zustand pro Glückszahl: Reihenfolge (am Anfang zufällig, damit kein Film bevorzugt wird), ob verschoben,
+   was abgeschickt wurde und ob Google den Empfang bestätigt hat (status: offen / angekommen / fehler). */
+let ALLE = store.get() || {};
+let ALT = lies("rl.filme.v1");   // frühere Version: ein Zustand pro Gerät, Empfang nie bestätigt
+let gz = "", S = null;
+const speichern = () => store.set(ALLE);
+function zustandFuer(g){
+  let z = ALLE[g];
+  if(!z && ALT && Array.isArray(ALT.order)){
+    z = {order: ALT.order, bewegt: !!ALT.bewegt, nochmals: !!ALT.gesendet};
+    ALT = null; try{ localStorage.removeItem("rl.filme.v1"); }catch(e){}
+  }
+  if(!z) z = {order: mischen(FILME), bewegt: false};
+  if(!gleicheFilme(z.order)){
+    /* Liste wurde nachträglich ergänzt: bisherige Reihenfolge behalten, neue Filme an zufälliger Stelle einfügen */
+    const alt = Array.isArray(z.order) ? z.order.filter(f => FILME.includes(f)) : [];
+    if(alt.length >= 2){
+      const neu = FILME.filter(f => !alt.includes(f));
+      neu.forEach(f => alt.splice(Math.floor(Math.random() * (alt.length + 1)), 0, f));
+      z = {order: alt, bewegt: !!z.bewegt, neu, nochmals: !!(z.nochmals || z.status)};
+    } else z = {order: mischen(FILME), bewegt: false};
+  }
+  ALLE[g] = z; speichern();
+  return z;
 }
-const speichern = () => store.set(S);
-speichern();
 
 const ICON = {
   hoch: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l6-6 6 6"/></svg>',
@@ -311,39 +332,88 @@ liste.addEventListener("pointerup", loslassen);
 liste.addEventListener("pointercancel", loslassen);
 liste.addEventListener("lostpointercapture", loslassen);
 
-/* ---------- Abschicken ---------- */
+/* ---------- Abschicken (mit Empfangsbestätigung von Google) ---------- */
+const ICON_STATUS = {
+  angekommen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  offen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>',
+  fehler: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg>'
+};
 function zeigeDanke(){
   $("#sortieren").hidden = true; $("#danke").hidden = false;
-  const gz = window.LP && LP.glueckszahl();
-  $("#dankeText").textContent = VORSCHAU ? "Vorschau – es wurde nichts abgeschickt." : `Deine Rangliste ist abgeschickt${gz ? " (Glückszahl " + gz + ")" : ""}.`;
+  const st = VORSCHAU ? "angekommen" : (S.status || "offen");
+  const icon = $("#dankeIcon");
+  icon.className = "haken" + (st === "offen" ? " warten" : st === "fehler" ? " fehler" : "");
+  icon.innerHTML = ICON_STATUS[st];
+  $("#dankeTitel").textContent = st === "angekommen" ? "Danke!" : st === "offen" ? "Wird gesendet …" : "Noch nicht angekommen";
+  $("#dankeText").innerHTML = VORSCHAU ? "Vorschau – es wurde nichts abgeschickt."
+    : st === "angekommen" ? `Deine Rangliste ist angekommen.<br><span class="gross">Glückszahl ${esc(gz)}</span>`
+    : st === "offen" ? "Einen Moment, deine Rangliste wird gerade abgeschickt."
+    : "Deine Rangliste konnte nicht abgeschickt werden. Prüf, ob du Internet hast, und tipp dann auf «Nochmals senden».";
+  $("#nochmalsWrap").hidden = st !== "fehler";
+  $("#andereZahl").parentElement.hidden = VORSCHAU;
   $("#top3").innerHTML = (S.gesendetOrder || S.order).slice(0, 3)
     .map((f, i) => `<li><span class="nr">${i + 1}</span><span class="titel">${esc(f)}</span></li>`).join("");
-  window.scrollTo(0, 0);
 }
 function zeigeListe(){
   $("#danke").hidden = true; $("#sortieren").hidden = false;
   const neu = S.neu || [], h = $("#neuHinweis");
-  h.hidden = !neu.length;
-  if(neu.length) h.textContent = `Neu dazugekommen: ${neu.join(", ")}. ` + (S.warGesendet
-    ? "Schieb den Film an den richtigen Platz und schick deine Rangliste nochmals ab – sonst zählt sie nicht vollständig."
-    : "Schieb den Film an den richtigen Platz.");
+  let t = "";
+  if(neu.length) t = `Neu dazugekommen: ${neu.join(", ")}. Schieb den Film an den richtigen Platz` + (S.nochmals ? " und schick deine Rangliste nochmals ab." : ".");
+  else if(S.nochmals) t = "Bitte schick deine Rangliste nochmals ab. Jetzt siehst du, ob sie wirklich angekommen ist.";
+  h.hidden = !t; h.textContent = t;
   zeichnen();
+}
+function zeigen(){ if(S.status) zeigeDanke(); else zeigeListe(); }
+
+/* Senden direkt an die Tabelle «Übungen – Resultate» und auf die Antwort warten.
+   Gleiche id bei «Nochmals senden»: Google speichert eine Abgabe nie doppelt. */
+const laufend = new Set();
+async function senden(g){
+  const z = ALLE[g]; if(!z || !z.offen || laufend.has(g)) return;
+  laufend.add(g);
+  const rec = z.offen;
+  z.status = "offen"; speichern(); if(g === gz) zeigeDanke();
+  try{
+    const r = await fetch(LP.endpoint, {method: "POST", headers: {"Content-Type": "text/plain;charset=utf-8"}, body: JSON.stringify(z.offen)});
+    const t = await r.text();
+    if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt");
+    if(z.offen === rec){ z.status = "angekommen"; delete z.offen; }
+  }catch(e){ if(z.offen === rec) z.status = "fehler"; }
+  laufend.delete(g);
+  speichern(); if(g === gz && !$("#danke").hidden) zeigeDanke();
 }
 $("#senden").addEventListener("click", () => {
   if(!S.bewegt && !confirm("Du hast noch nichts verschoben – die Filme stehen noch in zufälliger Reihenfolge.\n\nIst das wirklich deine Rangliste?")) return;
-  if(!VORSCHAU && !(window.LP && LP.glueckszahl())){ location.reload(); return; }   // ohne Glückszahl: Seite fragt beim Neuladen danach
-  if(window.LP) LP.runde(UEBUNG, THEMA,
-    S.order.map((f, i) => ({frage: f, antwort: i + 1, loesung: "", punkte: 0, t: Date.now()})),
-    {art: "rangliste", rangliste: S.order.slice()});
-  S.gesendet = true; S.gesendetOrder = S.order.slice(); delete S.neu; delete S.warGesendet; speichern();
-  zeigeDanke();
+  if(VORSCHAU){ S.gesendetOrder = S.order.slice(); S.status = "angekommen"; zeigeDanke(); window.scrollTo(0, 0); return; }
+  if(!gz || !window.LP){ location.reload(); return; }   // ohne Glückszahl: Seite fragt beim Neuladen danach
+  const jetzt = Date.now();
+  S.offen = {typ: "uebung-runde", v: 1, id: jetzt.toString(36) + Math.random().toString(36).slice(2, 10),
+    uebung: UEBUNG, glueckszahl: gz, thema: THEMA, datum: new Date(jetzt).toISOString(), punkte: 0, max: S.order.length,
+    aufgaben: S.order.map((f, i) => ({nr: i + 1, thema: THEMA, frage: f, antworten: [String(i + 1)], loesung: "", punkte: 0, t: jetzt})),
+    art: "rangliste", rangliste: S.order.slice()};
+  S.gesendetOrder = S.order.slice(); delete S.neu; delete S.nochmals;
+  window.scrollTo(0, 0);
+  senden(gz);
 });
-$("#aendern").addEventListener("click", zeigeListe);
+$("#nochmals").addEventListener("click", () => senden(gz));
+$("#aendern").addEventListener("click", () => { delete S.status; delete S.offen; speichern(); zeigeListe(); });
+$("#andereZahl").addEventListener("click", () => { const k = document.querySelector(".lpgz-pill"); if(k) k.click(); });
 
 /* ---------- Start ---------- */
 $("#vorschau").hidden = !VORSCHAU;
 if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
-if(S.gesendet) zeigeDanke(); else zeigeListe();
+/* Glückszahl beobachten: beim Start (nach der Abfrage) und wenn ein Kind oben eine andere Zahl wählt */
+function glueckszahlPruefen(){
+  const neu = VORSCHAU ? "vorschau" : ((window.LP && LP.glueckszahl()) || "");
+  if(!neu || neu === gz) return;
+  gz = neu; S = zustandFuer(gz);
+  liste.innerHTML = "";
+  zeigen();
+  if(S.offen && S.status !== "angekommen") senden(gz);   // nicht bestätigte Abgabe von früher nochmals schicken
+}
+$("#sortieren").hidden = true;
+glueckszahlPruefen();
+setInterval(glueckszahlPruefen, 400);
 </script>
 </body>
 </html>
