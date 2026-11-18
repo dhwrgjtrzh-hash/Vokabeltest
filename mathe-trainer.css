@@ -314,3 +314,14 @@ details.help table.wp{margin:6px 0 10px}
   table.wp td.op{color:#f2b27a}
   table.wtab th, table.wtab th.strich{border-bottom-color:var(--mute)}
 }
+
+/* Grundanforderungen gelb, erweiterte Anforderungen grün (wie im Matheplan) */
+.anf{display:inline-flex;align-items:center;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:700;white-space:nowrap}
+.anf.grund{background:#ffe58a;color:#5c4400}
+.anf.erw{background:#bfe8a8;color:#1f5410}
+.sesshead .qtype{margin:0}
+details.help .buch{margin:10px 0 0;padding-top:8px;border-top:1px dashed var(--line);font-size:.92rem}
+@media (prefers-color-scheme: dark){
+  .anf.grund{background:#4a3c08;color:#ffe08a}
+  .anf.erw{background:#1d3d14;color:#b6eb98}
+}
