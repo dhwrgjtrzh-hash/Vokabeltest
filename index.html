@@ -189,6 +189,19 @@ body.fach-offen header .klasse{display:none}
 .u-nochmal{color:#c0392b; font-weight:700}
 .u-weiter{color:#b35c00; font-weight:700}
 .u-balken i.halb{background:#f0a020}
+/* Grundanforderungen gelb, erweiterte Anforderungen grün (wie im Matheplan) */
+.u-balken .u-gr{display:inline-flex; gap:3px; padding:3px; border-radius:6px}
+.u-balken .u-gr i{flex:none; width:14px}
+.u-balken .u-gr i:not([class]), .u-balken .u-gr i[class=""]{background:rgba(255,255,255,.8)}
+.u-gr.grund, .anf.grund{background:#ffe58a} .u-gr.erw, .anf.erw{background:#bfe8a8}
+.anf{display:inline-flex; align-items:center; border-radius:999px; padding:2px 9px; font-size:12px; font-weight:700; white-space:nowrap}
+.anf.grund{color:#5c4400} .anf.erw{color:#1f5410}
+.u-buch{margin:4px 0 6px!important; font-size:14px}
+@media (prefers-color-scheme: dark){
+  .u-gr.grund, .anf.grund{background:#4a3c08} .u-gr.erw, .anf.erw{background:#1d3d14}
+  .anf.grund{color:#ffe08a} .anf.erw{color:#b6eb98}
+  .u-balken .u-gr i:not([class]), .u-balken .u-gr i[class=""]{background:rgba(255,255,255,.2)}
+}
 .u-balken i.halb-ok{background:linear-gradient(90deg,#2fa35c 50%,#f0a020 50%)}
 .u-ziel.halb{border-left-color:#f0a020}
 .u-leise{color:var(--muted)}
@@ -403,7 +416,8 @@ function serverStand(plan, gz){
 function planLage(p, st){
   const g = (st && st.goals) || {};
   const z = p.ziele.map(x => { const s = g[x.id] || {}; const n = +s.n || 0, ok = +s.ok || 0;
-    return Object.assign({}, x, { n, ok, done: !!s.done, lv: +s.lv || 1, q: n ? ok / n : null }); });
+    /* lv > 2: Lernstand aus der Zeit mit drei Stufen – Stufe 3 erreicht gilt heute als geschafft (wie im Mathe-Trainer) */
+    return Object.assign({}, x, { n, ok, done: !!s.done || +s.lv > 2, lv: +s.lv || 1, q: n ? ok / n : null }); });
   const geschafft = z.filter(x => x.done), begonnen = z.filter(x => x.n > 0);
   /* rot: unter 60 % richtig · orange: 60–84 % richtig (noch nicht ganz sicher) · jeweils nur, solange das Lernziel nicht geschafft ist */
   const nochmal = z.filter(x => !x.done && x.n >= 4 && x.q < 0.6).sort((a, b) => a.q - b.q);
@@ -420,12 +434,18 @@ function matheUebenHtml(gz, staende){
   const status = {};
   lagen.forEach(({p, l}) => {
     const tot = p.ziele.length, gs = l.geschafft.length;
-    const balken = `<span class="u-balken" aria-hidden="true">${l.z.map(z => `<i class="${z.done ? (l.auffrischen.includes(z) ? 'ok halb-ok' : 'ok') : z.n ? (l.nochmal.includes(z) ? 'no' : l.sicherer.includes(z) ? 'halb' : 'dran') : ''}"></i>`).join('')}</span>`;
+    const seg = z => `<i class="${z.done ? (l.auffrischen.includes(z) ? 'ok halb-ok' : 'ok') : z.n ? (l.nochmal.includes(z) ? 'no' : l.sicherer.includes(z) ? 'halb' : 'dran') : ''}"></i>`;
+    /* gelb: Grundanforderungen · grün: erweiterte Anforderungen */
+    const grund = l.z.filter(z => !z.erw), erw = l.z.filter(z => z.erw);
+    const gsG = grund.filter(z => z.done).length;
+    const balken = `<span class="u-balken" aria-hidden="true"><span class="u-gr grund">${grund.map(seg).join('')}</span>${erw.length ? `<span class="u-gr erw">${erw.map(seg).join('')}</span>` : ''}</span>`;
     const text = !l.begonnen.length && !gs ? `<span class="u-leise">Noch nicht geübt</span>`
       : l.nochmal.length ? `<span class="u-nochmal">Nochmals üben: ${esc(l.nochmal[0].titel)}</span>`
       : l.sicherer.length ? `<span class="u-weiter">Weiter üben: ${esc(l.sicherer[0].titel)}</span>`
       : l.auffrischen.length ? `<span class="u-weiter">Nochmals anschauen: ${esc(l.auffrischen[0].titel)}</span>`
-      : gs === tot ? `<span>Alles geschafft 🏆</span>` : `<span>${gs} von ${tot} geschafft${gs ? ' ⭐' : ''}</span>`;
+      : gs === tot ? `<span>Alles geschafft 🏆</span>`
+      : gsG === grund.length ? `<span>Grundanforderungen geschafft ⭐ – jetzt die erweiterten</span>`
+      : `<span>${gsG} von ${grund.length} Grundanforderungen geschafft${gsG ? ' ⭐' : ''}</span>`;
     status[p.plan] = `${balken}${text}`;
   });
   /* ausführliche Tipps (eingeklappt) */
@@ -437,8 +457,10 @@ function matheUebenHtml(gz, staende){
   const offen = lagen.flatMap(({p, l}) => l.begonnen.length ? l.offen.filter(x => !x.erw).map(x => ({p, x})) : []);
   const teile = [];
   if (nochmal.length) teile.push(`<p class="u-intro">${nochmal.length === 1 ? 'Dieses Lernziel klappt' : 'Diese Lernziele klappen'} noch nicht so gut. Lies die Erklärung bei «So geht's» und übe ${nochmal.length === 1 ? 'es' : 'sie'} dann nochmals.</p>`);
-  const karte = (p, x, cls) => `<div class="u-ziel ${cls}"><p class="u-titel"><b>${esc(x.titel)}</b> <span class="u-plan">${esc(p.plan)}</span></p>
+  const anf = x => `<span class="anf ${x.erw ? 'erw' : 'grund'}">${x.erw ? 'Erweiterte Anforderung' : 'Grundanforderung'}</span>`;
+  const karte = (p, x, cls) => `<div class="u-ziel ${cls}"><p class="u-titel"><b>${esc(x.titel)}</b> <span class="u-plan">${esc(p.plan)}</span> ${anf(x)}</p>
       <p class="u-leise">${esc(x.info || '')}${x.info ? ' · ' : ''}${x.ok} von ${x.n} Aufgaben richtig (${Math.round(x.q * 100)} %)</p>
+      ${x.buch ? `<p class="u-buch">📖 Üben im Buch und Heft: <b>${esc(x.buch)}</b></p>` : ''}
       <details><summary>So geht's</summary><div class="u-hilfe">${x.hilfe}</div></details>${zielLink(p, x)}</div>`;
   nochmal.forEach(({p, x}) => teile.push(karte(p, x, '')));
   if (sicherer.length){
@@ -452,7 +474,7 @@ function matheUebenHtml(gz, staende){
   const allesGut = !nochmal.length && !sicherer.length && !auffrischen.length && lagen.some(({l}) => l.begonnen.length);
   if (allesGut && (neu.length || offen.length)) teile.push(`<p class="u-intro">Super, was du bisher geübt hast, klappt gut! Hier wartet noch Neues auf dich:</p>`);
   if (neu.length) teile.push(`<p><b>Noch nicht begonnen:</b> ${neu.map(esc).join(', ')}</p>`);
-  if (offen.length) teile.push(`<p><b>Noch nicht geübt:</b></p><ul class="u-offen">${MATHE_PLAENE.filter(p => offen.some(o => o.p === p)).map(p => `<li><span class="u-leise">${esc(p.plan)}:</span> ${offen.filter(o => o.p === p).map(({x}) => esc(x.titel)).join(', ')}</li>`).join('')}</ul>`);
+  if (offen.length) teile.push(`<p><b>Noch nicht geübt</b> <span class="anf grund">Grundanforderungen</span></p><ul class="u-offen">${MATHE_PLAENE.filter(p => offen.some(o => o.p === p)).map(p => `<li><span class="u-leise">${esc(p.plan)}:</span> ${offen.filter(o => o.p === p).map(({x}) => esc(x.titel)).join(', ')}</li>`).join('')}</ul>`);
   const anzahl = nochmal.length + sicherer.length + auffrischen.length;
   const detail = teile.length ? `<summary><span>🎯 Das solltest du noch üben</span>${anzahl ? `<span class="u-zahl">${anzahl}</span>` : ''}<span class="u-nr">Nr. ${esc(gz)}</span></summary>
     <div class="u-inhalt">${teile.join('')}</div>` : '';

@@ -5,8 +5,11 @@
 
    Gleicher Ablauf wie die bisherigen Mathe-Trainer:
    - Anmeldung nur mit der Glückszahl (1 bis 21), nie mit einem Namen
-   - Lernziele mit drei Stufen (Einstieg · wie im Test · knifflig); die erste Aufgabe
-     eines Lernziels kommt auf Stufe 2 (Einstufung)
+   - Lernziele mit zwei Stufen bis «geschafft»: Stufe 1 · Einstieg (2 Punkte), Stufe 2 · wie im Test
+     (4 Punkte); ein Fehler kostet einen Punkt. Die erste Aufgabe eines Lernziels kommt gleich auf
+     Stufe 2 (Einstufung): richtig → Einstieg übersprungen. Stufe 3 · knifflig gibt es nur noch als
+     Zusatz, wenn ein Lernziel geschafft ist (gemischt mit Aufgaben wie im Test).
+     (Bis 18.11.2026: drei Stufen mit je 5 Punkten – das waren zu viele Aufgaben pro Matheplan.)
    - Lernstand auf allen Geräten (über die Glückszahl), Resultate in die Tabelle
      «Übungen – Resultate» (gleiches Google-Skript wie bisher)
 
@@ -73,6 +76,20 @@ function parse(s){
 }
 function parseInt0(s){ s=String(s||"").trim().replace(EINHEITEN,"").trim(); return /^\d+$/.test(s) ? parseInt(s,10) : null; }
 
+/* Wo im Buch und im Arbeitsheft das Lernziel vorkommt: «TB S. 39 · S. 174» → «Buch S. 39, 174» (gleich in mathe-lernziele.js) */
+function buchText(tb){
+  const teile = []; let vor = "Buch";
+  String(tb||"").split("·").map(x=>x.trim()).filter(Boolean).forEach(x=>{
+    const m = x.match(/^(TB|AH)?\s*S\.\s*(.+)$/); if(!m) return;
+    if(m[1]) vor = m[1]==="AH" ? "Arbeitsheft" : "Buch";
+    const letzter = teile[teile.length-1];
+    if(letzter && letzter.vor===vor) letzter.s += ", "+m[2]; else teile.push({vor, s:m[2]});
+  });
+  return teile.map(t=>`${t.vor} S. ${t.s}`).join(" · ");
+}
+/* Grundanforderungen gelb, erweiterte Anforderungen grün – wie im Matheplan */
+const anforderung = g => `<span class="anf ${g.erw?"erw":"grund"}">${g.erw?"Erweiterte Anforderung":"Grundanforderung"}</span>`;
+
 const ol = steps => `<ol>${steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
 const situation = text => `<div class="situation">${text}</div>`;
 const frage = text => `<p class="q">${text}</p>`;
@@ -123,9 +140,9 @@ function lzk64(text){
 
 /* ===== Lernpfad ===== */
 let app, pill, GOAL;
-const NEED = 5;              // so viele Punkte braucht es pro Stufe
-const STREAK = 3;            // oder so viele richtige Antworten hintereinander
-const LEVELS = 3;
+const NEED = [0, 2, 4];      // so viele Punkte braucht es: Stufe 1 · Einstieg 2, Stufe 2 · wie im Test 4 (Fehler: −1)
+const LEVELS = 2;            // mit Stufe 2 ist ein Lernziel geschafft; Stufe 3 · knifflig nur noch als Zusatz
+const ZUSATZ_KNIFFLIG = 0.4; // geschaffte Lernziele: so oft kommt eine knifflige Aufgabe, sonst eine wie im Test
 const LVNAME = ["","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
 let gz = (store.get("uebung.gz")||store.get("dz.gz")||store.get("rs.gz")||"").replace(/\D/g,"");
 const gzGueltig = v => /^\d{1,2}$/.test(String(v)) && +v >= 1 && +v <= 21;   // Glückszahlen der Klasse: 1 bis 21
@@ -135,7 +152,16 @@ let P = null, S = null;
 function pkey(){ return "uebung.p."+UEBUNG+"."+gz; }
 function loadP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P=null; } if(!P||!P.goals) P={goals:{}, last:null}; }
 function saveP(){ P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt); STAND.merken(UEBUNG, gz, txt, P.t); }
-function gs(id){ return P.goals[id] || (P.goals[id]={lv:1, pr:0, done:false, n:0, ok:0}); }
+function gs(id){
+  const s = P.goals[id] || (P.goals[id]={lv:1, pr:0, done:false, n:0, ok:0});
+  if(!s.done){
+    /* Lernstand aus der Zeit mit drei Stufen: Wer schon auf Stufe 3 war, hat «wie im Test» sicher gekonnt → geschafft.
+       Mehr Punkte als neu nötig: Es fehlt noch eine richtige Antwort. */
+    if(s.lv > LEVELS){ s.done = true; s.lv = LEVELS; s.pr = NEED[LEVELS]; }
+    else if(s.pr >= NEED[s.lv||1]) s.pr = NEED[s.lv||1] - 1;
+  }
+  return s;
+}
 
 /* Aufgaben aus der Lernzielkontrolle kommen nie vor (SPERRE im Trainer) */
 function lzkGesperrt(t, id){
@@ -203,7 +229,7 @@ function startGoal(id){
 function next(){
   const id = S.goal;
   const st = gs(id);
-  let lv = st.lv;
+  let lv = st.done ? (Math.random() < ZUSATZ_KNIFFLIG ? 3 : 2) : st.lv;   // geschafft: Zusatzaufgaben, auch knifflige
   const probe = st.lv===1 && st.pr===0 && !st.done && !st.probed;   // Einstufung: gleich mit Stufe 2 beginnen
   if(probe) lv = 2;
   const sig = t=>t.type+"|"+String(t.html||"").replace(/<[^>]*>/g,"").replace(/[0-9.,’'\/]+/g,"#").slice(0,70);
@@ -220,10 +246,13 @@ const inp = (id, cls="", mode="decimal")=>`<input class="ans ${cls}" id="${id}" 
 const fracInput = (a,b)=>`<span class="fin">${inp(a,"small","numeric")}<i></i>${inp(b,"small","numeric")}</span>`;
 
 function head(){
-  const g = GOAL[S.task.goal], s = gs(g.id);
-  let dots=""; for(let i=0;i<NEED;i++) dots+=`<i class="${i<s.pr?"on":""}"></i>`;
-  return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span></div>
-    <div class="sesshead"><b>${s.done?"Alle Stufen geschafft – du übst weiter auf Stufe 3":LVNAME[s.lv]}</b><span class="grow"></span><span class="dots">${dots}<span>${s.pr}/${NEED}${(s.streak||0)>0?` · 🔥 ${s.streak} in Folge`:""}</span></span></div>`;
+  const g = GOAL[S.task.goal], s = gs(g.id), need = NEED[s.lv];
+  const folge = (s.streak||0)>1 ? `🔥 ${s.streak} in Folge` : "";
+  let dots=""; if(!s.done) for(let i=0;i<need;i++) dots+=`<i class="${i<s.pr?"on":""}"></i>`;
+  const stand = s.done ? `<span class="dots"><span>${folge}</span></span>`
+    : `<span class="dots">${dots}<span>${s.pr}/${need}${folge?` · ${folge}`:""}</span></span>`;
+  return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span>${anforderung(g)}</div>
+    <div class="sesshead"><b>${s.done?`⭐ Geschafft – Zusatzaufgabe · ${LVNAME[S.task.lv]}`:S.task.probe?"Einstufung · eine Aufgabe wie im Test":LVNAME[s.lv]}</b><span class="grow"></span>${S.task.probe?"":stand}</div>`;
 }
 
 /* Wertetabelle zum Ausfüllen: Zeilen [{l, r}], null = Eingabefeld */
@@ -257,7 +286,7 @@ function draw(){
         ${needsCheck?`<button class="btn" id="check">Prüfen</button>`:""}
         <button class="btn" id="nextBtn" hidden>Weiter →</button>
       </div>
-      <details class="help"><summary>💡 So geht's</summary>${g.help()}</details>
+      <details class="help"><summary>💡 So geht's</summary>${g.help()}${g.tb?`<p class="buch">📖 Üben im Buch und Heft: <b>${buchText(g.tb)}</b></p>`:""}</details>
     </div>`;
   const inputs = [...app.querySelectorAll("input.ans")];
   inputs.forEach((el,j)=>el.addEventListener("keydown",e=>{
@@ -338,19 +367,20 @@ function finish(ok, given, extra){
   let toast = "";
   if(t.probe){
     s.probed = true;
-    if(ok){ s.lv = 2; s.pr = 1; s.streak = 1; toast = `🚀 Stark! Das kannst du schon – Stufe 1 überspringst du.`; }
+    if(ok){ s.lv = 2; s.pr = 1; s.streak = 1; toast = `🚀 Stark! Das kannst du schon – den Einstieg überspringst du.`; }
+    else s.streak = 0;                         // weiter mit Stufe 1 · Einstieg
+  } else if(s.done){
+    s.streak = ok ? (s.streak||0) + 1 : 0;     // Zusatzaufgaben: zählen nicht mehr für die Stufen
   } else if(ok){
     s.streak = (s.streak||0) + 1;
-    s.pr = Math.min(NEED, s.pr+1);
-    if(s.pr>=NEED || s.streak>=STREAK){
-      const fast = s.pr<NEED;
-      if(s.lv<LEVELS){ s.lv++; s.pr=0; s.streak=0; toast = `🎉 Stufe ${s.lv-1} geschafft${fast?` – ${STREAK} richtig hintereinander`:""}! Jetzt kommt <b>Stufe ${s.lv}</b>.`; }
-      else if(!s.done){ s.done=true; s.pr=NEED; S.goalDone = true;
+    s.pr = Math.min(NEED[s.lv], s.pr+1);
+    if(s.pr >= NEED[s.lv]){
+      if(s.lv < LEVELS){ s.lv++; s.pr = 0; s.streak = 0; toast = `🎉 Einstieg geschafft! Jetzt kommen Aufgaben <b>wie im Test</b>.`; }
+      else { s.done = true; S.goalDone = true;
         const nx = nextGoal(g.id);
-        toast = `🏆 Super! Du hast «${g.title}» geschafft.${nx?`<br>Weiter geht es mit <b>${GOAL[nx].title}</b>.`:"<br>Du hast alle Lernziele geschafft! Jetzt kommen gemischte Aufgaben."}`; }
-      else s.pr = NEED;
+        toast = `🏆 Super! Du hast «${g.title}» geschafft.${nx?`<br>Weiter geht es mit <b>${GOAL[nx].title}</b>.`:"<br>Du hast alle Lernziele geschafft! Jetzt kommen gemischte Aufgaben – auch knifflige."}`; }
     }
-  } else { s.streak = 0; if(!s.done) s.pr = Math.max(0, s.pr-1); }
+  } else { s.streak = 0; s.pr = Math.max(0, s.pr-1); }
   saveP();
   const entry = {nr:S.nr, thema:g.title, stufe:t.lv, frage:t.text, antworten:[given], loesung:t.show, punkte:ok?1:0, test:false, t:Date.now()};
   S.log.push(entry); S.pending.push(entry); savePending();
