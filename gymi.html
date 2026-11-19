@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="de-CH" data-fach="mathe" data-trainer="mathe">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gymi-Training</title>
+<link rel="icon" type="image/png" href="icons/icon-gymi-64.png">
+<link rel="apple-touch-icon" href="icons/icon-gymi-180.png">
+<link rel="stylesheet" href="mathe-trainer.css">
+<link rel="stylesheet" href="lernportal.css">
+<style>
+/* ===== Gymi-Training ===== */
+html[data-fach] .lp-kopf .gy-logo{background:linear-gradient(135deg,#2fb39a,#16806d)}
+.gy-beta{display:inline-block;margin-left:4px;font-size:.72rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:#fdeceb;color:#a32315;border:1.5px solid #d93a2b;vertical-align:1px}
+.gy-banner{background:#fdeceb;color:#7a1a10;border:2px solid #f2b8b0;border-radius:14px;padding:8px 12px;margin:0 0 14px;font-size:.88rem;line-height:1.35}
+.gy-start h2{font-size:1.45rem;margin:0 0 4px}
+.gy-modi{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0 6px}
+@media (min-width:700px){.gy-modi{grid-template-columns:1fr 1fr}}
+.gy-modus{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;cursor:pointer;color:var(--ink);font:inherit}
+button.gy-modus:hover{border-color:var(--accent)}
+.gy-modus .gy-m-ico{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.5rem;background:var(--accent-soft)}
+.gy-modus b{display:block;font-family:var(--lp-titel);font-weight:600;font-size:1.3rem;line-height:1.2}
+.gy-modus .gy-m-text{display:block;color:var(--mute);font-size:.95rem;margin-top:3px;line-height:1.35}
+.gy-modus.gy-pruef{cursor:default}
+.gy-knoepfe{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.gy-knoepfe .btn{padding:9px 14px;min-height:44px;font-size:.95rem}
+.gy-weiter{display:block;width:100%;text-align:left;font:inherit;font-weight:800;font-size:1.1rem;border:0;border-radius:16px;padding:14px 18px;margin:14px 0 4px;cursor:pointer;background:linear-gradient(135deg,#ffd45c,#ff9a3d);color:#2b1600}
+.gy-stand{margin-top:14px;border:2px solid var(--line);border-radius:16px;padding:4px 14px}
+.gy-stand summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--accent)}
+.gy-zeile{display:grid;grid-template-columns:minmax(0,1fr) 110px 5.5em;gap:10px;align-items:center;padding:5px 0;font-size:.95rem;border-top:1px solid var(--line)}
+.gy-zeile .gy-bar{height:9px;border-radius:999px;background:var(--line);overflow:hidden}
+.gy-zeile .gy-bar i{display:block;height:100%;border-radius:999px;background:#2fa35c}
+.gy-zeile .gy-zahl{color:var(--mute);font-size:.85rem;text-align:right;white-space:nowrap}
+.gy-prs{margin:8px 0 10px;padding:0;list-style:none;font-size:.95rem}
+.gy-prs li{padding:4px 0;border-top:1px solid var(--line)}
+.gy-original{margin:16px 0 0;font-size:.95rem;color:var(--mute)}
+.gy-original a{color:var(--accent);font-weight:700}
+/* Aufgabe */
+.gy-aufgabe .sesshead{gap:8px 10px}
+.gy-titel{font-weight:700;color:var(--mute);font-size:.95rem}
+.gy-zaehler{font-size:.85rem;color:var(--mute);font-weight:700;white-space:nowrap}
+.gy-sit p{margin:0 0 8px}.gy-sit p:last-child{margin-bottom:0}
+.gy-sit .folge{font-size:1.45rem;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums;margin:8px 0}
+.gy-teil{margin:16px 0 0}
+.gy-teil .q{font-size:1.15rem;margin:0 0 8px}
+.gy-lab{color:var(--accent)}
+.gy-teil .fd{flex-wrap:wrap}
+.gy-teil input.ans.mittel{width:5.6em}
+.gy-teil.ok .q::after{content:" ✓";color:var(--good)}
+.gy-tipp{margin-top:12px;border-radius:14px;padding:10px 14px;background:#fff6d6;color:#5c4300;border:2px solid #f1d27a;font-weight:600}
+.gy-unten{margin-top:14px}
+.explain .gy-loes{display:block;margin-top:8px;font-weight:800}
+/* Figuren (SVG) */
+svg.fig{display:block;max-width:100%;height:auto;margin:10px auto;max-height:260px}
+svg.fig.uhr{max-height:170px}
+svg.fig .lab{font:700 13px/1 var(--lp-text,system-ui);fill:var(--ink)}
+svg.fig .lab.klein{font-size:11px;font-weight:700;fill:var(--mute)}
+svg.fig .flaeche{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round}
+svg.fig .holz{stroke:#c98a3a;stroke-width:4.5;stroke-linecap:round}
+svg.fig .kopf{fill:#d6402f}
+svg.fig .kante{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+svg.fig .wasser{fill:#7cc4f0;opacity:.75}
+svg.fig .wasser2{fill:#a9dbf7;opacity:.85}
+svg.fig .rot1{fill:#ef6b5e;stroke:#7a1d14;stroke-width:1.5;stroke-linejoin:round}
+svg.fig .rot2{fill:#c9473b;stroke:#7a1d14;stroke-width:1.5;stroke-linejoin:round}
+svg.fig .rot3{fill:#dd5a4d;stroke:#7a1d14;stroke-width:1.5;stroke-linejoin:round}
+svg.fig .gitter{stroke:#7a1d14;stroke-width:1;opacity:.7}
+svg.fig .ziffer{fill:var(--card);stroke:var(--ink);stroke-width:3}
+svg.fig .strich{stroke:var(--ink);stroke-width:2.5}
+svg.fig .zeiger{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+svg.fig .zeiger.dick{stroke-width:6}
+svg.fig .mitte{fill:var(--ink)}
+/* Prüfung */
+.gy-leiste{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--bg);padding:8px 0 10px;margin:-6px 0 8px}
+.gy-uhr{font:800 1.35rem/1 var(--lp-text,system-ui);font-variant-numeric:tabular-nums;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 12px;min-width:5.6em;text-align:center}
+.gy-uhr.knapp{border-color:#e0614f;color:#b42318;background:#fde4e1}
+.gy-nav{display:flex;flex-wrap:wrap;gap:5px;flex:1}
+.gy-nav button{width:36px;height:36px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;cursor:pointer;font-size:.95rem}
+.gy-nav button.voll{background:var(--accent-soft);border-color:var(--accent-soft)}
+.gy-nav button.jetzt{border-color:var(--accent);color:var(--accent)}
+.gy-hinweis{margin:14px 0 0;font-size:.9rem}
+.gy-fenster{position:fixed;inset:0;z-index:50;background:rgba(15,21,34,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.gy-fenster .card{max-width:440px;width:100%;text-align:center}
+.gy-toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;background:#b42318;color:#fff;font-weight:800;border-radius:14px;padding:12px 18px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.gy-zahlen{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 8px}
+.gy-zahlen div{flex:1 1 130px;background:var(--accent-soft);border-radius:16px;padding:10px 14px}
+.gy-zahlen b{display:block;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.gy-zahlen span{font-size:.88rem;color:var(--mute);font-weight:700}
+details.gy-erg{border:2px solid var(--line);border-radius:16px;padding:4px 14px;margin-top:10px}
+details.gy-erg summary{cursor:pointer;font-weight:700;padding:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+details.gy-erg summary .gy-punkte{margin-left:auto;font-variant-numeric:tabular-nums}
+.gy-ok{color:var(--good)} .gy-falsch{color:var(--bad)}
+.gy-antw{margin:8px 0;padding:8px 12px;border-radius:12px;background:var(--bg)}
+.gy-antw .q{font-size:1.02rem;margin:0 0 4px}
+@media (max-width:560px){
+  .gy-teil .q{font-size:1.05rem}
+  .gy-teil input.ans.mittel{width:4.9em}
+  .gy-teil .einheit{font-size:1.15rem}
+  .gy-sit .folge{font-size:1.25rem}
+  .gy-zeile{grid-template-columns:minmax(0,1fr) 70px 4.8em}
+  .gy-uhr{font-size:1.15rem;min-width:4.8em}
+  .gy-nav button{width:32px;height:32px}
+}
+@media (prefers-color-scheme: dark){
+  html:not([data-theme="light"]) .gy-beta{background:#3d1d1a;color:#ffb3a8;border-color:#ff7b6b}
+  html:not([data-theme="light"]) .gy-banner{background:#3d1d1a;color:#ffd2cc;border-color:#7a2f27}
+  html:not([data-theme="light"]) .gy-tipp{background:#3a2d0a;color:#ffe08a;border-color:#7a5c10}
+  html:not([data-theme="light"]) .gy-uhr.knapp{background:#3b1c1c;color:#ff9a8f}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="back lp-zurueck" href="./#mathe">‹ Lernportal</a>
+    <div class="logo lp-logo gy-logo">Gymi</div>
+    <h1 class="grow lp-titel"><small>Mathe <span class="gy-beta">🧪 Beta-Test</span></small>Gymi-Training</h1>
+    <button class="pill" id="pill" type="button" title="Andere Glückszahl eingeben" hidden></button>
+  </header>
+  <main id="app"></main>
+</div>
+<script src="mathe-trainer.js"></script>
+<script src="gymi-aufgaben.js"></script>
+<script>
+/* =====================================================================
+   Gymi-Training (Beta, seit 19.11.2026)
+   Aufgaben im Stil der Gymiprüfung (ZAP Langgymnasium, Mathematik) aus gymi-aufgaben.js.
+   Anmeldung, Lernstand auf allen Geräten und Senden wie die anderen Mathe-Trainer (mathe-trainer.js).
+   - Üben: eine Aufgabe nach der anderen, mit Tipps. Ist etwas falsch, gibt es einen zweiten Versuch,
+     danach den Lösungsweg. Es kommen vor allem Aufgabenarten, die noch nicht gut klappen.
+   - Prüfung mit Zeit: 6 Aufgaben in 24 Minuten oder 12 Aufgaben in 48 Minuten, ohne Tipps.
+     Die Uhr läuft weiter, auch wenn man die Seite verlässt. Ist die Zeit um, wird abgegeben.
+   - Aufgaben aus der Lernzielkontrolle LZK 6.4 kommen nie vor (lzk64 aus mathe-trainer.js).
+   - Resultate in die Tabelle «Übungen – Resultate», Übung «Gymi-Training»:
+     Üben → Thema «Üben», Prüfung → Thema «Prüfung kurz» / «Prüfung lang» (mit Dauer und Zeitlimit).
+     Pro Teilaufgabe ein Eintrag; punkte = 1 nur, wenn beim ersten Versuch richtig.
+   ===================================================================== */
+const UEBUNG = "Gymi-Training";
+const START_NOTE = "Aufgaben wie an der Gymiprüfung in Mathematik – ohne Taschenrechner. Leg ein Blatt Papier für Notizen bereit.";
+const GOALS = GYMI.THEMEN.map(t => ({id: t.id, title: t.name}));
+function SPERRE(){ return false; }
+const PRUEFUNGEN = { kurz: {n: 6, min: 24, name: "Prüfung kurz"}, lang: {n: 12, min: 48, name: "Prüfung lang"} };
+const ORIGINAL_URL = "https://www.zh.ch/de/bildung/schulen/maturitaetsschule/zentrale-aufnahmepruefung/pruefung-fuer-das-langgymnasium.html";
+let MODUS = null, E = null, uhrTimer = null;
+
+function curThema(){ return MODUS === "pruefung" ? "Prüfung" : "Üben"; }
+function startAuto(){ menue(); }
+
+/* Resultate wie die anderen Mathe-Trainer, dazu Aufgabenart (typ), Teil, Tipps, zweiter Versuch und Zeit */
+function makeRec(items, thema, g){
+  const ab = Math.min(...items.map(i => +i.ab || Infinity));   // Beginn der ersten Aufgabe (für die Übungszeit in der Station)
+  return {typ:"uebung-runde", v:4, id:Date.now().toString(36)+Math.random().toString(36).slice(2,10), uebung:UEBUNG, glueckszahl:g, thema, datum:new Date().toISOString(),
+    punkte:items.filter(i=>i.punkte).length, max:items.length, modus:"ueben", start: isFinite(ab) ? ab : undefined,
+    aufgaben:items.map(i=>({nr:i.nr, thema:i.thema, typ:i.typ, teil:i.teil, frage:i.frage, kontext:i.kontext, antworten:i.antworten, loesung:i.loesung, punkte:i.punkte, t:i.t, tipp:i.tipp, zweiter:i.zweiter, sek:i.sek}))};
+}
+const kurzText = s => String(s || "").length > 500 ? String(s).slice(0, 500) + " …" : String(s || "");
+function recSenden(rec){ const q = queue(); q.push(rec); store.set(QKEY, JSON.stringify(q.slice(-60))); flush(); }
+
+/* ---------- Lernstand pro Aufgabenart: P.typ[id] = {n, ok, h (letzte 6: 1 = ganz richtig beim ersten Versuch), t} ---------- */
+function typen(){ return (P.typ = P.typ || {}); }
+function typStand(id){ return typen()[id] || {n:0, ok:0, h:""}; }
+function merkeTyp(id, ok){ const s = typen()[id] || (typen()[id] = {n:0, ok:0, h:""}); s.n++; if (ok) s.ok++; s.h = (s.h + (ok ? "1" : "0")).slice(-6); s.t = Date.now(); }
+const quote = h => h && h.length ? [...h].filter(c => c === "1").length / h.length : null;
+
+function neueAufgabe(typ){
+  let t = null;
+  for (let k = 0; k < 300; k++){ t = GYMI.erzeuge(typ); if (!lzk64(t.html + " | " + t.text)) return t; }   // nie eine Testaufgabe
+  return null;
+}
+function waehleTyp(){
+  const ids = Object.keys(GYMI.TYPEN), z = S.zuletzt || [];
+  const letztesThema = z.length ? GYMI.TYPEN[z[z.length-1]].thema : null;
+  let kand = ids.filter(id => !z.slice(-4).includes(id) && GYMI.TYPEN[id].thema !== letztesThema);
+  if (!kand.length) kand = ids.filter(id => !z.slice(-2).includes(id));
+  const gewicht = id => { const s = typStand(id); if (!s.n) return 4; const q = quote(s.h); return 1 + 3 * (1 - (q == null ? 0.5 : q)) + (Date.now() - (s.t||0) > 3*864e5 ? 1 : 0); };
+  const w = kand.map(gewicht), sum = w.reduce((a,b) => a+b, 0);
+  let r = Math.random() * sum;
+  for (let i = 0; i < kand.length; i++){ r -= w[i]; if (r <= 0) return kand[i]; }
+  return kand[kand.length-1];
+}
+
+/* ---------- Darstellung einer Aufgabe ---------- */
+function feld(teil, i, w){
+  w = w || [];
+  const v = k => esc(w[k] == null ? "" : w[k]);
+  if (teil.art === "bruch") return `<span class="fin"><input class="ans small" data-t="${i}" data-k="0" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" value="${v(0)}" aria-label="Zähler"><i></i><input class="ans small" data-t="${i}" data-k="1" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" value="${v(1)}" aria-label="Nenner"></span>`;
+  if (teil.art === "uhr") return `<input class="ans mittel" data-t="${i}" data-k="0" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="hh.mm" value="${v(0)}" aria-label="Uhrzeit"><span class="einheit">Uhr</span>`;
+  return `<input class="ans mittel" data-t="${i}" data-k="0" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?" value="${v(0)}" aria-label="Antwort">${teil.einheit ? `<span class="einheit">${esc(teil.einheit)}</span>` : ""}`;
+}
+function aufgabeHtml(t, werte){
+  return `<div class="situation gy-sit">${t.html}</div>` + t.teile.map((teil, i) => `
+    <div class="gy-teil" data-i="${i}">
+      <p class="q">${teil.label ? `<b class="gy-lab">${teil.label}</b> ` : ""}${teil.frage}</p>
+      <div class="fd">${feld(teil, i, werte && werte[i])}</div>
+    </div>`).join("");
+}
+function eingabenLesen(t){
+  const r = t.teile.map(() => []);
+  app.querySelectorAll("input.ans[data-t]").forEach(el => { r[+el.dataset.t][+el.dataset.k] = el.value; });
+  return r;
+}
+function bewerten(t, w){ return t.ungeordnet ? GYMI.bewerteUngeordnet(t.teile, w) : t.teile.map((teil, i) => GYMI.bewerte(teil, w[i])); }
+function enterWeiter(onEnter){
+  const inputs = [...app.querySelectorAll("input.ans")];
+  inputs.forEach((el, j) => el.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return; e.preventDefault();
+    const rest = inputs.slice(j+1).filter(x => !x.readOnly);
+    if (rest.length && !rest[0].value) rest[0].focus(); else onEnter();
+  }));
+}
+function toast(text){
+  const d = document.createElement("div"); d.className = "gy-toast"; d.textContent = text;
+  document.body.appendChild(d); setTimeout(() => d.remove(), 4000);
+}
+const mmss = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+const datum = t => { const d = new Date(t); return `${d.getDate()}.${d.getMonth()+1}.`; };
+
+/* ===================================================================== Start */
+function standHtml(){
+  const ty = typen(), n = Object.values(ty).reduce((a, s) => a + s.n, 0), prs = P.pr || [];
+  if (!n && !prs.length) return "";
+  const zeilen = GYMI.THEMEN.map(th => {
+    const ids = Object.keys(GYMI.TYPEN).filter(k => GYMI.TYPEN[k].thema === th.id);
+    const h = ids.map(id => typStand(id).h || "").join(""), anz = ids.reduce((a, id) => a + typStand(id).n, 0), q = quote(h);
+    return `<div class="gy-zeile"><span>${esc(th.name)}</span><span class="gy-bar" title="${q == null ? "noch nicht geübt" : Math.round(q*100) + " % ganz richtig (zuletzt)"}"><i style="width:${q == null ? 0 : Math.round(q*100)}%"></i></span><span class="gy-zahl">${anz ? `${anz} ${anz === 1 ? "Aufgabe" : "Aufgaben"}` : "noch offen"}</span></div>`;
+  }).join("");
+  const pl = prs.slice(-3).reverse().map(p => `<li>${datum(p.t)} · ${p.art === "lang" ? "lange" : "kurze"} Prüfung: <b>${p.punkte} von ${p.max} Punkten</b> · ${mmss(p.dauer)} von ${p.limit/60} Min.</li>`).join("");
+  return `<details class="gy-stand"><summary>📊 Dein Stand</summary>${zeilen}
+    <p class="sub" style="margin:8px 0 4px;font-size:.85rem">Der grüne Balken zeigt, wie viele Aufgaben zuletzt beim ersten Versuch ganz richtig waren.</p>
+    ${pl ? `<p style="margin:10px 0 0;font-weight:700">Deine letzten Prüfungen</p><ul class="gy-prs">${pl}</ul>` : ""}</details>`;
+}
+function menue(){
+  MODUS = null; S = {mode:"menue", pending:[], log:[]}; clearInterval(uhrTimer);
+  pill.hidden = false; pill.textContent = `Nr. ${gz}`;
+  const laufend = pruefungLaden();
+  if (laufend && !laufend.abgegeben && Date.now() >= laufend.ende){ E = laufend; MODUS = "pruefung"; return abgeben("zeit"); }
+  const offen = laufend && !laufend.abgegeben ? laufend : null;
+  app.innerHTML = `<div class="card gy-start">
+    <p class="gy-banner"><b>🧪 Beta-Test:</b> Das Gymi-Training ist neu und noch in der Probephase – es kann Fehler geben. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</p>
+    <h2>Üben für die Gymiprüfung</h2>
+    <p class="sub" style="margin:0">Aufgaben wie an der Gymiprüfung in Mathematik. Rechne <b>ohne Taschenrechner</b> und leg ein Blatt Papier für Notizen bereit.</p>
+    ${offen ? `<button class="gy-weiter" id="weiterPr" type="button">⏱ Weiter mit deiner Prüfung · noch ${Math.max(1, Math.ceil((offen.ende - Date.now())/60000))} Min.</button>` : ""}
+    <div class="gy-modi">
+      <button class="gy-modus" id="ueben" type="button"><span class="gy-m-ico">✏️</span><span><b>Üben</b><span class="gy-m-text">Eine Aufgabe nach der anderen – mit Tipps und Lösungsweg, ohne Zeitdruck.</span></span></button>
+      <div class="gy-modus gy-pruef"><span class="gy-m-ico">⏱</span><span><b>Prüfung mit Zeit</b><span class="gy-m-text">Wie an der echten Prüfung: ohne Tipps, mit Uhr. Am Schluss siehst du deine Punkte und alle Lösungswege.</span>
+        <span class="gy-knoepfe">${offen ? `<button class="linkish" id="abbrechen" type="button">Angefangene Prüfung abbrechen</button>`
+          : `<button class="btn small" id="kurz" type="button">6 Aufgaben · 24 Min.</button><button class="btn small" id="lang" type="button">12 Aufgaben · 48 Min.</button>`}</span></span></div>
+    </div>
+    ${standHtml()}
+    <p class="gy-original">📄 <a href="${ORIGINAL_URL}" target="_blank" rel="noopener">Echte Gymiprüfungen mit Lösungen</a> (Kanton Zürich) – zum Ausdrucken und auf Papier lösen.</p>
+  </div>`;
+  document.getElementById("ueben").onclick = uebenStart;
+  const k = document.getElementById("kurz"); if (k) k.onclick = () => pruefungStart("kurz");
+  const l = document.getElementById("lang"); if (l) l.onclick = () => pruefungStart("lang");
+  const w = document.getElementById("weiterPr"); if (w) w.onclick = () => { E = offen; MODUS = "pruefung"; S = {mode:"pruefung", pending:[], log:[]}; zeichnePruefung(); };
+  const ab = document.getElementById("abbrechen"); if (ab) ab.onclick = () => fenster("Angefangene Prüfung abbrechen?", "Deine Antworten werden gelöscht und nicht ausgewertet.", "Ja, abbrechen", () => { store.set(pkey_pr(), ""); menue(); });
+  window.scrollTo(0, 0);
+}
+function fenster(titel, text, ja, aktion){
+  const f = document.createElement("div"); f.className = "gy-fenster";
+  f.innerHTML = `<div class="card"><h2>${titel}</h2><p class="sub">${text}</p><div class="actions" style="justify-content:center"><button class="btn" id="fJa" type="button">${ja}</button><button class="btn ghost" id="fNein" type="button">Zurück</button></div></div>`;
+  document.body.appendChild(f);
+  f.querySelector("#fJa").onclick = () => { f.remove(); aktion(); };
+  f.querySelector("#fNein").onclick = () => f.remove();
+  f.querySelector("#fNein").focus({preventScroll:true});
+}
+
+/* ===================================================================== Üben */
+function uebenStart(){
+  MODUS = "ueben";
+  S = {mode:"ueben", log:[], pending:[], nr:0, zuletzt:[], richtig:0, gemacht:0};
+  naechste();
+}
+function naechste(){
+  let typ = waehleTyp(), t = neueAufgabe(typ);
+  for (let k = 0; !t && k < 10; k++){ typ = waehleTyp(); t = neueAufgabe(typ); }
+  S.zuletzt.push(typ); S.zuletzt = S.zuletzt.slice(-8);
+  S.task = {t, versuch:1, tipps:0, tippVorher:0, fertig:false, erst:null, start:Date.now()};
+  S.nr++;
+  zeichneUeben();
+}
+function zeichneUeben(){
+  const A = S.task, t = A.t;
+  pill.hidden = false; pill.textContent = `Nr. ${gz}`;
+  app.innerHTML = `<div class="card gy-aufgabe">
+    <div class="sesshead"><span class="qtype">${esc(t.thema)}</span><span class="gy-titel">${esc(t.titel)}</span><span class="grow"></span>${S.gemacht ? `<span class="gy-zaehler">${S.richtig} von ${S.gemacht} ganz richtig</span>` : ""}</div>
+    ${aufgabeHtml(t)}
+    <div id="fb"></div>
+    <div id="tipps"></div>
+    <div class="actions">
+      <button class="btn" id="check" type="button">Prüfen</button>
+      <button class="btn ghost" id="tipp" type="button">💡 Tipp</button>
+      <button class="btn" id="weiter" type="button" hidden>Nächste Aufgabe →</button>
+    </div>
+    <div class="gy-unten"><button class="linkish" id="zumStart" type="button">Zurück zum Start</button></div>
+  </div>`;
+  document.getElementById("check").onclick = pruefenUeben;
+  document.getElementById("tipp").onclick = () => zeigeTipp();
+  document.getElementById("weiter").onclick = naechste;
+  document.getElementById("zumStart").onclick = () => { sendPending(); menue(); };
+  enterWeiter(() => { if (S.task.fertig) naechste(); else pruefenUeben(); });
+  const erstes = app.querySelector("input.ans"); if (erstes) erstes.focus({preventScroll:true});
+  const oben = app.getBoundingClientRect().top; if (oben < 0) window.scrollBy(0, oben - 10);
+}
+function zeigeTipp(){
+  const A = S.task, t = A.t;
+  if (A.tipps >= t.tipps.length) return;
+  A.tipps++;
+  document.getElementById("tipps").innerHTML = t.tipps.slice(0, A.tipps).map(x => `<div class="gy-tipp">💡 ${x}</div>`).join("");
+  const b = document.getElementById("tipp");
+  if (A.tipps >= t.tipps.length) b.hidden = true; else b.textContent = "💡 Noch ein Tipp";
+}
+function meldung(kind, html){ document.getElementById("fb").innerHTML = `<div class="fb show ${kind}">${html}</div>`; }
+function markieren(res){
+  res.forEach((r, i) => {
+    app.querySelectorAll(`input.ans[data-t="${i}"]`).forEach(el => {
+      el.classList.toggle("ok", r.status === "ok"); el.classList.toggle("no", r.status !== "ok");
+      if (r.status === "ok") el.readOnly = true;
+    });
+    const box = app.querySelector(`.gy-teil[data-i="${i}"]`); if (box) box.classList.toggle("ok", r.status === "ok");
+  });
+}
+function pruefenUeben(){
+  const A = S.task, t = A.t; if (A.fertig) return;
+  const res = bewerten(t, eingabenLesen(t));
+  if (res.some(r => r.status === "leer")) return meldung("bad", "Bitte fülle zuerst alle Felder aus.");
+  const ung = res.find(r => r.status === "ungueltig"); if (ung) return meldung("bad", ung.meldung);
+  markieren(res);
+  const alleOk = res.every(r => r.status === "ok");
+  if (A.versuch === 1){
+    A.erst = res.map(r => r.status === "ok"); A.tippVorher = A.tipps;
+    if (alleOk) return abschluss(res, true);
+    A.versuch = 2;
+    const n = res.filter(r => r.status === "ok").length, extra = res.map(r => r.meldung).filter(Boolean)[0];
+    meldung("bad", `${n ? `${n} von ${res.length} richtig. ` : "Noch nicht richtig. "}${extra ? extra + " " : ""}Lies den Tipp und versuche es nochmals.`);
+    zeigeTipp();
+    document.getElementById("check").textContent = "Nochmals prüfen";
+    const falsch = app.querySelector("input.ans.no"); if (falsch){ falsch.focus({preventScroll:true}); falsch.select(); }
+    return;
+  }
+  abschluss(res, false);
+}
+function abschluss(res, glatt){
+  const A = S.task, t = A.t; A.fertig = true;
+  app.querySelectorAll("input.ans").forEach(el => el.readOnly = true);
+  ["check","tipp"].forEach(id => { const b = document.getElementById(id); if (b) b.hidden = true; });
+  const alleOk = res.every(r => r.status === "ok");
+  S.gemacht++; if (glatt) S.richtig++;
+  merkeTyp(t.typ, glatt); saveP();
+  const sek = Math.round((Date.now() - A.start) / 1000);
+  t.teile.forEach((teil, i) => {
+    const e = {nr:S.nr, thema:t.thema, typ:t.typ, teil:teil.label || "", frage:(teil.label ? teil.label + " " : "") + GYMI.plain(teil.frage), kontext:kurzText(t.kontext),
+      antworten:[res[i].given], loesung:teil.show, punkte:A.erst[i] ? 1 : 0, t:Date.now(), ab:A.start, tipp:A.tippVorher || 0, zweiter:(!A.erst[i] && res[i].status === "ok") ? 1 : 0, sek};
+    S.log.push(e); S.pending.push(e);
+  });
+  savePending();
+  const loes = t.teile.map(x => `${x.label ? x.label + " " : ""}${esc(x.show)}`).join(" · ");
+  if (glatt) document.getElementById("fb").innerHTML = `<div class="fb show good">${pick(["Super, alles richtig! ⭐","Stark – alles richtig! ⭐","Genau so! ⭐","Perfekt! ⭐"])}</div>
+      <details class="way"><summary>Lösungsweg anschauen</summary><div class="explain ok">${t.weg}</div></details>`;
+  else document.getElementById("fb").innerHTML = `<div class="fb show ${alleOk ? "good" : "bad"}">${alleOk ? "Jetzt stimmt's! 👍" : "Leider noch nicht ganz richtig."}</div>
+      <div class="explain${alleOk ? " ok" : ""}"><h3>💡 So geht es</h3>${t.weg}<span class="gy-loes">Lösung: ${loes}</span></div>
+      ${alleOk ? "" : `<p class="sub" style="margin:10px 0 0">Lies den Lösungsweg genau und rechne ihn auf deinem Blatt nach.</p>`}`;
+  const w = document.getElementById("weiter"); w.hidden = false; w.focus({preventScroll:true});
+  if (S.pending.length >= 8) sendPending();
+}
+
+/* ===================================================================== Prüfung mit Zeit */
+const pkey_pr = () => "gymi.pruefung." + gz;
+function pruefungLaden(){ try { return JSON.parse(store.get(pkey_pr()) || "null"); } catch(e){ return null; } }
+function pruefungSpeichern(){ if (E) store.set(pkey_pr(), JSON.stringify(E)); }
+function pruefungsTypen(n){
+  const themen = shuffle(GYMI.THEMEN.map(t => t.id)), out = [];
+  const vomThema = id => shuffle(Object.keys(GYMI.TYPEN).filter(k => GYMI.TYPEN[k].thema === id && !out.includes(k)));
+  for (let runde = 0; out.length < n && runde < 10; runde++)
+    for (const th of (runde ? shuffle(themen.slice()) : themen)){ if (out.length >= n) break; const c = vomThema(th); if (c.length) out.push(c[0]); }
+  return shuffle(out);
+}
+function pruefungStart(art){
+  const cfg = PRUEFUNGEN[art], start = Date.now();
+  const aufgaben = pruefungsTypen(cfg.n).map(typ => ({t: neueAufgabe(typ), w: []})).filter(a => a.t);
+  E = {art, start, ende: start + cfg.min * 60000, limit: cfg.min * 60, aufgaben, aktiv: 0, abgegeben: false};
+  MODUS = "pruefung"; S = {mode:"pruefung", pending:[], log:[]};
+  pruefungSpeichern();
+  zeichnePruefung();
+}
+const beantwortet = a => a.t.teile.every((teil, i) => { const w = a.w[i] || [], v = k => String(w[k] == null ? "" : w[k]).trim(); return teil.art === "bruch" ? !!(v(0) && v(1)) : !!v(0); });
+function eingabenMerken(){
+  if (!E || E.abgegeben || !app.querySelector("input.ans[data-t]")) return;
+  const a = E.aufgaben[E.aktiv]; a.w = eingabenLesen(a.t); pruefungSpeichern();
+  const b = app.querySelector(`.gy-nav button[data-i="${E.aktiv}"]`); if (b) b.classList.toggle("voll", beantwortet(a));
+}
+function zeichnePruefung(){
+  const a = E.aufgaben[E.aktiv], t = a.t, letzte = E.aktiv === E.aufgaben.length - 1;
+  pill.hidden = false; pill.textContent = `Nr. ${gz}`;
+  app.innerHTML = `
+    <div class="gy-leiste">
+      <span class="gy-uhr" id="uhr" title="Verbleibende Zeit">⏱ --:--</span>
+      <span class="gy-nav">${E.aufgaben.map((x, i) => `<button type="button" data-i="${i}" class="${i === E.aktiv ? "jetzt" : ""} ${beantwortet(x) ? "voll" : ""}" aria-label="Aufgabe ${i+1}">${i+1}</button>`).join("")}</span>
+      <button class="btn small" id="abgeben" type="button">Abgeben</button>
+    </div>
+    <div class="card gy-aufgabe">
+      <div class="sesshead"><span class="qtype">Aufgabe ${E.aktiv+1} von ${E.aufgaben.length}</span><span class="gy-titel">${esc(t.thema)}</span></div>
+      ${aufgabeHtml(t, a.w)}
+      <div class="actions">
+        <button class="btn ghost" id="zurueck" type="button" ${E.aktiv === 0 ? "disabled" : ""}>← Zurück</button>
+        <button class="btn" id="vor" type="button">${letzte ? "Fertig – abgeben" : "Weiter →"}</button>
+      </div>
+      <p class="sub gy-hinweis">Du kannst zwischen den Aufgaben hin und her springen. Deine Antworten bleiben gespeichert.</p>
+    </div>`;
+  app.querySelectorAll("input.ans").forEach(el => el.addEventListener("input", () => { E.aufgaben[E.aktiv].tz = Date.now(); eingabenMerken(); }));   // tz: zuletzt an dieser Aufgabe gearbeitet
+  app.querySelectorAll(".gy-nav button").forEach(b => b.onclick = () => gehe(+b.dataset.i));
+  document.getElementById("zurueck").onclick = () => gehe(E.aktiv - 1);
+  document.getElementById("vor").onclick = () => letzte ? abgebenFragen() : gehe(E.aktiv + 1);
+  document.getElementById("abgeben").onclick = abgebenFragen;
+  enterWeiter(() => letzte ? abgebenFragen() : gehe(E.aktiv + 1));
+  const erstes = [...app.querySelectorAll("input.ans")].find(x => !x.value) || app.querySelector("input.ans");
+  if (erstes) erstes.focus({preventScroll:true});
+  window.scrollTo(0, 0);
+  tick(); clearInterval(uhrTimer); uhrTimer = setInterval(tick, 1000);
+}
+function gehe(i){ if (i < 0 || i >= E.aufgaben.length) return; eingabenMerken(); E.aktiv = i; pruefungSpeichern(); zeichnePruefung(); }
+function tick(){
+  if (!E || E.abgegeben || MODUS !== "pruefung"){ clearInterval(uhrTimer); return; }
+  const rest = Math.max(0, Math.round((E.ende - Date.now()) / 1000));
+  const el = document.getElementById("uhr");
+  if (el){ el.textContent = `⏱ ${mmss(rest)}`; el.classList.toggle("knapp", rest <= 300); }
+  if (rest <= 300 && rest > 0 && !E.warn5){ E.warn5 = true; pruefungSpeichern(); toast("Noch 5 Minuten!"); }
+  if (rest <= 0) abgeben("zeit");
+}
+function abgebenFragen(){
+  eingabenMerken();
+  const leer = E.aufgaben.reduce((s, a) => s + a.t.teile.filter((teil, i) => !(a.w[i] || []).some(x => String(x || "").trim())).length, 0);
+  fenster("Prüfung abgeben?", leer ? `Du hast noch ${leer} ${leer === 1 ? "Feld" : "Felder"} leer. Nach dem Abgeben kannst du nichts mehr ändern.` : "Nach dem Abgeben kannst du nichts mehr ändern.", "Ja, abgeben", () => abgeben("selbst"));
+}
+function abgeben(grund){
+  if (!E || E.abgegeben) return;
+  eingabenMerken();
+  clearInterval(uhrTimer);
+  document.querySelectorAll(".gy-fenster, .gy-toast").forEach(f => f.remove());
+  E.abgegeben = true; E.grund = grund;
+  E.dauer = Math.round((Math.min(Date.now(), E.ende) - E.start) / 1000);
+  let punkte = 0, max = 0;
+  const eintraege = [];
+  E.erg = E.aufgaben.map((a, nr) => {
+    const t = a.t, w = t.teile.map((_, i) => a.w[i] || []), r = bewerten(t, w);
+    const ganz = r.every(x => x.status === "ok");
+    merkeTyp(t.typ, ganz);
+    r.forEach((x, i) => {
+      max++; if (x.status === "ok") punkte++;
+      eintraege.push({nr:nr+1, thema:t.thema, typ:t.typ, teil:t.teile[i].label || "", frage:(t.teile[i].label ? t.teile[i].label + " " : "") + GYMI.plain(t.teile[i].frage), kontext:kurzText(t.kontext),
+        antworten:[x.given || ""], loesung:t.teile[i].show, punkte:x.status === "ok" ? 1 : 0, t:Math.min(a.tz || E.start, Date.now())});
+    });
+    return r.map(x => ({status:x.status, given:x.given || ""}));
+  });
+  E.punkte = punkte; E.max = max;
+  const cfg = PRUEFUNGEN[E.art];
+  recSenden({typ:"uebung-runde", v:4, id:Date.now().toString(36)+Math.random().toString(36).slice(2,10), uebung:UEBUNG, glueckszahl:gz, thema:cfg.name, datum:new Date().toISOString(),
+    punkte, max, modus:"pruefung", start:E.start, dauer:E.dauer, limit:E.limit, abgabe:grund, aufgaben:eintraege});
+  P.pr = (P.pr || []).concat([{t:Date.now(), art:E.art, punkte, max, dauer:E.dauer, limit:E.limit}]).slice(-20);
+  saveP();
+  store.set(pkey_pr(), "");
+  try { store.set("gymi.letzte." + gz, JSON.stringify(E)); } catch(e){}
+  zeigeErgebnis();
+}
+function zeigeErgebnis(){
+  const ganzRichtig = E.erg.filter(r => r.every(x => x.status === "ok")).length;
+  const cfg = PRUEFUNGEN[E.art];
+  app.innerHTML = `<div class="card gy-ende">
+    <h2>${E.grund === "zeit" ? "⏰ Die Zeit ist um – deine Prüfung ist abgegeben." : "Prüfung abgegeben 🎉"}</h2>
+    <div class="gy-zahlen">
+      <div><b>${E.punkte} / ${E.max}</b><span>Punkte</span></div>
+      <div><b>${ganzRichtig} / ${E.aufgaben.length}</b><span>Aufgaben ganz richtig</span></div>
+      <div><b>${mmss(E.dauer)}</b><span>gebraucht (von ${cfg.min} Min.)</span></div>
+    </div>
+    <p class="sub">An der echten Gymiprüfung zählt auch dein Lösungsweg auf dem Papier. Hier zählt nur das Resultat. Schau dir bei den falschen Aufgaben den Lösungsweg an.</p>
+    ${E.aufgaben.map((a, nr) => {
+      const t = a.t, r = E.erg[nr], p = r.filter(x => x.status === "ok").length;
+      return `<details class="gy-erg"${p < r.length ? " open" : ""}><summary><span>Aufgabe ${nr+1}</span><span class="gy-titel">${esc(t.thema)}</span><span class="gy-punkte ${p === r.length ? "gy-ok" : "gy-falsch"}">${p === r.length ? "✓" : "✗"} ${p} / ${r.length}</span></summary>
+        <div class="situation gy-sit">${t.html}</div>
+        ${t.teile.map((teil, i) => `<div class="gy-antw"><p class="q">${teil.label ? `<b class="gy-lab">${teil.label}</b> ` : ""}${teil.frage}</p>
+          ${r[i].status === "ok" ? `<span class="gy-ok">✓ ${esc(r[i].given)}</span>` : `<span class="gy-falsch">✗ ${r[i].given ? "Deine Antwort: " + esc(r[i].given) : "keine Antwort"}</span> · Richtig: <b>${esc(teil.show)}</b>`}</div>`).join("")}
+        <details class="way"${p < r.length ? " open" : ""}><summary>Lösungsweg</summary><div class="explain">${t.weg}</div></details>
+      </details>`;
+    }).join("")}
+    <div class="actions"><button class="btn" id="neu" type="button">Neue Prüfung</button><button class="btn ghost" id="start" type="button">Zum Start</button></div>
+  </div>`;
+  document.getElementById("neu").onclick = () => pruefungStart(E.art);
+  document.getElementById("start").onclick = menue;
+  window.scrollTo(0, 0);
+}
+
+trainerStart();
+</script>
+</body>
+</html>
