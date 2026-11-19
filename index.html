@@ -139,7 +139,8 @@ body.fach-offen header .klasse{display:none}
 .im-fach .chips{margin-top:5px}
 .im-fach .u-status{margin-top:4px}
 .im-fach .trainer .pfeil{width:34px; height:34px}
-.im-fach .extra-knopf{margin-top:6px; padding:11px 14px; gap:12px; border-radius:18px}
+.im-fach .extras{margin-top:6px; gap:8px}
+.im-fach .extra-knopf{margin-top:0; padding:11px 14px; gap:12px; border-radius:18px}
 .im-fach .extra-knopf .x-ico{width:46px; height:46px; border-radius:13px; font-size:18px}
 .im-fach .extra-knopf .x-name{font-size:20px}
 .im-fach .extra-knopf .x-text{font-size:14px; margin-top:1px}
@@ -173,6 +174,18 @@ body.fach-offen header .klasse{display:none}
 .extra-knopf .pfeil{width:44px; height:44px; border-radius:50%; background:#2b1600; color:#ffd45c; display:grid; place-items:center}
 .extra-knopf .pfeil svg{width:22px; height:22px}
 @media (max-width:440px){ .extra-knopf{grid-template-columns:auto minmax(0,1fr)} .extra-knopf .pfeil{display:none} }
+/* Mehrere Extra-Knöpfe (Einmaleins-Trainer, Gymi-Training): auf breiten Bildschirmen nebeneinander (19.11.2026) */
+.extras{display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px}
+.extras .extra-knopf{margin-top:0}
+@media (min-width:640px){ .extras{grid-template-columns:1fr 1fr} }
+.extra-knopf .beta-name{vertical-align:4px}
+/* Gymi-Training: eigene Farbe (Türkis) */
+.extra-knopf.gymi{color:#062b24; background:linear-gradient(135deg, #9af2da 0%, #2fb39a 100%); border-color:#23a088; box-shadow:0 6px 18px rgba(35,160,136,.28)}
+.extra-knopf.gymi:focus-visible{outline-color:#23a088}
+.extra-knopf.gymi .x-ico{color:#0f6a5a; font-size:18px}
+.extra-knopf.gymi .x-text{color:#0b3d33}
+.extra-knopf.gymi .u-status, .extra-knopf.gymi .u-status .u-leise{color:#0b3d33}
+.extra-knopf.gymi .pfeil{background:#062b24; color:#9af2da}
 
 @media (max-width:440px){
   .fach{padding:16px 14px}
@@ -255,6 +268,19 @@ body.fach-offen header .klasse{display:none}
 .u-hilfe table.wtab td.strich{color:var(--muted); padding:4px 2px}
 @media (prefers-color-scheme: dark){ .u-hilfe table.wp td.op{color:#f2b27a} }
 @media (prefers-reduced-motion: reduce){ .fach, .trainer{transition:none} .fach:hover, .trainer:hover{transform:none} }
+/* Extra-Knöpfe kompakt, damit die Mathe-Seite ohne Scrollen Platz hat (19.11.2026):
+   Handy: zwei kleine Kacheln nebeneinander (Name, Beta-Hinweis, Stand) · breite Bildschirme: Beschreibung nur ohne Stand */
+@media (max-width:639px){
+  .extras{grid-template-columns:1fr 1fr; gap:8px}
+  .extras .extra-knopf{grid-template-columns:minmax(0,1fr); align-items:start; gap:0; padding:10px 12px; border-radius:16px}
+  .extras .extra-knopf .x-ico, .extras .extra-knopf .pfeil, .extras .extra-knopf .x-text{display:none}
+  .extras .extra-knopf .x-name{font-size:17px; line-height:1.15}
+  .extras .extra-knopf .beta-name{display:table; margin:4px 0 0; font-size:11px; padding:2px 7px}
+  .extras .extra-knopf .u-status{font-size:12.5px; margin-top:4px; line-height:1.3}
+}
+@media (min-width:640px){
+  .extras .extra-knopf:has(.u-status:not(:empty)) .x-text{display:none}
+}
 </style>
 </head>
 <body>
@@ -299,7 +325,9 @@ const FAECHER = [
       { name:'Proportionalität', text:'Wertetabellen, Strecke und Zeit, Geschwindigkeit in km/h.', zeichen:'km/h', url:BASIS+'proportionalitaet.html', chips:[] },
       { name:'Umgekehrte Proportionalität', text:'Doppelt so viele – halb so lang: verteilen, Maschinen, Tempo.', zeichen:'·2 :2', url:BASIS+'umgekehrte-proportionalitaet.html', chips:[] },
       { name:'Wertepaare und Wertetabellen', text:'Proportional, umgekehrt proportional oder weder noch?', zeichen:'x | y', url:BASIS+'wertetabellen.html', chips:[] },
-      { name:'Einmaleins-Trainer', plan:'Einmaleins', extra:true, text:'Kleines und grosses 1×1 – schnell und sicher.', zeichen:'1×1', url:BASIS+'einmaleins.html', chips:[] }
+      { name:'Einmaleins-Trainer', plan:'Einmaleins', extra:true, text:'Kleines und grosses 1×1 – schnell und sicher.', zeichen:'1×1', url:BASIS+'einmaleins.html', chips:[] },
+      /* Gymi-Training (Beta, 19.11.2026): Aufgaben im Stil der Gymiprüfung – üben oder als Prüfung mit Zeit */
+      { name:'Gymi-Training', plan:'Gymi-Training', extra:true, stil:'gymi', beta:true, text:'Aufgaben wie an der Gymiprüfung – üben oder mit Zeit.', zeichen:'Gymi', url:BASIS+'gymi.html', chips:[] }
     ]},
   { id:'deutsch', name:'Deutsch',
     tipp:'Tippe beim Start immer <b>deine Glückszahl</b> ein. Dann machst du dort weiter, wo du aufgehört hast.',
@@ -381,16 +409,16 @@ function fachseite(f){
             </${gesperrt(t) ? 'div' : 'a'}>
           </li>`).join('')}
       </ul>
-      ${f.trainer.filter(t => t.extra).map(t => `
-        <a class="extra-knopf" href="${esc(t.url)}">
+      ${f.trainer.some(t => t.extra) ? `<div class="extras">${f.trainer.filter(t => t.extra).map(t => `
+        <a class="extra-knopf${t.stil ? ' ' + t.stil : ''}" href="${esc(t.url)}">
           <span class="x-ico">${t.zeichen}</span>
           <span>
-            <span class="x-name">${t.name}</span>
+            <span class="x-name">${t.name}${t.beta ? '<span class="beta-name">🧪 Beta-Test</span>' : ''}</span>
             <span class="x-text">${t.text}</span>
             ${f.id === 'mathe' ? `<span class="u-status" data-plan="${esc(t.plan || t.name)}"></span>` : ''}
           </span>
           <span class="pfeil">${ICONS.pfeil}</span>
-        </a>`).join('')}
+        </a>`).join('')}</div>` : ''}
       ${f.id === 'mathe' ? '<details class="ueben" id="ueben" hidden></details>' : ''}
     </section>`;
   if (f.id === 'mathe' && window.MATHE_PLAENE) matheUeben();
@@ -489,9 +517,16 @@ function einmaleinsStatus(gz){
   return st.grossFrei ? `<span>Kleines 1×1: ${zaehle('k:', 45)} · Grosses 1×1: ${zaehle('g:', 80)} sitzen</span>`
     : `<span>Kleines 1×1: ${zaehle('k:', 45)} sitzen · Grosses 1×1 🔒 ab 41</span>`;
 }
+/* Gymi-Training: wie viele Aufgaben geübt und die letzte Prüfung (aus dem Lernstand im Trainer) */
+function gymiStatus(gz){
+  const st = lokalerStand('Gymi-Training', gz), ty = (st && st.typ) || {}, pr = (st && st.pr) || [];
+  const n = Object.values(ty).reduce((a, x) => a + (+x.n || 0), 0), l = pr[pr.length - 1];
+  if (!n && !l) return `<span class="u-leise">Noch nicht geübt</span>`;
+  return `<span>${n} ${n === 1 ? 'Aufgabe' : 'Aufgaben'} geübt${l ? ` · letzte Prüfung: ${l.punkte}/${l.max} Punkte` : ''}</span>`;
+}
 function matheUebenZeigen(gz, staende){
   const r = matheUebenHtml(gz, staende);
-  document.querySelectorAll('.u-status[data-plan]').forEach(el => { el.innerHTML = r.status[el.dataset.plan] || (el.dataset.plan === 'Einmaleins' ? einmaleinsStatus(gz) : ''); });
+  document.querySelectorAll('.u-status[data-plan]').forEach(el => { el.innerHTML = r.status[el.dataset.plan] || (el.dataset.plan === 'Einmaleins' ? einmaleinsStatus(gz) : el.dataset.plan === 'Gymi-Training' ? gymiStatus(gz) : ''); });
   const d = document.getElementById('ueben');
   if (d){ const offen = d.dataset.gesetzt ? d.open : true; d.innerHTML = r.detail; d.hidden = !r.detail; d.open = offen; d.dataset.gesetzt = '1'; }
 }
