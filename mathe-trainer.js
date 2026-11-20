@@ -13,7 +13,8 @@
      hintereinander bei «wie im Test» → kurzer Zwischenhalt mit 2 Einstiegsaufgaben (die Punkte bei «wie im
      Test» bleiben gespeichert), die Hilfe «So geht's» ist dann offen. Muss ein Kind bei einem Lernziel zum
      zweiten Mal zurück, geht es mit dem nächsten offenen Lernziel weiter; das schwierige kommt später wieder.
-   - «Ich komme nicht weiter» (nach einer Rückfrage): Lösung anschauen, zählt als falsch, dann die nächste Aufgabe.
+   - «Ich komme nicht weiter» (nach einer Rückfrage): Lösung anschauen, zählt als falsch. «Weiter» geht erst nach
+     2 Minuten – damit die Kinder den Lösungsweg anschauen statt durchzuklicken (bleibt auch nach Neuladen).
      (Bis 18.11.2026: drei Stufen mit je 5 Punkten – das waren zu viele Aufgaben pro Matheplan.)
    - Lernstand auf allen Geräten (über die Glückszahl), Resultate in die Tabelle
      «Übungen – Resultate» (gleiches Google-Skript wie bisher)
@@ -216,6 +217,7 @@ function gzFrage(z, ja, nein){
   document.getElementById("gzja").focus({preventScroll:true});
 }
 function startAuto(){
+  const sp = sperreLesen(); if(sp) return sperreKarte(sp, startAuto);
   /* Kommt das Kind über «… üben» aus dem Lernportal, startet genau dieses Lernziel (nur einmal) */
   const zp = new URLSearchParams(location.search).get("ziel");
   if(zp && GOAL[zp] && !startAuto.ziel){ startAuto.ziel = true; try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){} return startGoal(zp); }
@@ -318,7 +320,7 @@ function nwKnopf(){
   nw.innerHTML = `<button class="nwknopf" id="nwBtn">🤔 Ich komme nicht weiter</button>`;
   document.getElementById("nwBtn").onclick = () => {
     if(S.done) return;
-    nw.innerHTML = `<p>Dann siehst du die Lösung. Die Aufgabe zählt als <b>falsch</b>.</p>
+    nw.innerHTML = `<p>Dann siehst du die Lösung. Die Aufgabe zählt als <b>falsch</b>.<br>Du hast dann <b>2 Minuten</b> Zeit, um den Lösungsweg genau anzuschauen. Erst danach geht es weiter.</p>
       <div class="nwja"><button class="btn small" id="nwJa">Lösung zeigen</button><button class="btn small ghost" id="nwNein">Doch noch probieren</button></div>`;
     document.getElementById("nwJa").onclick = aufgeben;
     document.getElementById("nwNein").onclick = nwKnopf;
@@ -329,6 +331,41 @@ function aufgeben(){
   const t = S.task;
   if(t.type==="choice") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===String(t.answer)) b.classList.add("ok"); });
   finish(false, "nicht weitergekommen", "Kein Problem. Schau dir genau an, wie es geht – die Aufgabe zählt als falsch.");
+  const loesung = (document.querySelector("#fb .explain")||{}).outerHTML || "";
+  const bis = Date.now() + SPERRE_MS;
+  store.set(skey(), JSON.stringify({bis, loesung}));
+  sperreLaeuft(bis, document.getElementById("nextBtn"));
+}
+
+/* Nach «Ich komme nicht weiter»: 2 Minuten Zeit für den Lösungsweg, erst dann «Weiter» */
+const SPERRE_MS = 2*60*1000;
+const skey = () => "uebung.sperre."+UEBUNG+"."+gz;
+function sperreLesen(){ try{ const x = JSON.parse(store.get(skey())||"null"); if(x && x.bis > Date.now()) return x; }catch(e){} store.set(skey(), ""); return null; }
+function sperreLaeuft(bis, knopf, fertig){
+  S.sperreBis = bis;
+  knopf.insertAdjacentHTML("beforebegin", `<p class="sperrhinweis" id="sperrhinweis">⏳ Nimm dir Zeit: Lies den Lösungsweg Schritt für Schritt. Kannst du ihn jemandem erklären?</p>`);
+  const tick = () => {
+    const rest = Math.ceil((bis - Date.now())/1000);
+    if(rest <= 0){
+      clearInterval(S.sperreUhr); S.sperreBis = 0; store.set(skey(), "");
+      knopf.disabled = false; knopf.textContent = "Weiter →";
+      const h = document.getElementById("sperrhinweis"); if(h) h.remove();
+      if(fertig) fertig();
+      return;
+    }
+    knopf.disabled = true; knopf.textContent = `Weiter in ${Math.floor(rest/60)}:${String(rest%60).padStart(2,"0")}`;
+  };
+  clearInterval(S.sperreUhr); S.sperreUhr = setInterval(tick, 1000); tick();
+}
+/* Wer während der 2 Minuten die Seite neu lädt oder zurückkommt, sieht den Lösungsweg nochmals */
+function sperreKarte(x, dann){
+  S = S || {};
+  app.innerHTML = `<div class="card"><p class="sub" style="margin:0 0 10px">Du bist bei der letzten Aufgabe nicht weitergekommen. Schau dir den Lösungsweg nochmals genau an.</p>
+      ${x.loesung}
+      <div class="actions"><button class="btn" id="nextBtn" disabled>Weiter →</button></div></div>`;
+  const knopf = document.getElementById("nextBtn");
+  sperreLaeuft(x.bis, knopf);
+  knopf.onclick = () => { if(!knopf.disabled) dann(); };
 }
 
 const FAKTOR = {h:3600, min:60, s:1};
@@ -453,6 +490,7 @@ function nextGoal(from){
 /* Ein verschobenes Lernziel wieder aufnehmen: neue Chance, zuerst ein paar Einstiegsaufgaben */
 function wiederAufnehmen(id){ const s = gs(id); if(s.spaeter){ s.spaeter = 0; s.zurueck = 0; } }
 function go(){
+  if(S.sperreBis && Date.now() < S.sperreBis) return;   // 2 Minuten für den Lösungsweg
   if(S.goalDone || S.weiter){
     const nx = S.weiter || nextGoal(S.goal);
     S.goalDone = false; S.weiter = null;

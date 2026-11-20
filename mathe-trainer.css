@@ -331,3 +331,5 @@ details.help .buch{margin:10px 0 0;padding-top:8px;border-top:1px dashed var(--l
 .nw p{margin:0 0 8px;font-size:.95rem}
 .nwknopf{background:none;border:0;padding:6px 2px;font:inherit;font-weight:700;font-size:.95rem;color:var(--mute);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .nwja{display:flex;gap:8px;flex-wrap:wrap}
+.sperrhinweis{flex-basis:100%;margin:0;font-size:.95rem;color:var(--mute)}
+.btn:disabled#nextBtn{opacity:.55;cursor:default}
