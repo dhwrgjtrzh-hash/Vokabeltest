@@ -320,7 +320,7 @@ function nwKnopf(){
   nw.innerHTML = `<button class="nwknopf" id="nwBtn">🤔 Ich komme nicht weiter</button>`;
   document.getElementById("nwBtn").onclick = () => {
     if(S.done) return;
-    nw.innerHTML = `<p>Dann siehst du die Lösung. Die Aufgabe zählt als <b>falsch</b>.<br>Du hast dann <b>2 Minuten</b> Zeit, um den Lösungsweg genau anzuschauen. Erst danach geht es weiter.</p>
+    nw.innerHTML = `<p>Dann siehst du die Lösung. Die Aufgabe zählt als <b>falsch</b>.<br>Du musst dann <b>mindestens 2 Minuten warten</b>, bis es weitergeht. Schau dir in dieser Zeit den Lösungsweg genau an.</p>
       <div class="nwja"><button class="btn small" id="nwJa">Lösung zeigen</button><button class="btn small ghost" id="nwNein">Doch noch probieren</button></div>`;
     document.getElementById("nwJa").onclick = aufgeben;
     document.getElementById("nwNein").onclick = nwKnopf;
@@ -343,7 +343,7 @@ const skey = () => "uebung.sperre."+UEBUNG+"."+gz;
 function sperreLesen(){ try{ const x = JSON.parse(store.get(skey())||"null"); if(x && x.bis > Date.now()) return x; }catch(e){} store.set(skey(), ""); return null; }
 function sperreLaeuft(bis, knopf, fertig){
   S.sperreBis = bis;
-  knopf.insertAdjacentHTML("beforebegin", `<p class="sperrhinweis" id="sperrhinweis">⏳ Nimm dir Zeit: Lies den Lösungsweg Schritt für Schritt. Kannst du ihn jemandem erklären?</p>`);
+  knopf.insertAdjacentHTML("beforebegin", `<p class="sperrhinweis" id="sperrhinweis">⏳ Du musst mindestens 2 Minuten warten. Lies den Lösungsweg Schritt für Schritt – kannst du ihn jemandem erklären?</p>`);
   const tick = () => {
     const rest = Math.ceil((bis - Date.now())/1000);
     if(rest <= 0){
