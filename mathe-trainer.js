@@ -11,8 +11,11 @@
      Zusatz, wenn ein Lernziel geschafft ist (gemischt mit Aufgaben wie im Test).
    - Wenn es zu schwer ist (seit 20.11.2026): Im Einstieg kostet ein Fehler keinen Punkt. Zwei Fehler
      hintereinander bei «wie im Test» → kurzer Zwischenhalt mit 2 Einstiegsaufgaben (die Punkte bei «wie im
-     Test» bleiben gespeichert), die Hilfe «So geht's» ist dann offen. Muss ein Kind bei einem Lernziel zum
-     zweiten Mal zurück, geht es mit dem nächsten offenen Lernziel weiter; das schwierige kommt später wieder.
+     Test» bleiben gespeichert), die Hilfe «So geht's» ist dann offen.
+   - Bearbeitet (Hausaufgabe): Nach 10 Aufgaben bei einem Lernziel ohne «geschafft» gilt es als «bearbeitet»
+     (im Lernportal rot/orange je nach Fehlern) und es geht mit dem nächsten Lernziel weiter. So kommen auch
+     Kinder mit vielen Fehlern durch alle Grundanforderungen. Bearbeitete Lernziele kommen später wieder dran
+     (vor den erweiterten) und können dann noch geschafft werden.
    - «Ich komme nicht weiter» (nach einer Rückfrage): Lösung anschauen, zählt als falsch. «Weiter» geht erst nach
      2 Minuten – damit die Kinder den Lösungsweg anschauen statt durchzuklicken (bleibt auch nach Neuladen).
      (Bis 18.11.2026: drei Stufen mit je 5 Punkten – das waren zu viele Aufgaben pro Matheplan.)
@@ -148,6 +151,7 @@ function lzk64(text){
 let app, pill, GOAL;
 const NEED = [0, 2, 4];      // so viele Punkte braucht es: Stufe 1 · Einstieg 2, Stufe 2 · wie im Test 4 (Fehler: −1)
 const LEVELS = 2;            // mit Stufe 2 ist ein Lernziel geschafft; Stufe 3 · knifflig nur noch als Zusatz
+const DURCHGANG = 10;        // so viele Aufgaben pro Lernziel, dann «bearbeitet» und weiter (wenn nicht schon geschafft)
 const ZUSATZ_KNIFFLIG = 0.4; // geschaffte Lernziele: so oft kommt eine knifflige Aufgabe, sonst eine wie im Test
 const LVNAME = ["","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
 let gz = (store.get("uebung.gz")||store.get("dz.gz")||store.get("rs.gz")||"").replace(/\D/g,"");
@@ -160,6 +164,7 @@ function loadP(){ try{ P = JSON.parse(store.get(pkey())||"null"); }catch(e){ P=n
 function saveP(){ P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt); STAND.merken(UEBUNG, gz, txt, P.t); }
 function gs(id){
   const s = P.goals[id] || (P.goals[id]={lv:1, pr:0, done:false, n:0, ok:0});
+  if(s.spaeter){ s.bearbeitet = s.bearbeitet || s.spaeter; delete s.spaeter; }
   if(!s.done){
     /* Lernstand aus der Zeit mit drei Stufen: Wer schon auf Stufe 3 war, hat «wie im Test» sicher gekonnt → geschafft.
        Mehr Punkte als neu nötig: Es fehlt noch eine richtige Antwort. */
@@ -221,7 +226,7 @@ function startAuto(){
   /* Kommt das Kind über «… üben» aus dem Lernportal, startet genau dieses Lernziel (nur einmal) */
   const zp = new URLSearchParams(location.search).get("ziel");
   if(zp && GOAL[zp] && !startAuto.ziel){ startAuto.ziel = true; try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){} return startGoal(zp); }
-  const last = P.last && GOAL[P.last] && !gs(P.last).done && !gs(P.last).spaeter ? P.last : null;
+  const last = P.last && GOAL[P.last] && !gs(P.last).done ? P.last : null;
   const open = nextGoal(null);   // erstes offenes Lernziel (Grundanforderungen zuerst, verschobene später)
   startGoal(last || open || pick(GOALS).id);
 }
@@ -453,14 +458,20 @@ function finish(ok, given, extra){
     if(s.lv===1){ if(s.fe>=2) S.hilfeOffen = true; }          // Einstieg: ein Fehler kostet keinen Punkt
     else if(s.fe<2) s.pr = Math.max(0, s.pr-1);
     else {                     // zwei Fehler hintereinander bei «wie im Test» (der zweite kostet keinen Punkt mehr)
-      s.fe = 0; s.zurueck = (s.zurueck||0) + 1;
-      const nx = s.zurueck>=2 ? nextGoal(g.id) : null;          // zum zweiten Mal: mit einem anderen Lernziel weiter
+      s.fe = 0;
       s.pr2 = s.pr; s.lv = 1; s.pr = 0; s.zw = true; S.hilfeOffen = true;
-      if(nx && nx!==g.id && (g.erw || !GOAL[nx].erw)){            // von einer Grundanforderung nie zu einer erweiterten
-        s.spaeter = Date.now(); S.weiter = nx; S.hilfeOffen = false;   // das neue Lernziel beginnt mit der Einstufung
-        toast = `«${g.title}» ist noch schwierig. Wir nehmen es später nochmals dran.<br>Jetzt geht es weiter mit <b>«${GOAL[nx].title}»</b>.`;
-      } else toast = `Das ist noch schwierig. Wir machen kurz zwei <b>einfachere Aufgaben</b>${s.pr2?` – deine Punkte bei «wie im Test» bleiben gespeichert`:""}.`;
+      toast = `Das ist noch schwierig. Wir machen kurz zwei <b>einfachere Aufgaben</b>${s.pr2?` – deine Punkte bei «wie im Test» bleiben gespeichert`:""}.`;
     }
+  }
+  /* Durchgang fertig: Nach 10 Aufgaben ist das Lernziel «bearbeitet» – die Hausaufgabe ist gemacht, auch mit Fehlern */
+  if(!s.done) s.nb = (s.nb||0) + 1;
+  if(!s.done && s.nb >= DURCHGANG){
+    s.bearbeitet = Date.now(); s.nb = 0;
+    const nx = nextGoal(g.id);
+    if(nx && (g.erw || !GOAL[nx].erw)){                         // von einer Grundanforderung nie zu einer erweiterten
+      S.weiter = nx; P.last = nx; S.hilfeOffen = false;          // das nächste Lernziel beginnt mit der Einstufung
+      toast = `📝 Du hast «${g.title}» <b>bearbeitet</b>. Es hat noch Fehler – du kannst es später nochmals üben.<br>Jetzt geht es weiter mit <b>«${GOAL[nx].title}»</b>.`;
+    } else toast = (toast ? toast+"<br>" : "") + `📝 Du hast «${g.title}» <b>bearbeitet</b>. Übe weiter – vielleicht schaffst du es noch!`;
   }
   saveP();
   const entry = {nr:S.nr, thema:g.title, stufe:t.lv, frage:t.text, antworten:[given], loesung:t.show, punkte:ok?1:0, test:false, t:Date.now()};
@@ -481,14 +492,15 @@ function finish(ok, given, extra){
 function nextGoal(from){
   const i = GOALS.findIndex(x=>x.id===from);   // from = null: alle Lernziele von vorne
   const order = (i<0 ? GOALS : GOALS.slice(i+1).concat(GOALS.slice(0,i))).filter(x=>!gs(x.id).done);
-  const spaeter = l => l.filter(x=>gs(x.id).spaeter).sort((a,b)=>gs(a.id).spaeter-gs(b.id).spaeter);   // am längsten verschoben zuerst
-  const jetzt = l => l.filter(x=>!gs(x.id).spaeter);
+  /* zuerst Lernziele, die noch nicht bearbeitet sind; dann die bearbeiteten (mit Fehlern), am längsten nicht geübte zuerst */
+  const spaeter = l => l.filter(x=>gs(x.id).bearbeitet).sort((a,b)=>gs(a.id).bearbeitet-gs(b.id).bearbeitet);
+  const jetzt = l => l.filter(x=>!gs(x.id).bearbeitet);
   const grund = order.filter(x=>!x.erw), erw = order.filter(x=>x.erw);
   const g = jetzt(grund)[0] || spaeter(grund)[0] || jetzt(erw)[0] || spaeter(erw)[0];
   return g ? g.id : null;
 }
-/* Ein verschobenes Lernziel wieder aufnehmen: neue Chance, zuerst ein paar Einstiegsaufgaben */
-function wiederAufnehmen(id){ const s = gs(id); if(s.spaeter){ s.spaeter = 0; s.zurueck = 0; } }
+/* Ein bearbeitetes Lernziel wieder aufnehmen: neuer Durchgang mit 10 Aufgaben */
+function wiederAufnehmen(id){ const s = gs(id); if(s.bearbeitet && !s.done) s.nb = 0; }
 function go(){
   if(S.sperreBis && Date.now() < S.sperreBis) return;   // 2 Minuten für den Lösungsweg
   if(S.goalDone || S.weiter){

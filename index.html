@@ -447,7 +447,9 @@ function planLage(p, st){
   const g = (st && st.goals) || {};
   const z = p.ziele.map(x => { const s = g[x.id] || {}; const n = +s.n || 0, ok = +s.ok || 0;
     /* lv > 2: Lernstand aus der Zeit mit drei Stufen – Stufe 3 erreicht gilt heute als geschafft (wie im Mathe-Trainer) */
-    return Object.assign({}, x, { n, ok, done: !!s.done || +s.lv > 2, lv: +s.lv || 1, q: n ? ok / n : null }); });
+    const done = !!s.done || +s.lv > 2;
+    /* bearbeitet: 10 Aufgaben gemacht, aber (noch) nicht geschafft – die Hausaufgabe ist erledigt, mit Fehlern */
+    return Object.assign({}, x, { n, ok, done, bearbeitet: !done && !!(s.bearbeitet || s.spaeter), lv: +s.lv || 1, q: n ? ok / n : null }); });
   const geschafft = z.filter(x => x.done), begonnen = z.filter(x => x.n > 0);
   /* rot: unter 60 % richtig · orange: 60–84 % richtig (noch nicht ganz sicher) · jeweils nur, solange das Lernziel nicht geschafft ist */
   const nochmal = z.filter(x => !x.done && x.n >= 4 && x.q < 0.6).sort(grundZuerst);
@@ -464,12 +466,18 @@ function matheUebenHtml(gz, staende){
   const status = {};
   lagen.forEach(({p, l}) => {
     const tot = p.ziele.length, gs = l.geschafft.length;
-    const seg = z => `<i class="${z.done ? (l.auffrischen.includes(z) ? 'ok halb-ok' : 'ok') : z.n ? (l.nochmal.includes(z) ? 'no' : l.sicherer.includes(z) ? 'halb' : 'dran') : ''}"></i>`;
+    const seg = z => `<i class="${z.done ? (l.auffrischen.includes(z) ? 'ok halb-ok' : 'ok') : z.n ? (l.nochmal.includes(z) ? 'no' : l.sicherer.includes(z) || z.bearbeitet ? 'halb' : 'dran') : ''}"></i>`;
     /* gelb: Grundanforderungen · grün: erweiterte Anforderungen */
     const grund = l.z.filter(z => !z.erw), erw = l.z.filter(z => z.erw);
-    const gsG = grund.filter(z => z.done).length;
+    const gsG = grund.filter(z => z.done).length, erlG = grund.filter(z => z.done || z.bearbeitet).length;
+    const ueben = l.nochmal.concat(l.sicherer).find(z => !z.erw);   // Grundanforderung mit den meisten Fehlern
     const balken = `<span class="u-balken" aria-hidden="true"><span class="u-gr grund">${grund.map(seg).join('')}</span>${erw.length ? `<span class="u-gr erw">${erw.map(seg).join('')}</span>` : ''}</span>`;
+    /* Solange die Grundanforderungen nicht alle bearbeitet sind: wie weit die Hausaufgabe ist.
+       Danach: was noch nicht sitzt (rot/orange) – bearbeitet ist bearbeitet, auch mit Fehlern. */
     const text = !l.begonnen.length && !gs ? `<span class="u-leise">Noch nicht geübt</span>`
+      : erlG < grund.length ? `<span>${erlG} von ${grund.length} Grundanforderungen bearbeitet${gsG ? ` · ${gsG} geschafft ⭐` : ''}</span>`
+      : gsG < grund.length && ueben ? `<span class="${l.nochmal.includes(ueben) ? 'u-nochmal' : 'u-weiter'}">✓ Grundanforderungen bearbeitet · nochmals üben: ${esc(ueben.titel)}</span>`
+      : gsG < grund.length ? `<span>✓ Grundanforderungen bearbeitet · ${gsG} von ${grund.length} geschafft</span>`
       : l.nochmal.length ? `<span class="u-nochmal">Nochmals üben: ${esc(l.nochmal[0].titel)}</span>`
       : l.sicherer.length ? `<span class="u-weiter">Weiter üben: ${esc(l.sicherer[0].titel)}</span>`
       : l.auffrischen.length ? `<span class="u-weiter">Nochmals anschauen: ${esc(l.auffrischen[0].titel)}</span>`
