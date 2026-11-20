@@ -210,9 +210,9 @@ const GOALS = [
    <p>Tim ist 8, seine Tante 31. Wie alt ist die Tante, wenn Tim 16 ist?<br>→ Nicht proportional! Der Unterschied bleibt immer 23 Jahre: 16 + 23 = <b>39</b>.</p>`,
  gen(lv){
    for(let tries=0; tries<400; tries++){
-     const art = pick(lv===1 ? ["saft","schritte","teilen","saft"] : lv===2 ? ["saft","schritte","teilen","alter","buch"] : ["schritte","teilen","alter","buch","stock","papa"]);
-     if(art==="saft"){ const a = pick([2,3,4,5,6]), p = pick([1.2,1.5,1.8,2.4,2.5]), b = pick([3,5,7,8,9,10,12,15]);
-       if(b===a || (lv>1 && (b%a===0))) continue; if(a===4 && p===2.15) continue;
+     const art = pick(lv===1 ? ["saft","teilen","saft"] : lv===2 ? ["saft","schritte","teilen","alter","buch"] : ["schritte","teilen","alter","buch","stock","papa"]);
+     if(art==="saft"){ const a = pick([2,3,4,5,6]), p = pick(lv===1 ? [1.5,2,2.5,3] : [1.2,1.5,1.8,2.4,2.5]), b = pick([3,5,7,8,9,10,12,15]);
+       if(b===a || (lv>1 && (b%a===0)) || (lv===1 && b%a)) continue;   // Einstieg: 2-, 3-, 4-mal so viel if(a===4 && p===2.15) continue;
        const pa = rund(a*p,2), pb = rund(b*p,2);
        const rows = [{l:a+" l", r:chf(pa)},{l:b+" l", r:"?",frage:true,strich:true},{l:a+" l", r:chf(pa)}];
        propWeg(a,b).forEach((w,i,arr)=>rows.push({l:w.x+" l", r:chf(p*w.x), op:w.op, fett:i===arr.length-1}));
@@ -229,7 +229,7 @@ const GOALS = [
      }
      if(art==="teilen"){ const a = pick([3,4,5,6,8]), x = pick([6,7.5,8,9,10,12,15]), b = pick([3,4,5,6,8,10,12]);
        if(b===a) continue; const y = rund(a*x/b,2); if(!ganz(y*20)) continue;
-       if(lv===1 && !(b%a===0 || a%b===0)) continue;
+       if(lv===1 && (!(b%a===0 || a%b===0) || !ganz(y))) continue;   // Einstieg: ganze Franken
        return {type:"input", html:situation(`${a} Freundinnen kaufen zusammen ein Geschenk. Jede bezahlt <b>${chf(x)}</b>`)+frage(`Wie viel bezahlt jede, wenn <b>${b} Freundinnen</b> mitmachen?`), answer:y, unit:"Fr.", k:[],
          text:`${a} Freundinnen à ${chf(x)} → ${b} Freundinnen`, show:chf(y),
          explain:`<p>Mehr Personen → jede bezahlt weniger → <b>umgekehrt proportional</b>.</p><p>Das Geschenk kostet ${a} · ${chf(x)} = <b>${chf(a*x)}</b><br>${chf(a*x)} : ${b} = <b>${chf(y)}</b></p>`};

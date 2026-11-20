@@ -74,9 +74,10 @@ const GOALS = [
    if(lv===1){
      /* Anzahl – Preis */
      const ware = pick([["Hefte","Heft"],["Stifte","Stift"],["Kinoeintritte","Kinoeintritt"],["Glacen","Glace"],["Bälle","Ball"]]);
-     const p = pick([2,3,4,5,6,8,9,1.5,2.5,3.5]);
-     const xs = shuffle([1,2,3,4,5,6,8,10]).slice(0,4).sort((a,b)=>a-b);
-     known = pick(xs.filter(x=>x>1));
+     /* Einstieg (seit 20.11.2026 einfacher): ganze Preise, der Preis für 1 Stück ist bekannt */
+     const p = pick([2,3,4,5,6,8,9,2.5]);
+     const xs = [1].concat(shuffle([2,3,4,5,6,8,10]).slice(0,3)).sort((a,b)=>a-b);
+     known = 1;
      kopf = [`Anzahl ${ware[0]}`, "Preis in Fr."]; sit = `Alle ${ware[0]} kosten gleich viel.`;
      rows = xs.map(x=>({l:x, r:rund(x*p,2)}));
      fmtR = x => chfZahl(x); lab = ["Anzahl","Preis"];
@@ -153,13 +154,14 @@ const GOALS = [
      const v = pick(ALLE_V), u = wer(v);
      const frageZeit = Math.random()<.45;
      let tsec;
-     if(lv===1) tsec = 60*pick([15,20,30,90,120,180]);
+     if(lv===1) tsec = 60*pick([30,60,120,180,240]);   // Einstieg: ganze und halbe Stunden
      else if(lv===2) tsec = 60*pick([10,20,25,35,40,45,50,75,80,100,150]);
      else tsec = frageZeit ? 30*rnd(9,190) : 60*pick([5,10,12,15,25,35,40,45,50,75]);
      const s = rund(v*tsec/3600,3);
      if(s<1 || s>1500) continue;
      if(v>=600 && tsec<1800) continue;
      if(v<=6 && tsec>3*3600) continue;
+     if(lv===1 && (v>300 || v%10 && v>20)) continue;     // Einstieg: runde Geschwindigkeiten
      const k = ["v"+v, "v"+v+"t"+tsec, "v"+v+"s"+s];
      if(!frageZeit){
        if(lv<3 && !ganz(s)) continue;
@@ -246,8 +248,11 @@ const GOALS = [
    const rateTxt = x => K.bTxt(x).replace(" Schrauben"," Schrauben");
    if(lv<3){
      let a1 = K.a(), a2;
-     for(let i=0;i<50;i++){ a2 = K.a(); if(a2!==a1 && (lv===1 ? (a2%a1===0 || a1%a2===0) : (a2%a1!==0 && a1%a2!==0))) break; }
-     if(a2===a1) a2 = a1*2;
+     /* Einstieg: das eine Wertepaar ist 2- oder 3-mal so gross, beim Wandern nur ganze Stunden */
+     const einfach = (x,y) => [2,3].includes(Math.max(x,y)/Math.min(x,y)) && (K.id!=="wandern" || (x%60===0 && y%60===0));
+     if(lv===1) for(let i=0;i<100 && !(a1%60===0 || K.id!=="wandern");i++) a1 = K.a();
+     for(let i=0;i<100;i++){ a2 = K.a(); if(a2!==a1 && (lv===1 ? einfach(a1,a2) : (a2%a1!==0 && a1%a2!==0))) break; }
+     if(a2===a1 || (lv===1 && !einfach(a1,a2))) a2 = a1*2;
      const prop = Math.random()<.5;
      let b2 = wert(a2);
      if(!prop) b2 = falsch(a2);
@@ -300,7 +305,7 @@ const GOALS = [
      const GEF = [["einen Eimer",8,20],["eine Giesskanne",6,14],["ein Aquarium",40,240],["eine Badewanne",100,220],["ein Planschbecken",200,900],["ein Fass",100,400]];
      for(let i=0;i<400;i++){
        let r, sec;
-       if(lv===1){ r = pick([5,6,8,10,12,15,20]); sec = 60*rnd(2,25); }
+       if(lv===1){ r = pick([5,10,20]); sec = 60*rnd(2,12); }   // Einstieg: einfache Zahlen
        else if(lv===2){ r = pick([4,6,8,10,12,14,16,20]); sec = Math.random()<.5 ? 60*rnd(2,40)+30 : 60*rnd(61,100); }
        else { r = pick([2.5,7.5,1.5,4.5,3,6,9]); sec = 20*rnd(6,180); }
        const V = r*sec/60;
