@@ -945,15 +945,18 @@ B:{ woerter:{1:"Wald Mann Häuser Brief Schuh Stück",2:"Mütze Klavier Fahne M�
 /* ===== Rechtschreibbereiche ===== */
 const CATS = {
   GK:{name:"Gross- und Kleinschreibung", kurz:"Gross/klein", farbe:"#2f5bea",
-      tipp:"Nomen schreibt man gross. Probe: Kannst du «der», «die», «das» oder «ein» davorsetzen? Dann ist es ein Nomen. Am Satzanfang schreibt man immer gross. Alle anderen Wörter schreibt man klein.",
+      tipp:"Nomen schreibt man gross. Probe: Kannst du «der», «die», «das» oder «ein» davorsetzen? Dann ist es ein Nomen. Auch die Nachsilben -ung, -heit, -keit, -nis und -schaft zeigen dir: Das Wort ist ein Nomen (Zeitung, Freiheit, Möglichkeit, Ergebnis, Freundschaft). Am Satzanfang schreibt man immer gross. Alle anderen Wörter schreibt man klein.",
       satzanfang:"Am Satzanfang schreibt man immer gross – egal, was für ein Wort es ist. Schau nach jedem Punkt, Fragezeichen oder Ausrufezeichen: Das nächste Wort beginnt gross.",
-      lp:"Nomenprobe (Begleiter davorsetzen) und Satzanfänge gezielt kontrollieren."},
+      lp:"Nomenprobe (Begleiter davorsetzen), Nachsilben als Nomen-Signal (-ung, -heit, -keit, -nis, -schaft) und Satzanfänge gezielt kontrollieren."},
   NG:{name:"Verben und Adjektive als Nomen", kurz:"Nominalisierung", farbe:"#5b3fd6",
       tipp:"Auch Verben und Adjektive werden zu Nomen, wenn ein Signalwort davorsteht: das Lesen, beim Spielen, zum Schreiben, etwas Schönes, viel Neues, alles Gute. Dann schreibt man sie gross.",
       lp:"Signalwörter für Nominalisierungen trainieren (das, beim, zum, etwas, viel, nichts, alles + Verb/Adjektiv)."},
   DK:{name:"Doppelte Mitlaute (ll, mm, nn, ss, tt …)", kurz:"Doppel-Mitlaut", farbe:"#d0451b",
-      tipp:"Sprich das Wort langsam und hör genau hin: Ist der Selbstlaut davor kurz (Sonne, Mitte, Teller)? Dann folgen meistens zwei gleiche Mitlaute. Ist er lang (Hose, Vater), steht nur einer.",
+      tipp:"Sprich das Wort langsam und hör genau hin: Ist der Selbstlaut davor kurz (Sonne, Mitte, Teller)? Dann folgen meistens zwei gleiche Mitlaute. Ist er lang (Hose, Vater), steht nur einer. Ausnahme sind ss-Wörter wie gross oder Strasse: Die muss man sich merken.",
       lp:"Vokallänge abhören (kurz/lang) und Silben schwingen: Bei kurzem Vokal wird der Mitlaut am Silbengelenk verdoppelt (Son-ne)."},
+  SS:{name:"ss nach langem Selbstlaut (statt ß)", kurz:"ss nach lang", farbe:"#00838f",
+      tipp:"Nach einem langen Selbstlaut oder nach ei, au, eu, ie steht oft nur ein s: Hose, Reise, Haus, Wiese. Manche Wörter haben dort aber ss, zum Beispiel gross, Strasse, Fuss, süss, heiss, draussen, schliessen. Das kommt daher, dass man in der Schweiz kein ß schreibt, sondern ss. Diese Wörter musst du dir merken. Wörter aus derselben Familie schreibt man gleich: gross – grösser – Grösse, Fuss – Füsse – Fussball.",
+      lp:"ss nach langem Selbstlaut und nach ei/au/eu/ie als Merkwörter üben (in der Schweiz steht ss statt ß); Wortfamilien bilden (gross – grösser – Grösse, Fuss – Füsse – Fussball)."},
   CK:{name:"ck und tz", kurz:"ck / tz", farbe:"#b26b00",
       tipp:"Nach einem kurzen Selbstlaut schreibt man ck statt kk und tz statt zz: Zucker, Katze. Nach l, n, r steht nie ck oder tz: Onkel, Herz, Pilz. Nach einem langen Selbstlaut auch nicht: Haken, Brezel.",
       lp:"ck/tz nur nach kurzem Vokal; Merksatz «Nach l, n, r – das merke ja – steht nie tz und nie ck»."},
@@ -979,12 +982,18 @@ const CATS = {
       tipp:"Sprich das Wort beim Schreiben langsam und in Silben mit: Ge-burts-tag, Schmet-ter-ling. Schreib jeden Laut, den du hörst, und lies das Wort danach nochmals genau durch.",
       lp:"Langsames, silbiertes Mitsprechen beim Schreiben und Kontrolllesen; Wörter nach dem Schreiben Buchstabe für Buchstabe vergleichen."}
 };
-const CAT_ORDER = ["GK","NG","DK","CK","IE","DH","AV","AE","V","DS","SO"];
+const CAT_ORDER = ["GK","NG","DK","SS","CK","IE","DH","AV","AE","V","DS","SO"];
 
 const VOK = "aeiouäöüy";
 const isVok = c => !!c && VOK.includes(c);
 const isLetter = c => !!c && /[a-zäöüß]/i.test(c);
 const isUpper = c => c !== c.toLowerCase() && c === c.toUpperCase();
+/* ss nach langem Selbstlaut: In der Schweiz steht ss statt ß (gross, Strasse, heiss). Das ist kein Doppel-Mitlaut
+   nach kurzem Selbstlaut, sondern ein Merkwort. Sicher erkennbar nach ei/ai/au/äu/eu/ie; bei einfachen langen
+   Selbstlauten nur über bekannte Wortstämme (Spass, Masse, Floss sind mehrdeutig und bleiben Doppel-Mitlaut). */
+const SS_NACH_DOPPELLAUT = /(ei|ai|au|äu|eu|ie)$/;
+const SS_LANGE_STAEMME = ["stra","gro","grö","fu","fü","sü","gru","grü","blo","sto","stö","klo","klö","gefä","gesä"];
+const ssNachLang = (L, i) => { const vor = L.slice(0, i); return SS_NACH_DOPPELLAUT.test(vor) || SS_LANGE_STAEMME.some(st => vor.endsWith(st)); };
 
 /* Normalisieren: Leerzeichen, ß → ss, typografische Zeichen */
 function norm(s){
@@ -1001,7 +1010,7 @@ function stellen(w, imSatz){
   if(imSatz && (L==="das" || L==="dass")){ o.push({c:"DS", s:0, e:L.length}); return o; }
   let m;
   const re1 = /([bdfglmnprst])\1+/g;
-  while((m = re1.exec(L))) o.push({c:"DK", s:m.index, e:m.index+m[0].length});
+  while((m = re1.exec(L))) o.push({c: m[1]==="s" && ssNachLang(L, m.index) ? "SS" : "DK", s:m.index, e:m.index+m[0].length});
   const re2 = /ck|tz/g;
   while((m = re2.exec(L))) o.push({c:"CK", s:m.index, e:m.index+2});
   const re3 = /ie/g;
@@ -1834,9 +1843,20 @@ function zeigeMarkiert(text, set, cls){
   return [...text].map((ch,k)=> set && set.has(k) ? `<mark class="${cls}">${esc(ch)}</mark>` : esc(ch)).join("");
 }
 /* Gross/klein: Erklärung passend zum Fall (Satzanfang, Nomen, kein Nomen) */
+/* Nachsilbe, die ein Nomen anzeigt (Zeitung, Freiheit, Ergebnisse) – nur wenn davor ein Wortstamm mit Selbstlaut steht (nicht: Sprung, Schwung) */
+function nachsilbe(w){
+  const L = String(w).toLowerCase();
+  if(/(sprung|schwung|tennis)$/.test(L)) return "";
+  const m = L.match(/^(.+?)(ung|heit|keit|nis|schaft)(en|se)?$/);
+  if(!m || !/[aeiouäöüy]/.test(m[1])) return "";
+  const ok = {ung:["","en"], heit:["","en"], keit:["","en"], nis:["","se"], schaft:["","en"]}[m[2]];
+  return ok.includes(m[3]||"") ? m[2] : "";
+}
 function gkTipp(ziel, antwort, satzanfang){
   const zielGross = /^[A-ZÄÖÜ]/.test(ziel), antwortGross = /^[A-ZÄÖÜ]/.test(antwort||"");
   if(zielGross && satzanfang) return ["Satzanfang", CATS.GK.satzanfang];
+  const ns = zielGross && nachsilbe(ziel);
+  if(ns && !antwortGross) return ["Nomen schreibt man gross", `«${ziel}» ist ein Nomen. Das verrät dir schon die Nachsilbe -${ns}: Wörter mit -ung, -heit, -keit, -nis oder -schaft sind Nomen. Probe: Du kannst «der», «die», «das» oder «ein» davorsetzen. Nomen schreibt man immer gross.`];
   if(zielGross && !antwortGross) return ["Nomen schreibt man gross", `«${ziel}» ist ein Nomen. Probe: Du kannst «der», «die», «das» oder «ein» davorsetzen. Nomen schreibt man immer gross.`];
   if(!zielGross && antwortGross) return ["Kein Nomen – darum klein", `«${ziel}» ist kein Nomen. Probe: «der», «die» oder «das» passt nicht davor. Gross schreibt man nur Nomen und das erste Wort im Satz.`];
   return ["Gross- und Kleinschreibung", "Schau jeden Buchstaben an: Nur der erste Buchstabe eines Nomens oder am Satzanfang ist gross, alle anderen sind klein."];
