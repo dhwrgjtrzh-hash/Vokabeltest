@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="de-CH" data-fach="deutsch" data-trainer="grammatik">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grammatik</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="lernportal.css">
+<style>
+/* Aufbau: Kopf wie alle Trainer. Startseite = 8 Themen-Kacheln (ohne Scrollen, auch auf dem Handy).
+   Thema = 3 Stufen (Repetition, 6. Klasse, Knacknüsse). Runde = 8 Aufgaben, je eine Karte mit Rückmeldung. */
+:root{
+  --bg:var(--lp-bg,#f3f6fb); --karte:var(--lp-karte,#fff); --ink:var(--lp-ink,#1b2433); --leise:var(--lp-leise,#5f6b85); --linie:var(--lp-linie,#dfe5ef);
+  --akzent:var(--lp-akzent,#c2255c); --soft:var(--lp-akzent-soft,#fbe6ee);
+  --gut:var(--lp-gut,#127a3c); --gut-bg:var(--lp-gut-bg,#dcf5e4); --falsch:var(--lp-falsch,#b42318); --falsch-bg:var(--lp-falsch-bg,#fde4e1);
+  --mark:#fff1b8; --mark-ink:#5c4300;
+  --titel:var(--lp-titel,"Fredoka",system-ui,sans-serif); --text:var(--lp-text,"Atkinson Hyperlegible",system-ui,sans-serif);
+  --wN:#2f6fd6; --wV:#d6402f; --wA:#2f9e44; --wP:#8a4fd1; --wX:#6b7280;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --mark:#4a3d12; --mark-ink:#f3d77a; --wN:#6f9cf0; --wV:#f0705f; --wA:#5cc271; --wP:#b48cf0; --wX:#9aa1ad; } }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--text);-webkit-text-size-adjust:100%}
+.wrap{max-width:860px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left)) 48px}
+.lp-kopf{margin-bottom:14px}
+h2{font:600 1.4rem/1.2 var(--titel);margin:0 0 6px}
+h3{font:600 1.12rem/1.25 var(--titel);margin:0 0 4px}
+.leise{color:var(--leise)}
+.karte{background:var(--karte);border:1.5px solid var(--linie);border-radius:18px;padding:16px 18px}
+.btn{font:700 1rem/1.2 var(--text);border:0;border-radius:14px;padding:13px 20px;min-height:48px;cursor:pointer;background:var(--akzent);color:#fff}
+.btn.zweit{background:var(--karte);color:var(--ink);border:1.5px solid var(--linie)}
+.btn.klein{min-height:38px;padding:8px 13px;font-size:.92rem;border-radius:12px}
+.btn[disabled]{opacity:.45;cursor:default}
+button:focus-visible{outline:3px solid var(--akzent);outline-offset:2px}
+.aktionen{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.beta{display:flex;gap:8px;align-items:flex-start;background:var(--mark);color:var(--mark-ink);border-radius:12px;padding:7px 12px;margin-bottom:12px;font-size:.9rem;line-height:1.35}
+.beta b{white-space:nowrap}
+.beta-hinter,.modal-hinter{position:fixed;inset:0;z-index:10000;background:rgba(15,21,34,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.beta-karte,.modal{background:var(--karte);color:var(--ink);border-radius:20px;padding:22px;max-width:520px;width:100%;max-height:calc(100vh - 32px);overflow:auto}
+.beta-karte{text-align:center;max-width:440px}
+.beta-karte .gross{font-size:2.6rem;line-height:1;margin-bottom:6px}
+.beta-karte p{margin:10px 0 0;line-height:1.5;text-align:left}
+.modal ul{margin:8px 0 0;padding-left:20px}.modal li{margin:6px 0;line-height:1.45}
+.modal dl{margin:8px 0 0}.modal dt{font-weight:700;margin-top:10px}.modal dd{margin:2px 0 0}
+
+/* ----- Startseite: Themen ----- */
+.frage-oben{font:500 1.2rem/1.2 var(--titel);margin:2px 0 10px}
+.themen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:700px){ .themen{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px} }
+.thema{--c:var(--akzent);display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  background:var(--karte);border:2px solid var(--linie);border-radius:16px;padding:11px 12px 10px;min-height:0}
+.thema:hover{border-color:var(--c)}
+.thema .kopf{display:flex;align-items:center;gap:9px;width:100%}
+.zeichen{flex:none;min-width:34px;height:34px;padding:0 6px;border-radius:10px;display:grid;place-items:center;background:var(--c);color:#fff;font:600 1rem/1 var(--titel)}
+.thema .name{font:600 1.05rem/1.15 var(--titel);overflow-wrap:anywhere;hyphens:auto}
+.punkte{display:flex;gap:5px;align-items:center}
+.punkte i{width:22px;height:8px;border-radius:5px;background:var(--linie)}
+.punkte i.halb{background:linear-gradient(90deg,var(--c) 50%,var(--linie) 50%)}
+.punkte i.gut{background:var(--c)}
+.thema .stand{font-size:.82rem;color:var(--leise);line-height:1.25}
+@media (min-width:700px){ .thema{padding:14px 14px 12px;gap:8px} .zeichen{min-width:40px;height:40px;font-size:1.1rem} .thema .name{font-size:1.15rem} .thema .stand{font-size:.88rem} }
+
+/* ----- Thema: Stufen ----- */
+.th-kopf{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.th-kopf .zeichen{min-width:46px;height:46px;font-size:1.3rem;border-radius:13px}
+.th-kopf h2{margin:0;flex:1}
+.stufen{display:grid;gap:10px}
+.stufe{--c:var(--akzent);display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;text-align:left;width:100%;font:inherit;color:inherit;
+  background:var(--karte);border:1.5px solid var(--linie);border-radius:16px;padding:12px 14px;cursor:pointer}
+.stufe:hover{border-color:var(--c)}
+.stufe .nr{grid-row:1/3;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--soft);color:var(--akzent);font:600 1.3rem/1 var(--titel)}
+.stufe b{font:600 1.08rem/1.2 var(--titel)}
+.stufe .txt{grid-column:2;font-size:.9rem;color:var(--leise);line-height:1.3}
+.stufe .st{grid-row:1/3;grid-column:3;font-weight:700;font-size:.85rem;border-radius:999px;padding:5px 11px;background:var(--soft);color:var(--akzent);white-space:nowrap}
+.stufe .st.gut{background:var(--gut-bg);color:var(--gut)}
+.stufe.zu{cursor:default;border-style:dashed;opacity:.8}
+.stufe.zu:hover{border-color:var(--linie)}
+.stufe.zu .st{background:var(--bg);color:var(--leise)}
+details.hilfe{margin-top:12px;background:var(--karte);border:1.5px solid var(--linie);border-radius:16px;padding:10px 14px}
+details.hilfe summary{cursor:pointer;font-weight:700;color:var(--akzent)}
+details.hilfe ul{margin:8px 0 2px;padding-left:20px}details.hilfe li{margin:5px 0;line-height:1.45}
+
+/* ----- Aufgabe ----- */
+.oben{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fortschritt{flex:1;display:flex;gap:4px}.fortschritt i{flex:1;height:7px;border-radius:4px;background:var(--linie)}
+.fortschritt i.jetzt{background:var(--akzent)}.fortschritt i.gut{background:var(--gut)}.fortschritt i.nein{background:var(--falsch)}
+.auftrag{font-weight:700;font-size:1.08rem;margin:2px 0 12px}
+.kontext{font-size:1.25rem;line-height:1.6;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:var(--bg)}
+.kontext mark,.zeile mark{background:var(--mark);color:var(--mark-ink);border-radius:6px;padding:1px 4px;font-weight:700}
+.kontext .trenn,.zeile .trenn{color:var(--leise);margin:0 2px}
+.opts{display:flex;flex-wrap:wrap;gap:9px}
+.opts.lang{display:grid}
+.opt{font:700 1rem/1.25 var(--text);text-align:left;color:var(--ink);background:var(--karte);border:2px solid var(--linie);border-radius:14px;padding:11px 16px;min-height:50px;cursor:pointer}
+.opts.lang .opt{width:100%;font-weight:400;font-size:1.05rem}
+.opt:hover{border-color:var(--akzent)}
+.opt.an{border-color:var(--akzent);background:var(--soft)}
+.opt.richtig{border-color:var(--gut);background:var(--gut-bg);color:var(--gut)}
+.opt.falsch{border-color:var(--falsch);background:var(--falsch-bg);color:var(--falsch)}
+.opt.fehlt{border-color:var(--gut);border-style:dashed}
+.opts.zu .opt{cursor:default}
+.gross-schrift,.gross-schrift .wort{text-transform:uppercase;letter-spacing:.04em}
+/* Wörter antippen */
+.woerter{display:flex;flex-wrap:wrap;gap:7px 6px;align-items:baseline;font-size:1.2rem;line-height:1.3;margin-bottom:6px}
+.wort{font:inherit;color:var(--ink);background:var(--karte);border:2px solid var(--linie);border-radius:11px;padding:6px 10px;cursor:pointer;min-height:44px}
+.wort:hover{border-color:var(--akzent)}
+.wort.an{background:var(--akzent);border-color:var(--akzent);color:#fff}
+.wort.ok{background:var(--gut-bg);border-color:var(--gut);color:var(--gut);font-weight:700}
+.wort.falsch{background:var(--falsch-bg);border-color:var(--falsch);color:var(--falsch);text-decoration:line-through}
+.wort.fehlt{border-color:var(--gut);border-style:dashed;color:var(--gut);font-weight:700}
+.zeichen-satz{font-size:1.2rem;margin-left:-4px}
+.woerter.zu .wort{cursor:default}
+/* Eingabe */
+.zeile{font-size:1.2rem;line-height:2.1}
+.feld{font:inherit;font-size:1.15rem;width:9.5em;max-width:100%;padding:6px 10px;border:2px solid var(--linie);border-radius:11px;background:var(--karte);color:var(--ink)}
+.feld:focus{outline:3px solid var(--akzent);outline-offset:1px;border-color:var(--akzent)}
+.feld.ok{border-color:var(--gut);background:var(--gut-bg);color:var(--gut)}.feld.falsch{border-color:var(--falsch);background:var(--falsch-bg);color:var(--falsch)}
+/* Sätze bauen */
+.bau{min-height:58px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;padding:10px;border:2px dashed var(--linie);border-radius:14px;margin-bottom:12px}
+.bau:empty::before{content:"Tippe die Kärtchen in der richtigen Reihenfolge an …";color:var(--leise);font-size:.95rem}
+.karten{display:flex;flex-wrap:wrap;gap:8px}
+.kart{font:700 1.05rem/1.2 var(--text);background:var(--soft);color:var(--ink);border:2px solid transparent;border-radius:12px;padding:10px 13px;cursor:pointer;min-height:46px}
+.kart.gesetzt{background:var(--akzent);color:#fff}
+.kart.ok{background:var(--gut-bg);color:var(--gut);border-color:var(--gut)}.kart.falsch{background:var(--falsch-bg);color:var(--falsch);border-color:var(--falsch)}
+.bau .punkt{font-size:1.3rem;font-weight:700}
+/* Zerlegen */
+.buchstaben{display:flex;flex-wrap:nowrap;justify-content:center;margin:6px 0 14px;user-select:none;-webkit-user-select:none}
+.bs{font:700 clamp(1.3rem,6.2vw,2rem)/1 var(--text);background:none;border:0;color:var(--ink);padding:10px clamp(1px,.6vw,4px);cursor:pointer;position:relative;border-radius:8px;min-width:clamp(18px,5.6vw,30px)}
+.bs:hover{background:var(--soft)}
+.bs.strich::after{content:"";position:absolute;right:-2px;top:4px;bottom:4px;width:4px;border-radius:2px;background:var(--akzent)}
+.bs.strich.ok::after{background:var(--gut)}.bs.strich.falsch::after{background:var(--falsch)}
+.bs.fehlt::after{content:"";position:absolute;right:-2px;top:4px;bottom:4px;width:0;border-right:4px dashed var(--gut)}
+.loes-teile{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
+.loes-teile span{border-radius:9px;padding:4px 9px;font-weight:700;font-size:.95rem}
+.r-V{background:#e6efff;color:#1f4fae}.r-S{background:#fff1b8;color:#5c4300}.r-N{background:#e3f6e8;color:#1d6b33}
+@media (prefers-color-scheme:dark){ .r-V{background:#1f2b52;color:#a9c1ff}.r-S{background:#4a3d12;color:#f3d77a}.r-N{background:#14331f;color:#8fe0a8} }
+/* Kreisel durchspielen */
+.weg{display:grid;gap:9px}
+.schritt{border:1.5px solid var(--linie);border-radius:14px;padding:10px 12px}
+.schritt p{margin:0 0 8px;font-weight:700}
+.schritt .ant{font-weight:700;border-radius:999px;padding:3px 11px;font-size:.92rem}
+.schritt .ant.ok{background:var(--gut-bg);color:var(--gut)}.schritt .ant.no{background:var(--falsch-bg);color:var(--falsch)}
+.schritt.fertig p{margin:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ende{font:600 1.15rem/1.2 var(--titel);color:var(--gut);padding:6px 2px}
+/* Pinsel */
+.palette{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 12px}
+.farbe{font:700 .95rem/1 var(--text);border:2px solid var(--c);color:var(--c);background:var(--karte);border-radius:999px;padding:9px 13px;cursor:pointer;min-height:42px}
+.farbe.an{background:var(--c);color:#fff}
+.wort[data-wa]{border-color:var(--c);box-shadow:inset 0 -5px 0 var(--c)}
+.wort .tag{display:block;font-size:.7rem;font-weight:700;color:var(--c);line-height:1;margin-top:3px;text-transform:none;letter-spacing:0}
+.wN{--c:var(--wN)}.wV{--c:var(--wV)}.wA{--c:var(--wA)}.wP{--c:var(--wP)}.wX{--c:var(--wX)}
+/* Rückmeldung */
+.meldung{margin-top:14px;border-radius:14px;padding:12px 14px;font-weight:700}
+.meldung.gut{background:var(--gut-bg);color:var(--gut)}.meldung.nein{background:var(--falsch-bg);color:var(--falsch)}
+.meldung .zus{margin:6px 0 0;font-weight:400;color:var(--ink);line-height:1.45}
+.meldung ul{margin:6px 0 0;padding-left:20px;font-weight:400;color:var(--ink)}
+.fehltext{color:var(--falsch);font-weight:700;font-size:.95rem;margin:10px 0 0}
+.ergebnis{text-align:center}
+.ergebnis .gross{font:600 3rem/1 var(--titel);color:var(--akzent);margin:10px 0}
+.shake{animation:shake .35s}@keyframes shake{25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){
+  .wrap{padding-top:10px}
+  .karte{padding:14px}
+  .kontext,.zeile,.woerter{font-size:1.1rem}
+  .opt{padding:10px 13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="lp-zurueck" href="./#deutsch">‹ Lernportal</a>
+    <div class="lp-logo">Gr</div>
+    <h1 class="lp-titel"><small>Deutsch · Beta-Test</small>Grammatik</h1>
+    <div class="lp-rechts"></div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script src="tipp-schutz.js" data-knoepfe=".lp-antwort"></script>
+<script src="lp-ergebnisse.js"></script>
+<script src="grammatik-aufgaben.js"></script>
+<script>
+const UEBUNG = "Grammatik";
+const VORSCHAU = /[?&]vorschau/.test(location.search);   // zum Ausprobieren: keine Glückszahl, nichts wird gesendet
+const PRO_RUNDE = 8, BESTANDEN = 6;                       // geschafft ab 6 von 8 richtig
+const {THEMEN, PRONOMENLISTE, WA} = window.GRAMMATIK;
+const app = document.getElementById("app");
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const gross1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+const store = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const thema = id => THEMEN.find(t => t.id === id);
+
+/* ===== Lernstand (pro Glückszahl, auch über mehrere Geräte) ===== */
+let gz = "", P = null;
+const pkey = () => "grammatik.p." + gz;
+const neuerStand = () => ({v:1, th:{}, t:0});
+function ladeP(){ try{ P = JSON.parse(store.get(pkey()) || "null"); }catch(e){ P = null; } if(!P || P.v !== 1) P = neuerStand(); }
+let sendeTimer = null;
+const post = body => fetch(window.LP.endpoint, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body)}).then(r => r.json());
+function speichereP(){
+  P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt);
+  if(VORSCHAU) return;
+  clearTimeout(sendeTimer); sendeTimer = setTimeout(() => post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:gz, t:P.t, stand:txt}).catch(()=>{}), 1500);
+}
+const geholt = {};
+function holeStand(weiter){
+  if(VORSCHAU || geholt[gz] || !window.LP || !window.LP.endpoint){ weiter(); return; }
+  geholt[gz] = true;
+  let fertig = false; const w = () => { if(!fertig){ fertig = true; weiter(); } };
+  setTimeout(w, 4000);
+  post({typ:"stand-laden", uebung:UEBUNG, glueckszahl:gz}).then(d => {
+    if(fertig) return;
+    const lokal = (() => { try{ return JSON.parse(store.get(pkey()) || "null"); }catch(e){ return null; } })();
+    const tl = (lokal && lokal.t) || 0, tr = (d && d.ok && d.stand) ? (Number(d.t) || 0) : -1;
+    if(tr > tl) store.set(pkey(), d.stand);
+    else if(lokal && tl > 0) post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:gz, t:tl, stand:JSON.stringify(lokal)}).catch(()=>{});
+  }).catch(()=>{}).finally(w);
+}
+const stufeStand = (id, s) => ((P.th[id] || {})[s]) || null;
+const geschafft = (id, s) => { const x = stufeStand(id, s); return !!x && x.best >= BESTANDEN; };
+const offen = (id, s) => s === 1 || geschafft(id, s - 1);
+
+/* ===== Start ===== */
+function start(){
+  const g = VORSCHAU ? "vorschau" : window.LP ? window.LP.glueckszahl() : "";
+  if(!g){ app.innerHTML = `<div class="karte"><h2>Gib zuerst deine Glückszahl ein.</h2><p class="leise">Tippe oben rechts auf den Knopf, falls das Fenster nicht erscheint.</p></div>`; setTimeout(start, 800); return; }
+  if(g !== gz){ gz = g; P = null; }
+  holeStand(zeigen);
+}
+function zeigen(){
+  ladeP(); R = null;
+  const id = (location.hash || "").slice(1);
+  if(thema(id)) themaSeite(thema(id)); else startseite();
+}
+window.addEventListener("hashchange", () => { if(!R || confirm("Möchtest du die Runde abbrechen?")) zeigen(); });
+
+function startseite(){
+  window.scrollTo(0, 0);
+  app.innerHTML = BETA_LEISTE + `<p class="frage-oben">Welches Thema möchtest du üben?</p>
+    <div class="themen">${THEMEN.map(t => {
+      const st = [1,2,3].map(s => { const x = stufeStand(t.id, s); return x && x.best >= BESTANDEN ? "gut" : x ? "halb" : ""; });
+      const n = st.filter(x => x === "gut").length, beg = st.some(Boolean);
+      const text = n === 3 ? "Alles geschafft 🏆" : !beg ? "Noch nicht geübt" : `${n} von 3 Stufen geschafft`;
+      return `<button class="thema" style="--c:${t.farbe}" data-id="${t.id}"><span class="kopf"><span class="zeichen">${esc(t.zeichen)}</span><span class="name">${esc(t.name)}</span></span>
+        <span class="punkte" aria-hidden="true">${st.map(c => `<i class="${c}"></i>`).join("")}</span><span class="stand">${text}</span></button>`;
+    }).join("")}</div>`;
+  app.querySelectorAll(".thema").forEach(b => b.onclick = () => { location.hash = b.dataset.id; });
+}
+
+function themaSeite(t){
+  window.scrollTo(0, 0);
+  app.innerHTML = `<div class="th-kopf"><span class="zeichen" style="background:${t.farbe}">${esc(t.zeichen)}</span><h2>${esc(t.name)}</h2>
+      <button class="btn zweit klein" id="alle">‹ Alle Themen</button></div>
+    <div class="stufen">${t.stufen.map((s, i) => {
+      const n = i + 1, x = stufeStand(t.id, n), auf = offen(t.id, n);
+      const st = !auf ? `🔒 zuerst Stufe ${n - 1}` : !x ? "neu" : x.best >= BESTANDEN ? `✓ ${x.best} von ${PRO_RUNDE}` : `bisher ${x.best} von ${PRO_RUNDE}`;
+      return `<button class="stufe${auf ? "" : " zu"}" data-s="${n}" ${auf ? "" : 'aria-disabled="true"'}><span class="nr">${n}</span><b>${esc(s.titel)}</b>
+        <span class="txt">${esc(s.text)}</span><span class="st${x && x.best >= BESTANDEN ? " gut" : ""}">${st}</span></button>`;
+    }).join("")}</div>
+    <p class="leise" style="font-size:.9rem;margin:10px 2px 0">Eine Runde hat ${PRO_RUNDE} Aufgaben. Mit ${BESTANDEN} richtigen hast du die Stufe geschafft – dann geht die nächste auf.</p>
+    <details class="hilfe"${Object.keys(P.th[t.id] || {}).length ? "" : " open"}><summary>So geht's – ${esc(t.name)}</summary><ul>${t.hilfe.map(h => `<li>${h}</li>`).join("")}</ul>
+      ${t.liste ? `<button class="btn zweit klein" id="liste">📋 Pronomenliste</button>` : ""}</details>`;
+  $("#alle").onclick = () => { location.hash = ""; };
+  app.querySelectorAll(".stufe").forEach(b => b.onclick = () => {
+    const n = +b.dataset.s;
+    if(!offen(t.id, n)){ b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); return; }
+    starteRunde(t, n);
+  });
+  const l = $("#liste"); if(l) l.onclick = pronomenliste;
+}
+
+/* ===== Hilfen als Fenster ===== */
+function fenster(html){
+  const h = document.createElement("div"); h.className = "modal-hinter"; h.setAttribute("role", "dialog"); h.setAttribute("aria-modal", "true");
+  h.innerHTML = `<div class="modal">${html}<div class="aktionen" style="justify-content:center"><button class="btn" id="zu">Schliessen</button></div></div>`;
+  document.body.appendChild(h);
+  const zu = () => h.remove();
+  h.querySelector("#zu").onclick = zu; h.onclick = e => { if(e.target === h) zu(); };
+  h.querySelector("#zu").focus();
+}
+function pronomenliste(){
+  fenster(`<h2>📋 Pronomenliste</h2><dl>${PRONOMENLISTE.map(([k, w]) => `<dt>${esc(k)}</dt><dd>${esc(w)}</dd>`).join("")}</dl>`);
+}
+function hilfeFenster(t){
+  fenster(`<h2>So geht's – ${esc(t.name)}</h2><ul>${t.hilfe.map(h => `<li>${h}</li>`).join("")}</ul>
+    ${t.liste || t.id === "kreisel" || t.id === "partikeln" ? `<p style="margin:12px 0 0"><button class="btn zweit klein" id="liste2">📋 Pronomenliste</button></p>` : ""}`);
+  const l = $("#liste2"); if(l) l.onclick = () => { $(".modal-hinter").remove(); pronomenliste(); };
+}
+
+/* ===== Runde ===== */
+let R = null;
+function starteRunde(t, s){
+  R = {t, s, i:0, aufgaben:window.GRAMMATIK.runde(t.id, s, PRO_RUNDE), log:[], start:Date.now()};
+  zeigeAufgabe();
+}
+function zeigeAufgabe(){
+  const a = R.aufgaben[R.i];
+  R.fertig = false;
+  const prog = R.aufgaben.map((_, k) => { const l = R.log[k]; return `<i class="${k === R.i ? "jetzt" : l ? (l.punkte ? "gut" : "nein") : ""}"></i>`; }).join("");
+  app.innerHTML = `<div class="karte" id="aufgabe">
+      <div class="oben"><div class="fortschritt">${prog}</div><button class="btn zweit klein" id="hilfe">💡 Hilfe</button></div>
+      <div class="leise" style="font-size:.85rem;font-weight:700">${esc(R.t.name)} · Stufe ${R.s} · Aufgabe ${R.i + 1} von ${R.aufgaben.length}</div>
+      <div class="auftrag">${esc(a.frage)}</div>
+      <div id="eingabe"></div>
+      <div id="meldung"></div>
+      <div class="aktionen" id="aktionen"></div>
+    </div>
+    <div class="aktionen"><button class="btn zweit klein" id="abbruch">Runde abbrechen</button></div>`;
+  $("#hilfe").onclick = () => hilfeFenster(R.t);
+  $("#abbruch").onclick = () => { if(confirm("Möchtest du die Runde abbrechen? Die Aufgaben dieser Runde zählen dann nicht.")){ R = null; themaSeite(thema(location.hash.slice(1)) || THEMEN[0]); } };
+  ({wahl:baueWahl, tap:baueTap, multi:baueMulti, eingabe:baueEingabe, bauen:baueBauen, zerlegen:baueZerlegen, weg:baueWeg, pinsel:bauePinsel})[a.typ](a, $("#eingabe"));
+  window.scrollTo(0, 0);
+}
+function pruefKnopf(fn){ $("#aktionen").innerHTML = `<button class="btn" id="pruefen">Prüfen</button>`; $("#pruefen").onclick = fn; }
+function fehlt(txt){ $("#meldung").innerHTML = `<p class="fehltext">${esc(txt)}</p>`; const f = $("#aufgabe"); f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake"); }
+const LOB = ["Richtig!", "Genau!", "Super!", "Stimmt!", "Bravo!"];
+/* Ergebnis einer Aufgabe zeigen und merken */
+function fertig(a, ok, antwort, loesung, zusatzHtml){
+  if(R.fertig) return; R.fertig = true;
+  const erkl = a.erkl ? `<div class="zus">${esc(a.erkl)}</div>` : "";
+  $("#meldung").innerHTML = `<div class="meldung ${ok ? "gut" : "nein"}">${ok ? LOB[Math.floor(Math.random() * LOB.length)] : "Nicht ganz."}${zusatzHtml || ""}${ok && a.typ !== "eingabe" ? "" : erkl}</div>`;
+  R.log[R.i] = {frage: logFrage(a), antwort:String(antwort), loesung:String(loesung), punkte: ok ? 1 : 0, thema:a.thema, t:Date.now()};
+  $("#aktionen").innerHTML = `<button class="btn" id="weiter">${R.i < R.aufgaben.length - 1 ? "Weiter →" : "Fertig →"}</button>`;
+  const w = $("#weiter"); w.onclick = weiter; w.focus({preventScroll:true});
+  if(innerWidth < 860) $("#meldung").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+function logFrage(a){
+  const kontext = a.zeile ? " " + String(a.zeile).replace(/<[^>]+>/g, "") : a.satz ? " " + satzText(a.satz, true) : a.woerter ? " " + a.woerter.map(w => w.t).join(" ").replace(/ ([.,?!])/g, "$1") : a.wort ? " " + a.wort : "";
+  return (a.frage + kontext).slice(0, 300);
+}
+function satzText(s, mitMarke){ return s.map(w => w.mark && mitMarke ? `[${w.t}]` : w.t).join(" ").replace(/ ([.,?!:])/g, "$1"); }
+function weiter(){ R.i++; if(R.i < R.aufgaben.length) zeigeAufgabe(); else abschluss(); }
+
+/* ---- Kontext: Satz mit markiertem Wort oder eine Zeile ---- */
+function kontextHtml(a){
+  if(a.satz) return `<div class="kontext">${a.satz.map((w, i) => (w.p || i === 0 ? "" : " ") + (w.mark ? `<mark>${esc(w.t)}</mark>` : esc(w.t))).join("")}</div>`;
+  if(a.zeile) return `<div class="kontext">${a.zeileHtml ? a.zeile : esc(a.zeile).replace(/___/g, "<b>___</b>")}</div>`;
+  return "";
+}
+
+/* ---- Auswahl mit einem Tipp ---- */
+function baueWahl(a, E){
+  E.innerHTML = kontextHtml(a) + `<div class="opts${a.lang ? " lang" : ""}">${a.optionen.map((o, i) => `<button class="opt lp-antwort${a.gross ? " gross-schrift" : ""}" data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+  E.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    if(R.fertig) return;
+    const wahl = a.optionen[+b.dataset.i], ok = wahl === a.richtig;
+    E.querySelector(".opts").classList.add("zu");
+    E.querySelectorAll(".opt").forEach(x => { const o = a.optionen[+x.dataset.i]; if(o === a.richtig) x.classList.add("richtig"); else if(x === b) x.classList.add("falsch"); });
+    fertig(a, ok, wahl, a.richtig, ok || a.kreisel ? "" : `<div class="zus">Richtig ist: <b>${esc(a.richtig)}</b></div>`);
+  });
+}
+
+/* ---- Wörter (oder Satzglieder) im Satz antippen ---- */
+function baueTap(a, E){
+  const gew = new Set();
+  E.innerHTML = `<div class="woerter${a.gross ? " gross-schrift" : ""}">${a.woerter.map((w, i) => w.p ? `<span class="zeichen-satz">${esc(w.t)}</span>` : `<button class="wort" data-i="${i}">${esc(w.t)}</button>`).join("")}</div>`;
+  E.querySelectorAll(".wort").forEach(b => b.onclick = () => {
+    if(R.fertig) return;
+    const i = +b.dataset.i;
+    if(a.einzeln){ gew.clear(); E.querySelectorAll(".wort").forEach(x => x.classList.remove("an")); gew.add(i); b.classList.add("an"); }
+    else { gew.has(i) ? gew.delete(i) : gew.add(i); b.classList.toggle("an", gew.has(i)); }
+    $("#meldung").innerHTML = "";
+  });
+  pruefKnopf(() => {
+    if(!gew.size) return fehlt(a.einzeln ? "Tippe zuerst ein Wort an." : "Tippe zuerst die Wörter an.");
+    const ziele = a.woerter.map((w, i) => w.z ? i : -1).filter(i => i >= 0);
+    const ok = ziele.length === gew.size && ziele.every(i => gew.has(i));
+    E.querySelector(".woerter").classList.add("zu");
+    const falsch = [], fehlend = [];
+    E.querySelectorAll(".wort").forEach(b => { const i = +b.dataset.i, w = a.woerter[i]; b.classList.remove("an");
+      if(w.z && gew.has(i)) b.classList.add("ok");
+      else if(gew.has(i)){ b.classList.add("falsch"); falsch.push(w); }
+      else if(w.z){ b.classList.add("fehlt"); fehlend.push(w); } });
+    let zus = "";
+    if(!ok){
+      const z = [];
+      falsch.forEach(w => z.push(`<li>«${esc(w.t)}» ${a.segmente ? "– " + esc(w.info) : "ist " + (w.info === "kein Verbteil" || w.info === "keine Personalform" ? esc(w.info) : esc(artikel(w.info)))}.</li>`));
+      if(fehlend.length) z.push(`<li>Gefehlt hat: ${fehlend.map(w => `«${esc(w.t)}»`).join(", ")} (grün gestrichelt).</li>`);
+      zus = `<ul>${z.join("")}</ul>`;
+    }
+    const txt = s => s.map(w => w.t).join(" | ");
+    fertig(a, ok, txt([...gew].sort((x, y) => x - y).map(i => a.woerter[i])), txt(ziele.map(i => a.woerter[i])), zus);
+  });
+}
+const artikel = wa => ({"Nomen":"ein Nomen","Verb":"ein Verb","Adjektiv":"ein Adjektiv","Pronomen":"ein Pronomen","Partikel":"eine Partikel","Personalform":"die Personalform","weiterer Verbteil":"ein weiterer Verbteil"})[wa] || wa;
+
+/* ---- Mehrere Wörter auswählen ---- */
+function baueMulti(a, E){
+  const gew = new Set();
+  E.innerHTML = (a.liste ? `<p style="margin:0 0 10px"><button class="btn zweit klein" id="pliste">📋 Pronomenliste</button></p>` : "") +
+    `<p class="leise" style="margin:-4px 0 10px;font-size:.95rem">Es sind mehrere Wörter richtig.</p><div class="opts">${a.optionen.map((o, i) => `<button class="opt${a.gross ? " gross-schrift" : ""}" data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+  const l = E.querySelector("#pliste"); if(l) l.onclick = pronomenliste;
+  E.querySelectorAll(".opt").forEach(b => b.onclick = () => { if(R.fertig) return; const i = +b.dataset.i; gew.has(i) ? gew.delete(i) : gew.add(i); b.classList.toggle("an", gew.has(i)); $("#meldung").innerHTML = ""; });
+  pruefKnopf(() => {
+    if(!gew.size) return fehlt("Wähle zuerst mindestens ein Wort.");
+    const R_ = new Set(a.richtig.map(r => a.optionen.indexOf(r)));
+    const ok = R_.size === gew.size && [...R_].every(i => gew.has(i));
+    E.querySelector(".opts").classList.add("zu");
+    E.querySelectorAll(".opt").forEach(b => { const i = +b.dataset.i; b.classList.remove("an"); if(R_.has(i)) b.classList.add(gew.has(i) ? "richtig" : "fehlt"); else if(gew.has(i)) b.classList.add("falsch"); });
+    fertig(a, ok, [...gew].map(i => a.optionen[i]).join(" | "), a.richtig.join(" | "), ok ? "" : `<div class="zus">Grün umrandet sind alle richtigen Wörter.</div>`);
+  });
+}
+
+/* ---- Eintippen ---- */
+const norm = s => String(s || "").normalize("NFC").replace(/ß/g, "ss").replace(/\s+/g, " ").trim();
+const ohneUmlaut = s => s.replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/Ä/g, "Ae").replace(/Ö/g, "Oe").replace(/Ü/g, "Ue");
+function vergleiche(eingabe, loesungen){
+  const e = norm(eingabe);
+  for(const l of loesungen){
+    if(e === l) return {ok:true};
+    if(e.toLowerCase() === l.toLowerCase()) return {ok:true, hinweis: l[0] === l[0].toUpperCase() ? `«${l}» schreibt man gross.` : `«${l}» schreibt man klein.`};
+    if(ohneUmlaut(e).toLowerCase() === ohneUmlaut(l).toLowerCase()) return {ok:true, hinweis:`Schreib «${l}» mit ä, ö oder ü.`};
+  }
+  return {ok:false};
+}
+function baueEingabe(a, E){
+  let n = 0;
+  E.innerHTML = `<div class="kontext zeile">${a.teile.map(t => typeof t === "string" ? esc(t) : `<input class="feld" data-n="${n++}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Antwort">`).join("")}</div>`;
+  const felder = [...E.querySelectorAll(".feld")];
+  const pruefen = () => {
+    if(felder.some(f => !norm(f.value))) return fehlt(felder.length > 1 ? "Fülle zuerst alle Lücken aus." : "Schreib zuerst eine Antwort.");
+    const ziele = a.teile.filter(t => typeof t !== "string");
+    const erg = felder.map((f, i) => vergleiche(f.value, ziele[i].l));
+    const ok = erg.every(r => r.ok);
+    felder.forEach((f, i) => { f.readOnly = true; f.classList.add(erg[i].ok ? "ok" : "falsch"); });
+    const hinweise = erg.filter(r => r.hinweis).map(r => r.hinweis);
+    const zus = (!ok ? `<div class="zus">Richtig: <b>${ziele.map(z => esc(z.l[0])).join(" – ")}</b></div>` : "") + (hinweise.length ? `<div class="zus">Tipp: ${esc(hinweise.join(" "))}</div>` : "");
+    fertig(a, ok, felder.map(f => f.value.trim()).join(" – "), ziele.map(z => z.l[0]).join(" – "), zus);
+  };
+  felder.forEach((f, i) => { f.oninput = () => { $("#meldung").innerHTML = ""; }; f.onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); if(R.fertig) weiter(); else if(i < felder.length - 1 && !norm(felder[i + 1].value)) felder[i + 1].focus(); else pruefen(); } }; });
+  pruefKnopf(pruefen);
+  if(innerWidth >= 700) felder[0].focus({preventScroll:true});
+}
+
+/* ---- Satz aus Satzgliedern bauen ---- */
+function baueBauen(a, E){
+  const reihe = [];
+  const zeichne = () => {
+    E.innerHTML = `<div class="bau">${reihe.map((k, j) => `<button class="kart gesetzt" data-j="${j}">${esc(j === 0 ? gross1(a.karten[k]) : a.karten[k])}${j === a.karten.length - 1 ? "." : ""}</button>`).join("")}</div>
+      <div class="karten">${a.karten.map((k, i) => reihe.includes(i) ? "" : `<button class="kart" data-i="${i}">${esc(k)}</button>`).join("")}</div>`;
+    E.querySelectorAll(".kart[data-i]").forEach(b => b.onclick = () => { if(R.fertig) return; reihe.push(+b.dataset.i); $("#meldung").innerHTML = ""; zeichne(); });
+    E.querySelectorAll(".kart[data-j]").forEach(b => b.onclick = () => { if(R.fertig) return; reihe.splice(+b.dataset.j, 1); zeichne(); });
+  };
+  zeichne();
+  pruefKnopf(() => {
+    if(reihe.length < a.karten.length) return fehlt("Setze zuerst alle Kärtchen ein.");
+    const r = reihe.map(i => a.karten[i]);
+    const ok = r[0] === a.start && r[1] === a.pf && (!a.vt || r[r.length - 1] === a.vt);
+    E.querySelectorAll(".kart.gesetzt").forEach((b, j) => {
+      const t = r[j]; const gut = (j === 0 && t === a.start) || (j === 1 && t === a.pf) || (a.vt && j === r.length - 1 && t === a.vt) || (t !== a.start && t !== a.pf && t !== a.vt && j > 1 && !(a.vt && j === r.length - 1));
+      b.classList.remove("gesetzt"); b.classList.add(gut ? "ok" : "falsch"); });
+    const satz = gross1(r.join(" ")) + ".";
+    let zus = "";
+    if(!ok){
+      const z = [];
+      if(r[0] !== a.start) z.push(`Der Satz soll mit «${esc(gross1(a.start))}» beginnen.`);
+      if(r[1] !== a.pf) z.push(`An die 2. Stelle gehört die Personalform «${esc(a.pf)}».`);
+      if(a.vt && r[r.length - 1] !== a.vt) z.push(`Der weitere Verbteil «${esc(a.vt)}» steht ganz am Schluss.`);
+      zus = `<ul>${z.map(x => `<li>${x}</li>`).join("")}</ul>`;
+    }
+    fertig(a, ok, satz, a.loesung, zus);
+  });
+}
+
+/* ---- Wort in Morpheme zerlegen ---- */
+function baueZerlegen(a, E){
+  const striche = new Set();
+  const w = a.wort;
+  E.innerHTML = `<div class="buchstaben" id="bs">${[...w].map((b, i) => `<button class="bs" data-i="${i + 1}" ${i === w.length - 1 ? "disabled" : ""}>${esc(b)}</button>`).join("")}</div>
+    <p class="leise" style="text-align:center;margin:-6px 0 0;font-size:.92rem">Nochmals tippen nimmt den Strich wieder weg.</p>`;
+  E.querySelectorAll(".bs:not([disabled])").forEach(b => b.onclick = () => { if(R.fertig) return; const i = +b.dataset.i; striche.has(i) ? striche.delete(i) : striche.add(i); b.classList.toggle("strich", striche.has(i)); $("#meldung").innerHTML = ""; });
+  pruefKnopf(() => {
+    if(!striche.size) return fehlt("Setze zuerst mindestens einen Strich.");
+    const soll = new Set(a.grenzen);
+    const ok = soll.size === striche.size && [...soll].every(i => striche.has(i));
+    E.querySelectorAll(".bs").forEach(b => { const i = +b.dataset.i;
+      if(striche.has(i)) b.classList.add(soll.has(i) ? "ok" : "falsch"); else if(soll.has(i)) b.classList.add("fehlt"); });
+    const teile = (set) => { const g = [0, ...[...set].sort((x, y) => x - y), w.length]; return g.slice(0, -1).map((x, k) => w.slice(x, g[k + 1])).join(" | "); };
+    const loes = `<div class="loes-teile">${a.teile.map(x => `<span class="r-${x.r}">${esc(x.t)} <small>${x.r === "V" ? "Vor" : x.r === "S" ? "Stamm" : "Nach"}</small></span>`).join("")}</div>`;
+    fertig(a, ok, teile(striche), teile(soll), loes);
+  });
+}
+
+/* ---- Kreisel Schritt für Schritt ---- */
+function baueWeg(a, E){
+  let k = 0, aus = false;
+  const antworten = [];
+  const zeichne = () => {
+    const erledigt = antworten.map((ja, j) => `<div class="schritt fertig"><p>${esc(a.schritte[j].f)} <span class="ant ${ja === a.schritte[j].ja ? "ok" : "no"}">${ja ? "Ja" : "Nein"}</span></p></div>`).join("");
+    const jetzt = k < a.schritte.length && !aus ? `<div class="schritt"><p>${esc(a.schritte[k].f)}</p><div class="opts"><button class="opt lp-antwort" data-ja="1">Ja</button><button class="opt lp-antwort" data-ja="0">Nein</button></div></div>` : "";
+    E.innerHTML = kontextHtml(a) + `<div class="weg">${erledigt}${jetzt}</div>`;
+    E.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      if(R.fertig) return;
+      const ja = b.dataset.ja === "1";
+      antworten.push(ja);
+      if(ja !== a.schritte[k].ja){ aus = true; zeichne(); return fertig(a, false, antworten.map(x => x ? "Ja" : "Nein").join(" → "), a.schritte.map(s => s.ja ? "Ja" : "Nein").join(" → ") + " → " + WA[a.wa]); }
+      k++;
+      if(k === a.schritte.length){ aus = true; zeichne(); E.querySelector(".weg").insertAdjacentHTML("beforeend", `<div class="ende">→ «${esc(a.wort)}» ist ${artikel(WA[a.wa])}.</div>`); return fertig(a, true, antworten.map(x => x ? "Ja" : "Nein").join(" → "), a.schritte.map(s => s.ja ? "Ja" : "Nein").join(" → ") + " → " + WA[a.wa]); }
+      zeichne();
+    });
+  };
+  zeichne();
+}
+
+/* ---- Ganzer Satz: jedes Wort einer Wortart zuordnen ---- */
+function bauePinsel(a, E){
+  let farbe = "N";
+  const zu = {};
+  const zeichne = () => {
+    E.innerHTML = `<div class="palette">${["N","V","A","P","X"].map(k => `<button class="farbe w${k}${farbe === k ? " an" : ""}" data-k="${k}">${WA[k]}</button>`).join("")}</div>
+      <div class="woerter" id="pw">${a.woerter.map((w, i) => w.p ? `<span class="zeichen-satz">${esc(w.t)}</span>` :
+        `<button class="wort${zu[i] ? " w" + zu[i] : ""}" data-i="${i}" ${zu[i] ? `data-wa="${zu[i]}"` : ""}>${esc(w.t)}${zu[i] ? `<span class="tag">${WA[zu[i]]}</span>` : ""}</button>`).join("")}</div>`;
+    E.querySelectorAll(".farbe").forEach(b => b.onclick = () => { farbe = b.dataset.k; zeichne(); });
+    E.querySelectorAll(".wort").forEach(b => b.onclick = () => { if(R.fertig) return; const i = +b.dataset.i; zu[i] = zu[i] === farbe ? undefined : farbe; $("#meldung").innerHTML = ""; zeichne(); });
+  };
+  zeichne();
+  pruefKnopf(() => {
+    const idx = a.woerter.map((w, i) => w.p ? -1 : i).filter(i => i >= 0);
+    if(idx.some(i => !zu[i])) return fehlt("Bestimme zuerst jedes Wort.");
+    const falsch = idx.filter(i => zu[i] !== a.woerter[i].wa);
+    const ok = !falsch.length;
+    E.querySelectorAll(".wort").forEach(b => { const i = +b.dataset.i; b.classList.add(zu[i] === a.woerter[i].wa ? "ok" : "falsch"); });
+    E.querySelectorAll(".farbe").forEach(b => b.disabled = true);
+    const zus = ok ? "" : `<ul>${falsch.map(i => `<li>«${esc(a.woerter[i].t)}» ist ${artikel(WA[a.woerter[i].wa])}, nicht ${artikel(WA[zu[i]])}.</li>`).join("")}</ul>`;
+    fertig(a, ok, idx.map(i => a.woerter[i].t + ":" + zu[i]).join(" "), idx.map(i => a.woerter[i].t + ":" + a.woerter[i].wa).join(" "), zus);
+  });
+}
+
+/* ===== Ende der Runde ===== */
+function abschluss(){
+  const t = R.t, s = R.s, r = R.log.filter(l => l && l.punkte).length, n = R.aufgaben.length;
+  if(window.LP) LP.runde(UEBUNG, `${t.name} · Stufe ${s}`, R.log.filter(Boolean), {bereich:t.id, stufe:s, start:R.start});
+  const th = P.th[t.id] || (P.th[t.id] = {});
+  const x = th[s] || (th[s] = {best:0, n:0, ok:0, tot:0});
+  const vorher = x.best;
+  x.n++; x.last = r; x.best = Math.max(x.best, r); x.ok += r; x.tot += n; x.t = Date.now();
+  speichereP();
+  const geschafftJetzt = r >= BESTANDEN;
+  let txt;
+  if(geschafftJetzt && vorher < BESTANDEN) txt = s < 3 ? `🎉 Stufe ${s} geschafft! Jetzt ist Stufe ${s + 1} offen: ${t.stufen[s].titel}.` : `🏆 Du hast alle Stufen von «${t.name}» geschafft!`;
+  else if(geschafftJetzt) txt = "Wieder geschafft – sehr gut!";
+  else txt = `Für «geschafft» brauchst du ${BESTANDEN} von ${n}. Schau dir die Hilfe nochmals an und probier es gleich wieder – die Aufgaben sind jedes Mal anders.`;
+  const naechste = geschafftJetzt && s < 3;
+  R = null;
+  app.innerHTML = `<div class="karte ergebnis"><h2>${geschafftJetzt ? "Geschafft!" : "Noch nicht ganz"}</h2><div class="gross">${r} / ${n}</div>
+    <div class="meldung ${geschafftJetzt ? "gut" : "nein"}" style="text-align:left">${esc(txt)}</div>
+    <div class="aktionen" style="justify-content:center">
+      ${naechste ? `<button class="btn" id="next">Weiter mit Stufe ${s + 1} →</button>` : ""}
+      <button class="btn${naechste ? " zweit" : ""}" id="nochmal">Stufe ${s} nochmals</button>
+      <button class="btn zweit" id="ueber">Zur Übersicht</button></div></div>`;
+  if(naechste) $("#next").onclick = () => starteRunde(t, s + 1);
+  $("#nochmal").onclick = () => starteRunde(t, s);
+  $("#ueber").onclick = () => themaSeite(t);
+  window.scrollTo(0, 0);
+}
+
+/* ===== Beta-Test: Hinweis beim Öffnen und auf der Startseite ===== */
+const BETA_LEISTE = `<div class="beta"><span>🧪</span><span><b>Beta-Test:</b> Dieser Trainer ist neu. Wenn dir eine Aufgabe komisch vorkommt, sag es deiner Lehrperson.</span></div>`;
+function betaHinweis(){
+  const h = document.createElement("div"); h.className = "beta-hinter"; h.setAttribute("role", "dialog"); h.setAttribute("aria-modal", "true");
+  h.innerHTML = `<div class="beta-karte"><div class="gross">🧪</div><h2>Achtung: Beta-Test</h2>
+    <p>Der Grammatik-Trainer ist ganz neu und wird gerade ausprobiert. Darum kann es noch Fehler haben: zum Beispiel eine Aufgabe, die nicht ganz stimmt, oder eine Antwort, die falsch bewertet wird.</p>
+    <p>Wenn dir etwas komisch vorkommt, merk dir die Aufgabe und sag es deiner Lehrperson. So hilfst du mit, den Trainer besser zu machen.</p>
+    <div class="aktionen" style="justify-content:center"><button class="btn" id="betaOk">Verstanden – los geht's</button></div></div>`;
+  document.body.appendChild(h);
+  const ok = h.querySelector("#betaOk"); ok.onclick = () => h.remove(); ok.focus();
+}
+if(!VORSCHAU) betaHinweis();
+
+/* ===== Los ===== */
+if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
+start();
+// Andere Glückszahl gewählt (Knopf oben rechts): Lernstand dieser Zahl laden
+if(!VORSCHAU) setInterval(() => { if(!R && window.LP && LP.glueckszahl() && LP.glueckszahl() !== gz) start(); }, 1500);
+</script>
+</body>
+</html>
