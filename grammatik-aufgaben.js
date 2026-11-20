@@ -472,7 +472,7 @@ function kreiselWort(opt){
   let pool = [];
   SAETZE.forEach((s, si) => s.forEach((w, wi) => { if(!w.p && !w.nie && (opt.knack ? w.knack : !w.knack)) pool.push([si, wi]); }));
   if(opt.drei) {
-    // 4./5. Klasse: Nomen, Verb, Adjektiv – andere Wörter seltener
+    // Grundlagen: Nomen, Verb, Adjektiv – andere Wörter seltener
     const haupt = pool.filter(([si, wi]) => "NVA".includes(SAETZE[si][wi].wa));
     if(Math.random() < 0.8) pool = haupt;
   }
@@ -773,8 +773,8 @@ const THEMEN = [
       "<b>Knacknuss:</b> Auch Verben und Adjektive werden zu Nomen, wenn ein Begleiter davorsteht: das Lachen, beim Schwimmen, die Kleine."
     ],
     stufen:[
-      {titel:"Repetition 4./5. Klasse", text:"Nomen finden, Begleiter und Mehrzahl", gen:["nomenTap","begleiter","mehrzahl"]},
-      {titel:"6. Klasse", text:"Gefühle als Nomen, Nomen bilden, Fälle", gen:["abstrakt","nomenBilden","fall","nomenTap"]},
+      {titel:"Grundlagen", text:"Nomen finden, Begleiter und Mehrzahl", gen:["nomenTap","begleiter","mehrzahl"]},
+      {titel:"Vertiefung", text:"Gefühle als Nomen, Nomen bilden, Fälle", gen:["abstrakt","nomenBilden","fall","nomenTap"]},
       {titel:"Knacknüsse", text:"Nomen aus Verben und Adjektiven, knifflige Mehrzahl", gen:["nominal","nomenTapKnack","mehrzahlKnack"]}
     ]},
   {id:"verben", name:"Verben", zeichen:"V", farbe:"#d6402f",
@@ -786,8 +786,8 @@ const THEMEN = [
       "Das Perfekt bildet man mit «haben» oder «sein». Bei Bewegungen von einem Ort zum andern meist mit «sein»: ich bin gelaufen."
     ],
     stufen:[
-      {titel:"Repetition 4./5. Klasse", text:"Verben finden, Grundform, Personalform, drei Zeitformen", gen:["verbTap","grundform","personalform","zeitform"]},
-      {titel:"6. Klasse", text:"Alle fünf Zeitformen, Sätze umsetzen, Personalform finden", gen:["zeitform5","zeitSetzen","personalformTap"]},
+      {titel:"Grundlagen", text:"Verben finden, Grundform, Personalform, drei Zeitformen", gen:["verbTap","grundform","personalform","zeitform"]},
+      {titel:"Vertiefung", text:"Alle fünf Zeitformen, Sätze umsetzen, Personalform finden", gen:["zeitform5","zeitSetzen","personalformTap"]},
       {titel:"Knacknüsse", text:"Unregelmässige Verben, haben oder sein, Verbteile", gen:["personalformStark","praeteritum","habenSein","verbteile","grundformStark"]}
     ]},
   {id:"adjektive", name:"Adjektive", zeichen:"A", farbe:"#2f9e44",
@@ -799,8 +799,8 @@ const THEMEN = [
       "<b>Knacknuss:</b> Auch beim Verb bleibt es ein Adjektiv: Der Hund bellt laut (lauter, am lautesten). Unregelmässig: gut – besser – am besten, hoch – höher – am höchsten."
     ],
     stufen:[
-      {titel:"Repetition 4./5. Klasse", text:"Adjektive finden und vergleichen", gen:["adjTap","vergleich","vergleichSatz"]},
-      {titel:"6. Klasse", text:"Endungen vor dem Nomen, Adjektive bilden und erkennen", gen:["endung","adjBilden","adjMulti"]},
+      {titel:"Grundlagen", text:"Adjektive finden und vergleichen", gen:["adjTap","vergleich","vergleichSatz"]},
+      {titel:"Vertiefung", text:"Endungen vor dem Nomen, Adjektive bilden und erkennen", gen:["endung","adjBilden","adjMulti"]},
       {titel:"Knacknüsse", text:"Adjektive beim Verb, unregelmässig vergleichen", gen:["adjTapKnack","vergleichSchwer","vergleichSatzSchwer"]}
     ]},
   {id:"pronomen", name:"Pronomen", zeichen:"P", farbe:"#8a4fd1", liste:true,
@@ -812,8 +812,8 @@ const THEMEN = [
       "<b>Knacknuss:</b> Die Fragewörter wer, wen, wem, wessen, was und welcher sind Pronomen. Wann, wo, warum und wie sind Partikeln."
     ],
     stufen:[
-      {titel:"Einstieg", text:"Nomen ersetzen, Pronomen finden", gen:["ersetzen","pronTap"]},
-      {titel:"6. Klasse", text:"Pronomen im Satz, Besitz, Begleiter sind Pronomen", gen:["pronFall","besitz","pronMulti"]},
+      {titel:"Grundlagen", text:"Nomen ersetzen, Pronomen finden", gen:["ersetzen","pronTap"]},
+      {titel:"Vertiefung", text:"Pronomen im Satz, Besitz, Begleiter sind Pronomen", gen:["pronFall","besitz","pronMulti"]},
       {titel:"Knacknüsse", text:"Ersatzprobe mit ganzen Sätzen, Fragewörter", gen:["ersatzSatz","fragewort","pronTapKnack"]}
     ]},
   {id:"partikeln", name:"Partikeln", zeichen:"Pa", farbe:"#6b7280",
@@ -825,8 +825,8 @@ const THEMEN = [
       "<b>Genauer:</b> Präpositionen stehen vor Nomen (auf, mit, für). Konjunktionen verbinden (und, aber, weil, dass)."
     ],
     stufen:[
-      {titel:"Einstieg", text:"Veränderbar oder nicht? Partikeln finden", gen:["veraenderbar","partTap"]},
-      {titel:"6. Klasse", text:"Partikeln erkennen und einsetzen", gen:["keinePartikel","verbinden","partTapAlle"]},
+      {titel:"Grundlagen", text:"Veränderbar oder nicht? Partikeln finden", gen:["veraenderbar","partTap"]},
+      {titel:"Vertiefung", text:"Partikeln erkennen und einsetzen", gen:["keinePartikel","verbinden","partTapAlle"]},
       {titel:"Knacknüsse", text:"Partikel am Satzanfang, Präposition oder Konjunktion", gen:["grossAnfang","partGenau","fragewort"]}
     ]},
   {id:"kreisel", name:"Wortarten-Kreisel", zeichen:"⟳", farbe:"#c2255c",
@@ -837,11 +837,11 @@ const THEMEN = [
       "3. <b>Hat es ein festes Geschlecht?</b> (der, die, das) Ja → <b>Nomen</b>.",
       "4. <b>Kann man es vergleichen?</b> (… -er, am … -sten) Ja → <b>Adjektiv</b>. Sonst → <b>Pronomen</b> (Pronomenliste).",
       "Pronomen passen sich an (der Hund, die Katze, das Haus) – darum haben sie kein festes Geschlecht.",
-      "In der 4. und 5. Klasse hast du den Kreisel mit den drei Hauptwortarten Nomen, Verb und Adjektiv gemacht."
+      "In den Grundlagen geht es zuerst nur um die drei Hauptwortarten: Nomen, Verb und Adjektiv."
     ],
     stufen:[
-      {titel:"Repetition 4./5. Klasse", text:"Nomen, Verb, Adjektiv – oder keine der drei?", gen:["kreisel3"]},
-      {titel:"6. Klasse", text:"Alle fünf Wortarten, den Kreisel durchspielen", gen:["kreisel5","kreiselWeg"]},
+      {titel:"Grundlagen", text:"Nomen, Verb, Adjektiv – oder keine der drei?", gen:["kreisel3"]},
+      {titel:"Vertiefung", text:"Alle fünf Wortarten, den Kreisel durchspielen", gen:["kreisel5","kreiselWeg"]},
       {titel:"Knacknüsse", text:"Knifflige Wörter und ganze Sätze", gen:["kreiselKnack","pinsel","kreiselKnack"]}
     ]},
   {id:"morpheme", name:"Morpheme", zeichen:"M", farbe:"#b8690a",
@@ -853,9 +853,9 @@ const THEMEN = [
       "<b>Knacknuss:</b> Der Stamm kann sich ein wenig verändern: fahren – fährt – fuhr – Fähre."
     ],
     stufen:[
-      {titel:"Repetition 4. Klasse", text:"Stamm-Morpheme und Wortfamilien", gen:["stammFinden","familieNicht","gemeinsam"]},
-      {titel:"Repetition 5. Klasse", text:"Vor- und Nachmorpheme, Wörter zerlegen", gen:["zerlegen","rolle","nachWahl","vorGegenteil"]},
-      {titel:"6. Klasse und Knacknüsse", text:"Lange Wörter zerlegen, Wortart am Nachmorphem, Stämme, die sich verändern", gen:["zerlegenLang","wortartNach","stammWechsel"]}
+      {titel:"Grundlagen", text:"Stamm-Morpheme und Wortfamilien", gen:["stammFinden","familieNicht","gemeinsam"]},
+      {titel:"Vertiefung", text:"Vor- und Nachmorpheme, Wörter zerlegen", gen:["zerlegen","rolle","nachWahl","vorGegenteil"]},
+      {titel:"Knacknüsse", text:"Lange Wörter zerlegen, Wortart am Nachmorphem, Stämme, die sich verändern", gen:["zerlegenLang","wortartNach","stammWechsel"]}
     ]},
   {id:"saetze", name:"Sätze bauen", zeichen:"S", farbe:"#0e7490",
     hilfe:[
@@ -865,8 +865,8 @@ const THEMEN = [
       "<b>Weitere Verbteile</b> stehen am Satzende: Wir <b>haben</b> einen Fuchs <b>gesehen</b>. Der Zug <b>fährt</b> pünktlich <b>ab</b>."
     ],
     stufen:[
-      {titel:"Repetition 4./5. Klasse", text:"Personalform finden, Verschiebeprobe, Sätze bauen", gen:["pfTap","verschiebe","bauen"]},
-      {titel:"6. Klasse", text:"Verbenfächer: mit dem Verb nach Satzgliedern fragen", gen:["verbenfaecher","bauen","verschiebe"]},
+      {titel:"Grundlagen", text:"Personalform finden, Verschiebeprobe, Sätze bauen", gen:["pfTap","verschiebe","bauen"]},
+      {titel:"Vertiefung", text:"Verbenfächer: mit dem Verb nach Satzgliedern fragen", gen:["verbenfaecher","bauen","verschiebe"]},
       {titel:"Knacknüsse", text:"Sätze mit mehreren Verbteilen", gen:["verbteile","bauenVT","verbenfaecherAlle"]}
     ]}
 ];
