@@ -222,7 +222,7 @@ function holeStand(weiter){
 }
 const stufeStand = (id, s) => ((P.th[id] || {})[s]) || null;
 const geschafft = (id, s) => { const x = stufeStand(id, s); return !!x && x.best >= BESTANDEN; };
-const offen = (id, s) => s === 1 || geschafft(id, s - 1);
+const offen = (id, s) => VORSCHAU || s === 1 || geschafft(id, s - 1);   // Vorschau (Lehrperson): alle Stufen offen
 
 /* ===== Start ===== */
 function start(){
