@@ -325,3 +325,9 @@ details.help .buch{margin:10px 0 0;padding-top:8px;border-top:1px dashed var(--l
   .anf.grund{background:#4a3c08;color:#ffe08a}
   .anf.erw{background:#1d3d14;color:#b6eb98}
 }
+
+/* «Ich komme nicht weiter» – bewusst unauffällig unter «Prüfen» */
+.nw{margin-top:12px}
+.nw p{margin:0 0 8px;font-size:.95rem}
+.nwknopf{background:none;border:0;padding:6px 2px;font:inherit;font-weight:700;font-size:.95rem;color:var(--mute);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.nwja{display:flex;gap:8px;flex-wrap:wrap}
