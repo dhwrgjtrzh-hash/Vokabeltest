@@ -203,7 +203,7 @@ const GOALS = [
    <p>Er reicht <b>10 Tage</b>. Kontrolle: 4 · 15 = 60 und 6 · 10 = 60.</p>`,
  gen(lv){
    for(let tries=0; tries<500; tries++){
-     const art = pick(lv===1 ? ["futter","treppe","umpacken","gaertner"] : ["futter","treppe","umpacken","tempo","tempoV","gaertner"]);
+     const art = pick(lv===1 ? ["futter","umpacken","gaertner"] : ["futter","treppe","umpacken","tempo","tempoV","gaertner"]);   // Einstieg ohne Treppe (krumme Zahlen)
      let a, b, c;
      const ok = (a,c) => lv===1 ? (c%a===0 || a%c===0) && c!==a : (c%a!==0 && a%c!==0);
      if(art==="futter"){

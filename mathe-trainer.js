@@ -9,6 +9,10 @@
      (4 Punkte); ein Fehler kostet einen Punkt. Die erste Aufgabe eines Lernziels kommt gleich auf
      Stufe 2 (Einstufung): richtig → Einstieg übersprungen. Stufe 3 · knifflig gibt es nur noch als
      Zusatz, wenn ein Lernziel geschafft ist (gemischt mit Aufgaben wie im Test).
+   - Wenn es zu schwer ist (seit 20.11.2026): Im Einstieg kostet ein Fehler keinen Punkt. Zwei Fehler
+     hintereinander bei «wie im Test» → kurzer Zwischenhalt mit 2 Einstiegsaufgaben (die Punkte bei «wie im
+     Test» bleiben gespeichert), die Hilfe «So geht's» ist dann offen. Muss ein Kind bei einem Lernziel zum
+     zweiten Mal zurück, geht es mit dem nächsten offenen Lernziel weiter; das schwierige kommt später wieder.
      (Bis 18.11.2026: drei Stufen mit je 5 Punkten – das waren zu viele Aufgaben pro Matheplan.)
    - Lernstand auf allen Geräten (über die Glückszahl), Resultate in die Tabelle
      «Übungen – Resultate» (gleiches Google-Skript wie bisher)
@@ -214,13 +218,14 @@ function startAuto(){
   /* Kommt das Kind über «… üben» aus dem Lernportal, startet genau dieses Lernziel (nur einmal) */
   const zp = new URLSearchParams(location.search).get("ziel");
   if(zp && GOAL[zp] && !startAuto.ziel){ startAuto.ziel = true; try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){} return startGoal(zp); }
-  const last = P.last && GOAL[P.last] && !gs(P.last).done ? P.last : null;
-  const open = GOALS.find(g=>!gs(g.id).done && !g.erw) || GOALS.find(g=>!gs(g.id).done);
-  startGoal(last || (open ? open.id : pick(GOALS).id));
+  const last = P.last && GOAL[P.last] && !gs(P.last).done && !gs(P.last).spaeter ? P.last : null;
+  const open = nextGoal(null);   // erstes offenes Lernziel (Grundanforderungen zuerst, verschobene später)
+  startGoal(last || open || pick(GOALS).id);
 }
 function otherNumber(){ sendPending(); STAND.jetzt(true); S = null; gz = ""; store.set("uebung.gz", ""); home(); }
 
 function startGoal(id){
+  wiederAufnehmen(id);
   P.last = id; saveP();
   S = {mode:"goal", goal:id, log:[], pending:[], nr:0};
   next();
@@ -239,7 +244,7 @@ function next(){
   S.lastSig = sig(t);
   t.goal = id; t.lv = lv; t.probe = probe;
   S.task = t; S.done = false; S.nr++;
-  draw();
+  draw(); S.hilfeOffen = false;
 }
 
 const inp = (id, cls="", mode="decimal")=>`<input class="ans ${cls}" id="${id}" inputmode="${mode}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?">`;
@@ -252,7 +257,7 @@ function head(){
   const stand = s.done ? `<span class="dots"><span>${folge}</span></span>`
     : `<span class="dots">${dots}<span>${s.pr}/${need}${folge?` · ${folge}`:""}</span></span>`;
   return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span>${anforderung(g)}</div>
-    <div class="sesshead"><b>${s.done?`⭐ Geschafft – Zusatzaufgabe · ${LVNAME[S.task.lv]}`:S.task.probe?"Einstufung · eine Aufgabe wie im Test":LVNAME[s.lv]}</b><span class="grow"></span>${S.task.probe?"":stand}</div>`;
+    <div class="sesshead"><b>${s.done?`⭐ Geschafft – Zusatzaufgabe · ${LVNAME[S.task.lv]}`:S.task.probe?"Einstufung · eine Aufgabe wie im Test":s.zw?"Einstieg · kurz zwischendurch":LVNAME[s.lv]}</b><span class="grow"></span>${S.task.probe?"":stand}</div>`;
 }
 
 /* Wertetabelle zum Ausfüllen: Zeilen [{l, r}], null = Eingabefeld */
@@ -286,7 +291,7 @@ function draw(){
         ${needsCheck?`<button class="btn" id="check">Prüfen</button>`:""}
         <button class="btn" id="nextBtn" hidden>Weiter →</button>
       </div>
-      <details class="help"><summary>💡 So geht's</summary>${g.help()}${g.tb?`<p class="buch">📖 Üben im Buch und Heft: <b>${buchText(g.tb)}</b></p>`:""}</details>
+      <details class="help"${S.hilfeOffen?" open":""}><summary>💡 So geht's</summary>${g.help()}${g.tb?`<p class="buch">📖 Üben im Buch und Heft: <b>${buchText(g.tb)}</b></p>`:""}</details>
     </div>`;
   const inputs = [...app.querySelectorAll("input.ans")];
   inputs.forEach((el,j)=>el.addEventListener("keydown",e=>{
@@ -372,15 +377,30 @@ function finish(ok, given, extra){
   } else if(s.done){
     s.streak = ok ? (s.streak||0) + 1 : 0;     // Zusatzaufgaben: zählen nicht mehr für die Stufen
   } else if(ok){
-    s.streak = (s.streak||0) + 1;
+    s.streak = (s.streak||0) + 1; s.fe = 0;
     s.pr = Math.min(NEED[s.lv], s.pr+1);
     if(s.pr >= NEED[s.lv]){
-      if(s.lv < LEVELS){ s.lv++; s.pr = 0; s.streak = 0; toast = `🎉 Einstieg geschafft! Jetzt kommen Aufgaben <b>wie im Test</b>.`; }
+      if(s.lv < LEVELS && s.zw){ s.lv = 2; s.pr = Math.min(s.pr2||0, NEED[2]-1); s.pr2 = 0; s.zw = false; s.streak = 0;
+        toast = `👍 Gut! Jetzt wieder Aufgaben <b>wie im Test</b>${s.pr?` – deine ${s.pr} ${s.pr===1?"Punkt ist":"Punkte sind"} noch da`:""}.`; }
+      else if(s.lv < LEVELS){ s.lv++; s.pr = 0; s.streak = 0; toast = `🎉 Einstieg geschafft! Jetzt kommen Aufgaben <b>wie im Test</b>.`; }
       else { s.done = true; S.goalDone = true;
         const nx = nextGoal(g.id);
         toast = `🏆 Super! Du hast «${g.title}» geschafft.${nx?`<br>Weiter geht es mit <b>${GOAL[nx].title}</b>.`:"<br>Du hast alle Lernziele geschafft! Jetzt kommen gemischte Aufgaben – auch knifflige."}`; }
     }
-  } else { s.streak = 0; s.pr = Math.max(0, s.pr-1); }
+  } else {
+    s.streak = 0; s.fe = (s.fe||0) + 1;
+    if(s.lv===1){ if(s.fe>=2) S.hilfeOffen = true; }          // Einstieg: ein Fehler kostet keinen Punkt
+    else if(s.fe<2) s.pr = Math.max(0, s.pr-1);
+    else {                     // zwei Fehler hintereinander bei «wie im Test» (der zweite kostet keinen Punkt mehr)
+      s.fe = 0; s.zurueck = (s.zurueck||0) + 1;
+      const nx = s.zurueck>=2 ? nextGoal(g.id) : null;          // zum zweiten Mal: mit einem anderen Lernziel weiter
+      s.pr2 = s.pr; s.lv = 1; s.pr = 0; s.zw = true; S.hilfeOffen = true;
+      if(nx && nx!==g.id && (g.erw || !GOAL[nx].erw)){            // von einer Grundanforderung nie zu einer erweiterten
+        s.spaeter = Date.now(); S.weiter = nx; S.hilfeOffen = false;   // das neue Lernziel beginnt mit der Einstufung
+        toast = `«${g.title}» ist noch schwierig. Wir nehmen es später nochmals dran.<br>Jetzt geht es weiter mit <b>«${GOAL[nx].title}»</b>.`;
+      } else toast = `Das ist noch schwierig. Wir machen kurz zwei <b>einfachere Aufgaben</b>${s.pr2?` – deine Punkte bei «wie im Test» bleiben gespeichert`:""}.`;
+    }
+  }
   saveP();
   const entry = {nr:S.nr, thema:g.title, stufe:t.lv, frage:t.text, antworten:[given], loesung:t.show, punkte:ok?1:0, test:false, t:Date.now()};
   S.log.push(entry); S.pending.push(entry); savePending();
@@ -398,17 +418,22 @@ function finish(ok, given, extra){
   if(S.pending.length>=10 || toast) sendPending();
 }
 function nextGoal(from){
-  const i = GOALS.findIndex(x=>x.id===from);
-  const order = GOALS.slice(i+1).concat(GOALS.slice(0,i));
-  const g = order.find(x=>!gs(x.id).done && !x.erw) || order.find(x=>!gs(x.id).done);
+  const i = GOALS.findIndex(x=>x.id===from);   // from = null: alle Lernziele von vorne
+  const order = (i<0 ? GOALS : GOALS.slice(i+1).concat(GOALS.slice(0,i))).filter(x=>!gs(x.id).done);
+  const spaeter = l => l.filter(x=>gs(x.id).spaeter).sort((a,b)=>gs(a.id).spaeter-gs(b.id).spaeter);   // am längsten verschoben zuerst
+  const jetzt = l => l.filter(x=>!gs(x.id).spaeter);
+  const grund = order.filter(x=>!x.erw), erw = order.filter(x=>x.erw);
+  const g = jetzt(grund)[0] || spaeter(grund)[0] || jetzt(erw)[0] || spaeter(erw)[0];
   return g ? g.id : null;
 }
+/* Ein verschobenes Lernziel wieder aufnehmen: neue Chance, zuerst ein paar Einstiegsaufgaben */
+function wiederAufnehmen(id){ const s = gs(id); if(s.spaeter){ s.spaeter = 0; s.zurueck = 0; } }
 function go(){
-  if(S.goalDone){
-    S.goalDone = false;
-    const nx = nextGoal(S.goal);
+  if(S.goalDone || S.weiter){
+    const nx = S.weiter || nextGoal(S.goal);
+    S.goalDone = false; S.weiter = null;
     sendPending();
-    if(nx){ S.goal = nx; P.last = nx; saveP(); }
+    if(nx){ wiederAufnehmen(nx); S.goal = nx; P.last = nx; saveP(); }
   }
   if(allDone()) S.goal = pick(GOALS).id;   // alles geschafft: gemischt weiterüben
   next();

@@ -441,6 +441,8 @@ function serverStand(plan, gz){
   ]);
 }
 /* Auswertung eines Plans aus dem gespeicherten Lernstand */
+/* Grundanforderungen zuerst (die sind oft Hausaufgabe), dann nach Anteil richtig */
+const grundZuerst = (a, b) => (a.erw ? 1 : 0) - (b.erw ? 1 : 0) || a.q - b.q;
 function planLage(p, st){
   const g = (st && st.goals) || {};
   const z = p.ziele.map(x => { const s = g[x.id] || {}; const n = +s.n || 0, ok = +s.ok || 0;
@@ -448,10 +450,10 @@ function planLage(p, st){
     return Object.assign({}, x, { n, ok, done: !!s.done || +s.lv > 2, lv: +s.lv || 1, q: n ? ok / n : null }); });
   const geschafft = z.filter(x => x.done), begonnen = z.filter(x => x.n > 0);
   /* rot: unter 60 % richtig · orange: 60–84 % richtig (noch nicht ganz sicher) · jeweils nur, solange das Lernziel nicht geschafft ist */
-  const nochmal = z.filter(x => !x.done && x.n >= 4 && x.q < 0.6).sort((a, b) => a.q - b.q);
-  const sicherer = z.filter(x => !x.done && x.n >= 3 && !nochmal.includes(x) && x.q < 0.85).sort((a, b) => a.q - b.q);
+  const nochmal = z.filter(x => !x.done && x.n >= 4 && x.q < 0.6).sort(grundZuerst);
+  const sicherer = z.filter(x => !x.done && x.n >= 3 && !nochmal.includes(x) && x.q < 0.85).sort(grundZuerst);
   /* geschafft, aber insgesamt unter 75 % richtig: nochmals anschauen */
-  const auffrischen = z.filter(x => x.done && x.n >= 3 && x.q < 0.75).sort((a, b) => a.q - b.q);
+  const auffrischen = z.filter(x => x.done && x.n >= 3 && x.q < 0.75).sort(grundZuerst);
   const dran = z.filter(x => !x.done && x.n > 0 && !nochmal.includes(x) && !sicherer.includes(x));
   const offen = z.filter(x => x.n === 0 && !x.done);
   return { z, geschafft, begonnen, nochmal, sicherer, auffrischen, dran, offen, last: st && st.last };
