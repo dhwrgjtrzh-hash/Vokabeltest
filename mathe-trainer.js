@@ -13,6 +13,7 @@
      hintereinander bei «wie im Test» → kurzer Zwischenhalt mit 2 Einstiegsaufgaben (die Punkte bei «wie im
      Test» bleiben gespeichert), die Hilfe «So geht's» ist dann offen. Muss ein Kind bei einem Lernziel zum
      zweiten Mal zurück, geht es mit dem nächsten offenen Lernziel weiter; das schwierige kommt später wieder.
+   - «Ich komme nicht weiter» (nach einer Rückfrage): Lösung anschauen, zählt als falsch, dann die nächste Aufgabe.
      (Bis 18.11.2026: drei Stufen mit je 5 Punkten – das waren zu viele Aufgaben pro Matheplan.)
    - Lernstand auf allen Geräten (über die Glückszahl), Resultate in die Tabelle
      «Übungen – Resultate» (gleiches Google-Skript wie bisher)
@@ -291,6 +292,7 @@ function draw(){
         ${needsCheck?`<button class="btn" id="check">Prüfen</button>`:""}
         <button class="btn" id="nextBtn" hidden>Weiter →</button>
       </div>
+      <div class="nw" id="nw"></div>
       <details class="help"${S.hilfeOffen?" open":""}><summary>💡 So geht's</summary>${g.help()}${g.tb?`<p class="buch">📖 Üben im Buch und Heft: <b>${buchText(g.tb)}</b></p>`:""}</details>
     </div>`;
   const inputs = [...app.querySelectorAll("input.ans")];
@@ -303,9 +305,30 @@ function draw(){
   const c = document.getElementById("check"); if(c) c.onclick = ()=>check();
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.onclick=()=>check(b.dataset.c, b));
   document.getElementById("nextBtn").onclick = go;
+  nwKnopf();
   // Wer nach unten gescrollt hat (z. B. zu «Weiter →»), sieht die neue Aufgabe von oben
   const oben = app.getBoundingClientRect().top;
   if(oben < 0) window.scrollBy(0, oben - 10);
+}
+
+/* «Ich komme nicht weiter»: Das Kind sieht die Lösung, die Aufgabe zählt als falsch, dann geht es weiter.
+   Erst nach einer Rückfrage – damit ein versehentlicher Tipp nicht als Fehler zählt. */
+function nwKnopf(){
+  const nw = document.getElementById("nw"); if(!nw) return;
+  nw.innerHTML = `<button class="nwknopf" id="nwBtn">🤔 Ich komme nicht weiter</button>`;
+  document.getElementById("nwBtn").onclick = () => {
+    if(S.done) return;
+    nw.innerHTML = `<p>Dann siehst du die Lösung. Die Aufgabe zählt als <b>falsch</b>.</p>
+      <div class="nwja"><button class="btn small" id="nwJa">Lösung zeigen</button><button class="btn small ghost" id="nwNein">Doch noch probieren</button></div>`;
+    document.getElementById("nwJa").onclick = aufgeben;
+    document.getElementById("nwNein").onclick = nwKnopf;
+  };
+}
+function aufgeben(){
+  if(S.done) return;
+  const t = S.task;
+  if(t.type==="choice") app.querySelectorAll(".cmpbtns button").forEach(b=>{ if(b.dataset.c===String(t.answer)) b.classList.add("ok"); });
+  finish(false, "nicht weitergekommen", "Kein Problem. Schau dir genau an, wie es geht – die Aufgabe zählt als falsch.");
 }
 
 const FAKTOR = {h:3600, min:60, s:1};
@@ -368,6 +391,7 @@ function finish(ok, given, extra){
   app.querySelectorAll("input.ans").forEach(el=>el.readOnly=true);
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.disabled=true);
   const c=document.getElementById("check"); if(c) c.hidden=true;
+  const nw=document.getElementById("nw"); if(nw) nw.hidden=true;
   s.n++; if(ok) s.ok++;
   let toast = "";
   if(t.probe){
