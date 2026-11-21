@@ -1289,8 +1289,10 @@ const AUDIO_DIR = "audio/rs/";
 const AUDIO_DA = new Set((typeof AUDIO_LISTE === "string" ? AUDIO_LISTE : "").split(" ").filter(Boolean));
 const audioKey = t => String(t).replace(/\^/g,"").replace(/\s+/g," ").trim().toLowerCase();
 const fnv = s => { let h=0x811c9dc5; for(const ch of s){ h^=ch.codePointAt(0); h=Math.imul(h,0x01000193)>>>0; } return h.toString(16).padStart(8,"0"); };
-/* Langsam: eigene, langsam gesprochene Aufnahme (nicht künstlich gedehnt) */
-const audioPfad = (t, langsam) => { const h = fnv(audioKey(t)); return AUDIO_DA.has(h) ? AUDIO_DIR + (langsam ? "langsam/" + h + ".m4a" : h + ".mp3") : null; };
+/* Stimme: Katja (Azure, de-DE-KatjaNeural), November 2026. Langsam: eigene, langsam gesprochene Aufnahme (nicht künstlich gedehnt).
+   AUDIO_V ändern, wenn die Aufnahmen neu gemacht werden – dann laden die Geräte nicht mehr die alten aus dem Zwischenspeicher. */
+const AUDIO_V = "?v=katja1";
+const audioPfad = (t, langsam) => { const h = fnv(audioKey(t)); return AUDIO_DA.has(h) ? AUDIO_DIR + (langsam ? "langsam/" : "") + h + ".mp3" + AUDIO_V : null; };
 const HOEREN = TTS || AUDIO_DA.size > 0;
 const PLAYER = new Audio(); PLAYER.preload = "auto";
 let spielId = 0;
