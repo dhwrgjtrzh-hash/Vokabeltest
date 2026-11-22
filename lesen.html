@@ -107,12 +107,6 @@ details.mehr{margin-top:18px}details.mehr summary{cursor:pointer;color:var(--lei
 .aktionen{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
 .ergebnis{text-align:center}
 .ergebnis .gross{font:600 3rem/1 var(--titel);color:var(--akzent);margin:10px 0}
-.beta{display:flex;gap:10px;align-items:flex-start;background:var(--mark);color:var(--mark-ink);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
-.beta b{white-space:nowrap}
-.beta-hinter{position:fixed;inset:0;z-index:10000;background:rgba(15,21,34,.55);display:flex;align-items:center;justify-content:center;padding:16px}
-.beta-karte{background:var(--karte);color:var(--ink);border-radius:20px;padding:22px;max-width:440px;width:100%;text-align:center}
-.beta-karte .gross{font-size:2.6rem;line-height:1;margin-bottom:6px}
-.beta-karte p{margin:10px 0 0;line-height:1.5;text-align:left}
 .shake{animation:shake .35s}@keyframes shake{25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -122,7 +116,7 @@ details.mehr{margin-top:18px}details.mehr summary{cursor:pointer;color:var(--lei
   <header class="lp-kopf">
     <a class="lp-zurueck" href="./#deutsch">‹ Lernportal</a>
     <div class="lp-logo">Aa</div>
-    <h1 class="lp-titel"><small>Deutsch · Beta-Test</small>Leseverstehen</h1>
+    <h1 class="lp-titel"><small>Deutsch</small>Leseverstehen</h1>
     <div class="lp-rechts"></div>
   </header>
   <main id="app"></main>
@@ -193,7 +187,7 @@ function home(){
   window.scrollTo(0, 0);
   if(!P.sb || !P.sb.fertig){
     const begonnen = P.sb && P.sb.erg ? Object.keys(P.sb.erg).length : 0;
-    app.innerHTML = BETA_LEISTE + `<div class="karte">
+    app.innerHTML = `<div class="karte">
       <div class="stufe-kopf"><div class="stufe-nr">📖</div><div><h2>Standortbestimmung</h2><p class="leise" style="margin:0">Drei kurze Texte mit je vier Fragen. Danach weisst du, auf welcher Stufe du startest.</p></div></div>
       <ul style="margin:14px 0 0;padding-left:20px;line-height:1.6">
         <li>Lies jeden Text in Ruhe. Du darfst ihn beim Antworten immer wieder anschauen.</li>
@@ -209,8 +203,10 @@ function home(){
     const stat = !x ? `<span class="status">neu</span>` : x.best >= BESTANDEN ? `<span class="status gut">✓ ${Math.round(x.best*100)} %</span>` : `<span class="status">${Math.round(x.best*100)} %</span>`;
     return `<button class="textkarte" data-id="${t.id}"><b>${esc(t.titel)}</b>${stat}<span class="meta">${esc(t.art)} · ${esc(t.thema)} · ${t.fragen.length} Fragen</span></button>`; };
   const frueher = [1,2,3,4,5].filter(s => s < st && texteDerStufe(s).length);
-  const naechste = st < 5 ? (texteDerStufe(st+1).length ? `Wenn du alle Texte dieser Stufe mit mindestens ${Math.round(BESTANDEN*100)} % geschafft hast, geht es weiter mit Stufe ${st+1}: ${STUFEN[st+1]}.` : `Stufe ${st+1} (${STUFEN[st+1]}) kommt bald.`) : "";
-  app.innerHTML = BETA_LEISTE + `<div class="karte">
+  const naechste = texteDerStufe(st+1).length ? `Wenn du alle Texte dieser Stufe mit mindestens ${Math.round(BESTANDEN*100)} % geschafft hast, geht es weiter mit Stufe ${st+1}: ${STUFEN[st+1]}.`
+    : geschafft === liste.length ? "🎉 Du hast alle Stufen geschafft! Du kannst jeden Text nochmals lesen und dein Ergebnis verbessern."
+    : "Das ist im Moment die höchste Stufe.";
+  app.innerHTML = `<div class="karte">
       <div class="stufe-kopf"><div class="stufe-nr">${st}</div><div><h2>Stufe ${st}: ${esc(STUFEN[st])}</h2><p class="leise" style="margin:0">${esc(STUFE_TEXT[st])}</p></div></div>
       <div class="punkte">${liste.map(t => `<i class="${(P.texte[t.id]||{}).best >= BESTANDEN ? "gut" : ""}"></i>`).join("")}<span class="leise" style="font-size:.9rem;margin-left:6px">${geschafft} von ${liste.length} Texten geschafft</span></div>
       <div class="texte">${liste.map(tk).join("")}</div>
@@ -327,6 +323,7 @@ function baueEingabe(q){
     E.innerHTML = `<p style="margin:0">Dein Wort: <b id="wortwahl" class="leise">noch keines</b></p>`;
   }
   if(q.typ === "kurz"){
+    hinweis("Ein Wort oder eine Zahl genügt.");
     E.innerHTML = `<input class="kurz" id="kurz" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Antwort hier schreiben …">`;
     const f = $("#kurz"); f.oninput = () => { A.text = f.value; $("#meldung").innerHTML = ""; }; f.onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); S.geprueft ? weiter() : pruefen(); } };
     if(innerWidth >= 860) f.focus();
@@ -370,9 +367,23 @@ const norm = s => String(s||"").normalize("NFC").replace(/ß/g,"ss").toLowerCase
 const ohneVorwort = s => { let x = s, alt; do { alt = x; x = x.replace(/^(in|im|auf|am|an|aus|bei|beim|der|die|das|den|dem|ein|eine|einen|gleis|um|ca|etwa|ungefähr)\s+/, ""); } while(x !== alt); return x; };
 function abstand(a, b){ const m = a.length, n = b.length, d = Array.from({length:m+1}, (_,i) => [i].concat(Array(n).fill(0))); for(let j=1;j<=n;j++) d[0][j] = j;
   for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + (a[i-1]===b[j-1]?0:1)); return d[m][n]; }
-function kurzRichtig(eingabe, loesungen){
+const passt = (a, b) => a === b || (b.length >= 5 && abstand(a, b) <= 1);
+/* Auch kurze ganze Sätze gelten («Die Weste ist gelb.»): Die Lösung muss vorkommen, und alle anderen Wörter
+   stammen aus der Frage oder sind Füllwörter. Aufzählungen zum Raten («rot gelb blau») und Verneinungen zählen nicht. */
+const FUELL = new Set("der die das den dem des ein eine einen einem einer es er sie ihn ihm ihr ihre ihren sein seine seinen man ist sind war waren hat haben heisst heissen nennt nennen in im ins auf am an aus bei beim um ab bis zu zum zur mit von vom nach etwa ca ungefähr pro nummer nr dann jetzt da dort so".split(" "));
+const NEIN = new Set("nicht kein keine keinen keiner nie oder".split(" "));
+function kurzRichtig(eingabe, loesungen, frage){
   const a = ohneVorwort(norm(eingabe));
-  return loesungen.some(l => { const b = ohneVorwort(norm(l)); return a === b || (b.length >= 5 && abstand(a, b) <= 1); });
+  if(loesungen.some(l => passt(a, ohneVorwort(norm(l))))) return true;
+  const w = norm(eingabe).split(" ").filter(Boolean);
+  if(w.length < 2 || w.length > 10 || w.some(x => NEIN.has(x))) return false;
+  const erlaubt = new Set([...FUELL, ...norm(frage).split(" ")]);
+  return loesungen.some(l => { const b = ohneVorwort(norm(l)).split(" "), k = b.length;
+    for(let i = 0; i + k <= w.length; i++){
+      if(!passt(w.slice(i, i+k).join(" "), b.join(" "))) continue;
+      if(w.every((x, j) => (j >= i && j < i+k) || erlaubt.has(x))) return true;
+    }
+    return false; });
 }
 const belegIdx = q => { const S_ = saetze(S.t); return [].concat(q.beleg||[]).flatMap(b => S_.map((s,i) => s.includes(b) ? i : -1).filter(i => i >= 0)); };
 
@@ -391,6 +402,7 @@ function pruefen(){
   }[q.typ]();
   if(leer) return fehlt(leer);
   S.geprueft = true; modus("");
+  if(q.typ === "beleg" || q.typ === "wort") hinweis("");
   let ok = false, antwort = "", loesung = "", zusatz = "";
   const E = $("#eingabe"), B = belegIdx(q);
   if(q.typ === "mc" || q.typ === "beleg"){
@@ -426,7 +438,7 @@ function pruefen(){
     if(!ok) zusatz = `Gesucht war «${q.loesung[0]}» – im Text grün markiert.`;
   }
   if(q.typ === "kurz"){
-    ok = kurzRichtig(A.text, q.loesung); antwort = A.text.trim(); loesung = q.loesung[0];
+    ok = kurzRichtig(A.text, q.loesung, q.frage); antwort = A.text.trim(); loesung = q.loesung[0];
     $("#kurz").readOnly = true; $("#kurz").style.borderColor = ok ? "var(--gut)" : "var(--falsch)";
     if(!ok) zusatz = `Richtig wäre: «${q.loesung[0]}».`;
   }
@@ -444,7 +456,7 @@ function pruefen(){
   // Belegstelle zeigen
   B.forEach(i => { const el = textEl().querySelector(`.satz[data-s="${i}"]`); if(el) el.classList.add("beleg", ...(ok ? ["gut"] : [])); });
   const LOB = ["Richtig!", "Genau!", "Stimmt!", "Super gelesen!"];
-  const belegTxt = B.length && !zusatz.includes("gelb") ? `<p>${ok ? "Im Text markiert: Hier steht es." : "Im Text gelb markiert: Hier steht es."}</p>` : "";
+  const belegTxt = B.length && !/gelb/i.test(zusatz) ? `<p>${ok ? "Im Text markiert: Hier steht es." : "Im Text gelb markiert: Hier steht es."}</p>` : "";
   $("#meldung").innerHTML = `<div class="meldung ${ok ? "gut" : "nein"}">${ok ? LOB[Math.floor(Math.random()*LOB.length)] : "Nicht ganz."}${zusatz ? `<div class="zus">${zusatz.startsWith("<") ? zusatz : esc(zusatz)}</div>` : ""}${belegTxt}</div>`;
   S.log[S.i] = {frage: q.typ === "tf" ? q.frage + " " + q.aussagen.map(x=>x[0]).join(" / ") : q.frage, antwort, loesung, punkte: ok ? 1 : 0, thema: q.art, typ: q.typ, t: Date.now()};
   $("#aktionen").innerHTML = `<button class="btn" id="weiter">${S.i < S.fragen.length - 1 ? "Weiter →" : "Fertig →"}</button>`;
@@ -475,7 +487,10 @@ function abschluss(){
   const vorher = x.best; x.n++; x.last = q; x.best = Math.max(x.best, q); x.t = Date.now();
   let aufstieg = "";
   const st = P.stufe, alle = texteDerStufe(st);
-  if(t.stufe === st && alle.every(y => (P.texte[y.id]||{}).best >= BESTANDEN) && texteDerStufe(st+1).length){ P.stufe = st + 1; aufstieg = `🎉 Stufe ${st} geschafft! Ab jetzt liest du auf Stufe ${st+1}: ${STUFEN[st+1]}.`; }
+  if(t.stufe === st && alle.every(y => (P.texte[y.id]||{}).best >= BESTANDEN)){
+    if(texteDerStufe(st+1).length){ P.stufe = st + 1; aufstieg = `🎉 Stufe ${st} geschafft! Ab jetzt liest du auf Stufe ${st+1}: ${STUFEN[st+1]}.`; }
+    else if(vorher < BESTANDEN) aufstieg = "🎉 Du hast alle Stufen geschafft!";
+  }
   speichereP();
   const titel = q >= BESTANDEN ? (vorher >= BESTANDEN ? "Wieder geschafft!" : "Text geschafft!") : "Noch nicht ganz";
   const txt = q >= BESTANDEN ? "Sehr gut gelesen." : `Für «geschafft» brauchst du ${Math.round(BESTANDEN*100)} %. Lies den Text später nochmals – die Fragen kommen in anderer Reihenfolge.`;
@@ -495,18 +510,6 @@ function sbAbschluss(){
   $("#w").onclick = home; window.scrollTo(0,0);
 }
 
-/* ===== Beta-Test: Hinweis beim Öffnen und auf der Startseite ===== */
-const BETA_LEISTE = `<div class="beta"><span>🧪</span><span><b>Beta-Test:</b> Dieser Trainer ist neu. Es kann noch Fehler geben. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</span></div>`;
-function betaHinweis(){
-  const h = document.createElement("div"); h.className = "beta-hinter"; h.setAttribute("role", "dialog"); h.setAttribute("aria-modal", "true");
-  h.innerHTML = `<div class="beta-karte"><div class="gross">🧪</div><h2>Achtung: Beta-Test</h2>
-    <p>Das Leseverstehen ist ganz neu und wird gerade ausprobiert. Darum kann es noch Fehler haben: zum Beispiel eine Aufgabe, die nicht ganz stimmt, oder eine Antwort, die falsch bewertet wird.</p>
-    <p>Wenn dir etwas komisch vorkommt, merk dir den Text und die Frage und sag es deiner Lehrperson. So hilfst du mit, den Trainer besser zu machen.</p>
-    <div class="aktionen" style="justify-content:center"><button class="btn" id="betaOk">Verstanden – los geht's</button></div></div>`;
-  document.body.appendChild(h);
-  const ok = h.querySelector("#betaOk"); ok.onclick = () => h.remove(); ok.focus();
-}
-betaHinweis();
 
 /* ===== Los ===== */
 if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
