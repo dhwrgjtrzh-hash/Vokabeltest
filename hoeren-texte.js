@@ -133,7 +133,7 @@ const HOERTEXTE = [
   situation:"Eine kurze Geschichte aus dem Schulhaus. Es geht um Elif und den Schlüssel für den Pausenkiosk.",
   rollen:{ E:{name:"Erzählerin", stimme:"erzaehlerin"}, L:{name:"Elif", stimme:"maedchen"}, B:{name:"Herr Brunner", stimme:"mann"} },
   teile:[
-    ["E","Jeden Freitag verkauft die Klasse 6b am Pausenkiosk Äpfel und Brötchen. Das Geld kommt in die Klassenkasse. Heute ist Elif für den Schlüssel zuständig. Doch als sie den Kiosk öffnen will, ist der Schlüssel weg."],
+    ["E","Jeden Freitag verkauft die Klasse 5a am Pausenkiosk Äpfel und Brötchen. Das Geld kommt in die Klassenkasse. Heute ist Elif für den Schlüssel zuständig. Doch als sie den Kiosk öffnen will, ist der Schlüssel weg."],
     ["L","Oh nein! Heute Morgen war er doch noch in meiner Jackentasche. Das weiss ich genau. Im Tram habe ich ihn noch gespürt."],
     ["E","Elif überlegt. Nach dem Tram ist sie direkt ins Schulhaus gegangen. Im Gang hat sie die Jacke an den Haken gehängt. Danach hatte sie Turnen. Die Jacke hatte sie in der Turnhalle gar nicht dabei. Elif geht zum Hauswart."],
     ["L","Herr Brunner, hat jemand einen Schlüssel abgegeben? Er hat einen roten Anhänger."],

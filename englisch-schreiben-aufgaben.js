@@ -19,15 +19,15 @@ const EN_SCHREIBEN = [
   satzbau:[
     "I usually have a bowl of porridge for breakfast.",
     "We never throw away old bread.",
-    "How many eggs do you need?",
-    "My brother sometimes eats baked beans on toast.",
+    "How many glasses of water do you drink?",
+    "My brother sometimes eats toast with honey.",
     "We buy regional and seasonal food."
   ],
   luecken:[
     { satz:"Can I have a ___ of cheese, please?", de:"Scheibe", loesung:["slice"] },
     { satz:"I drink a ___ of milk every morning.", de:"Glas", loesung:["glass"] },
     { satz:"Yoghurt and cheese are ___ products.", de:"Molkerei-", loesung:["dairy"] },
-    { satz:"How ___ sugar do we need for the cake?", de:"wie viel = how …", loesung:["much"] },
+    { satz:"How ___ water do you drink every day?", de:"wie viel = how …", loesung:["much"] },
     { satz:"Strawberries in winter come from ___ away.", de:"weit", loesung:["far"] },
     { satz:"We put the apple skins on the ___.", de:"Kompost", loesung:["compost"] },
     { satz:"Apples are ___ in autumn.", de:"saisonal", loesung:["seasonal"] },
@@ -35,7 +35,7 @@ const EN_SCHREIBEN = [
   ],
   saetze:[
     { woerter:["I","usually","eat","cereal"], muss:[["i"],["usually"],["eat"],["cereal"]], beispiel:"I usually eat cereal for breakfast.", tipp:"always/usually/never stehen vor dem Verb: I usually eat …" },
-    { woerter:["how many","eggs","need"], muss:[["how many"],["eggs"],["do","does"],["need"]], beispiel:"How many eggs do we need?", tipp:"Frage: How many … do we need?" },
+    { woerter:["how many","apples","in the bag"], muss:[["how many"],["apples"],["are there"],["bag"]], beispiel:"How many apples are there in the bag?", tipp:"Frage: How many … are there …?" },
     { woerter:["she","never","drink","coffee"], muss:[["she"],["never"],["drinks"],["coffee"]], beispiel:"She never drinks coffee.", tipp:"she → drinks (mit -s)" },
     { woerter:["we","recycle","bottles"], muss:[["we"],["recycle"],["bottles"]], beispiel:"We recycle our bottles.", tipp:"we → recycle (ohne -s)" }
   ],
@@ -58,23 +58,23 @@ const EN_SCHREIBEN = [
     "Storks build their nests on roofs.",
     "Marmots sleep for six months.",
     "Sea turtles lay their eggs in the sand.",
-    "Whales have to come up to breathe.",
+    "Humpback whales sing long songs.",
     "An eagle is faster than a marmot."
   ],
   luecken:[
     { satz:"The Alps are the ___ of the marmot.", de:"Lebensraum", loesung:["habitat"] },
     { satz:"Storks ___ on frogs, mice and worms.", de:"ernähren sich von", loesung:["feed"] },
     { satz:"Some sharks ___ eggs.", de:"legen", loesung:["lay"] },
-    { satz:"Sea turtles swim to the top to ___ air.", de:"atmen", loesung:["breathe"] },
+    { satz:"The eagle is the marmot's biggest ___.", de:"Feind", loesung:["enemy"] },
     { satz:"Only a few baby turtles ___.", de:"überleben", loesung:["survive"] },
     { satz:"Some snakes are ___.", de:"giftig", loesung:["poisonous"] },
-    { satz:"In August, storks start their long ___ to Africa.", de:"Wanderung, Zug (der Tiere)", loesung:["migration"] },
+    { satz:"A cheetah can run about 100 kilometres per ___.", de:"Stunde", loesung:["hour"] },
     { satz:"In autumn, a marmot can ___ up to seven kilograms.", de:"wiegen", loesung:["weigh"] }
   ],
   saetze:[
     { woerter:["marmots","live","mountains"], muss:[["marmots"],["live"],["mountains"]], beispiel:"Marmots live in the mountains.", tipp:"in the mountains" },
     { woerter:["the stork","feed on","frogs"], muss:[["stork"],["feeds on"],["frogs"]], beispiel:"The stork feeds on frogs.", tipp:"the stork (= it) → feeds" },
-    { woerter:["whales","breathe","air"], muss:[["whales"],["breathe"],["air"]], beispiel:"Whales breathe air.", tipp:"whales (= they) → breathe ohne -s" },
+    { woerter:["eagles","can","see","very far"], muss:[["eagles"],["can see"],["far"]], beispiel:"Eagles can see very far.", tipp:"can + Verb in der Grundform" },
     { woerter:["the female","lay","eggs"], muss:[["female"],["lays"],["eggs"]], beispiel:"The female lays eggs.", tipp:"the female (= she) → lays" }
   ],
   text:{ titel:"Fact file: my animal", auftrag:"Write a fact file about an animal you like.",
@@ -109,16 +109,16 @@ const EN_SCHREIBEN = [
     { woerter:["she","not","go","school"], muss:[["she"],["didn't go","did not go"],["school"]], beispiel:"She didn't go to school.", tipp:"Verneinung in der Vergangenheit: didn't + Verb" },
     { woerter:["Bell","invent","telephone"], muss:[["bell"],["invented"],["telephone"]], beispiel:"Bell invented the telephone.", tipp:"invent → invented" }
   ],
-  text:{ titel:"A day 100 years ago", auftrag:"Imagine you are a child 100 years ago. Write about your day.",
-    hilfe:"Stell dir vor, du lebst vor 100 Jahren. Was hast du an einem Tag gemacht? Schreib in der Vergangenheit (past simple), 5 bis 8 Sätze.",
+  text:{ titel:"My best day last year", auftrag:"Write about a great day you had last year.",
+    hilfe:"Denk an einen besonders schönen Tag im letzten Jahr. Schreib in der Vergangenheit (past simple), 5 bis 8 Sätze.",
     punkte:[
-      { text:"When did you get up?", woerter:["got up","woke up","get up"] },
-      { text:"What did you eat?", woerter:["ate","had","eat","bread","porridge","soup","milk"] },
-      { text:"Did you go to school or work?", woerter:["went","worked","school","work","helped","walked"] },
-      { text:"What didn't you have? (no phone, no TV …)", woerter:["didn't have","did not have","no phone","no tv","no computer","no car","no electricity"] },
-      { text:"How did you feel?", woerter:["was","felt","happy","tired","cold","hungry","sad"] }
+      { text:"When was it?", woerter:["in january","in february","in march","in april","in may","in june","in july","in august","in september","in october","in november","in december","last","on my birthday","in the holidays","it was"] },
+      { text:"Where did you go?", woerter:["went","go","visited","travelled","drove","flew"] },
+      { text:"What did you do?", woerter:["played","saw","watched","swam","climbed","made","ate","had","did","went"] },
+      { text:"Who was with you?", woerter:["with my","with","friend","friends","family","mum","dad","sister","brother","grandma","grandpa","cousin"] },
+      { text:"How did you feel?", woerter:["was","felt","happy","great","excited","tired","proud","fantastic","fun"] }
     ],
-    anfaenge:["I got up at …","For breakfast I had …","After that I went …","We didn't have …","In the evening I was …"],
+    anfaenge:["It was in …","We went to …","First we …","After that we …","I felt …"],
     minWoerter:35 }
 },
 
@@ -164,7 +164,7 @@ const EN_SCHREIBEN = [
     { satz:"Many chocolate ___ are in Switzerland.", de:"Fabriken", loesung:["factories"] },
     { satz:"Put the milk in a ___ and heat it.", de:"Pfanne", loesung:["pan"] },
     { satz:"Don't forget to ___ the mixture!", de:"rühren", loesung:["stir"] },
-    { satz:"Mix the eggs. ___ that, add the sugar.", de:"danach = … that", loesung:["after"] },
+    { satz:"Melt the chocolate. ___ that, add the milk.", de:"danach = … that", loesung:["after"] },
     { satz:"___ chocolate helps farmers in developing countries.", de:"Fairtrade-", loesung:["fair trade","fairtrade"] }
   ],
   saetze:[

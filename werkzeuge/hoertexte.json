@@ -272,7 +272,7 @@
   "teile": [
    {
     "stimme": "de-DE-KatjaNeural",
-    "text": "Jeden Freitag verkauft die Klasse 6b am Pausenkiosk Äpfel und Brötchen. Das Geld kommt in die Klassenkasse. Heute ist Elif für den Schlüssel zuständig. Doch als sie den Kiosk öffnen will, ist der Schlüssel weg.",
+    "text": "Jeden Freitag verkauft die Klasse 5a am Pausenkiosk Äpfel und Brötchen. Das Geld kommt in die Klassenkasse. Heute ist Elif für den Schlüssel zuständig. Doch als sie den Kiosk öffnen will, ist der Schlüssel weg.",
     "tempo": "-3%",
     "hoehe": "+0%",
     "pause": 450
@@ -569,18 +569,32 @@
  {
   "datei": "audio/en/eh1-breakfast.mp3",
   "sprache": "en",
-  "titel": "My breakfast",
+  "titel": "Our breakfast survey",
   "teile": [
    {
     "stimme": "en-GB-MaisieNeural",
-    "text": "Hi! I'm Lena and I live in Zurich. On school days I usually have a bowl of muesli with yoghurt and berries. I always drink a glass of orange juice. I never drink coffee. I don't like it!",
+    "text": "Hi! I'm Lena and I live in Zurich. Last week we did a breakfast survey in our class. There are twenty children in my class.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 700
    },
    {
     "stimme": "en-GB-MaisieNeural",
-    "text": "But on Sundays we have a big breakfast. My dad buys a special Swiss bread called Zopf. We eat it with butter, honey or jam. There is also a slice of cheese for everybody, and boiled eggs. I usually eat two eggs. Mmm, I love Sundays!",
+    "text": "Twelve children usually have muesli or cereal. Five children eat bread with butter and honey. Two children sometimes eat only a banana on the way to school. And one boy never has breakfast. He says he isn't hungry in the morning!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Most children drink milk or tea. Only three children drink orange juice.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "And me? My favourite breakfast is muesli with apples and nuts. I always have it at seven o'clock, before I go to school.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0
@@ -776,7 +790,7 @@
    },
    {
     "stimme": "en-GB-MaisieNeural",
-    "text": "Yes. Eggs, cheese, apples and bread. And Grandma, I've got our cloth bags too.",
+    "text": "Yes. Honey, cheese, apples and bread. And Grandma, I've got our cloth bags too.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450
@@ -797,7 +811,7 @@
    },
    {
     "stimme": "en-GB-LibbyNeural",
-    "text": "Good morning. Six eggs, please, and two hundred grams of mountain cheese.",
+    "text": "Good morning. A jar of honey, please, and two hundred grams of mountain cheese.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450
@@ -853,7 +867,7 @@
    },
    {
     "stimme": "en-GB-RyanNeural",
-    "text": "Six eggs, the cheese and two kilos of apples … that's fifteen francs, please.",
+    "text": "The honey, the cheese and two kilos of apples … that's fifteen francs, please.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450

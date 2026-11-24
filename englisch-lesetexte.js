@@ -19,20 +19,20 @@ const EN_LESETEXTE = [
     "My grandfather often drinks four or five glasses of black tea!",
     "We sit at the table for two hours."
   ],[
-    "Hi, I'm Oliver from Leeds in England.",
-    "During the week I usually eat a bowl of cereal with milk, because I don't have much time.",
-    "But on special occasions, like my birthday, my dad cooks a full English breakfast:",
-    "fried eggs, bacon, sausages, baked beans, tomatoes and toast.",
-    "I never eat all of it. It's too much for me!"
+    "Hi, I'm Sofía from Puebla in Mexico.",
+    "On school days my mum makes a quick breakfast: tortillas with beans and scrambled eggs.",
+    "We often eat fresh fruit too, like mango or papaya.",
+    "On special occasions, like my birthday, my grandma makes tamales and a hot chocolate drink with cinnamon.",
+    "I can never eat more than two tamales. They are so big!"
   ]],
-  woerter:[["a bowl of","eine Schale"],["instead","stattdessen"],["on special occasions","zu besonderen Anlässen"],["baked beans","Bohnen in Tomatensauce"]],
+  woerter:[["a bowl of","eine Schale"],["instead","stattdessen"],["on special occasions","zu besonderen Anlässen"],["scrambled eggs","Rührei"],["tamales","gefüllte Maisteig-Päckchen"]],
   fragen:[
-    { typ:"tf", art:"verbinden", frage:"Who says this? Yuki, Emre or Oliver?", hilfe:"Wer sagt das?", wahl:["Yuki","Emre","Oliver"], aussagen:[["«I always drink green tea.»","Yuki"],["«I don't have much time in the morning.»","Oliver"],["«Breakfast on Sundays takes two hours.»","Emre"],["«My brother doesn't like fish.»","Yuki"]] },
-    { typ:"multi", art:"finden", frage:"What does Emre's family eat on Sundays?", hilfe:"Was isst Emres Familie am Sonntag? Es können mehrere Antworten stimmen.", richtig:["white cheese","olives","honey"], falsch:["rice","bacon","cereal"] },
+    { typ:"tf", art:"verbinden", frage:"Who says this? Yuki, Emre or Sofía?", hilfe:"Wer sagt das?", wahl:["Yuki","Emre","Sofía"], aussagen:[["«I always drink green tea.»","Yuki"],["«My grandma cooks for my birthday.»","Sofía"],["«Breakfast on Sundays takes two hours.»","Emre"],["«My brother doesn't like fish.»","Yuki"]] },
+    { typ:"multi", art:"finden", frage:"What does Emre's family eat on Sundays?", hilfe:"Was isst Emres Familie am Sonntag? Es können mehrere Antworten stimmen.", richtig:["white cheese","olives","honey"], falsch:["rice","tortillas","mango"] },
     { typ:"kurz", art:"finden", frage:"How many glasses of tea does Emre's grandfather often drink?", hilfe:"Schreib die Zahl(en).", loesung:["four or five","4 or 5","four","five","4","5","4-5"] },
-    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Speck».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["bacon"] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Oliver usually eats a full English breakfast.","False"],["Yuki's brother sometimes has toast with jam.","True"],["Emre's mother makes the bread.","Not in the text"]] },
-    { typ:"mc", art:"schliessen", frage:"Why does Oliver never eat all of his birthday breakfast?", hilfe:"Warum isst Oliver sein Geburtstagsfrühstück nie ganz auf?", richtig:"It is too much food for him.", falsch:["He doesn't like his dad's cooking.","He has no time on his birthday.","He doesn't eat meat."] }
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Gurken».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["cucumbers"] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Sofía eats tamales every morning.","False"],["Yuki's brother sometimes has toast with jam.","True"],["Emre's mother makes the bread.","Not in the text"]] },
+    { typ:"mc", art:"schliessen", frage:"Why can Sofía never eat more than two tamales?", hilfe:"Warum isst Sofía nie mehr als zwei Tamales?", richtig:"They are very big.", falsch:["She doesn't like her grandma's cooking.","She has no time on her birthday.","She drinks too much hot chocolate."] }
   ]},
 
 { id:"e3-telephone", stufe:1, klasse:6, unit:3, titel:"From the first telephone to the text message", art:"Text", thema:"Communication",
@@ -178,7 +178,7 @@ const EN_LESETEXTE = [
     "They walk slowly through fields and meadows to find their food."
   ],[
     "In August, the young storks are ready for a long journey.",
-    "Storks from Switzerland fly south to spend the winter in Spain or in Africa.",
+    "Storks from Switzerland fly south to Spain or to Africa, where it is warm in winter.",
     "Some of them fly more than 4,000 kilometres!",
     "Storks don't like to fly over the sea.",
     "So they fly over Spain and cross the sea near Gibraltar, where it is very narrow."
@@ -216,7 +216,7 @@ const EN_LESETEXTE = [
     "A newborn whale is about four metres long and drinks its mother's milk.",
     "The mother cares for her baby for about one year and protects it from enemies like orcas."
   ],[
-    "Whales are not fish. They have to come up to the surface to breathe air.",
+    "Whales are not fish. They breathe air, just like us.",
     "The males are famous for their long songs. Scientists think they sing to find a mate."
   ]],
   woerter:[["krill","Krill (kleine Krebse)"],["equator","Äquator"],["mammals","Säugetiere"],["surface","Wasseroberfläche"]],
@@ -224,7 +224,7 @@ const EN_LESETEXTE = [
     { typ:"mc", art:"finden", frage:"How long is an adult humpback whale?", hilfe:"Wie lang ist ein erwachsener Buckelwal?", richtig:"about fourteen metres", falsch:["about four metres","about forty metres","about eight metres"] },
     { typ:"beleg", art:"verbinden", frage:"Why do humpback whales stay in cold waters in summer?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"There is a lot of food there.", falsch:["The water is cleaner there.","They give birth there.","There are no orcas there."], beleg:["there is a lot of food there"] },
     { typ:"ordnen", art:"verbinden", frage:"Put the whale's year in the right order. Start with summer.", hilfe:"Bring das Jahr des Wals in die richtige Reihenfolge. Beginne mit dem Sommer.", items:["They eat a lot in cold waters.","They swim to warm waters.","The females give birth.","The mother cares for her baby."] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Humpback whales have to come up to breathe air.","True"],["Humpback whales eat a lot during their long journey.","False"],["Humpback whales can jump out of the water.","Not in the text"]] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Humpback whales breathe air.","True"],["Humpback whales eat a lot during their long journey.","False"],["Humpback whales can jump out of the water.","Not in the text"]] },
     { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Feinde».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["enemies"] },
     { typ:"mc", art:"ganz", frage:"Which sentence is the best summary of the text?", hilfe:"Welcher Satz fasst den Text am besten zusammen?", richtig:"Humpback whales are huge mammals that travel very far between cold and warm waters.", falsch:["Humpback whales are fish that live only near the North Pole.","Humpback whales are dangerous for people.","Humpback whales sing because they are hungry."] }
   ]},

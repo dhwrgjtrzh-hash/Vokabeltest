@@ -36,20 +36,22 @@ const EN_STIMMEN = {
 const EN_HOERTEXTE = [
 
 /* ---------- Stufe 1: Genau zuhören ---------- */
-{ id:"eh1-breakfast", stufe:1, unit:1, titel:"My breakfast", art:"Podcast", thema:"Breakfast",
-  situation:"Lena aus Zürich erzählt in einem Podcast für Kinder, was sie zum Frühstück isst.",
+{ id:"eh1-breakfast", stufe:1, klasse:6, unit:1, titel:"Our breakfast survey", art:"Podcast", thema:"Breakfast",
+  situation:"Lena hat in ihrer Klasse eine Umfrage zum Frühstück gemacht. In einem Kinder-Podcast erzählt sie die Ergebnisse.",
   rollen:{ L:{name:"Lena", stimme:"maedchen"} },
   teile:[
-    ["L","Hi! I'm Lena and I live in Zurich. On school days I usually have a bowl of muesli with yoghurt and berries. I always drink a glass of orange juice. I never drink coffee. I don't like it!"],
-    ["L","But on Sundays we have a big breakfast. My dad buys a special Swiss bread called Zopf. We eat it with butter, honey or jam. There is also a slice of cheese for everybody, and boiled eggs. I usually eat two eggs. Mmm, I love Sundays!"]
+    ["L","Hi! I'm Lena and I live in Zurich. Last week we did a breakfast survey in our class. There are twenty children in my class."],
+    ["L","Twelve children usually have muesli or cereal. Five children eat bread with butter and honey. Two children sometimes eat only a banana on the way to school. And one boy never has breakfast. He says he isn't hungry in the morning!"],
+    ["L","Most children drink milk or tea. Only three children drink orange juice."],
+    ["L","And me? My favourite breakfast is muesli with apples and nuts. I always have it at seven o'clock, before I go to school."]
   ],
-  woerter:[["berries","Beeren"],["boiled eggs","gekochte Eier"],["a slice of","eine Scheibe"]],
+  woerter:[["survey","Umfrage"],["on the way to school","auf dem Schulweg"],["nuts","Nüsse"]],
   fragen:[
-    { typ:"mc", art:"finden", frage:"What does Lena usually have on school days?", hilfe:"Was isst Lena an Schultagen meistens?", richtig:"a bowl of muesli with yoghurt and berries", falsch:["bread with honey and jam","two boiled eggs","a bowl of cereal with milk"] },
-    { typ:"mc", art:"finden", frage:"What does Lena always drink?", hilfe:"Was trinkt Lena immer?", richtig:"a glass of orange juice", falsch:["a cup of coffee","a glass of milk","a cup of tea"] },
-    { typ:"multi", art:"finden", frage:"What does the family eat on Sundays?", hilfe:"Was isst die Familie am Sonntag? Es können mehrere Antworten stimmen.", richtig:["Zopf with butter, honey or jam","a slice of cheese","boiled eggs"], falsch:["bacon","pancakes","sausages"] },
-    { typ:"kurz", art:"finden", frage:"How many eggs does Lena usually eat on Sundays?", hilfe:"Schreib die Zahl.", loesung:["2","two","two eggs","2 eggs"] },
-    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["Lena likes coffee.","False"],["Lena's dad buys the bread.","True"],["Lena has breakfast with her grandmother.","Not said"]] }
+    { typ:"kurz", art:"finden", frage:"How many children are there in Lena's class?", hilfe:"Schreib die Zahl.", loesung:["twenty","20","20 children","twenty children"] },
+    { typ:"mc", art:"finden", frage:"What do most children usually have for breakfast?", hilfe:"Was essen die meisten Kinder zum Frühstück?", richtig:"muesli or cereal", falsch:["bread with butter and honey","a banana","nothing"] },
+    { typ:"mc", art:"verbinden", frage:"Why does one boy never have breakfast?", hilfe:"Warum frühstückt ein Junge nie?", richtig:"He isn't hungry in the morning.", falsch:["He gets up too late.","He doesn't like muesli.","He eats at school."] },
+    { typ:"multi", art:"finden", frage:"What do most children drink?", hilfe:"Was trinken die meisten Kinder? Es können mehrere Antworten stimmen.", richtig:["milk","tea"], falsch:["orange juice","coffee","water"] },
+    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["Lena's favourite breakfast is muesli with apples and nuts.","True"],["Five children drink orange juice.","False"],["Lena's teacher helped with the survey.","Not said"]] }
   ]},
 
 { id:"e1h-farm", stufe:1, unit:1, titel:"Isla's day on the farm", art:"Podcast", thema:"Daily routine",
@@ -150,10 +152,10 @@ const EN_HOERTEXTE = [
   rollen:{ G:{name:"Grandma", stimme:"frau"}, A:{name:"Anna", stimme:"maedchen"}, S:{name:"Market seller", stimme:"mann"} },
   teile:[
     ["G","Here we are, Anna. Have you got the shopping list?"],
-    ["A","Yes. Eggs, cheese, apples and bread. And Grandma, I've got our cloth bags too."],
+    ["A","Yes. Honey, cheese, apples and bread. And Grandma, I've got our cloth bags too."],
     ["G","Well done. No plastic bags today!"],
     ["S","Good morning! What can I get you?"],
-    ["G","Good morning. Six eggs, please, and two hundred grams of mountain cheese."],
+    ["G","Good morning. A jar of honey, please, and two hundred grams of mountain cheese."],
     ["S","Here you are. Anything else?"],
     ["A","How much are the apples?"],
     ["S","Three francs a kilo. They're from a farm near here."],
@@ -161,13 +163,13 @@ const EN_HOERTEXTE = [
     ["A","Grandma, we haven't got any bread."],
     ["S","Sorry, I don't sell bread. But the bakery stand over there has lovely bread."],
     ["G","Thank you. How much is that altogether?"],
-    ["S","Six eggs, the cheese and two kilos of apples … that's fifteen francs, please."],
+    ["S","The honey, the cheese and two kilos of apples … that's fifteen francs, please."],
     ["G","Here's twenty."],
     ["S","And five francs change. Thank you, and have a nice weekend!"]
   ],
   woerter:[["cloth bags","Stofftaschen"],["mountain cheese","Bergkäse"],["altogether","insgesamt"],["change","Rückgeld"]],
   fragen:[
-    { typ:"multi", art:"finden", frage:"What do they buy from the market seller?", hilfe:"Was kaufen sie beim Mann am Marktstand? Es können mehrere Antworten stimmen.", richtig:["six eggs","mountain cheese","two kilos of apples"], falsch:["bread","milk","a plastic bag"] },
+    { typ:"multi", art:"finden", frage:"What do they buy from the market seller?", hilfe:"Was kaufen sie beim Mann am Marktstand? Es können mehrere Antworten stimmen.", richtig:["a jar of honey","mountain cheese","two kilos of apples"], falsch:["bread","eggs","a plastic bag"] },
     { typ:"mc", art:"verbinden", frage:"Why don't they need plastic bags?", hilfe:"Warum brauchen sie keine Plastiksäcke?", richtig:"Anna has brought cloth bags.", falsch:["The seller gives them a box.","They only buy a few things.","Grandma has a basket."] },
     { typ:"mc", art:"verbinden", frage:"Why does Grandma buy two kilos of apples?", hilfe:"Warum kauft die Grossmutter zwei Kilo Äpfel?", richtig:"Anna loves apple cake.", falsch:["They are very cheap.","Grandma wants to make juice.","The seller says they are healthy."] },
     { typ:"kurz", art:"verbinden", frage:"How much do they pay altogether?", hilfe:"Wie viel kostet alles zusammen? Schreib die Zahl.", loesung:["fifteen francs","15 francs","15","fifteen","15 chf","chf 15","15 fr"] },
