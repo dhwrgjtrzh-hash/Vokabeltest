@@ -51,12 +51,9 @@ textarea.lang:focus{outline:3px solid var(--akzent);outline-offset:1px}
 (function(){
 const UEBUNG = "Englisch Schreiben";
 const VORSCHAU = /[?&]vorschau/.test(location.search);
-const TEILE = {
-  satzbau:{name:"Sätze bauen", text:"Bring die Wörter in die richtige Reihenfolge.", zeichen:"🧩"},
-  luecken:{name:"Wörter einsetzen", text:"Schreib das fehlende englische Wort.", zeichen:"✍️"},
-  saetze:{name:"Sätze schreiben", text:"Mach aus den Wörtern einen ganzen Satz.", zeichen:"📝"},
-  text:{name:"Mein Text", text:"Schreib einen kurzen eigenen Text.", zeichen:"📄"}
-};
+/* Pro Unit eine gemischte Übung: so viele Aufgaben jeder Art, zufällig gewählt und gemischt */
+const MISCHUNG = {satzbau:3, luecken:4, saetze:3};
+const ARTNAME = {satzbau:"Sätze bauen", luecken:"Wörter einsetzen", saetze:"Sätze schreiben"};
 const app = document.getElementById("app");
 const $ = s => document.querySelector(s);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -99,41 +96,32 @@ function start(){
   holeStand(home);
 }
 
-/* ===== Startseite: Klassenstufe wählen, darin die Units mit ihren vier Teilen ===== */
-const KL_NRN = Object.keys(EN_KLASSEN).map(Number).sort((a,b) => b-a), KL_AKT = KL_NRN[0];
-const ukey = U => (U.klasse === KL_AKT ? "" : "k" + U.klasse + ".") + U.unit;          // 6. Klasse wie bisher «1.satzbau»
-const ulabel = U => (U.klasse === KL_AKT ? "" : U.klasse + ". Klasse · ") + "Unit " + U.unit;
+/* ===== Startseite: Units von Young World 4, je eine gemischte Übung und ein eigener Text ===== */
 function home(){
   ladeP(); S = null; window.scrollTo(0,0);
-  const kl = EN_KLASSEN[P.klasse] ? P.klasse : KL_AKT, UN = EN_KLASSEN[kl].units;
-  const units = EN_SCHREIBEN.filter(U => U.klasse === kl).sort((a,b) => a.unit - b.unit);
-  const offen = Object.keys(UN).map(Number).filter(u => !units.some(U => U.unit === u));
-  app.innerHTML = `<div class="beta-band">🧪 <b>Beta-Test:</b> Dieser Trainer ist neu. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</div>
-    <div class="klassenwahl" role="tablist">${KL_NRN.map(n => `<button role="tab" data-k="${n}" class="${n === kl ? "an" : ""}" aria-selected="${n === kl}">${n}. Klasse</button>`).join("")}</div>
-    <p class="leise klassen-info">${esc(EN_KLASSEN[kl].band)}${kl !== KL_AKT ? " · zum Wiederholen" : ""}</p><div class="karte">
+  const units = EN_SCHREIBEN.slice().sort((a,b) => a.unit - b.unit);
+  const status = (x, text) => !x ? `<span class="status">neu</span>` : text ? `<span class="status gut">✓ abgegeben</span>`
+    : x.best >= 0.8 ? `<span class="status gut">✓ ${Math.round(x.best*100)} %</span>` : `<span class="status">${Math.round(x.best*100)} %</span>`;
+  app.innerHTML = `<div class="beta-band">🧪 <b>Beta-Test:</b> Dieser Trainer ist neu. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</div><div class="karte">
     ${units.map(U => `<section class="unit">
-      <div class="unit-kopf"><div class="unit-nr">Unit<br>${U.unit}</div><div><h2 style="margin:0">${esc(UN[U.unit])}</h2></div></div>
-      <div class="teile">${Object.keys(TEILE).map(k => { const x = P.teile[ukey(U) + "." + k];
-        const stat = !x ? `<span class="status">neu</span>` : k === "text" ? `<span class="status gut">✓ abgegeben</span>`
-          : x.best >= 0.8 ? `<span class="status gut">✓ ${Math.round(x.best*100)} %</span>` : `<span class="status">${Math.round(x.best*100)} %</span>`;
-        return `<button class="textkarte" data-kl="${U.klasse}" data-u="${U.unit}" data-k="${k}"><b>${TEILE[k].zeichen} ${esc(k === "text" ? TEILE[k].name + ": " + U.text.titel : TEILE[k].name)}</b>${stat}<span class="meta">${esc(TEILE[k].text)}</span></button>`; }).join("")}</div>
-    </section>`).join("")}
-    ${offen.length ? `<div class="leer">Später kommen dazu: ${offen.map(u => `Unit ${u} «${esc(UN[u])}»`).join(", ")}.</div>` : ""}</div>`;
-  app.querySelectorAll(".textkarte").forEach(b => b.onclick = () => starte(+b.dataset.kl, +b.dataset.u, b.dataset.k));
-  app.querySelectorAll(".klassenwahl button").forEach(b => b.onclick = () => { P.klasse = Number(b.dataset.k); speichereP(); home(); });
+      <div class="unit-kopf"><div class="unit-nr">Unit<br>${U.unit}</div><div><h2 style="margin:0">${esc(EN_UNITS[U.unit])}</h2></div></div>
+      <div class="teile">
+        <button class="textkarte" data-u="${U.unit}" data-k="uebung"><b>✍️ Übung</b>${status(P.teile[U.unit + ".uebung"])}<span class="meta">Sätze bauen, Wörter einsetzen und Sätze schreiben – gemischt, jedes Mal andere Aufgaben</span></button>
+        <button class="textkarte" data-u="${U.unit}" data-k="text"><b>📄 Mein Text: ${esc(U.text.titel)}</b>${status(P.teile[U.unit + ".text"], true)}<span class="meta">Schreib einen kurzen eigenen Text.</span></button>
+      </div></section>`).join("")}</div>`;
+  app.querySelectorAll(".textkarte").forEach(b => b.onclick = () => starte(+b.dataset.u, b.dataset.k));
 }
 
-function starte(kl, u, k){
-  const U = EN_SCHREIBEN.find(x => x.klasse === kl && x.unit === u);
+function starte(u, k){
+  const U = EN_SCHREIBEN.find(x => x.unit === u);
   S = {U, k, i:0, log:[], start:Date.now()};
-  if(k === "satzbau") S.items = mische(U.satzbau);
-  if(k === "luecken") S.items = mische(U.luecken);
-  if(k === "saetze") S.items = U.saetze.slice();
   if(k === "text") return zeigeText();
+  const zug = art => mische(U[art]).slice(0, MISCHUNG[art]).map(x => ({art, x}));
+  S.items = mische(zug("satzbau").concat(zug("luecken"), zug("saetze")));
   zeigeAufgabe();
 }
 const kopf = () => `<div class="fortschritt">${S.items.map((_,j) => { const l = S.log[j]; return `<i class="${j === S.i ? "jetzt" : l ? (l.punkte >= 1 ? "gut" : "nein") : ""}"></i>`; }).join("")}</div>
-  <div class="leise" style="font-size:.9rem;font-weight:700">${ulabel(S.U)} · ${esc(TEILE[S.k].name)} · ${S.i+1} von ${S.items.length}</div>`;
+  <div class="leise" style="font-size:.9rem;font-weight:700">Unit ${S.U.unit} · Übung · ${S.i+1} von ${S.items.length} · ${esc(ARTNAME[S.items[S.i].art])}</div>`;
 function meldung(ok, txt){ $("#meldung").innerHTML = `<div class="meldung ${ok === true ? "gut" : ok === "halb" ? "" : "nein"}" ${ok === "halb" ? 'style="background:#fff4d6;color:#5c4300"' : ""}>${txt}</div>`; }
 function weiterKnopf(){
   $("#aktionen").innerHTML = `<button class="btn" id="weiter">${S.i < S.items.length - 1 ? "Weiter →" : "Fertig →"}</button>`;
@@ -148,9 +136,9 @@ function zeigeAufgabe(){
   app.innerHTML = `<div class="karte fragebox">${kopf()}<div class="frage" id="frage"></div><div id="eingabe"></div><div id="meldung"></div>
     <div class="aktionen" id="aktionen"><button class="btn" id="pruefen">Prüfen</button><button class="btn zweit" id="abbruch">Abbrechen</button></div></div>`;
   $("#abbruch").onclick = home;
-  if(S.k === "satzbau") satzbau(it);
-  if(S.k === "luecken") luecke(it);
-  if(S.k === "saetze") satz(it);
+  if(it.art === "satzbau") satzbau(it.x);
+  if(it.art === "luecken") luecke(it.x);
+  if(it.art === "saetze") satz(it.x);
   window.scrollTo(0,0);
 }
 function satzbau(ziel){
@@ -237,20 +225,20 @@ function satz(it){
 }
 function abschluss(){
   const r = S.log.reduce((a,l) => a + l.punkte, 0), n = S.log.length, q = r / n;
-  if(window.LP) LP.runde(UEBUNG, `${ulabel(S.U)} · ${TEILE[S.k].name}`, S.log, {klasse:S.U.klasse, unit:S.U.unit, teil:S.k, start:S.start, dauer:Date.now() - S.start});
-  const key = ukey(S.U) + "." + S.k, x = P.teile[key] || (P.teile[key] = {best:0, n:0});
+  if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · Übung`, S.log, {unit:S.U.unit, teil:"uebung", start:S.start, dauer:Date.now() - S.start});
+  const key = S.U.unit + ".uebung", x = P.teile[key] || (P.teile[key] = {best:0, n:0});
   x.n++; x.last = q; x.best = Math.max(x.best, q); x.t = Date.now(); if(x.erst == null) x.erst = q; speichereP();
   app.innerHTML = `<div class="karte ergebnis"><h2>${q >= 0.8 ? "Super geschrieben!" : "Geschafft – weiter üben!"}</h2><div class="gross">${String(r).replace(".5","½")} / ${n}</div>
-    <p>${q >= 0.8 ? "Das klappt schon sehr gut." : "Mach diesen Teil später nochmals. Die Aufgaben kommen dann in anderer Reihenfolge."}</p>
+    <p>${q >= 0.8 ? "Das klappt schon sehr gut." : "Mach die Übung später nochmals. Dann kommen andere Aufgaben."}</p>
     <div class="aktionen" style="justify-content:center"><button class="btn" id="w">Zur Übersicht</button></div></div>`;
   $("#w").onclick = home; window.scrollTo(0,0);
 }
 
 /* ===== Eigener Text ===== */
 function zeigeText(){
-  const T = S.U.text, ek = "schreiben.entwurf." + gz + "." + ukey(S.U);
+  const T = S.U.text, ek = "schreiben.entwurf." + gz + "." + S.U.unit;
   app.innerHTML = `<div class="karte">
-    <div class="leise" style="font-size:.9rem;font-weight:700">${ulabel(S.U)} · Mein Text</div>
+    <div class="leise" style="font-size:.9rem;font-weight:700">Unit ${S.U.unit} · Mein Text</div>
     <h2>${esc(T.titel)}</h2>
     <p style="margin:0 0 4px"><b>${esc(T.auftrag)}</b></p><p class="leise" style="margin:0 0 10px">${esc(T.hilfe)}</p>
     <p style="margin:0"><b>Das sollte in deinem Text vorkommen:</b></p>
@@ -291,8 +279,8 @@ function zeigeText(){
       return meldung("halb", `Bevor du abgibst:<p>${h.map(esc).join("<br>")}</p><p>Du kannst deinen Text noch verbessern – oder nochmals auf «Abgeben» tippen.</p>`);
     }
     const log = T.punkte.map((p,i) => ({frage:p.text, antwort: erfuellt[i] ? "✓" : "–", loesung:"", punkte: erfuellt[i] ? 1 : 0, thema:"text", t:Date.now()}));
-    if(window.LP) LP.runde(UEBUNG, `${ulabel(S.U)} · Mein Text: ${T.titel}`, log, {klasse:S.U.klasse, unit:S.U.unit, teil:"text", aufsatz:t.slice(0, 4000), woerter, saetze:saetze.length, start:S.start, dauer:Date.now() - S.start});
-    const key = ukey(S.U) + ".text", x = P.teile[key] || (P.teile[key] = {best:0, n:0});
+    if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · Mein Text: ${T.titel}`, log, {unit:S.U.unit, teil:"text", aufsatz:t.slice(0, 4000), woerter, saetze:saetze.length, start:S.start, dauer:Date.now() - S.start});
+    const key = S.U.unit + ".text", x = P.teile[key] || (P.teile[key] = {best:0, n:0});
     x.n++; x.best = Math.max(x.best, erfuellt.filter(Boolean).length / erfuellt.length); x.t = Date.now(); speichereP();
     store.set(ek, "");
     app.innerHTML = `<div class="karte ergebnis"><h2>Danke, dein Text ist abgegeben! 🎉</h2>

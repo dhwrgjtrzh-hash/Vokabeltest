@@ -588,27 +588,6 @@
   ]
  },
  {
-  "datei": "audio/en/eh1-cablecar.mp3",
-  "sprache": "en",
-  "titel": "At the cable car",
-  "teile": [
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "Good morning and welcome to the Alpenblick cable car. Because of strong wind, the cable car to the top is closed until two o'clock this afternoon. The cable car to the middle station is open.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 700
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "From the middle station you can go hiking, or you can visit our rope park. You can rent mountain bikes and scooters at the shop next to the ticket office. The restaurant at the middle station is open until five o'clock. Enjoy your day in the mountains!",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 0
-   }
-  ]
- },
- {
   "datei": "audio/en/e1h-farm.mp3",
   "sprache": "en",
   "titel": "Isla's day on the farm",
@@ -644,6 +623,251 @@
    {
     "stimme": "en-GB-MaisieNeural",
     "text": "We have dinner at six o'clock, and I usually go to bed at nine. Life on a farm is hard work, but I love it.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh1-cheetah.mp3",
+  "sprache": "en",
+  "titel": "The fastest animal on land",
+  "teile": [
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Hi, I'm Mia, and this is my favourite animal: the cheetah! Cheetahs live in Africa, in dry grassland.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "The cheetah is the fastest animal on land. It can run about one hundred kilometres per hour. That's as fast as a car on the motorway! But it can only run so fast for about thirty seconds. Then it's tired and has to rest.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "A cheetah isn't very big. It weighs about fifty kilograms. It has black spots on its yellow fur and a long tail. The tail helps it to turn quickly when it runs.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "A cheetah mother usually has three to five babies. The babies are called cubs. In the wild, cheetahs can live for about twelve years. I hope I can see a real cheetah one day!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh1-museum.mp3",
+  "sprache": "en",
+  "titel": "A day at the Transport Museum",
+  "teile": [
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Last Saturday I went to the Swiss Museum of Transport in Lucerne with my family. We took the train from Zurich, and the journey took about one hour.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "First we looked at the old trains. The first railway in Switzerland opened in 1847. It went from Zurich to Baden. People called it the «Spanish Bun Railway», because it brought fresh buns from Baden to Zurich.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Then we visited the hall with old cars and planes. My little brother sat in a real old plane. He didn't want to get out!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "After lunch we watched a film about space in the planetarium. That was my favourite part. We went home at five o'clock. I was very tired, but it was a great day.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh1-cablecar.mp3",
+  "sprache": "en",
+  "titel": "At the cable car",
+  "teile": [
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Good morning and welcome to the Alpenblick cable car. Because of strong wind, the cable car to the top is closed until two o'clock this afternoon. The cable car to the middle station is open.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "From the middle station you can go hiking, or you can visit our rope park. You can rent mountain bikes and scooters at the shop next to the ticket office. The restaurant at the middle station is open until five o'clock. Enjoy your day in the mountains!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh1-strawberries.mp3",
+  "sprache": "en",
+  "titel": "Chocolate strawberries",
+  "teile": [
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Hello and welcome to Kids in the Kitchen! Today we're making chocolate strawberries. They're perfect for a party or as a birthday present.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "You need twelve big strawberries, one hundred grams of dark chocolate and some baking paper.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "First, wash the strawberries and dry them well. Then break the chocolate into small pieces and put it in a bowl. Melt it over a pan of hot water. Be careful: the bowl gets hot!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "After that, hold a strawberry by its green leaves and dip it into the chocolate. Put it on the baking paper. Do the same with all the other strawberries.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Finally, put them in the fridge for thirty minutes. Then they're ready. Enjoy!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh2-market.mp3",
+  "sprache": "en",
+  "titel": "At the market",
+  "teile": [
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Here we are, Anna. Have you got the shopping list?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Yes. Eggs, cheese, apples and bread. And Grandma, I've got our cloth bags too.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Well done. No plastic bags today!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Good morning! What can I get you?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Good morning. Six eggs, please, and two hundred grams of mountain cheese.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Here you are. Anything else?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "How much are the apples?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Three francs a kilo. They're from a farm near here.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Then we'll take two kilos, please. Anna loves apple cake.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Grandma, we haven't got any bread.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Sorry, I don't sell bread. But the bakery stand over there has lovely bread.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Thank you. How much is that altogether?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Six eggs, the cheese and two kilos of apples … that's fifteen francs, please.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Here's twenty.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "And five francs change. Thank you, and have a nice weekend!",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0
@@ -847,6 +1071,188 @@
   ]
  },
  {
+  "datei": "audio/en/eh2-phone.mp3",
+  "sprache": "en",
+  "titel": "Mum's first mobile phone",
+  "teile": [
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Mum, what's this? It looks like a toy phone!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Ha! That's my first mobile phone. I got it in 2001, when I was fourteen.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "It's so small! And where is the screen?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "That little window is the screen. It was black and green. There were no colours.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Could you take photos with it?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "No, it didn't have a camera. And there was no internet on it. I could only make calls and send text messages.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Only that? What did you do on the bus?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "I played a game called Snake. A little snake ate dots and got longer and longer. I loved it!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "And did you send lots of messages?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Not really. Every message cost money, and a message could only have 160 letters. So we wrote very short messages, like «C U L8R». That means «see you later».",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "That's funny. But I think my phone is much better.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Maybe. But my old phone had one big advantage: the battery lasted a whole week!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh2-rental.mp3",
+  "sprache": "en",
+  "titel": "At the rental shop",
+  "teile": [
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Good morning! How can I help you?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "Good morning. We'd like to rent some things for three days. I need skis and ski boots.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "No problem. Skis and boots are thirty-five francs a day. What size are your shoes?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "Forty-four.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Here you are. And for the young lady?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "I'd like a snowboard, please. I tried it last winter and I loved it.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "A snowboard and boots for children are twenty francs a day. And you need a helmet.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Oh no, I forgot my helmet at home!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Don't worry. Helmets for children are free.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "Great. My son Nico is still at the hotel. He's got a cold, so he wants to stay in bed this morning. In the afternoon he'd like to go tobogganing. Can we rent a sledge?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Of course. A sledge is ten francs for the afternoon. The toboggan run starts at the top of the chairlift.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "Perfect. Thank you!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
   "datei": "audio/en/eh2-factory.mp3",
   "sprache": "en",
   "titel": "A visit to a chocolate factory",
@@ -896,6 +1302,174 @@
    {
     "stimme": "en-GB-LibbyNeural",
     "text": "Of course! But only one piece each, please!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh3-canteen.mp3",
+  "sprache": "en",
+  "titel": "Food in the bin",
+  "teile": [
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Hello and welcome to School Radio. Today I'm in the school canteen with Mrs Meier, our cook. Mrs Meier, how much food do you throw away every day?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Too much! On a normal day it's about fifteen kilograms. That's a whole big pot of food.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Wow. Why is it so much?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Many children take a big portion, and then they eat only half of it. And some children don't even try the vegetables. They just look at them and say «Yuck».",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Er … I sometimes do that too.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "I know, Sara. I've seen you.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Oops. So what can we do?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "We have a new idea. From next Monday, everybody gets a small portion first. If you're still hungry, you can come back and get more. And on Fridays, the children can choose the menu for the next week.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "That sounds good. Do you think it will work?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "I hope so. At my last school we did the same thing, and after one month we only threw away five kilograms a day.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Thank you, Mrs Meier. And I promise: I'll try the vegetables!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "I'll believe it when I see it!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh3-swallows.mp3",
+  "sprache": "en",
+  "titel": "Where do the swallows go?",
+  "teile": [
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Every spring, swallows come back to our farms and villages. But in autumn, they disappear. Lukas, where do they go?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "They fly to Africa, south of the Sahara desert. That's a journey of thousands of kilometres, and a swallow weighs only about twenty grams. That's less than a chocolate bar!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Why don't they stay here in winter?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Swallows eat insects, and they catch them in the air. In winter there are no flying insects here, so the swallows would starve. In Africa it's warm, and there's lots of food.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "How do you know where they go?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "In the past, we only put small rings on their legs. But we almost never found the birds again. Today we can put a tiny tracker on a swallow's back. It weighs less than half a gram. When the swallow comes back the next spring, we catch it again and read the data.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "And do they come back to the same place?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Very often, yes. Many swallows come back to the same barn every year. Some farmers call me and say: «Our swallows are back!» They're always so happy on that day.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "That's a lovely story. Can our listeners do anything to help?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Yes! If you have swallows on your farm or house, leave their nests alone. And don't close the barn doors in spring. They need a way in!",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0
