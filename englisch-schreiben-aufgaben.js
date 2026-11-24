@@ -7,8 +7,9 @@
               (jede Gruppe: mögliche Schreibweisen), beispiel = so könnte der Satz lauten
      text     kurzer eigener Text mit Checkliste (woerter = Hinweise, an denen die Checkliste
               einen Punkt erkennt) – die Lehrperson liest den Text in der Station
-   Nur 6. Klasse (Young World 4). Pro Unit eine gemischte Übung (Sätze bauen, Wörter einsetzen, Sätze schreiben)
-   und ein eigener Text. Grundlage: Class vocabulary und Strukturen pro Unit aus dem Teacher's Book Young World 4.
+   6. Klasse (Young World 4), allgemeiner Schreibtrainer: alle Sets zusammen sind ein Aufgabenpool für die gemischte
+   Übung (keine Units sichtbar); jedes Set hat zusätzlich ein Thema für einen eigenen Text.
+   Grundlage: Class vocabulary und Strukturen pro Unit aus dem Teacher's Book Young World 4.
    Nicht wie in den Lernkontrollen (Einkaufsliste Sonntagsbrunch, have-to-Bilder, Butler John, Postkarte, Bildbeschreibungen).
    ===================================================================== */
 const EN_SCHREIBEN = [

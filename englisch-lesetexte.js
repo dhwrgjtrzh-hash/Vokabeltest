@@ -1,13 +1,12 @@
 /* =====================================================================
-   Englisch Leseverstehen – Lesetexte zu Young World 4 (6. Klasse)
-   Zurzeit NICHT im Lernportal (24.11.2026 auf Wunsch herausgenommen). Aufbewahrt, falls das Leseverstehen
-   wieder gebraucht wird: braucht englisch-texte.js (EN_UNITS) und verstehen.js mit aufbau:"units".
-   Bewusst nichts aus den Lernkontrollen (siehe englisch-texte.js).
+   Englisch Leseverstehen – Lesetexte zu Young World 4 (6. Klasse), allgemeiner Trainer über das ganze Schuljahr
+   Nach Stufen 1–3 (stufe), nicht nach Units – unit nur zur Übersicht, die Kinder sehen keine Unit.
+   Eigene Texte – nichts aus dem Lehrmittel oder den Lernkontrollen (siehe englisch-texte.js).
    ===================================================================== */
 const EN_LESETEXTE = [
 
-/* ---------- Unit 1: The way we live (Frühstück, Nachhaltigkeit) ---------- */
-{ id:"e1-breakfasts", klasse:6, unit:1, titel:"Three breakfasts", art:"Text", thema:"Breakfast around the world",
+/* ---------- Stufe 1: Genau lesen ---------- */
+{ id:"e1-breakfasts", stufe:1, klasse:6, unit:1, titel:"Three breakfasts", art:"Text", thema:"Breakfast around the world",
   absaetze:[[
     "Hi, I'm Yuki and I live in Osaka, Japan.",
     "On school days I usually have a bowl of rice, miso soup and a small piece of grilled fish.",
@@ -36,41 +35,99 @@ const EN_LESETEXTE = [
     { typ:"mc", art:"schliessen", frage:"Why does Oliver never eat all of his birthday breakfast?", hilfe:"Warum isst Oliver sein Geburtstagsfrühstück nie ganz auf?", richtig:"It is too much food for him.", falsch:["He doesn't like his dad's cooking.","He has no time on his birthday.","He doesn't eat meat."] }
   ]},
 
-{ id:"e1-wasteweek", klasse:6, unit:1, titel:"Our Zero Waste Week", art:"Class blog", thema:"Sustainability",
+{ id:"e3-telephone", stufe:1, klasse:6, unit:3, titel:"From the first telephone to the text message", art:"Text", thema:"Communication",
   absaetze:[[
-    "Last month our class did a Zero Waste Week.",
-    "Our teacher told us that in Switzerland about one third of all food is wasted.",
-    "We wanted to do something about it."
+    "Today you can send a text message to a friend in a second.",
+    "But how did people communicate in the past?"
   ],[
-    "On Monday we weighed the rubbish from our classroom: three kilograms!",
-    "There was a lot of paper, plastic from prepackaged portions and old bread."
+    "In the 19th century, people wrote letters.",
+    "A letter from Zurich to London took several days."
   ],[
-    "Then we made a plan.",
-    "Everybody brought their snack in a box that we can re-use.",
-    "We put apple and banana skins on the compost behind the school.",
-    "We recycled paper and bottles.",
-    "And we gave away the bread we didn't eat to the chickens of a farmer nearby."
+    "Then, in 1876, Alexander Graham Bell got a patent for a new invention: the telephone.",
+    "A few days later he made his first phone call to his helper, Mr Watson, in the next room.",
+    "In the first years, only rich people had a telephone at home.",
+    "Operators had to connect every call by hand."
   ],[
-    "We also talked about where our food comes from.",
-    "Strawberries in December come from far away, by plane or by truck.",
-    "Apples from Switzerland are regional, and in autumn they are seasonal, too.",
-    "So we decided to buy more regional and seasonal food for our class picnic."
+    "Almost one hundred years later, on the third of April 1973, an engineer made the first call with a mobile phone in New York.",
+    "The phone was very big and heavy: it weighed more than one kilogram!"
   ],[
-    "On Friday we weighed the rubbish again: only one kilogram!",
-    "We are proud of it, and we want to keep going."
+    "On the third of December 1992, a young engineer in England sent the first text message.",
+    "It said: «Merry Christmas».",
+    "Today, people all over the world send billions of text messages every day."
   ]],
-  woerter:[["weigh","wiegen"],["wasted","verschwendet"],["skins","Schalen"],["nearby","in der Nähe"]],
+  woerter:[["communicate","sich verständigen"],["patent","Patent (Recht auf eine Erfindung)"],["operator","Telefonist/-in"],["billions","Milliarden"]],
   fragen:[
-    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["Why we started",1],["Checking our rubbish",2],["What we did",3],["Where does food come from?",4],["The result",5]] },
-    { typ:"kurz", art:"finden", frage:"How much rubbish was there on Friday?", hilfe:"Wie viel Abfall war es am Freitag?", loesung:["one kilogram","1 kilogram","1 kg","one kilo","1","one","1 kilo"] },
-    { typ:"multi", art:"finden", frage:"What did the class do against waste?", hilfe:"Was hat die Klasse gegen Abfall gemacht? Es können mehrere Antworten stimmen.", richtig:["They brought snacks in boxes they can re-use.","They put fruit skins on the compost.","They gave old bread to a farmer's chickens."], falsch:["They stopped eating snacks.","They bought strawberries in December.","They threw the bread away."] },
-    { typ:"beleg", art:"verbinden", frage:"Why are strawberries in December not a good idea?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"They come from far away.", falsch:["They are too expensive.","They don't taste good.","They are not healthy."], beleg:["Strawberries in December come from far away"] },
-    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «saisonal».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["seasonal"] },
-    { typ:"mc", art:"schliessen", frage:"How does the class feel at the end of the week?", hilfe:"Wie fühlt sich die Klasse am Ende der Woche?", richtig:"Proud, and they want to do more.", falsch:["Tired, and they want to stop.","Sad, because there is still rubbish.","Bored, because it was too easy."] }
+    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["A question",1],["Letters",2],["A new invention",3],["The first mobile phone",4],["The first text message",5]] },
+    { typ:"kurz", art:"finden", frage:"In which year did Bell get a patent for the telephone?", hilfe:"Schreib die Jahreszahl.", loesung:["1876"] },
+    { typ:"beleg", art:"verbinden", frage:"Why couldn't everybody call friends in the first years?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"Only rich people had a telephone at home.", falsch:["The telephone didn't work at night.","Phone calls were not allowed.","There were no operators."], beleg:["only rich people had a telephone at home"] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["The first mobile phone was small and light.","False"],["The first text message said «Merry Christmas».","True"],["Bell's helper, Mr Watson, was his brother.","Not in the text"]] },
+    { typ:"ordnen", art:"verbinden", frage:"Put the events in the right order.", hilfe:"Bring die Ereignisse in die richtige Reihenfolge.", items:["People wrote letters.","Bell made his first phone call.","An engineer called with a mobile phone.","Someone sent the first text message."] },
+    { typ:"mc", art:"finden", frage:"When was the first text message sent?", hilfe:"Wann wurde die erste SMS geschickt?", richtig:"on the third of December 1992", falsch:["on the third of April 1973","on the third of December 1876","on the first of April 1992"] }
   ]},
 
-/* ---------- Unit 2: Fascinating animal facts ---------- */
-{ id:"e2-marmot", klasse:6, unit:2, titel:"Fact file: The Alpine marmot", art:"Fact file", thema:"Animals",
+{ id:"e3-chimneysweep", stufe:1, klasse:6, unit:3, titel:"Tom, the chimney sweep", art:"Diary", thema:"Children in the past",
+  absaetze:[[
+    "London, 12th January 1850",
+    "Today I got up at four o'clock in the morning.",
+    "It was dark and very cold.",
+    "I didn't have breakfast, only a piece of old bread."
+  ],[
+    "My master took me to a big house.",
+    "A maid opened the door and showed us the chimneys.",
+    "I climbed up the first chimney with my brush.",
+    "It was very narrow and full of black soot.",
+    "My knees hurt and I couldn't breathe well."
+  ],[
+    "In the afternoon we cleaned six more chimneys.",
+    "When I came home, I was black from head to toe.",
+    "I am only eight years old, but I can't go to school.",
+    "My family needs the money."
+  ],[
+    "Tonight I'm very tired.",
+    "One day I want to learn to read and write.",
+    "Then I can read stories like the children in the big house."
+  ]],
+  woerter:[["chimney sweep","Kaminfeger"],["master","Meister, Chef"],["soot","Russ"],["from head to toe","von Kopf bis Fuss"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"What time did Tom get up?", hilfe:"Wann ist Tom aufgestanden?", richtig:"at four o'clock in the morning", falsch:["at six o'clock in the morning","at eight o'clock in the morning","at four o'clock in the afternoon"] },
+    { typ:"kurz", art:"finden", frage:"How old is Tom?", hilfe:"Schreib die Zahl.", loesung:["eight","8","eight years old","8 years old"] },
+    { typ:"beleg", art:"verbinden", frage:"Why can't Tom go to school?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"His family needs the money.", falsch:["There is no school in London.","He doesn't like school.","He is too tired."], beleg:["My family needs the money"] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Tom had a big breakfast.","False"],["The chimneys were narrow and full of soot.","True"],["Tom has a little sister.","Not in the text"]] },
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Dienstmädchen».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["maid"] },
+    { typ:"mc", art:"schliessen", frage:"What does Tom wish for?", hilfe:"Was wünscht sich Tom?", richtig:"He wants to learn to read and write.", falsch:["He wants to clean more chimneys.","He wants to live in London.","He wants to be a maid."] }
+  ]},
+
+{ id:"e5-hotchocolate", stufe:1, klasse:6, unit:5, titel:"How to make real hot chocolate", art:"Recipe", thema:"Recipes",
+  absaetze:[[
+    "It's a cold winter afternoon and Mia is making hot chocolate for her friends.",
+    "Her friends are sitting in the kitchen and watching her."
+  ],[
+    "Ingredients for four cups:",
+    "800 ml milk, 100 g dark chocolate, 2 tablespoons of sugar, a pinch of cinnamon and some cream."
+  ],[
+    "First, break the chocolate into small pieces.",
+    "Then pour the milk into a pan and heat it slowly. Don't let it boil!",
+    "After that, add the chocolate and the sugar and stir until the chocolate melts.",
+    "Add a pinch of cinnamon.",
+    "Finally, pour the hot chocolate into four cups and put some cream on top."
+  ],[
+    "«Mmm, it smells great!» says Leo.",
+    "Mia usually makes hot chocolate with cocoa powder, but today she is using real chocolate.",
+    "Everybody agrees: it tastes much better!"
+  ]],
+  woerter:[["pan","Pfanne"],["boil","kochen (sprudeln)"],["stir","rühren"],["a pinch of","eine Prise"]],
+  fragen:[
+    { typ:"kurz", art:"finden", frage:"How much milk do you need?", hilfe:"Wie viel Milch braucht man?", loesung:["800 ml","800","800 millilitres","800ml"] },
+    { typ:"ordnen", art:"verbinden", frage:"Put the steps in the right order.", hilfe:"Bring die Schritte in die richtige Reihenfolge.", items:["Break the chocolate into pieces.","Heat the milk in a pan.","Add the chocolate and the sugar and stir.","Pour the hot chocolate into cups.","Put some cream on top."] },
+    { typ:"mc", art:"finden", frage:"What must you be careful about?", hilfe:"Worauf muss man aufpassen?", richtig:"The milk must not boil.", falsch:["The chocolate must not melt.","The cream must be hot.","The sugar must be brown."] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Mia's friends are sitting in the kitchen.","True"],["Mia always makes hot chocolate with real chocolate.","False"],["Leo brought the cream.","Not in the text"]] },
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «rühren».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["stir"] },
+    { typ:"mc", art:"schliessen", frage:"What do the friends think about the hot chocolate?", hilfe:"Was finden die Freunde?", richtig:"It tastes better than hot chocolate with cocoa powder.", falsch:["It is too sweet.","It is too cold.","It tastes like coffee."] }
+  ]},
+
+
+/* ---------- Stufe 2: Informationen verbinden ---------- */
+{ id:"e2-marmot", stufe:2, klasse:6, unit:2, titel:"Fact file: The Alpine marmot", art:"Fact file", thema:"Animals",
   absaetze:[[
     "Alpine marmots live high up in the mountains of Europe, for example in the Swiss Alps.",
     "Their habitat is above the forest, where there is a lot of grass and many flowers."
@@ -107,7 +164,7 @@ const EN_LESETEXTE = [
     { typ:"mc", art:"verbinden", frage:"Why does a marmot weigh more in autumn than in spring?", hilfe:"Warum ist ein Murmeltier im Herbst schwerer als im Frühling?", richtig:"It eats a lot in summer. In winter it doesn't eat.", falsch:["It has babies in autumn.","It drinks a lot of water in autumn.","It grows longer in autumn."] }
   ]},
 
-{ id:"e2-stork", klasse:6, unit:2, titel:"The long journey of the white stork", art:"Text", thema:"Animals / Migration",
+{ id:"e2-stork", stufe:2, klasse:6, unit:2, titel:"The long journey of the white stork", art:"Text", thema:"Animals / Migration",
   absaetze:[[
     "White storks are big birds with long red legs and a long red beak.",
     "They are black and white, and their wings are about two metres wide."
@@ -141,7 +198,7 @@ const EN_LESETEXTE = [
     { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Reise».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["journey"] }
   ]},
 
-{ id:"e2-humpback", klasse:6, unit:2, titel:"Fact file: The humpback whale", art:"Fact file", thema:"Animals / Migration",
+{ id:"e2-humpback", stufe:2, klasse:6, unit:2, titel:"Fact file: The humpback whale", art:"Fact file", thema:"Animals / Migration",
   absaetze:[[
     "Humpback whales live in all the oceans of the world.",
     "An adult humpback whale is about fourteen metres long. That's longer than a bus!",
@@ -172,103 +229,72 @@ const EN_LESETEXTE = [
     { typ:"mc", art:"ganz", frage:"Which sentence is the best summary of the text?", hilfe:"Welcher Satz fasst den Text am besten zusammen?", richtig:"Humpback whales are huge mammals that travel very far between cold and warm waters.", falsch:["Humpback whales are fish that live only near the North Pole.","Humpback whales are dangerous for people.","Humpback whales sing because they are hungry."] }
   ]},
 
-/* ---------- 6. Klasse, Unit 3: Yesterday and today (past simple, Erfindungen, Leben früher, Daten) ---------- */
-{ id:"e3-telephone", klasse:6, unit:3, titel:"From the first telephone to the text message", art:"Text", thema:"Communication",
+{ id:"e5-history", stufe:2, klasse:6, unit:5, titel:"Chocolate: a long story", art:"Text", thema:"History of chocolate",
   absaetze:[[
-    "Today you can send a text message to a friend in a second.",
-    "But how did people communicate in the past?"
+    "More than 3,000 years ago, people in Central America already used cocoa beans.",
+    "The Maya and later the Aztecs made a drink from them.",
+    "It wasn't sweet at all: it was bitter, and they often put chili in it!",
+    "The Aztecs also used cocoa beans as money."
   ],[
-    "In the 19th century, people wrote letters.",
-    "A letter from Zurich to London took several days."
+    "In the 16th century, Spanish sailors brought cocoa beans to Europe.",
+    "The Spanish added sugar to the drink, and soon rich people all over Europe loved hot chocolate."
   ],[
-    "Then, in 1876, Alexander Graham Bell got a patent for a new invention: the telephone.",
-    "A few days later he made his first phone call to his helper, Mr Watson, in the next room.",
-    "In the first years, only rich people had a telephone at home.",
-    "Operators had to connect every call by hand."
+    "For a long time, chocolate was only a drink.",
+    "In 1847, a company in England made the first chocolate bar you could eat."
   ],[
-    "Almost one hundred years later, on the third of April 1973, an engineer made the first call with a mobile phone in New York.",
-    "The phone was very big and heavy: it weighed more than one kilogram!"
+    "Switzerland became famous for chocolate in the 19th century.",
+    "In 1875, Daniel Peter from Vevey made the first milk chocolate.",
+    "A few years later, Rodolphe Lindt in Bern invented a machine that stirs the chocolate for many hours.",
+    "That made it soft and smooth, so it melts in your mouth."
   ],[
-    "On the third of December 1992, a young engineer in England sent the first text message.",
-    "It said: «Merry Christmas».",
-    "Today, people all over the world send billions of text messages every day."
+    "Today, people in Switzerland eat about eleven kilograms of chocolate per person every year!"
   ]],
-  woerter:[["communicate","sich verständigen"],["patent","Patent (Recht auf eine Erfindung)"],["operator","Telefonist/-in"],["billions","Milliarden"]],
+  woerter:[["bitter","bitter"],["sailors","Seeleute"],["invented","erfand"],["melts","schmilzt"]],
   fragen:[
-    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["A question",1],["Letters",2],["A new invention",3],["The first mobile phone",4],["The first text message",5]] },
-    { typ:"kurz", art:"finden", frage:"In which year did Bell get a patent for the telephone?", hilfe:"Schreib die Jahreszahl.", loesung:["1876"] },
-    { typ:"beleg", art:"verbinden", frage:"Why couldn't everybody call friends in the first years?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"Only rich people had a telephone at home.", falsch:["The telephone didn't work at night.","Phone calls were not allowed.","There were no operators."], beleg:["only rich people had a telephone at home"] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["The first mobile phone was small and light.","False"],["The first text message said «Merry Christmas».","True"],["Bell's helper, Mr Watson, was his brother.","Not in the text"]] },
-    { typ:"ordnen", art:"verbinden", frage:"Put the events in the right order.", hilfe:"Bring die Ereignisse in die richtige Reihenfolge.", items:["People wrote letters.","Bell made his first phone call.","An engineer called with a mobile phone.","Someone sent the first text message."] },
-    { typ:"mc", art:"finden", frage:"When was the first text message sent?", hilfe:"Wann wurde die erste SMS geschickt?", richtig:"on the third of December 1992", falsch:["on the third of April 1973","on the third of December 1876","on the first of April 1992"] }
+    { typ:"mc", art:"finden", frage:"How did the first chocolate drink taste?", hilfe:"Wie schmeckte das erste Schokoladengetränk?", richtig:"bitter, often with chili", falsch:["very sweet","like milk","like coffee with sugar"] },
+    { typ:"ordnen", art:"verbinden", frage:"Put the history of chocolate in the right order.", hilfe:"Bring die Geschichte in die richtige Reihenfolge.", items:["The Aztecs drink cocoa with chili.","Spanish sailors bring cocoa to Europe.","A company in England makes the first chocolate bar.","Daniel Peter makes the first milk chocolate."] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["The Aztecs paid with cocoa beans.","True"],["Chocolate was always something to eat.","False"],["Daniel Peter had three children.","Not in the text"]] },
+    { typ:"beleg", art:"verbinden", frage:"Why did Lindt's machine make chocolate better?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"It made the chocolate soft and smooth.", falsch:["It made the chocolate cheaper.","It made the chocolate sweeter.","It made the chocolate cold."], beleg:["That made it soft and smooth"] },
+    { typ:"kurz", art:"finden", frage:"How many kilograms of chocolate does a person in Switzerland eat per year?", hilfe:"Schreib die Zahl.", loesung:["eleven","11","about eleven","11 kilograms","eleven kilograms","11 kg"] },
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «fügten hinzu».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["added"] }
   ]},
 
-{ id:"e3-chimneysweep", klasse:6, unit:3, titel:"Tom, the chimney sweep", art:"Diary", thema:"Children in the past",
+
+/* ---------- Stufe 3: Zwischen den Zeilen lesen ---------- */
+{ id:"e1-wasteweek", stufe:3, klasse:6, unit:1, titel:"Our Zero Waste Week", art:"Class blog", thema:"Sustainability",
   absaetze:[[
-    "London, 12th January 1850",
-    "Today I got up at four o'clock in the morning.",
-    "It was dark and very cold.",
-    "I didn't have breakfast, only a piece of old bread."
+    "Last month our class did a Zero Waste Week.",
+    "Our teacher told us that in Switzerland about one third of all food is wasted.",
+    "We wanted to do something about it."
   ],[
-    "My master took me to a big house.",
-    "A maid opened the door and showed us the chimneys.",
-    "I climbed up the first chimney with my brush.",
-    "It was very narrow and full of black soot.",
-    "My knees hurt and I couldn't breathe well."
+    "On Monday we weighed the rubbish from our classroom: three kilograms!",
+    "There was a lot of paper, plastic from prepackaged portions and old bread."
   ],[
-    "In the afternoon we cleaned six more chimneys.",
-    "When I came home, I was black from head to toe.",
-    "I am only eight years old, but I can't go to school.",
-    "My family needs the money."
+    "Then we made a plan.",
+    "Everybody brought their snack in a box that we can re-use.",
+    "We put apple and banana skins on the compost behind the school.",
+    "We recycled paper and bottles.",
+    "And we gave away the bread we didn't eat to the chickens of a farmer nearby."
   ],[
-    "Tonight I'm very tired.",
-    "One day I want to learn to read and write.",
-    "Then I can read stories like the children in the big house."
+    "We also talked about where our food comes from.",
+    "Strawberries in December come from far away, by plane or by truck.",
+    "Apples from Switzerland are regional, and in autumn they are seasonal, too.",
+    "So we decided to buy more regional and seasonal food for our class picnic."
+  ],[
+    "On Friday we weighed the rubbish again: only one kilogram!",
+    "We are proud of it, and we want to keep going."
   ]],
-  woerter:[["chimney sweep","Kaminfeger"],["master","Meister, Chef"],["soot","Russ"],["from head to toe","von Kopf bis Fuss"]],
+  woerter:[["weigh","wiegen"],["wasted","verschwendet"],["skins","Schalen"],["nearby","in der Nähe"]],
   fragen:[
-    { typ:"mc", art:"finden", frage:"What time did Tom get up?", hilfe:"Wann ist Tom aufgestanden?", richtig:"at four o'clock in the morning", falsch:["at six o'clock in the morning","at eight o'clock in the morning","at four o'clock in the afternoon"] },
-    { typ:"kurz", art:"finden", frage:"How old is Tom?", hilfe:"Schreib die Zahl.", loesung:["eight","8","eight years old","8 years old"] },
-    { typ:"beleg", art:"verbinden", frage:"Why can't Tom go to school?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"His family needs the money.", falsch:["There is no school in London.","He doesn't like school.","He is too tired."], beleg:["My family needs the money"] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Tom had a big breakfast.","False"],["The chimneys were narrow and full of soot.","True"],["Tom has a little sister.","Not in the text"]] },
-    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Dienstmädchen».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["maid"] },
-    { typ:"mc", art:"schliessen", frage:"What does Tom wish for?", hilfe:"Was wünscht sich Tom?", richtig:"He wants to learn to read and write.", falsch:["He wants to clean more chimneys.","He wants to live in London.","He wants to be a maid."] }
+    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["Why we started",1],["Checking our rubbish",2],["What we did",3],["Where does food come from?",4],["The result",5]] },
+    { typ:"kurz", art:"finden", frage:"How much rubbish was there on Friday?", hilfe:"Wie viel Abfall war es am Freitag?", loesung:["one kilogram","1 kilogram","1 kg","one kilo","1","one","1 kilo"] },
+    { typ:"multi", art:"finden", frage:"What did the class do against waste?", hilfe:"Was hat die Klasse gegen Abfall gemacht? Es können mehrere Antworten stimmen.", richtig:["They brought snacks in boxes they can re-use.","They put fruit skins on the compost.","They gave old bread to a farmer's chickens."], falsch:["They stopped eating snacks.","They bought strawberries in December.","They threw the bread away."] },
+    { typ:"beleg", art:"verbinden", frage:"Why are strawberries in December not a good idea?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"They come from far away.", falsch:["They are too expensive.","They don't taste good.","They are not healthy."], beleg:["Strawberries in December come from far away"] },
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «saisonal».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["seasonal"] },
+    { typ:"mc", art:"schliessen", frage:"How does the class feel at the end of the week?", hilfe:"Wie fühlt sich die Klasse am Ende der Woche?", richtig:"Proud, and they want to do more.", falsch:["Tired, and they want to stop.","Sad, because there is still rubbish.","Bored, because it was too easy."] }
   ]},
 
-/* ---------- 6. Klasse, Unit 4: The call of the Alps (Aktivitäten, Ferienziel, some/any) ---------- */
-{ id:"e4-lauterbrunnen", klasse:6, unit:4, titel:"Holiday destination: the Lauterbrunnen valley", art:"Travel guide", thema:"Holiday destinations",
-  absaetze:[[
-    "Are you looking for a holiday destination with a beautiful view?",
-    "Then come to the Lauterbrunnen valley in the Bernese Oberland!"
-  ],[
-    "General information:",
-    "The valley is famous for its 72 waterfalls.",
-    "You can get there by train from Interlaken.",
-    "The villages of Wengen and Mürren are above the valley.",
-    "There aren't any cars there, so the air is fresh and clean."
-  ],[
-    "Highlights:",
-    "You shouldn't miss the Trümmelbach Falls.",
-    "Here ten waterfalls come down inside the mountain.",
-    "You can take a lift into the rock and see them very close.",
-    "Another highlight is the Staubbach Falls near the village. The water falls almost 300 metres!"
-  ],[
-    "Activities:",
-    "In summer you can go hiking, climbing or paragliding.",
-    "In winter Wengen and Mürren are great resorts for skiing, snowboarding and tobogganing.",
-    "Is there anything for rainy summer days? Yes! Visit the waterfalls inside the mountain."
-  ]],
-  woerter:[["valley","Tal"],["waterfall","Wasserfall"],["lift","Lift"],["rock","Felsen"]],
-  fragen:[
-    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["Come and visit!",1],["Getting there and the villages",2],["Things you shouldn't miss",3],["What to do in summer and winter",4]] },
-    { typ:"kurz", art:"finden", frage:"How many waterfalls are there in the valley?", hilfe:"Schreib die Zahl.", loesung:["72","seventy-two","seventy two"] },
-    { typ:"beleg", art:"verbinden", frage:"Why is the air in Wengen and Mürren so fresh and clean?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"There aren't any cars there.", falsch:["There are many waterfalls.","The villages are in the forest.","It rains a lot."], beleg:["There aren't any cars there"] },
-    { typ:"multi", art:"finden", frage:"What can you do there in winter?", hilfe:"Was kann man im Winter machen? Es können mehrere Antworten stimmen.", richtig:["skiing","snowboarding","tobogganing"], falsch:["paragliding","kayaking","surfing"] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["You can see the Trümmelbach Falls inside the mountain.","True"],["The Staubbach Falls are about 30 metres high.","False"],["The train from Interlaken is free.","Not in the text"]] },
-    { typ:"mc", art:"schliessen", frage:"Why is the Trümmelbach Falls a good idea on a rainy day?", hilfe:"Warum passt der Trümmelbachfall gut für einen Regentag?", richtig:"The waterfalls are inside the mountain.", falsch:["It never rains in the valley.","You can go paragliding there.","There is a big restaurant."] }
-  ]},
-
-{ id:"e4-paragliding", klasse:6, unit:4, titel:"Flying like a bird", art:"Story", thema:"Sports activities",
+{ id:"e4-paragliding", stufe:3, klasse:6, unit:4, titel:"Flying like a bird", art:"Story", thema:"Sports activities",
   absaetze:[[
     "Last summer Noah and his family spent a week in Interlaken.",
     "For his twelfth birthday, his parents had a surprise: a paragliding flight!"
@@ -299,63 +325,35 @@ const EN_LESETEXTE = [
     { typ:"mc", art:"ganz", frage:"What does the end of the story show?", hilfe:"Was zeigt der Schluss?", richtig:"Noah loved the flight.", falsch:["Noah never wants to fly again.","Noah's mum was angry.","The flight was too short for Noah's mum."] }
   ]},
 
-/* ---------- 6. Klasse, Unit 5: The story of chocolate (Geschichte, Herstellung, first/then/after that/finally, present continuous) ---------- */
-{ id:"e5-history", klasse:6, unit:5, titel:"Chocolate: a long story", art:"Text", thema:"History of chocolate",
+{ id:"e4-lauterbrunnen", stufe:3, klasse:6, unit:4, titel:"Holiday destination: the Lauterbrunnen valley", art:"Travel guide", thema:"Holiday destinations",
   absaetze:[[
-    "More than 3,000 years ago, people in Central America already used cocoa beans.",
-    "The Maya and later the Aztecs made a drink from them.",
-    "It wasn't sweet at all: it was bitter, and they often put chili in it!",
-    "The Aztecs also used cocoa beans as money."
+    "Are you looking for a holiday destination with a beautiful view?",
+    "Then come to the Lauterbrunnen valley in the Bernese Oberland!"
   ],[
-    "In the 16th century, Spanish sailors brought cocoa beans to Europe.",
-    "The Spanish added sugar to the drink, and soon rich people all over Europe loved hot chocolate."
+    "General information:",
+    "The valley is famous for its 72 waterfalls.",
+    "You can get there by train from Interlaken.",
+    "The villages of Wengen and Mürren are above the valley.",
+    "There aren't any cars there, so the air is fresh and clean."
   ],[
-    "For a long time, chocolate was only a drink.",
-    "In 1847, a company in England made the first chocolate bar you could eat."
+    "Highlights:",
+    "You shouldn't miss the Trümmelbach Falls.",
+    "Here ten waterfalls come down inside the mountain.",
+    "You can take a lift into the rock and see them very close.",
+    "Another highlight is the Staubbach Falls near the village. The water falls almost 300 metres!"
   ],[
-    "Switzerland became famous for chocolate in the 19th century.",
-    "In 1875, Daniel Peter from Vevey made the first milk chocolate.",
-    "A few years later, Rodolphe Lindt in Bern invented a machine that stirs the chocolate for many hours.",
-    "That made it soft and smooth, so it melts in your mouth."
-  ],[
-    "Today, people in Switzerland eat about eleven kilograms of chocolate per person every year!"
+    "Activities:",
+    "In summer you can go hiking, climbing or paragliding.",
+    "In winter Wengen and Mürren are great resorts for skiing, snowboarding and tobogganing.",
+    "Is there anything for rainy summer days? Yes! Visit the waterfalls inside the mountain."
   ]],
-  woerter:[["bitter","bitter"],["sailors","Seeleute"],["invented","erfand"],["melts","schmilzt"]],
+  woerter:[["valley","Tal"],["waterfall","Wasserfall"],["lift","Lift"],["rock","Felsen"]],
   fragen:[
-    { typ:"mc", art:"finden", frage:"How did the first chocolate drink taste?", hilfe:"Wie schmeckte das erste Schokoladengetränk?", richtig:"bitter, often with chili", falsch:["very sweet","like milk","like coffee with sugar"] },
-    { typ:"ordnen", art:"verbinden", frage:"Put the history of chocolate in the right order.", hilfe:"Bring die Geschichte in die richtige Reihenfolge.", items:["The Aztecs drink cocoa with chili.","Spanish sailors bring cocoa to Europe.","A company in England makes the first chocolate bar.","Daniel Peter makes the first milk chocolate."] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["The Aztecs paid with cocoa beans.","True"],["Chocolate was always something to eat.","False"],["Daniel Peter had three children.","Not in the text"]] },
-    { typ:"beleg", art:"verbinden", frage:"Why did Lindt's machine make chocolate better?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"It made the chocolate soft and smooth.", falsch:["It made the chocolate cheaper.","It made the chocolate sweeter.","It made the chocolate cold."], beleg:["That made it soft and smooth"] },
-    { typ:"kurz", art:"finden", frage:"How many kilograms of chocolate does a person in Switzerland eat per year?", hilfe:"Schreib die Zahl.", loesung:["eleven","11","about eleven","11 kilograms","eleven kilograms","11 kg"] },
-    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «fügten hinzu».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["added"] }
-  ]},
-
-{ id:"e5-hotchocolate", klasse:6, unit:5, titel:"How to make real hot chocolate", art:"Recipe", thema:"Recipes",
-  absaetze:[[
-    "It's a cold winter afternoon and Mia is making hot chocolate for her friends.",
-    "Her friends are sitting in the kitchen and watching her."
-  ],[
-    "Ingredients for four cups:",
-    "800 ml milk, 100 g dark chocolate, 2 tablespoons of sugar, a pinch of cinnamon and some cream."
-  ],[
-    "First, break the chocolate into small pieces.",
-    "Then pour the milk into a pan and heat it slowly. Don't let it boil!",
-    "After that, add the chocolate and the sugar and stir until the chocolate melts.",
-    "Add a pinch of cinnamon.",
-    "Finally, pour the hot chocolate into four cups and put some cream on top."
-  ],[
-    "«Mmm, it smells great!» says Leo.",
-    "Mia usually makes hot chocolate with cocoa powder, but today she is using real chocolate.",
-    "Everybody agrees: it tastes much better!"
-  ]],
-  woerter:[["pan","Pfanne"],["boil","kochen (sprudeln)"],["stir","rühren"],["a pinch of","eine Prise"]],
-  fragen:[
-    { typ:"kurz", art:"finden", frage:"How much milk do you need?", hilfe:"Wie viel Milch braucht man?", loesung:["800 ml","800","800 millilitres","800ml"] },
-    { typ:"ordnen", art:"verbinden", frage:"Put the steps in the right order.", hilfe:"Bring die Schritte in die richtige Reihenfolge.", items:["Break the chocolate into pieces.","Heat the milk in a pan.","Add the chocolate and the sugar and stir.","Pour the hot chocolate into cups.","Put some cream on top."] },
-    { typ:"mc", art:"finden", frage:"What must you be careful about?", hilfe:"Worauf muss man aufpassen?", richtig:"The milk must not boil.", falsch:["The chocolate must not melt.","The cream must be hot.","The sugar must be brown."] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Mia's friends are sitting in the kitchen.","True"],["Mia always makes hot chocolate with real chocolate.","False"],["Leo brought the cream.","Not in the text"]] },
-    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «rühren».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["stir"] },
-    { typ:"mc", art:"schliessen", frage:"What do the friends think about the hot chocolate?", hilfe:"Was finden die Freunde?", richtig:"It tastes better than hot chocolate with cocoa powder.", falsch:["It is too sweet.","It is too cold.","It tastes like coffee."] }
+    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["Come and visit!",1],["Getting there and the villages",2],["Things you shouldn't miss",3],["What to do in summer and winter",4]] },
+    { typ:"kurz", art:"finden", frage:"How many waterfalls are there in the valley?", hilfe:"Schreib die Zahl.", loesung:["72","seventy-two","seventy two"] },
+    { typ:"beleg", art:"verbinden", frage:"Why is the air in Wengen and Mürren so fresh and clean?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"There aren't any cars there.", falsch:["There are many waterfalls.","The villages are in the forest.","It rains a lot."], beleg:["There aren't any cars there"] },
+    { typ:"multi", art:"finden", frage:"What can you do there in winter?", hilfe:"Was kann man im Winter machen? Es können mehrere Antworten stimmen.", richtig:["skiing","snowboarding","tobogganing"], falsch:["paragliding","kayaking","surfing"] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["You can see the Trümmelbach Falls inside the mountain.","True"],["The Staubbach Falls are about 30 metres high.","False"],["The train from Interlaken is free.","Not in the text"]] },
+    { typ:"mc", art:"schliessen", frage:"Why is the Trümmelbach Falls a good idea on a rainy day?", hilfe:"Warum passt der Trümmelbachfall gut für einen Regentag?", richtig:"The waterfalls are inside the mountain.", falsch:["It never rains in the valley.","You can go paragliding there.","There is a big restaurant."] }
   ]}
-
 ];

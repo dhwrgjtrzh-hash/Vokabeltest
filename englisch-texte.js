@@ -13,8 +13,9 @@
    Sonntagsbrunch-Einkaufsliste, Frühstück in der Schule (Vanja/Tim), Sonnenbär, Würfelqualle, Galapagos-Leguan,
    Apollo 11, Tiere im All, Ueli Steck, Engelberg-Postkarte, Kakaoanbau, Kakaobäuerin Comfort.
    Einfache Sprache (A1/A2). woerter: kleine Wörterhilfe ([englisch, deutsch]). hilfe: kurze Erklärung auf Deutsch.
-   Hörtexte nach Stufen 1–3 (stufe); in jeder Stufe kommen alle fünf Units vor (unit – nur zur Übersicht,
-   die Kinder sehen keine Unit). Die Lesetexte liegen in englisch-lesetexte.js (zurzeit nicht im Portal).
+   Allgemeine Trainer für die 6. Klasse über das ganze Schuljahr (Wunsch René, 24.11.2026): keine Units, keine
+   Freischaltung – alles von Anfang an. Hörtexte nach Stufen 1–3 (stufe); in jeder Stufe kommen alle fünf Units vor
+   (unit – nur zur Übersicht, die Kinder sehen keine Unit). Die Lesetexte liegen in englisch-lesetexte.js.
    ===================================================================== */
 /* Klassenstufen: 6. Klasse = Young World 4 (aktuell), 5. Klasse = Young World 3, 4. Klasse = Young World 2 (Repetition) */
 const EN_UNITS = {1:"The way we live", 2:"Fascinating animal facts", 3:"Yesterday and today", 4:"The call of the Alps", 5:"The story of chocolate"};

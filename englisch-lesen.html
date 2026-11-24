@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de-CH" data-fach="englisch" data-trainer="lesen">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Englisch – Leseverstehen</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="verstehen.css">
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="lp-zurueck" href="./#englisch">‹ Lernportal</a>
+    <div class="lp-logo">📖</div>
+    <h1 class="lp-titel"><small>Englisch · Beta-Test</small>Leseverstehen</h1>
+    <div class="lp-rechts"></div>
+  </header>
+  <main id="app"></main>
+</div>
+<script src="lp-ergebnisse.js"></script>
+<script src="englisch-texte.js"></script>
+<script src="englisch-lesetexte.js"></script>
+<script>
+window.VERSTEHEN = {
+  uebung: "Englisch Lesen", modus: "lesen", sprache: "en", aufbau: "stufen",
+  texte: EN_LESETEXTE, audio: "", maxHoeren: 0, beta: true,
+  /* allgemein über das Schuljahr, ohne Units (Wunsch René, 24.11.2026) */
+  stufen: {1:"Genau lesen", 2:"Informationen verbinden", 3:"Zwischen den Zeilen lesen"},
+  stufenText: {
+    1:"Kurze Texte. Such die Antworten genau im Text.",
+    2:"Etwas längere Texte. Oft musst du Informationen von verschiedenen Stellen verbinden.",
+    3:"Längere Texte. Manches steht nicht direkt da – du musst mitdenken."
+  }
+};
+</script>
+<script src="verstehen.js"></script>
+</body>
+</html>
