@@ -144,6 +144,7 @@ mark.y{background:#b9ecc9;color:#0a5a2a;border-radius:3px;padding:0 1px;text-dec
 .rule h3{margin:0 0 4px;font-size:.95rem;color:var(--c)}
 .rule p{margin:0;font-size:.95rem}
 .big-rule{margin-top:16px}
+.heft{margin-top:12px;padding:10px 14px;border-radius:14px;border:1.5px dashed var(--line);background:#fff;font-size:.95rem}
 .big-rule p{font-size:1.05rem}
 .again{background:var(--bad-bg);color:var(--bad);font-weight:700;border-radius:12px;padding:8px 12px;margin-bottom:6px}
 
@@ -982,6 +983,21 @@ const CATS = {
       tipp:"Sprich das Wort beim Schreiben langsam und in Silben mit: Ge-burts-tag, Schmet-ter-ling. Schreib jeden Laut, den du hörst, und lies das Wort danach nochmals genau durch.",
       lp:"Langsames, silbiertes Mitsprechen beim Schreiben und Kontrolllesen; Wörter nach dem Schreiben Buchstabe für Buchstabe vergleichen."}
 };
+/* Übungsheft «Deutsch Sechs» (LMVZ): wo die Kinder dasselbe (oder Ähnliches) im Heft üben können (24.11.2026).
+   Grammatik S. 36–63, Rechtschreibung S. 64–79; Erklärungen S. 84–117. Für «Genau hinhören» gibt es keine passende Seite. */
+const HEFT = {
+  GK:"Ähnlich im Übungsheft: Nomen erkennen, S. 36–41. Die Erklärung steht auf S. 84–89.",
+  NG:"Ähnlich im Übungsheft: Nomen erkennen mit den Proben, S. 36–41. Die Erklärung steht auf S. 84–89.",
+  DK:"Im Übungsheft: Die Doppelkonsonanten-Regel, S. 64–67. Die Erklärung steht auf S. 110–111.",
+  SS:"Im Übungsheft: s oder ss?, S. 67 (Aufgaben 6 und 7). Die Erklärung zur Doppelkonsonanten-Regel steht auf S. 110–111.",
+  CK:"Im Übungsheft: Die Doppelkonsonanten-Regel (auch ck und tz), S. 64–67. Die Erklärung steht auf S. 110–111.",
+  IE:"Ähnlich im Übungsheft: Lernwörter-Postentraining, S. 76–77.",
+  DH:"Im Übungsheft: Postentraining S. 76–77, Wörtergruppe «Wörter mit langem Vokal und h».",
+  AV:"Ähnlich im Übungsheft: Wörter mithilfe von Morphemen richtig schreiben, S. 68–71. Die Erklärung steht auf S. 112–113.",
+  AE:"Im Übungsheft: e oder ä, eu oder äu, S. 69 (Aufgabe 4). Die Erklärung steht auf S. 112–113.",
+  V:"Im Übungsheft: Postentraining S. 76–77, Wörtergruppe «Wörter mit v». Das Vormorphem ver- übst du auf S. 70.",
+  DS:"Im Übungsheft: das oder dass?, S. 78."
+};
 const CAT_ORDER = ["GK","NG","DK","SS","CK","IE","DH","AV","AE","V","DS","SO"];
 
 const VOK = "aeiouäöüy";
@@ -1688,6 +1704,7 @@ function regelIntro(c){
   app.innerHTML = `<div class="card">
     <span class="qtype" style="background:${CATS[c].farbe}1a;color:${CATS[c].farbe}">🎯 ${esc(CATS[c].name)}</span>
     <div class="rule big-rule"><h3>So geht die Regel</h3><p>${esc(CATS[c].tipp)}</p></div>
+    ${HEFT[c] ? `<p class="heft">📘 <b>Lieber im Heft üben?</b> ${esc(HEFT[c])}</p>` : ""}
     <div class="actions"><button class="btn" id="go">Los geht's</button><button class="btn ghost" id="zur">Zurück</button></div>
   </div>`;
   $("go").onclick = ()=>starteRegel(c);
@@ -2408,7 +2425,7 @@ function einschaetzung(k){
   if(stark.length) s.push(`<b>Sicher:</b> ${stark.map(c=>`${esc(CATS[c].name)} (${Math.round(rate(c)*100)}%)`).join(", ")}.`);
   if(schwach.length){
     s.push(`<b>Schwierigkeiten:</b> ${schwach.map(c=>{ const b = (k.beispiele[c]||[])[0]; return `${esc(CATS[c].name)} (${Math.round(rate(c)*100)}%${b?`, z. B. «${esc(b.a)}» statt «${esc(b.w)}»`:""})`; }).join("; ")}.`);
-    s.push(`<b>Empfehlung:</b> ${schwach.slice(0,2).map(c=>esc(CATS[c].lp)).join(" ")}`);
+    s.push(`<b>Empfehlung:</b> ${schwach.slice(0,2).map(c=>esc(CATS[c].lp) + (HEFT[c] ? ` <i>(${esc(HEFT[c].replace(/^(Ähnlich im|Im) Übungsheft: /, "Übungsheft: "))})</i>` : "")).join(" ")}`);
   } else if(k.n>=40) s.push(`In keinem Bereich zeigen sich grössere Schwierigkeiten.`);
   if(st.kiste) s.push(`In der Fehlerkiste liegen zurzeit ${st.kiste} Wörter, die noch nicht sicher sitzen.`);
   return s.map(x=>`<p>${x}</p>`).join("");

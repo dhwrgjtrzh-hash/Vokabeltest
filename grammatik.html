@@ -28,6 +28,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--text);-w
 h2{font:600 1.4rem/1.2 var(--titel);margin:0 0 6px}
 h3{font:600 1.12rem/1.25 var(--titel);margin:0 0 4px}
 .leise{color:var(--leise)}
+.heft{margin:12px 2px 0;padding:11px 14px;border-radius:14px;background:var(--karte);border:1.5px dashed var(--linie);font-size:.95rem;line-height:1.4}
 .karte{background:var(--karte);border:1.5px solid var(--linie);border-radius:18px;padding:16px 18px}
 .btn{font:700 1rem/1.2 var(--text);border:0;border-radius:14px;padding:13px 20px;min-height:48px;cursor:pointer;background:var(--akzent);color:#fff}
 .btn.zweit{background:var(--karte);color:var(--ink);border:1.5px solid var(--linie)}
@@ -193,6 +194,18 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;
 const gross1 = s => s.charAt(0).toUpperCase() + s.slice(1);
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
 const thema = id => THEMEN.find(t => t.id === id);
+/* Übungsheft «Deutsch Sechs» (LMVZ), Teil Grammatik: Seiten zum gleichen Thema und die Erklärung dazu (24.11.2026) */
+const HEFT = {
+  nomen:    {s:"S. 36–41", e:"S. 84–89"},
+  verben:   {s:"S. 42–47", e:"S. 90–93"},
+  adjektive:{s:"S. 48–51", e:"S. 94–95"},
+  pronomen: {s:"S. 52",    e:"S. 96–98 (mit der Pronomenliste)"},
+  partikeln:{s:"S. 53",    e:"S. 99"},
+  kreisel:  {s:"S. 54–55", e:"S. 100–101"},
+  morpheme: {s:"S. 56–59", e:"S. 102–105"},
+  saetze:   {s:"S. 60–63", e:"S. 106–109"}
+};
+const heftHinweis = t => HEFT[t.id] ? `<p class="heft">📘 <b>Lieber im Heft üben?</b> Im Übungsheft findest du «${esc(t.name)}» auf ${HEFT[t.id].s}. Die Erklärung dazu steht auf ${HEFT[t.id].e}.</p>` : "";
 
 /* ===== Lernstand (pro Glückszahl, auch über mehrere Geräte) ===== */
 let gz = "", P = null;
@@ -262,6 +275,7 @@ function themaSeite(t){
         <span class="txt">${esc(s.text)}</span><span class="st${x && x.best >= BESTANDEN ? " gut" : ""}">${st}</span></button>`;
     }).join("")}</div>
     <p class="leise" style="font-size:.9rem;margin:10px 2px 0">Eine Runde hat ${PRO_RUNDE} Aufgaben. Mit ${BESTANDEN} richtigen hast du die Stufe geschafft – dann geht die nächste auf.</p>
+    ${heftHinweis(t)}
     <details class="hilfe"${Object.keys(P.th[t.id] || {}).length ? "" : " open"}><summary>So geht's – ${esc(t.name)}</summary><ul>${t.hilfe.map(h => `<li>${h}</li>`).join("")}</ul>
       ${t.liste ? `<button class="btn zweit klein" id="liste">📋 Pronomenliste</button>` : ""}</details>`;
   $("#alle").onclick = () => { location.hash = ""; };
