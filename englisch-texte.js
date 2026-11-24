@@ -5,8 +5,8 @@
    woerter: kleine Wörterhilfe unter dem Text ([englisch, deutsch]).
    hilfe (bei einer Frage): kurze Erklärung auf Deutsch unter der Frage.
 
-   Aufbau wie im Leseverstehen Deutsch (lesen-texte.js) bzw. Hörverstehen (hoeren-texte.js),
-   aber mit unit statt stufe.
+   Lesetexte: Aufbau wie im Leseverstehen Deutsch (lesen-texte.js), aber nach Units (unit statt stufe).
+   Hörtexte: wie im Hörverstehen Deutsch (hoeren-texte.js) nach Stufen 1–3, über alle Themen (nicht nach Units).
    ===================================================================== */
 const EN_UNITS = {1:"The way we live", 2:"Fascinating animal facts", 3:"Yesterday and today", 4:"The call of the Alps", 5:"The story of chocolate"};
 
@@ -14,7 +14,8 @@ const EN_STIMMEN = {
   erzaehlerin: "en-GB-SoniaNeural",
   frau:        "en-GB-LibbyNeural",
   mann:        "en-GB-RyanNeural",
-  maedchen:    "en-GB-MaisieNeural"
+  maedchen:    "en-GB-MaisieNeural",
+  mann2:       "en-GB-ThomasNeural"
 };
 
 /* ============================== Reading ============================== */
@@ -160,12 +161,47 @@ const EN_LESETEXTE = [
   ]}
 ];
 
-/* ============================== Listening ============================== */
+/* ============================== Listening ==============================
+   Hörverstehen: NICHT nach Units, sondern über alles – Stufen 1–3 wie im Hörverstehen Deutsch
+   (Stufe 1 kurze Texte, Stufe 2 längere Gespräche, Stufe 3 zwischen den Zeilen hören).
+   Die Themen der Units kommen vor (Wohnen, Tiere, früher und heute, Alpen …), dazu Alltag.
+   Situation auf Deutsch, damit die Kinder wissen, worum es geht. */
 const EN_HOERTEXTE = [
 
-/* ---------- Unit 1: The way we live ---------- */
-{ id:"e1h-farm", unit:1, titel:"Isla's day on the farm", art:"Podcast", thema:"Daily routine",
-  situation:"Isla lives in Scotland. In a podcast for children she talks about her day.",
+/* ---------- Stufe 1: Genau zuhören ---------- */
+{ id:"eh1-station", stufe:1, titel:"At the station", art:"Announcement", thema:"Travel",
+  situation:"Du bist am Bahnhof Victoria in London und willst mit dem Zug nach Brighton fahren. Da kommt eine Durchsage.",
+  rollen:{ D:{name:"Announcement", stimme:"mann"} },
+  teile:[
+    ["D","Good morning. This is an announcement for passengers travelling to Brighton. The ten fifteen train to Brighton is delayed by about fifteen minutes. It will now leave from platform six, not from platform two. The café on the train is closed today. We are sorry for the delay."],
+    ["D","Once again: the ten fifteen train to Brighton will leave from platform six. Please have your tickets ready."]
+  ],
+  woerter:[["delayed","verspätet"],["platform","Gleis"],["passengers","Reisende"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"Where does the train go?", hilfe:"Wohin fährt der Zug?", richtig:"to Brighton", falsch:["to London","to Bristol","to Bath"] },
+    { typ:"kurz", art:"finden", frage:"Which platform does the train leave from now?", hilfe:"Schreib die Zahl.", loesung:["6","six","platform 6","platform six"] },
+    { typ:"mc", art:"verbinden", frage:"When does the train leave now?", hilfe:"Wann fährt der Zug jetzt ungefähr ab?", richtig:"at about 10.30", falsch:["at 10.15","at about 10.00","at about 11.15"] },
+    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["The train is delayed by about fifteen minutes.","True"],["You can buy food in the café on the train today.","False"],["The train is very full today.","Not said"]] }
+  ]},
+
+{ id:"eh1-message", stufe:1, titel:"A message from Aunt Kate", art:"Voice message", thema:"Free time",
+  situation:"Tom hört eine Sprachnachricht von seiner Tante Kate ab. Es geht um den Samstag.",
+  rollen:{ K:{name:"Aunt Kate", stimme:"frau"} },
+  teile:[
+    ["K","Hi Tom, it's Aunt Kate. I've got a great idea for Saturday: let's go to the zoo! I can pick you up at half past nine at your house. Please bring a packed lunch, a drink and your cap. It's going to be sunny."],
+    ["K","The zoo has new baby penguins, and at eleven o'clock you can watch them eat. If it rains, we can go to the science museum instead. Please call me back tonight. Bye!"]
+  ],
+  woerter:[["pick you up","dich abholen"],["packed lunch","Lunch zum Mitnehmen"],["instead","stattdessen"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"Where do they want to go on Saturday?", hilfe:"Wohin wollen sie am Samstag?", richtig:"to the zoo", falsch:["to the science museum","to the cinema","to the swimming pool"] },
+    { typ:"kurz", art:"finden", frage:"What time does Aunt Kate pick Tom up?", hilfe:"Schreib die Uhrzeit (auf Englisch oder als Zahl).", loesung:["half past nine","9.30","9:30","nine thirty","half past 9"] },
+    { typ:"multi", art:"finden", frage:"What must Tom bring?", hilfe:"Was muss Tom mitnehmen? Es können mehrere Antworten stimmen.", richtig:["a packed lunch","a drink","a cap"], falsch:["a jacket","money","a camera"] },
+    { typ:"mc", art:"verbinden", frage:"What will they do if it rains?", hilfe:"Was machen sie, wenn es regnet?", richtig:"They will go to the science museum.", falsch:["They will stay at home.","They will go to the zoo another day.","They will go to the cinema."] },
+    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["At eleven o'clock the penguins eat.","True"],["Tom must call Aunt Kate back tomorrow morning.","False"],["Aunt Kate has a dog.","Not said"]] }
+  ]},
+
+{ id:"e1h-farm", stufe:1, titel:"Isla's day on the farm", art:"Podcast", thema:"Daily routine",
+  situation:"Isla wohnt in Schottland. In einem Podcast für Kinder erzählt sie von ihrem Tag.",
   rollen:{ I:{name:"Isla", stimme:"maedchen"} },
   teile:[
     ["I","Hi! My name is Isla. I'm eleven years old and I live on a sheep farm in Scotland. We have about three hundred sheep, two dogs and lots of chickens."],
@@ -177,15 +213,16 @@ const EN_HOERTEXTE = [
   woerter:[["sheep","Schaf(e)"],["porridge","Haferbrei"],["lambs","Lämmer"]],
   fragen:[
     { typ:"multi", art:"finden", frage:"Which animals are on Isla's farm?", hilfe:"Welche Tiere gibt es auf dem Hof? Es können mehrere Antworten stimmen.", richtig:["sheep","dogs","chickens"], falsch:["cows","horses","goats"] },
-    { typ:"kurz", art:"finden", frage:"What time does Isla get up?", hilfe:"Schreib die Uhrzeit (z. B. auf Englisch oder als Zahl).", loesung:["half past six","6.30","6:30","six thirty","half past 6"] },
+    { typ:"kurz", art:"finden", frage:"What time does Isla get up?", hilfe:"Schreib die Uhrzeit (auf Englisch oder als Zahl).", loesung:["half past six","6.30","6:30","six thirty","half past 6"] },
     { typ:"ordnen", art:"verbinden", frage:"Put Isla's morning in the right order.", hilfe:"Bring Islas Morgen in die richtige Reihenfolge.", items:["She gets up.","She feeds the chickens.","She has porridge for breakfast.","She takes the school bus."] },
     { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["The journey to school takes forty minutes.","True"],["There are twenty children in Isla's class.","False"],["Isla's mum is a teacher.","Not said"]] },
     { typ:"mc", art:"verbinden", frage:"Why does the journey to school take so long?", hilfe:"Warum dauert der Schulweg so lange?", richtig:"The farm is far away from the village.", falsch:["The bus is very slow.","Isla walks to the bus.","The bus stops at every farm."] },
     { typ:"mc", art:"ganz", frage:"How does Isla feel about life on the farm?", hilfe:"Wie findet Isla das Leben auf dem Hof?", richtig:"It's hard work, but she loves it.", falsch:["She wants to live in a city.","She thinks it's boring.","She doesn't like the animals."] }
   ]},
 
-{ id:"e1h-tinyhouse", unit:1, titel:"Living in a tiny house", art:"Radio interview", thema:"Homes",
-  situation:"In a radio programme, a presenter talks to Dan Evans. Dan and his family live in a very small house.",
+/* ---------- Stufe 2: Zusammenhänge verstehen ---------- */
+{ id:"e1h-tinyhouse", stufe:2, titel:"Living in a tiny house", art:"Radio interview", thema:"Homes",
+  situation:"In einer Radiosendung spricht eine Moderatorin mit Dan Evans. Dan wohnt mit seiner Familie in einem sehr kleinen Haus.",
   rollen:{ P:{name:"Presenter", stimme:"erzaehlerin"}, D:{name:"Dan", stimme:"mann"} },
   teile:[
     ["P","Hello and welcome to Homes and Lives. Today I'm talking to Dan Evans. Dan lives with his wife and his daughter in a tiny house. Dan, how big is your house?"],
@@ -209,9 +246,8 @@ const EN_HOERTEXTE = [
     { typ:"mc", art:"ganz", frage:"How does Dan feel about his tiny house?", hilfe:"Wie findet Dan sein kleines Haus?", richtig:"He's very happy and wants to stay.", falsch:["He wants to go back to a normal house.","He thinks it's too expensive.","He isn't sure."] }
   ]},
 
-/* ---------- Unit 2: Fascinating animal facts ---------- */
-{ id:"e2h-aquarium", unit:2, titel:"At the aquarium", art:"Conversation", thema:"Animals",
-  situation:"Amy is on a school trip to an aquarium. A guide shows the class a big sea turtle.",
+{ id:"e2h-aquarium", stufe:2, titel:"At the aquarium", art:"Conversation", thema:"Animals",
+  situation:"Amy ist mit ihrer Klasse im Aquarium. Ein Guide zeigt ihnen eine grosse Meeresschildkröte.",
   rollen:{ G:{name:"Guide", stimme:"mann"}, A:{name:"Amy", stimme:"maedchen"} },
   teile:[
     ["G","Welcome to the turtle tank! This is Ollie. He's a green sea turtle, and he's about forty years old."],
@@ -237,8 +273,8 @@ const EN_HOERTEXTE = [
     { typ:"mc", art:"schliessen", frage:"How does Amy feel at the end?", hilfe:"Wie fühlt sich Amy am Schluss?", richtig:"She's excited about the sharks.", falsch:["She's scared of the sharks.","She's sad because she has to go.","She's bored."] }
   ]},
 
-{ id:"e2h-quiz", unit:2, titel:"Animal Quiz Time", art:"Radio quiz", thema:"Animals",
-  situation:"Lily plays in a radio quiz about animals. There are five questions. Every right answer is one point.",
+{ id:"e2h-quiz", stufe:2, titel:"Animal Quiz Time", art:"Radio quiz", thema:"Animals",
+  situation:"Lily spielt bei einem Tier-Quiz im Radio mit. Es gibt fünf Fragen. Für jede richtige Antwort gibt es einen Punkt.",
   rollen:{ H:{name:"Quiz host", stimme:"mann"}, L:{name:"Lily", stimme:"maedchen"} },
   teile:[
     ["H","Welcome to Animal Quiz Time! Our player today is Lily from Bristol. Hi, Lily!"],
@@ -264,5 +300,79 @@ const EN_HOERTEXTE = [
     { typ:"mc", art:"finden", frage:"From how far away can a golden eagle see a rabbit?", hilfe:"Aus welcher Entfernung sieht ein Steinadler ein Kaninchen?", richtig:"from three kilometres", falsch:["from three hundred metres","from thirty metres","from thirty kilometres"] },
     { typ:"mc", art:"finden", frage:"What does Lily win?", hilfe:"Was gewinnt Lily?", richtig:"a book about wild animals", falsch:["a trip to the zoo","a toy whale","a ticket for an aquarium"] },
     { typ:"mc", art:"schliessen", frage:"How does Lily feel about her prize?", hilfe:"Wie findet Lily ihren Preis?", richtig:"She's happy because she loves animal books.", falsch:["She's disappointed.","She wanted a different prize.","She doesn't care."] }
+  ]},
+
+/* ---------- Stufe 3: Zwischen den Zeilen hören ---------- */
+{ id:"eh3-newgirl", stufe:3, titel:"The new girl", art:"Story", thema:"School / Friendship",
+  situation:"Eine Geschichte aus einer Schule in England. Sofia ist neu in der Klasse. Achte darauf, wie es ihr geht.",
+  rollen:{ E:{name:"Narrator", stimme:"erzaehlerin"}, T:{name:"Mrs Hall", stimme:"frau"}, M:{name:"Mia", stimme:"maedchen"} },
+  teile:[
+    ["E","It was Sofia's first day at her new school. Her family had moved from Portugal to England only two weeks before. In the classroom, Sofia sat in the last row. She looked out of the window and didn't say a word."],
+    ["T","Everybody, this is Sofia. She comes from Lisbon. Mia, can you show her around at break time?"],
+    ["E","Mia nodded. At break time, she found Sofia next to the door. Sofia was holding her lunch box very tightly."],
+    ["M","Hi! Do you want to see the library? It's my favourite place in the school."],
+    ["E","Sofia smiled a little and followed her. In the library, Mia showed her a big book about animals. Sofia pointed at a picture of a dolphin and said, very quietly, that she loved dolphins."],
+    ["M","Me too! There are dolphins near Lisbon, right? Can you tell me about them tomorrow?"],
+    ["E","The next morning, Sofia didn't sit in the last row. She sat next to Mia, and she had brought a photo of a dolphin from home."]
+  ],
+  woerter:[["row","Reihe"],["break time","Pause"],["tightly","fest"]],
+  fragen:[
+    { typ:"mc", art:"schliessen", frage:"How does Sofia feel on her first day?", hilfe:"Wie fühlt sich Sofia am ersten Tag?", richtig:"She is shy and a bit nervous.", falsch:["She is angry with Mia.","She is bored.","She is very happy and loud."] },
+    { typ:"mc", art:"finden", frage:"Where does Sofia come from?", hilfe:"Woher kommt Sofia?", richtig:"from Lisbon in Portugal", falsch:["from London","from Madrid in Spain","from Rome in Italy"] },
+    { typ:"mc", art:"schliessen", frage:"Why does Sofia hold her lunch box very tightly?", hilfe:"Warum hält Sofia ihre Znünibox so fest?", richtig:"She feels unsure in the new school.", falsch:["She is very hungry.","She doesn't want to share her lunch.","The lunch box is broken."] },
+    { typ:"ordnen", art:"verbinden", frage:"Put the story in the right order.", hilfe:"Bring die Geschichte in die richtige Reihenfolge.", items:["Mrs Hall introduces Sofia to the class.","Mia finds Sofia next to the door.","They go to the library.","Sofia sees a picture of a dolphin.","Sofia sits next to Mia."] },
+    { typ:"mc", art:"ganz", frage:"What does the end of the story show?", hilfe:"Was zeigt der Schluss der Geschichte?", richtig:"Sofia and Mia are becoming friends.", falsch:["Sofia wants to go back to Portugal.","Mia doesn't like dolphins.","Sofia is still alone."] }
+  ]},
+
+{ id:"eh3-alps", stufe:3, titel:"Hiking in the Alps", art:"Radio interview", thema:"The Alps",
+  situation:"In einer Reisesendung im Radio spricht die Moderatorin mit Marco. Er ist Bergführer in Grindelwald.",
+  rollen:{ P:{name:"Presenter", stimme:"erzaehlerin"}, M:{name:"Marco", stimme:"mann"} },
+  teile:[
+    ["P","Today on Travel Time I'm talking to Marco. He is a mountain guide in Grindelwald, in Switzerland. Marco, what do people love about the Alps?"],
+    ["M","Oh, lots of things! The mountains, the lakes, the fresh air. And the cows with their big bells! Many tourists say the Alps look like a postcard."],
+    ["P","What's the best time for hiking?"],
+    ["M","Most people come in July and August. But my favourite time is September. There are fewer people on the paths, and the colours are beautiful."],
+    ["P","What should hikers bring?"],
+    ["M","Good shoes, a rain jacket, enough water and something to eat. And sun cream! The sun is very strong up in the mountains."],
+    ["P","Is hiking in the mountains dangerous?"],
+    ["M","It can be. The weather changes very fast. On hot summer days there are often thunderstorms in the afternoon. That's why I always tell my groups: start early in the morning. Then you're back before the storm comes."],
+    ["P","One last question: what's your favourite mountain?"],
+    ["M","That's easy. The Eiger. I can see it from my kitchen window every morning, and it still makes me happy."]
+  ],
+  woerter:[["mountain guide","Bergführer"],["hikers","Wandernde"],["thunderstorm","Gewitter"],["sun cream","Sonnencreme"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"Where does Marco work?", hilfe:"Wo arbeitet Marco?", richtig:"in Grindelwald in Switzerland", falsch:["in Zermatt in Switzerland","in Austria","in Italy"] },
+    { typ:"mc", art:"verbinden", frage:"Why is September Marco's favourite time?", hilfe:"Warum mag Marco den September am liebsten?", richtig:"There are fewer people and the colours are beautiful.", falsch:["It is the hottest month.","There are no thunderstorms.","The cows come down from the mountains."] },
+    { typ:"multi", art:"finden", frage:"What should hikers bring?", hilfe:"Was sollen Wandernde mitnehmen? Es können mehrere Antworten stimmen.", richtig:["a rain jacket","water","sun cream"], falsch:["a tent","a big camera","a map of London"] },
+    { typ:"mc", art:"verbinden", frage:"Why should hikers start early in the morning?", hilfe:"Warum soll man früh am Morgen losgehen?", richtig:"So they are back before the afternoon thunderstorms.", falsch:["Because the paths are closed in the afternoon.","Because it is too hot in the morning.","Because the cows need the paths in the afternoon."] },
+    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["Marco says the weather in the mountains changes very fast.","True"],["Most people come to the Alps in winter.","False"],["Marco has climbed the Eiger ten times.","Not said"]] },
+    { typ:"mc", art:"schliessen", frage:"How does Marco feel when he sees the Eiger every morning?", hilfe:"Wie fühlt sich Marco, wenn er jeden Morgen den Eiger sieht?", richtig:"Happy – he still loves the view.", falsch:["Bored – he has seen it too often.","Scared – he thinks it is dangerous.","Sad – he wants to live in a city."] }
+  ]},
+
+{ id:"eh3-grandpa", stufe:3, titel:"Grandpa's school days", art:"Conversation", thema:"Yesterday and today",
+  situation:"Ella macht ein Englischprojekt über die Schule früher. Sie fragt ihren Grossvater.",
+  rollen:{ E:{name:"Ella", stimme:"maedchen"}, G:{name:"Grandpa", stimme:"mann2"} },
+  teile:[
+    ["E","Grandpa, for my English project I need to find out about schools in the past. What was your school like?"],
+    ["G","Oh, it was very different! I went to a small school in a village. There were only two classrooms and forty children."],
+    ["E","Forty? In one class?"],
+    ["G","No, no. Twenty in each room. But in my room there were children from six to nine years old, all together with one teacher."],
+    ["E","Did you have computers?"],
+    ["G","Computers? No! We wrote on small blackboards with chalk. Paper was expensive, so we only used exercise books for important things."],
+    ["E","And how did you get to school?"],
+    ["G","I walked. Three kilometres there and three kilometres back, every day. In winter, the snow was sometimes so deep that we came home with wet feet."],
+    ["E","That sounds hard. Did you like school?"],
+    ["G","Hmm … not always. The teacher was very strict. If you talked in class, you had to stand in the corner. But I loved the stories she read to us on Friday afternoons. I still remember some of them!"],
+    ["E","Thanks, Grandpa! I think I'm happy with my school today."],
+    ["G","I think so too!"]
+  ],
+  woerter:[["blackboard","Wandtafel"],["chalk","Kreide"],["strict","streng"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"How many children were in Grandpa's room?", hilfe:"Wie viele Kinder waren in Grossvaters Schulzimmer?", richtig:"twenty", falsch:["forty","nine","six"] },
+    { typ:"mc", art:"finden", frage:"What did the children write on?", hilfe:"Worauf schrieben die Kinder?", richtig:"small blackboards", falsch:["computers","big sheets of paper","tablets"] },
+    { typ:"tf", art:"verbinden", frage:"True, false or not said?", aussagen:[["Grandpa walked three kilometres to school.","True"],["All the children in Grandpa's room were the same age.","False"],["Grandpa's teacher was a man.","False"],["Grandpa had a bike.","Not said"]] },
+    { typ:"mc", art:"schliessen", frage:"What did Grandpa like most about school?", hilfe:"Was mochte Grossvater an der Schule am meisten?", richtig:"the stories on Friday afternoons", falsch:["standing in the corner","walking in the snow","the strict teacher"] },
+    { typ:"mc", art:"schliessen", frage:"Ella says: «I think I'm happy with my school today.» What does she mean?", hilfe:"Was meint Ella damit?", richtig:"Her school today is easier and nicer than Grandpa's school.", falsch:["She wants to go to Grandpa's old school.","She doesn't like her teacher.","She wants to write on blackboards."] },
+    { typ:"mc", art:"ganz", frage:"What is the conversation mainly about?", hilfe:"Worum geht es im Gespräch vor allem?", richtig:"what school was like in the past", falsch:["how to walk in the snow","Grandpa's favourite stories","Ella's English teacher"] }
   ]}
 ];

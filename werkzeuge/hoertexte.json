@@ -567,6 +567,48 @@
   ]
  },
  {
+  "datei": "audio/en/eh1-station.mp3",
+  "sprache": "en",
+  "titel": "At the station",
+  "teile": [
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Good morning. This is an announcement for passengers travelling to Brighton. The ten fifteen train to Brighton is delayed by about fifteen minutes. It will now leave from platform six, not from platform two. The café on the train is closed today. We are sorry for the delay.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Once again: the ten fifteen train to Brighton will leave from platform six. Please have your tickets ready.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh1-message.mp3",
+  "sprache": "en",
+  "titel": "A message from Aunt Kate",
+  "teile": [
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Hi Tom, it's Aunt Kate. I've got a great idea for Saturday: let's go to the zoo! I can pick you up at half past nine at your house. Please bring a packed lunch, a drink and your cap. It's going to be sunny.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "The zoo has new baby penguins, and at eleven o'clock you can watch them eat. If it rains, we can go to the science museum instead. Please call me back tonight. Bye!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
   "datei": "audio/en/e1h-farm.mp3",
   "sprache": "en",
   "titel": "Isla's day on the farm",
@@ -875,6 +917,230 @@
    {
     "stimme": "en-GB-MaisieNeural",
     "text": "Thank you! I love animal books!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh3-newgirl.mp3",
+  "sprache": "en",
+  "titel": "The new girl",
+  "teile": [
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "It was Sofia's first day at her new school. Her family had moved from Portugal to England only two weeks before. In the classroom, Sofia sat in the last row. She looked out of the window and didn't say a word.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Everybody, this is Sofia. She comes from Lisbon. Mia, can you show her around at break time?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Mia nodded. At break time, she found Sofia next to the door. Sofia was holding her lunch box very tightly.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Hi! Do you want to see the library? It's my favourite place in the school.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Sofia smiled a little and followed her. In the library, Mia showed her a big book about animals. Sofia pointed at a picture of a dolphin and said, very quietly, that she loved dolphins.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Me too! There are dolphins near Lisbon, right? Can you tell me about them tomorrow?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "The next morning, Sofia didn't sit in the last row. She sat next to Mia, and she had brought a photo of a dolphin from home.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh3-alps.mp3",
+  "sprache": "en",
+  "titel": "Hiking in the Alps",
+  "teile": [
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Today on Travel Time I'm talking to Marco. He is a mountain guide in Grindelwald, in Switzerland. Marco, what do people love about the Alps?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Oh, lots of things! The mountains, the lakes, the fresh air. And the cows with their big bells! Many tourists say the Alps look like a postcard.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "What's the best time for hiking?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Most people come in July and August. But my favourite time is September. There are fewer people on the paths, and the colours are beautiful.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "What should hikers bring?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Good shoes, a rain jacket, enough water and something to eat. And sun cream! The sun is very strong up in the mountains.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Is hiking in the mountains dangerous?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "It can be. The weather changes very fast. On hot summer days there are often thunderstorms in the afternoon. That's why I always tell my groups: start early in the morning. Then you're back before the storm comes.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "One last question: what's your favourite mountain?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "That's easy. The Eiger. I can see it from my kitchen window every morning, and it still makes me happy.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh3-grandpa.mp3",
+  "sprache": "en",
+  "titel": "Grandpa's school days",
+  "teile": [
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Grandpa, for my English project I need to find out about schools in the past. What was your school like?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "Oh, it was very different! I went to a small school in a village. There were only two classrooms and forty children.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Forty? In one class?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "No, no. Twenty in each room. But in my room there were children from six to nine years old, all together with one teacher.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Did you have computers?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "Computers? No! We wrote on small blackboards with chalk. Paper was expensive, so we only used exercise books for important things.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "And how did you get to school?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "I walked. Three kilometres there and three kilometres back, every day. In winter, the snow was sometimes so deep that we came home with wet feet.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "That sounds hard. Did you like school?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "Hmm … not always. The teacher was very strict. If you talked in class, you had to stand in the corner. But I loved the stories she read to us on Friday afternoons. I still remember some of them!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Thanks, Grandpa! I think I'm happy with my school today.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-ThomasNeural",
+    "text": "I think so too!",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0

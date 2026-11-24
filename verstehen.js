@@ -66,7 +66,9 @@ const TF_HILFE = EN ? (HOEREN ? "True = stimmt · False = stimmt nicht · Not sa
 let gz = "", P = null, S = null;
 const pkey = () => "verstehen." + C.uebung + ".p." + gz;
 const neuerStand = () => ({v:1, stufe: UNITS ? 0 : (SB_TEXTE.length ? 0 : 1), sb:null, texte:{}, faehig:{}, t:0});
-function ladeP(){ try{ P = JSON.parse(store.get(pkey()) || "null"); }catch(e){ P = null; } if(!P || P.v !== 1) P = neuerStand(); }
+function ladeP(){ try{ P = JSON.parse(store.get(pkey()) || "null"); }catch(e){ P = null; } if(!P || P.v !== 1) P = neuerStand();
+  if(!UNITS && !SB_TEXTE.length && !(P.stufe >= 1)) P.stufe = 1;   // z. B. früher nach Units gespeichert
+  if(!UNITS && P.stufe > hoechsteStufe) P.stufe = hoechsteStufe; }
 let sendeTimer = null;
 const post = body => fetch(window.LP.endpoint, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body)}).then(r=>r.json());
 function speichereP(){
