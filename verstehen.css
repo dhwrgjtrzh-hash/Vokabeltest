@@ -106,6 +106,10 @@ details.mehr{margin-top:18px}details.mehr summary{cursor:pointer;color:var(--lei
 .unit-kopf{display:flex;gap:12px;align-items:center;margin-bottom:4px}
 .unit-nr{flex:none;min-width:58px;height:58px;padding:0 8px;border-radius:16px;background:var(--soft);color:var(--akzent);display:grid;place-items:center;font:600 1.05rem/1.05 var(--titel);text-align:center}
 .unit.aktuell .unit-nr{background:var(--akzent);color:#fff}
+.klassenwahl{display:flex;gap:6px;background:var(--soft);padding:5px;border-radius:16px;margin:0 0 6px}
+.klassenwahl button{flex:1;border:0;background:transparent;border-radius:12px;padding:10px 6px;font:600 1rem var(--titel);color:var(--akzent);cursor:pointer}
+.klassenwahl button.an{background:var(--akzent);color:#fff}
+.klassen-info{margin:0 0 12px 4px;font-size:.92rem}
 .leer{border:1.5px dashed var(--linie);border-radius:16px;padding:14px 16px;color:var(--leise);margin-top:14px}
 /* Abspieler */
 .spieler{display:flex;gap:12px;align-items:center;background:var(--karte);border:1.5px solid var(--linie);border-radius:18px;padding:12px 14px}

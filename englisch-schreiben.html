@@ -99,25 +99,32 @@ function start(){
   holeStand(home);
 }
 
-/* ===== Startseite: Units mit ihren vier Teilen ===== */
+/* ===== Startseite: Klassenstufe wählen, darin die Units mit ihren vier Teilen ===== */
+const KL_NRN = Object.keys(EN_KLASSEN).map(Number).sort((a,b) => b-a), KL_AKT = KL_NRN[0];
+const ukey = U => (U.klasse === KL_AKT ? "" : "k" + U.klasse + ".") + U.unit;          // 6. Klasse wie bisher «1.satzbau»
+const ulabel = U => (U.klasse === KL_AKT ? "" : U.klasse + ". Klasse · ") + "Unit " + U.unit;
 function home(){
   ladeP(); S = null; window.scrollTo(0,0);
-  const units = EN_SCHREIBEN.slice().sort((a,b) => b.unit - a.unit), aktuell = units[0].unit;
-  const offen = Object.keys(EN_UNITS).map(Number).filter(u => u > aktuell);
-  app.innerHTML = `<div class="beta-band">🧪 <b>Beta-Test:</b> Dieser Trainer ist neu. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</div><div class="karte">
-    ${units.map(U => `<section class="unit ${U.unit === aktuell ? "aktuell" : ""}">
-      <div class="unit-kopf"><div class="unit-nr">Unit<br>${U.unit}</div><div><h2 style="margin:0">${esc(EN_UNITS[U.unit])}</h2></div></div>
-      <div class="teile">${Object.keys(TEILE).map(k => { const x = P.teile[U.unit + "." + k];
+  const kl = EN_KLASSEN[P.klasse] ? P.klasse : KL_AKT, UN = EN_KLASSEN[kl].units;
+  const units = EN_SCHREIBEN.filter(U => U.klasse === kl).sort((a,b) => a.unit - b.unit);
+  const offen = Object.keys(UN).map(Number).filter(u => !units.some(U => U.unit === u));
+  app.innerHTML = `<div class="beta-band">🧪 <b>Beta-Test:</b> Dieser Trainer ist neu. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</div>
+    <div class="klassenwahl" role="tablist">${KL_NRN.map(n => `<button role="tab" data-k="${n}" class="${n === kl ? "an" : ""}" aria-selected="${n === kl}">${n}. Klasse</button>`).join("")}</div>
+    <p class="leise klassen-info">${esc(EN_KLASSEN[kl].band)}${kl !== KL_AKT ? " · zum Wiederholen" : ""}</p><div class="karte">
+    ${units.map(U => `<section class="unit">
+      <div class="unit-kopf"><div class="unit-nr">Unit<br>${U.unit}</div><div><h2 style="margin:0">${esc(UN[U.unit])}</h2></div></div>
+      <div class="teile">${Object.keys(TEILE).map(k => { const x = P.teile[ukey(U) + "." + k];
         const stat = !x ? `<span class="status">neu</span>` : k === "text" ? `<span class="status gut">✓ abgegeben</span>`
           : x.best >= 0.8 ? `<span class="status gut">✓ ${Math.round(x.best*100)} %</span>` : `<span class="status">${Math.round(x.best*100)} %</span>`;
-        return `<button class="textkarte" data-u="${U.unit}" data-k="${k}"><b>${TEILE[k].zeichen} ${esc(k === "text" ? TEILE[k].name + ": " + U.text.titel : TEILE[k].name)}</b>${stat}<span class="meta">${esc(TEILE[k].text)}</span></button>`; }).join("")}</div>
+        return `<button class="textkarte" data-kl="${U.klasse}" data-u="${U.unit}" data-k="${k}"><b>${TEILE[k].zeichen} ${esc(k === "text" ? TEILE[k].name + ": " + U.text.titel : TEILE[k].name)}</b>${stat}<span class="meta">${esc(TEILE[k].text)}</span></button>`; }).join("")}</div>
     </section>`).join("")}
-    ${offen.length ? `<div class="leer">Später kommen dazu: ${offen.map(u => `Unit ${u} «${esc(EN_UNITS[u])}»`).join(", ")}.</div>` : ""}</div>`;
-  app.querySelectorAll(".textkarte").forEach(b => b.onclick = () => starte(+b.dataset.u, b.dataset.k));
+    ${offen.length ? `<div class="leer">Später kommen dazu: ${offen.map(u => `Unit ${u} «${esc(UN[u])}»`).join(", ")}.</div>` : ""}</div>`;
+  app.querySelectorAll(".textkarte").forEach(b => b.onclick = () => starte(+b.dataset.kl, +b.dataset.u, b.dataset.k));
+  app.querySelectorAll(".klassenwahl button").forEach(b => b.onclick = () => { P.klasse = Number(b.dataset.k); speichereP(); home(); });
 }
 
-function starte(u, k){
-  const U = EN_SCHREIBEN.find(x => x.unit === u);
+function starte(kl, u, k){
+  const U = EN_SCHREIBEN.find(x => x.klasse === kl && x.unit === u);
   S = {U, k, i:0, log:[], start:Date.now()};
   if(k === "satzbau") S.items = mische(U.satzbau);
   if(k === "luecken") S.items = mische(U.luecken);
@@ -126,7 +133,7 @@ function starte(u, k){
   zeigeAufgabe();
 }
 const kopf = () => `<div class="fortschritt">${S.items.map((_,j) => { const l = S.log[j]; return `<i class="${j === S.i ? "jetzt" : l ? (l.punkte >= 1 ? "gut" : "nein") : ""}"></i>`; }).join("")}</div>
-  <div class="leise" style="font-size:.9rem;font-weight:700">Unit ${S.U.unit} · ${esc(TEILE[S.k].name)} · ${S.i+1} von ${S.items.length}</div>`;
+  <div class="leise" style="font-size:.9rem;font-weight:700">${ulabel(S.U)} · ${esc(TEILE[S.k].name)} · ${S.i+1} von ${S.items.length}</div>`;
 function meldung(ok, txt){ $("#meldung").innerHTML = `<div class="meldung ${ok === true ? "gut" : ok === "halb" ? "" : "nein"}" ${ok === "halb" ? 'style="background:#fff4d6;color:#5c4300"' : ""}>${txt}</div>`; }
 function weiterKnopf(){
   $("#aktionen").innerHTML = `<button class="btn" id="weiter">${S.i < S.items.length - 1 ? "Weiter →" : "Fertig →"}</button>`;
@@ -230,8 +237,8 @@ function satz(it){
 }
 function abschluss(){
   const r = S.log.reduce((a,l) => a + l.punkte, 0), n = S.log.length, q = r / n;
-  if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · ${TEILE[S.k].name}`, S.log, {unit:S.U.unit, teil:S.k, start:S.start, dauer:Date.now() - S.start});
-  const key = S.U.unit + "." + S.k, x = P.teile[key] || (P.teile[key] = {best:0, n:0});
+  if(window.LP) LP.runde(UEBUNG, `${ulabel(S.U)} · ${TEILE[S.k].name}`, S.log, {klasse:S.U.klasse, unit:S.U.unit, teil:S.k, start:S.start, dauer:Date.now() - S.start});
+  const key = ukey(S.U) + "." + S.k, x = P.teile[key] || (P.teile[key] = {best:0, n:0});
   x.n++; x.last = q; x.best = Math.max(x.best, q); x.t = Date.now(); if(x.erst == null) x.erst = q; speichereP();
   app.innerHTML = `<div class="karte ergebnis"><h2>${q >= 0.8 ? "Super geschrieben!" : "Geschafft – weiter üben!"}</h2><div class="gross">${String(r).replace(".5","½")} / ${n}</div>
     <p>${q >= 0.8 ? "Das klappt schon sehr gut." : "Mach diesen Teil später nochmals. Die Aufgaben kommen dann in anderer Reihenfolge."}</p>
@@ -241,9 +248,9 @@ function abschluss(){
 
 /* ===== Eigener Text ===== */
 function zeigeText(){
-  const T = S.U.text, ek = "schreiben.entwurf." + gz + "." + S.U.unit;
+  const T = S.U.text, ek = "schreiben.entwurf." + gz + "." + ukey(S.U);
   app.innerHTML = `<div class="karte">
-    <div class="leise" style="font-size:.9rem;font-weight:700">Unit ${S.U.unit} · Mein Text</div>
+    <div class="leise" style="font-size:.9rem;font-weight:700">${ulabel(S.U)} · Mein Text</div>
     <h2>${esc(T.titel)}</h2>
     <p style="margin:0 0 4px"><b>${esc(T.auftrag)}</b></p><p class="leise" style="margin:0 0 10px">${esc(T.hilfe)}</p>
     <p style="margin:0"><b>Das sollte in deinem Text vorkommen:</b></p>
@@ -284,8 +291,8 @@ function zeigeText(){
       return meldung("halb", `Bevor du abgibst:<p>${h.map(esc).join("<br>")}</p><p>Du kannst deinen Text noch verbessern – oder nochmals auf «Abgeben» tippen.</p>`);
     }
     const log = T.punkte.map((p,i) => ({frage:p.text, antwort: erfuellt[i] ? "✓" : "–", loesung:"", punkte: erfuellt[i] ? 1 : 0, thema:"text", t:Date.now()}));
-    if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · Mein Text: ${T.titel}`, log, {unit:S.U.unit, teil:"text", aufsatz:t.slice(0, 4000), woerter, saetze:saetze.length, start:S.start, dauer:Date.now() - S.start});
-    const key = S.U.unit + ".text", x = P.teile[key] || (P.teile[key] = {best:0, n:0});
+    if(window.LP) LP.runde(UEBUNG, `${ulabel(S.U)} · Mein Text: ${T.titel}`, log, {klasse:S.U.klasse, unit:S.U.unit, teil:"text", aufsatz:t.slice(0, 4000), woerter, saetze:saetze.length, start:S.start, dauer:Date.now() - S.start});
+    const key = ukey(S.U) + ".text", x = P.teile[key] || (P.teile[key] = {best:0, n:0});
     x.n++; x.best = Math.max(x.best, erfuellt.filter(Boolean).length / erfuellt.length); x.t = Date.now(); speichereP();
     store.set(ek, "");
     app.innerHTML = `<div class="karte ergebnis"><h2>Danke, dein Text ist abgegeben! 🎉</h2>

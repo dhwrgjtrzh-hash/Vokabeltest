@@ -12,6 +12,7 @@
        audio:   "audio/hv/",          // Ordner der Aufnahmen (nur Hören), Datei = <id>.mp3
        stufen, stufenText,            // nur aufbau "stufen"
        units,                         // nur aufbau "units": {1:"The way we live", …}
+       klassen,                       // optional bei "units": {6:{band,units}, 5:…, 4:…} – Wahl der Klassenstufe, Text braucht klasse
        maxHoeren: 2,                  // so oft darf man den Text vor/während den Fragen hören
        beta: true
      }
@@ -37,7 +38,10 @@ const TEXTE = C.texte;
 const TEXT = id => TEXTE.find(t => t.id === id);
 const SB_TEXTE = TEXTE.filter(t => t.sb).sort((a,b)=>a.stufe-b.stufe);
 const texteDerStufe = s => TEXTE.filter(t => !t.sb && t.stufe === s);
-const texteDerUnit = u => TEXTE.filter(t => t.unit === u);
+const KLASSEN = C.klassen || null;                       // {6:{band, units:{…}}, 5:…, 4:…} – Units nach Klassenstufe
+const KL_NRN = KLASSEN ? Object.keys(KLASSEN).map(Number).sort((a,b) => b-a) : [];
+const texteDerUnit = (u, k) => TEXTE.filter(t => t.unit === u && (!KLASSEN || t.klasse === k));
+const unitLabel = t => (KLASSEN && t.klasse !== KL_NRN[0] ? t.klasse + ". Klasse · " : "") + "Unit " + t.unit;
 const hoechsteStufe = UNITS ? 0 : Math.max(...TEXTE.filter(t=>!t.sb).map(t=>t.stufe));
 const sauber = w => w.replace(/^[«»"„“”'(]+|[«»"„“”'.,;:!?)]+$/g, "");
 const zeitFmt = s => { s = Math.max(0, Math.round(s||0)); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); };
@@ -137,18 +141,23 @@ function textKarte(t){
   return `<button class="textkarte" data-id="${t.id}"><b>${esc(t.titel)}</b>${stat}<span class="meta">${esc(t.art)}${t.thema ? " · " + esc(t.thema) : ""} · ${t.fragen.length} Fragen</span></button>`;
 }
 function homeUnits(){
-  const nrn = Object.keys(C.units).map(Number).filter(u => texteDerUnit(u).length).sort((a,b) => b-a);
-  const aktuell = nrn[0];
-  const offen = Object.keys(C.units).map(Number).filter(u => !texteDerUnit(u).length && u > aktuell);
-  app.innerHTML = `${betaBand()}<div class="karte">
-      ${nrn.map(u => { const liste = texteDerUnit(u), geschafft = liste.filter(t => (P.texte[t.id]||{}).best >= BESTANDEN).length;
+  const k = KLASSEN ? (KLASSEN[P.klasse] ? P.klasse : KL_NRN[0]) : 0;
+  const UN = KLASSEN ? KLASSEN[k].units : C.units;
+  const nrn = Object.keys(UN).map(Number).filter(u => texteDerUnit(u, k).length).sort((a,b) => KLASSEN ? a-b : b-a);
+  const aktuell = KLASSEN ? 0 : nrn[0];
+  const offen = Object.keys(UN).map(Number).filter(u => !texteDerUnit(u, k).length && (KLASSEN || u > aktuell));
+  const wahl = KLASSEN ? `<div class="klassenwahl" role="tablist">${KL_NRN.map(n => `<button role="tab" data-k="${n}" class="${n === k ? "an" : ""}" aria-selected="${n === k}">${n}. Klasse</button>`).join("")}</div>
+      <p class="leise klassen-info">${esc(KLASSEN[k].band)}${k !== KL_NRN[0] ? " · zum Wiederholen" : ""}</p>` : "";
+  app.innerHTML = `${betaBand()}${wahl}<div class="karte">
+      ${nrn.map(u => { const liste = texteDerUnit(u, k), geschafft = liste.filter(t => (P.texte[t.id]||{}).best >= BESTANDEN).length;
         return `<section class="unit ${u === aktuell ? "aktuell" : ""}">
-          <div class="unit-kopf"><div class="unit-nr">Unit<br>${u}</div><div><h2 style="margin:0">${esc(C.units[u])}</h2>
+          <div class="unit-kopf"><div class="unit-nr">Unit<br>${u}</div><div><h2 style="margin:0">${esc(UN[u])}</h2>
           <p class="leise" style="margin:2px 0 0;font-size:.92rem">${geschafft} von ${liste.length} Texten geschafft</p></div></div>
           <div class="texte">${liste.map(textKarte).join("")}</div></section>`; }).join("")}
-      ${offen.length ? `<div class="leer">Später kommen dazu: ${offen.map(u => `Unit ${u} «${esc(C.units[u])}»`).join(", ")}.</div>` : ""}
+      ${offen.length ? `<div class="leer">Später kommen dazu: ${offen.map(u => `Unit ${u} «${esc(UN[u])}»`).join(", ")}.</div>` : ""}
     </div>${staerken()}`;
   app.querySelectorAll(".textkarte").forEach(b => b.onclick = () => starteText(TEXT(b.dataset.id)));
+  app.querySelectorAll(".klassenwahl button").forEach(b => b.onclick = () => { P.klasse = Number(b.dataset.k); speichereP(); homeUnits(); });
 }
 /* Was gelingt schon gut? (aus allen beantworteten Fragen) */
 function staerken(){
@@ -180,7 +189,7 @@ function vorbereiten(q){
   if(q.typ === "ordnen") { do { x.pool = mische(q.items); } while(x.pool.join("|") === q.items.join("|")); }
   return x;
 }
-const kopfArt = t => S.sb ? "Standortbestimmung · " : UNITS ? `Unit ${t.unit} · ` : `Stufe ${t.stufe} · `;
+const kopfArt = t => S.sb ? "Standortbestimmung · " : UNITS ? unitLabel(t) + " · " : `Stufe ${t.stufe} · `;
 
 /* ----- Lesen ----- */
 function textHtml(t){
@@ -504,12 +513,12 @@ function abschluss(){
   S.log.forEach(l => { const f = P.faehig[l.thema] || (P.faehig[l.thema] = {n:0, r:0}); f.n++; f.r += l.punkte; });
   const worte = saetze(t).join(" ").split(/\s+/).filter(Boolean).length;
   const zusatz = {art: S.sb ? "sb" : "text", text: t.id, modus: C.modus, start: S.start, dauer: Date.now() - S.start, woerter: worte};
-  if(UNITS) zusatz.unit = t.unit; else zusatz.stufe = t.stufe;
+  if(UNITS){ zusatz.unit = t.unit; if(KLASSEN) zusatz.klasse = t.klasse; } else zusatz.stufe = t.stufe;
   if(HOEREN){ zusatz.hoeren = S.hoerzahl; zusatz.langsam = S.langsamGenutzt; if(S.audio && isFinite(S.audio.duration)) zusatz.tondauer = Math.round(S.audio.duration); }
   else zusatz.lesezeit = S.lesezeit;
   const vorher = (P.texte[t.id] || {}).best || 0;
   zusatz.erstes = !P.texte[t.id];
-  if(window.LP) LP.runde(C.uebung, (S.sb ? "Standortbestimmung" : UNITS ? "Unit " + t.unit : "Stufe " + t.stufe) + " · " + t.titel,
+  if(window.LP) LP.runde(C.uebung, (S.sb ? "Standortbestimmung" : UNITS ? unitLabel(t) : "Stufe " + t.stufe) + " · " + t.titel,
     S.log.map(l => ({frage:l.frage, antwort:l.antwort, loesung:l.loesung, punkte:l.punkte, thema:l.thema, t:l.t})), zusatz);
   if(S.sb){
     P.sb.erg[t.id] = q; speichereP();
