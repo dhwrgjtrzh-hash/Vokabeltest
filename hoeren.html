@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de-CH" data-fach="deutsch" data-trainer="hoeren">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hörverstehen</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="verstehen.css">
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="lp-zurueck" href="./#deutsch">‹ Lernportal</a>
+    <div class="lp-logo">🎧</div>
+    <h1 class="lp-titel"><small>Deutsch · Beta-Test</small>Hörverstehen</h1>
+    <div class="lp-rechts"></div>
+  </header>
+  <main id="app"></main>
+</div>
+<script src="lp-ergebnisse.js"></script>
+<script src="hoeren-texte.js"></script>
+<script>
+window.VERSTEHEN = {
+  uebung: "Hören", modus: "hoeren", sprache: "de", aufbau: "stufen",
+  texte: HOERTEXTE, audio: "audio/hv/", maxHoeren: 2, beta: true,
+  stufen: {1:"Genau zuhören", 2:"Zusammenhänge verstehen", 3:"Zwischen den Zeilen hören"},
+  stufenText: {
+    1:"Kurze Texte. Achte auf Zahlen, Namen, Orte und Zeiten.",
+    2:"Längere Texte und Gespräche. Oft musst du mehrere Informationen verbinden oder etwas ordnen.",
+    3:"Manches wird nicht direkt gesagt. Achte darauf, wie die Leute sprechen und was sie fühlen."
+  }
+};
+</script>
+<script src="verstehen.js"></script>
+</body>
+</html>

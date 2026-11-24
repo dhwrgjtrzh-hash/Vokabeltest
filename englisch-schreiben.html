@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="de-CH" data-fach="englisch" data-trainer="schreiben">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Englisch – Schreiben</title>
+<link rel="icon" type="image/svg+xml" href="icons/icon-lernportal.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="verstehen.css">
+<style>
+.teile{display:grid;gap:10px;margin-top:12px}
+.satzziel{display:flex;flex-wrap:wrap;gap:7px;min-height:54px;padding:10px;border:1.5px dashed var(--linie);border-radius:14px;margin-bottom:12px;align-items:center}
+.kachel{font:700 1.05rem/1.2 var(--text);border:1.5px solid var(--linie);background:var(--karte);color:var(--ink);border-radius:12px;padding:10px 13px;cursor:pointer;min-height:46px}
+.satzziel .kachel{background:var(--soft);border-color:var(--akzent)}
+.kacheln{display:flex;flex-wrap:wrap;gap:7px}
+.luecke{font-size:1.15rem;line-height:1.7;margin:4px 0 6px}
+.luecke input{font:inherit;width:9.5em;padding:6px 10px;border:1.5px solid var(--linie);border-radius:10px;background:var(--karte);color:var(--ink)}
+.luecke input:focus{outline:3px solid var(--akzent);outline-offset:1px}
+.de{font-size:.92rem;color:var(--leise)}
+.wortchips{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 12px}
+.wortchips span{background:var(--soft);color:var(--akzent);font-weight:700;border-radius:999px;padding:6px 12px}
+textarea.kurz{min-height:90px;resize:vertical;line-height:1.5}
+textarea.lang{width:100%;min-height:230px;font:inherit;font-size:1.08rem;line-height:1.6;padding:12px 14px;border:1.5px solid var(--linie);border-radius:14px;background:var(--karte);color:var(--ink);resize:vertical}
+textarea.lang:focus{outline:3px solid var(--akzent);outline-offset:1px}
+.check{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.check li{display:flex;gap:9px;align-items:flex-start}
+.check li i{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--linie);display:grid;place-items:center;font-style:normal;font-size:.85rem;font-weight:700}
+.check li.ja i{background:var(--gut);border-color:var(--gut);color:#fff}
+.zaehler{font-size:.92rem;color:var(--leise);margin-top:6px}
+.anfaenge{font-size:.95rem;color:var(--leise);margin:6px 0 0}
+.anfaenge b{color:var(--ink)}
+</style>
+<link rel="stylesheet" href="lernportal.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="lp-kopf">
+    <a class="lp-zurueck" href="./#englisch">‹ Lernportal</a>
+    <div class="lp-logo">✏️</div>
+    <h1 class="lp-titel"><small>Englisch · Beta-Test</small>Schreiben</h1>
+    <div class="lp-rechts"></div>
+  </header>
+  <main id="app"></main>
+</div>
+<script src="lp-ergebnisse.js"></script>
+<script src="englisch-texte.js"></script>
+<script src="englisch-schreiben-aufgaben.js"></script>
+<script>
+(function(){
+const UEBUNG = "Englisch Schreiben";
+const VORSCHAU = /[?&]vorschau/.test(location.search);
+const TEILE = {
+  satzbau:{name:"Sätze bauen", text:"Bring die Wörter in die richtige Reihenfolge.", zeichen:"🧩"},
+  luecken:{name:"Wörter einsetzen", text:"Schreib das fehlende englische Wort.", zeichen:"✍️"},
+  saetze:{name:"Sätze schreiben", text:"Mach aus den Wörtern einen ganzen Satz.", zeichen:"📝"},
+  text:{name:"Mein Text", text:"Schreib einen kurzen eigenen Text.", zeichen:"📄"}
+};
+const app = document.getElementById("app");
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mische = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const store = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const apo = s => String(s||"").replace(/[’‘`´]/g,"'");
+const norm = s => apo(s).toLowerCase().replace(/[.,;:!?«»"“”]/g," ").replace(/\s+/g," ").trim();
+function abstand(a, b){ const m = a.length, n = b.length, d = Array.from({length:m+1}, (_,i) => [i].concat(Array(n).fill(0))); for(let j=1;j<=n;j++) d[0][j] = j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + (a[i-1]===b[j-1]?0:1)); return d[m][n]; }
+
+/* ===== Lernstand ===== */
+let gz = "", P = null, S = null;
+const pkey = () => "schreiben.p." + gz;
+function ladeP(){ try{ P = JSON.parse(store.get(pkey()) || "null"); }catch(e){ P = null; } if(!P || P.v !== 1) P = {v:1, teile:{}, t:0}; }
+const post = body => fetch(window.LP.endpoint, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body)}).then(r=>r.json());
+let sendeTimer = null;
+function speichereP(){
+  P.t = Date.now(); const txt = JSON.stringify(P); store.set(pkey(), txt);
+  if(VORSCHAU) return;
+  clearTimeout(sendeTimer); sendeTimer = setTimeout(() => post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:gz, t:P.t, stand:txt}).catch(()=>{}), 1500);
+}
+const geholt = {};
+function holeStand(weiter){
+  if(VORSCHAU || geholt[gz] || !window.LP || !window.LP.endpoint){ weiter(); return; }
+  geholt[gz] = true;
+  let fertig = false; const w = () => { if(!fertig){ fertig = true; weiter(); } };
+  setTimeout(w, 4000);
+  post({typ:"stand-laden", uebung:UEBUNG, glueckszahl:gz}).then(d => {
+    if(fertig) return;
+    const lokal = (() => { try{ return JSON.parse(store.get(pkey()) || "null"); }catch(e){ return null; } })();
+    const tl = (lokal && lokal.t) || 0, tr = (d && d.ok && d.stand) ? (Number(d.t) || 0) : -1;
+    if(tr > tl) store.set(pkey(), d.stand);
+    else if(lokal && tl > 0) post({typ:"stand-speichern", uebung:UEBUNG, glueckszahl:gz, t:tl, stand:JSON.stringify(lokal)}).catch(()=>{});
+  }).catch(()=>{}).finally(w);
+}
+function start(){
+  const g = VORSCHAU ? "vorschau" : window.LP ? window.LP.glueckszahl() : "";
+  if(!g){ app.innerHTML = `<div class="karte"><h2>Gib zuerst deine Glückszahl ein.</h2><p class="leise">Tippe oben rechts auf den Knopf, falls das Fenster nicht erscheint.</p></div>`; setTimeout(start, 800); return; }
+  if(g !== gz){ gz = g; P = null; }
+  holeStand(home);
+}
+
+/* ===== Startseite: Units mit ihren vier Teilen ===== */
+function home(){
+  ladeP(); S = null; window.scrollTo(0,0);
+  const units = EN_SCHREIBEN.slice().sort((a,b) => b.unit - a.unit), aktuell = units[0].unit;
+  const offen = Object.keys(EN_UNITS).map(Number).filter(u => u > aktuell);
+  app.innerHTML = `<div class="beta-band">🧪 <b>Beta-Test:</b> Dieser Trainer ist neu. Wenn dir etwas komisch vorkommt, sag es deiner Lehrperson.</div><div class="karte">
+    ${units.map(U => `<section class="unit ${U.unit === aktuell ? "aktuell" : ""}">
+      <div class="unit-kopf"><div class="unit-nr">Unit<br>${U.unit}</div><div><h2 style="margin:0">${esc(EN_UNITS[U.unit])}</h2></div></div>
+      <div class="teile">${Object.keys(TEILE).map(k => { const x = P.teile[U.unit + "." + k];
+        const stat = !x ? `<span class="status">neu</span>` : k === "text" ? `<span class="status gut">✓ abgegeben</span>`
+          : x.best >= 0.8 ? `<span class="status gut">✓ ${Math.round(x.best*100)} %</span>` : `<span class="status">${Math.round(x.best*100)} %</span>`;
+        return `<button class="textkarte" data-u="${U.unit}" data-k="${k}"><b>${TEILE[k].zeichen} ${esc(k === "text" ? TEILE[k].name + ": " + U.text.titel : TEILE[k].name)}</b>${stat}<span class="meta">${esc(TEILE[k].text)}</span></button>`; }).join("")}</div>
+    </section>`).join("")}
+    ${offen.length ? `<div class="leer">Später kommen dazu: ${offen.map(u => `Unit ${u} «${esc(EN_UNITS[u])}»`).join(", ")}.</div>` : ""}</div>`;
+  app.querySelectorAll(".textkarte").forEach(b => b.onclick = () => starte(+b.dataset.u, b.dataset.k));
+}
+
+function starte(u, k){
+  const U = EN_SCHREIBEN.find(x => x.unit === u);
+  S = {U, k, i:0, log:[], start:Date.now()};
+  if(k === "satzbau") S.items = mische(U.satzbau);
+  if(k === "luecken") S.items = mische(U.luecken);
+  if(k === "saetze") S.items = U.saetze.slice();
+  if(k === "text") return zeigeText();
+  zeigeAufgabe();
+}
+const kopf = () => `<div class="fortschritt">${S.items.map((_,j) => { const l = S.log[j]; return `<i class="${j === S.i ? "jetzt" : l ? (l.punkte >= 1 ? "gut" : "nein") : ""}"></i>`; }).join("")}</div>
+  <div class="leise" style="font-size:.9rem;font-weight:700">Unit ${S.U.unit} · ${esc(TEILE[S.k].name)} · ${S.i+1} von ${S.items.length}</div>`;
+function meldung(ok, txt){ $("#meldung").innerHTML = `<div class="meldung ${ok === true ? "gut" : ok === "halb" ? "" : "nein"}" ${ok === "halb" ? 'style="background:#fff4d6;color:#5c4300"' : ""}>${txt}</div>`; }
+function weiterKnopf(){
+  $("#aktionen").innerHTML = `<button class="btn" id="weiter">${S.i < S.items.length - 1 ? "Weiter →" : "Fertig →"}</button>`;
+  $("#weiter").onclick = () => { S.i++; S.i < S.items.length ? zeigeAufgabe() : abschluss(); };
+  $("#weiter").focus({preventScroll:true});
+}
+function fehlt(txt){ $("#meldung").innerHTML = `<p class="fehltext">${esc(txt)}</p>`; }
+
+/* ===== Aufgaben ===== */
+function zeigeAufgabe(){
+  const it = S.items[S.i];
+  app.innerHTML = `<div class="karte fragebox">${kopf()}<div class="frage" id="frage"></div><div id="eingabe"></div><div id="meldung"></div>
+    <div class="aktionen" id="aktionen"><button class="btn" id="pruefen">Prüfen</button><button class="btn zweit" id="abbruch">Abbrechen</button></div></div>`;
+  $("#abbruch").onclick = home;
+  if(S.k === "satzbau") satzbau(it);
+  if(S.k === "luecken") luecke(it);
+  if(S.k === "saetze") satz(it);
+  window.scrollTo(0,0);
+}
+function satzbau(ziel){
+  $("#frage").innerHTML = `Bring die Wörter in die richtige Reihenfolge.<span class="hilfe-de">Tippe die Wörter nacheinander an. Tippst du ein Wort oben nochmals an, kommt es zurück.</span>`;
+  const woerter = ziel.split(" ");
+  let pool; do { pool = mische(woerter.map((w,i) => ({w,i}))); } while(pool.map(x=>x.w).join(" ") === ziel);
+  const gew = []; let fertig = false;
+  const zeichne = () => {
+    $("#eingabe").innerHTML = `<div class="satzziel">${gew.map((x,j) => `<button class="kachel" data-j="${j}">${esc(x.w)}</button>`).join("") || '<span class="leise">Dein Satz …</span>'}</div>
+      <div class="kacheln">${pool.filter(x => !gew.includes(x)).map(x => `<button class="kachel" data-i="${x.i}">${esc(x.w)}</button>`).join("")}</div>`;
+    $("#eingabe").querySelectorAll(".satzziel .kachel").forEach(b => b.onclick = () => { if(fertig) return; gew.splice(+b.dataset.j, 1); $("#meldung").innerHTML = ""; zeichne(); });
+    $("#eingabe").querySelectorAll(".kacheln .kachel").forEach(b => b.onclick = () => { if(fertig) return; gew.push(pool.find(x => x.i === +b.dataset.i)); $("#meldung").innerHTML = ""; zeichne(); });
+  };
+  zeichne();
+  $("#pruefen").onclick = () => {
+    if(gew.length < woerter.length) return fehlt("Setz zuerst alle Wörter ein.");
+    fertig = true;
+    const satz = gew.map(x => x.w).join(" "), ok = satz === ziel;
+    S.log[S.i] = {frage:"Satz bauen: " + ziel, antwort:satz, loesung:ziel, punkte: ok ? 1 : 0, thema:"satzbau", t:Date.now()};
+    meldung(ok, ok ? "Richtig!" : `Nicht ganz. Richtig ist:<p><b>${esc(ziel)}</b></p>`);
+    weiterKnopf();
+  };
+}
+function luecke(it){
+  const [vor, nach] = it.satz.split("___");
+  $("#frage").innerHTML = `Schreib das fehlende Wort auf Englisch.`;
+  $("#eingabe").innerHTML = `<p class="luecke">${esc(vor)}<input id="l" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="fehlendes Wort">${esc(nach)}</p><p class="de">Auf Deutsch: <b>${esc(it.de)}</b></p>`;
+  const f = $("#l"); if(innerWidth >= 860) f.focus({preventScroll:true});
+  f.oninput = () => $("#meldung").innerHTML = "";
+  f.onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); $("#weiter") ? $("#weiter").click() : $("#pruefen").click(); } };
+  $("#pruefen").onclick = () => {
+    const a = norm(f.value); if(!a) return fehlt("Schreib zuerst ein Wort.");
+    f.readOnly = true;
+    const L = it.loesung.map(norm);
+    const genau = L.includes(a), fast = !genau && L.some(l => l.length >= 4 && abstand(a, l) <= 1);
+    const p = genau ? 1 : fast ? 0.5 : 0;
+    f.style.borderColor = genau ? "var(--gut)" : fast ? "#d39b16" : "var(--falsch)";
+    S.log[S.i] = {frage:it.satz.replace("___", "…") + " (" + it.de + ")", antwort:f.value.trim(), loesung:it.loesung[0], punkte:p, thema:"wortschatz", t:Date.now()};
+    meldung(genau ? true : fast ? "halb" : false, genau ? "Richtig!" : fast ? `Fast! Achte auf die Schreibweise: <b>${esc(it.loesung[0])}</b> (½ Punkt)` : `Nicht ganz. Richtig ist: <b>${esc(it.loesung[0])}</b>`);
+    weiterKnopf();
+  };
+}
+/* Satz prüfen: alle Pflicht-Wortgruppen da? Gross am Anfang? Punkt am Schluss? */
+function satzPruefung(text, it){
+  const t = apo(text).trim(), n = " " + norm(t) + " ";
+  const fehltWort = it.muss.filter(g => !g.some(w => n.includes(" " + norm(w) + " ")));
+  // kleine Schreibfehler (ein Buchstabe) bei längeren Wörtern erkennen
+  const tipp = fehltWort.filter(g => g.some(w => { const ww = norm(w); return ww.length >= 5 && !ww.includes(" ") && n.trim().split(" ").some(x => abstand(x, ww) <= 1); }));
+  const gross = /^[A-Z]/.test(t), punkt = /[.!?]$/.test(t), lang = n.trim().split(" ").length >= 3;
+  return {fehltWort, tipp, gross, punkt, lang, ok: !fehltWort.length && gross && punkt && lang};
+}
+function satz(it){
+  $("#frage").innerHTML = `Schreib einen ganzen Satz mit diesen Wörtern.<span class="hilfe-de">Du darfst Wörter wie a, the, in, at … dazu nehmen und die Verben anpassen.</span>`;
+  $("#eingabe").innerHTML = `<div class="wortchips">${it.woerter.map(w => `<span>${esc(w)}</span>`).join("")}</div>
+    <textarea class="kurz" id="s" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Write your sentence …"></textarea>`;
+  const f = $("#s"); if(innerWidth >= 860) f.focus({preventScroll:true});
+  let versuch = 0;
+  f.oninput = () => $("#meldung").innerHTML = "";
+  $("#pruefen").onclick = () => {
+    if(!norm(f.value)) return fehlt("Schreib zuerst einen Satz.");
+    versuch++;
+    const r = satzPruefung(f.value, it);
+    if(r.ok){
+      const p = versuch === 1 ? 1 : 0.5;
+      S.log[S.i] = {frage:"Satz mit: " + it.woerter.join(", "), antwort:f.value.trim(), loesung:it.beispiel, punkte:p, thema:"saetze", t:Date.now()};
+      f.readOnly = true; f.style.borderColor = "var(--gut)";
+      meldung(versuch === 1 ? true : "halb", (versuch === 1 ? "Super Satz!" : "Jetzt stimmt's! (½ Punkt)") + (norm(f.value) !== norm(it.beispiel) ? `<p>So könnte man es auch schreiben: <b>${esc(it.beispiel)}</b></p>` : ""));
+      return weiterKnopf();
+    }
+    const hinweise = [];
+    if(!r.lang) hinweise.push("Schreib einen ganzen Satz.");
+    if(r.fehltWort.length) hinweise.push(r.tipp.length ? "Schau die Schreibweise nochmals an." : `Es fehlt noch etwas. Tipp: ${it.tipp}`);
+    if(!r.gross) hinweise.push("Der Satz beginnt mit einem grossen Buchstaben.");
+    if(!r.punkt) hinweise.push("Am Schluss steht ein Punkt.");
+    if(versuch === 1){
+      meldung(false, `Noch nicht ganz.<p>${hinweise.map(esc).join("<br>")}</p><p>Verbessere deinen Satz und prüf nochmals.</p>`);
+      return;
+    }
+    S.log[S.i] = {frage:"Satz mit: " + it.woerter.join(", "), antwort:f.value.trim(), loesung:it.beispiel, punkte:0, thema:"saetze", t:Date.now()};
+    f.readOnly = true; f.style.borderColor = "var(--falsch)";
+    meldung(false, `Nicht ganz. So könnte der Satz lauten:<p><b>${esc(it.beispiel)}</b></p>`);
+    weiterKnopf();
+  };
+}
+function abschluss(){
+  const r = S.log.reduce((a,l) => a + l.punkte, 0), n = S.log.length, q = r / n;
+  if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · ${TEILE[S.k].name}`, S.log, {unit:S.U.unit, teil:S.k, start:S.start, dauer:Date.now() - S.start});
+  const key = S.U.unit + "." + S.k, x = P.teile[key] || (P.teile[key] = {best:0, n:0});
+  x.n++; x.last = q; x.best = Math.max(x.best, q); x.t = Date.now(); if(x.erst == null) x.erst = q; speichereP();
+  app.innerHTML = `<div class="karte ergebnis"><h2>${q >= 0.8 ? "Super geschrieben!" : "Geschafft – weiter üben!"}</h2><div class="gross">${String(r).replace(".5","½")} / ${n}</div>
+    <p>${q >= 0.8 ? "Das klappt schon sehr gut." : "Mach diesen Teil später nochmals. Die Aufgaben kommen dann in anderer Reihenfolge."}</p>
+    <div class="aktionen" style="justify-content:center"><button class="btn" id="w">Zur Übersicht</button></div></div>`;
+  $("#w").onclick = home; window.scrollTo(0,0);
+}
+
+/* ===== Eigener Text ===== */
+function zeigeText(){
+  const T = S.U.text, ek = "schreiben.entwurf." + gz + "." + S.U.unit;
+  app.innerHTML = `<div class="karte">
+    <div class="leise" style="font-size:.9rem;font-weight:700">Unit ${S.U.unit} · Mein Text</div>
+    <h2>${esc(T.titel)}</h2>
+    <p style="margin:0 0 4px"><b>${esc(T.auftrag)}</b></p><p class="leise" style="margin:0 0 10px">${esc(T.hilfe)}</p>
+    <p style="margin:0"><b>Das sollte in deinem Text vorkommen:</b></p>
+    <ul class="check" id="check">${T.punkte.map((p,i) => `<li data-i="${i}"><i></i><span>${esc(p.text)}</span></li>`).join("")}</ul>
+    <p class="anfaenge">Satzanfänge, die dir helfen: ${T.anfaenge.map(a => `<b>${esc(a)}</b>`).join(" · ")}</p>
+  </div>
+  <div class="karte" style="margin-top:14px">
+    <textarea class="lang" id="txt" autocapitalize="sentences" spellcheck="false" placeholder="Write here …"></textarea>
+    <div class="zaehler" id="zaehler"></div>
+    <p class="leise" style="font-size:.9rem;margin:8px 0 0">Schreib keine echten Namen von dir oder anderen Kindern. Dein Text wird gespeichert, bis du ihn abgibst.</p>
+    <div id="meldung"></div>
+    <div class="aktionen" id="aktionen"><button class="btn" id="abgeben">Abgeben</button><button class="btn zweit" id="abbruch">Später weiterschreiben</button></div>
+  </div>`;
+  const f = $("#txt"); f.value = store.get(ek) || "";
+  const pruefe = () => {
+    const n = " " + norm(f.value) + " ", woerter = norm(f.value).split(" ").filter(Boolean).length;
+    const erfuellt = T.punkte.map(p => p.woerter.some(w => n.includes(" " + norm(w) + " ")));
+    document.querySelectorAll("#check li").forEach((li,i) => { li.classList.toggle("ja", erfuellt[i]); li.querySelector("i").textContent = erfuellt[i] ? "✓" : ""; });
+    $("#zaehler").textContent = `${woerter} Wörter` + (woerter < T.minWoerter ? ` – schreib mindestens ${T.minWoerter}.` : " ✓");
+    return {erfuellt, woerter};
+  };
+  f.oninput = () => { store.set(ek, f.value); $("#meldung").innerHTML = ""; pruefe(); };
+  pruefe();
+  $("#abbruch").onclick = home;
+  $("#abgeben").onclick = () => {
+    const {erfuellt, woerter} = pruefe(), t = f.value.trim();
+    if(woerter < 10) return fehlt("Schreib zuerst ein paar Sätze.");
+    // Form prüfen: Sätze beginnen gross und enden mit Punkt
+    const saetze = t.split(/(?<=[.!?])\s+/).filter(Boolean);
+    const klein = saetze.filter(s => /^[a-z]/.test(s)).length, ohnePunkt = /[.!?]$/.test(t) ? 0 : 1;
+    if(!S.gewarnt && (woerter < T.minWoerter || erfuellt.includes(false) || klein || ohnePunkt)){
+      S.gewarnt = true;
+      const h = [];
+      if(woerter < T.minWoerter) h.push(`Dein Text hat erst ${woerter} Wörter. Schaffst du ${T.minWoerter}?`);
+      if(erfuellt.includes(false)) h.push("Noch nicht alle Punkte der Liste sind abgehakt.");
+      if(klein) h.push("Jeder Satz beginnt mit einem grossen Buchstaben.");
+      if(ohnePunkt) h.push("Am Schluss steht ein Punkt.");
+      return meldung("halb", `Bevor du abgibst:<p>${h.map(esc).join("<br>")}</p><p>Du kannst deinen Text noch verbessern – oder nochmals auf «Abgeben» tippen.</p>`);
+    }
+    const log = T.punkte.map((p,i) => ({frage:p.text, antwort: erfuellt[i] ? "✓" : "–", loesung:"", punkte: erfuellt[i] ? 1 : 0, thema:"text", t:Date.now()}));
+    if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · Mein Text: ${T.titel}`, log, {unit:S.U.unit, teil:"text", text:t.slice(0, 4000), woerter, saetze:saetze.length, start:S.start, dauer:Date.now() - S.start});
+    const key = S.U.unit + ".text", x = P.teile[key] || (P.teile[key] = {best:0, n:0});
+    x.n++; x.best = Math.max(x.best, erfuellt.filter(Boolean).length / erfuellt.length); x.t = Date.now(); speichereP();
+    store.set(ek, "");
+    app.innerHTML = `<div class="karte ergebnis"><h2>Danke, dein Text ist abgegeben! 🎉</h2>
+      <p>${woerter} Wörter · ${erfuellt.filter(Boolean).length} von ${erfuellt.length} Punkten der Liste</p>
+      <p class="leise">Deine Lehrperson liest deinen Text.</p>
+      <div class="aktionen" style="justify-content:center"><button class="btn" id="w">Zur Übersicht</button></div></div>`;
+    $("#w").onclick = home; window.scrollTo(0,0);
+  };
+  window.scrollTo(0,0);
+}
+
+if(window.LP) LP.start({rechts: document.querySelector(".lp-kopf .lp-rechts")});
+start();
+if(!VORSCHAU) setInterval(() => { if(!S && window.LP && LP.glueckszahl() && LP.glueckszahl() !== gz) start(); }, 1500);
+})();
+</script>
+</body>
+</html>

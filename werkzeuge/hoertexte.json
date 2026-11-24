@@ -1,0 +1,884 @@
+[
+ {
+  "datei": "audio/hv/h1-bahnhof.mp3",
+  "sprache": "de",
+  "titel": "Durchsage am Bahnhof",
+  "teile": [
+   {
+    "stimme": "de-CH-JanNeural",
+    "text": "Achtung, eine Information zum Interregio nach Chur, Abfahrt zehn Uhr zweiunddreissig. Dieser Zug fährt heute nicht auf Gleis neun, sondern auf Gleis sieben. Der Zug hat etwa zehn Minuten Verspätung. Grund dafür ist eine Störung bei Thalwil. Bitte beachten Sie: Heute gibt es in diesem Zug keinen Speisewagen.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "de-CH-JanNeural",
+    "text": "Ich wiederhole: Der Interregio nach Chur, Abfahrt zehn Uhr zweiunddreissig, fährt heute auf Gleis sieben. Er hat etwa zehn Minuten Verspätung. Wir bitten um Entschuldigung.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h1-training.mp3",
+  "sprache": "de",
+  "titel": "Eine Nachricht von der Trainerin",
+  "teile": [
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Hallo Nora, hier ist Sandra vom Fussballclub. Ich melde mich, weil sich beim Training am Donnerstag etwas ändert. Nach dem vielen Regen ist der Rasen zu nass. Darum trainieren wir am Donnerstag in der Turnhalle. Das Training beginnt wie immer um fünf Uhr, aber es dauert heute nur bis sechs.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Bitte bring Hallenschuhe mit, keine Fussballschuhe! Und vergiss deine Trinkflasche nicht.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Noch etwas: Am Samstag spielen wir ein Turnier in Winterthur. Wir treffen uns um Viertel nach acht beim Bahnhof Stettbach. Wenn du am Samstag nicht kannst, schick mir bitte bis Freitag eine Nachricht. Tschüss, bis Donnerstag!",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h1-biber.mp3",
+  "sprache": "de",
+  "titel": "Der Biber",
+  "teile": [
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Weisst du, welches Tier das grösste Nagetier in Europa ist? Es ist der Biber. Ein erwachsener Biber kann bis zu dreissig Kilogramm schwer werden – so schwer wie ein grosser Hund.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Biber leben am Wasser: an Bächen, Flüssen und Seen. Dort bauen sie ihre Wohnung, die Biberburg. Der Eingang der Burg liegt unter dem Wasser. So kommen Feinde nicht hinein. Biber sind gute Schwimmer. Sie können bis zu fünfzehn Minuten unter Wasser bleiben.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Mit ihren starken Zähnen fällen Biber sogar Bäume. Sie fressen aber kein Fleisch und keine Fische, sondern Rinde, Zweige, Blätter und Wasserpflanzen. Tagsüber schlafen die Biber meistens. Erst am Abend werden sie aktiv.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Vor etwa zweihundert Jahren gab es in der Schweiz keine Biber mehr. Die Menschen hatten sie gejagt. Heute leben wieder mehrere tausend Biber bei uns.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h2-schulreise.mp3",
+  "sprache": "de",
+  "titel": "Die Schulreise",
+  "teile": [
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Hallo Mia! Wie war die Schule?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Gut! Frau Keller hat uns heute erzählt, wohin die Schulreise geht. Wir gehen auf den Uetliberg!",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Oh, schön. Fahrt ihr mit dem Zug hinauf?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Ja. Zuerst fahren wir mit dem Tram zum Hauptbahnhof und dann mit der S10 auf den Uetliberg. Oben wandern wir auf dem Planetenweg bis zur Felsenegg.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Den Planetenweg kenne ich. Da steht bei jedem Planeten eine Tafel, oder?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Genau. Wir bekommen ein Arbeitsblatt und müssen bei jeder Tafel eine Frage beantworten. Bei der Felsenegg essen wir dann unser Picknick.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Und wie kommt ihr wieder hinunter?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Mit der Seilbahn nach Adliswil. Und von dort mit dem Zug zurück nach Zürich. Um halb fünf sind wir wieder beim Schulhaus.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Was musst du alles mitnehmen?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Ein Picknick, etwas zum Trinken, gute Schuhe und eine Regenjacke. Frau Keller sagt, auf dem Berg kann das Wetter schnell ändern. Geld brauchen wir keins, die Schule bezahlt die Fahrkarten.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Und wann ist die Schulreise?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Am Dienstag. Wenn es regnet, gehen wir am Donnerstag.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Gut. Dann kaufen wir am Montag zusammen etwas Feines fürs Picknick ein.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Au ja! Ich freue mich schon so! Darf ich auch eine kleine Schokolade mitnehmen?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Eine kleine, ja.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h2-pet.mp3",
+  "sprache": "de",
+  "titel": "Was passiert mit der PET-Flasche?",
+  "teile": [
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Willkommen bei «Wissen am Mittag». In der Schweiz trinken wir jedes Jahr aus über einer Milliarde PET-Flaschen. Was passiert eigentlich mit diesen Flaschen? Das frage ich Herrn Graf. Er arbeitet in einer Recyclingfirma. Herr Graf, wohin gehört eine leere PET-Flasche?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-JanNeural",
+    "text": "In die PET-Sammlung. Sammelstellen gibt es in fast jedem Supermarkt und an vielen Bahnhöfen. Ganz wichtig: Nur Getränkeflaschen aus PET gehören hinein. Flaschen von Shampoo oder Speiseöl gehören nicht in die PET-Sammlung.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Und was passiert dann mit den Flaschen?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-JanNeural",
+    "text": "Ein Lastwagen bringt sie in ein Sortierwerk. Dort werden sie nach Farben sortiert: durchsichtig, hellblau, grün und braun. Danach werden die Flaschen in ganz kleine Stücke zerschnitten und gewaschen. Diese Stücke nennt man Flakes, auf Deutsch Flocken.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Und aus diesen Flocken macht man wieder neue Flaschen?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-JanNeural",
+    "text": "Ja. Die Flocken werden geschmolzen. Daraus entstehen kleine Körner. Aus den Körnern macht eine Fabrik wieder neue Flaschen. Aus farbigen Flocken macht man zum Beispiel auch Fasern für Pullover.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Wie viele Flaschen kommen denn zurück?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-JanNeural",
+    "text": "Mehr als acht von zehn Flaschen. Das ist schon viel. Aber jede Flasche, die im Abfall landet, ist eine verlorene Flasche. Darum mein Tipp: Leere Flaschen flach drücken und immer zur Sammelstelle bringen.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Herzlichen Dank, Herr Graf.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h2-schluessel.mp3",
+  "sprache": "de",
+  "titel": "Der verschwundene Schlüssel",
+  "teile": [
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Jeden Freitag verkauft die Klasse 6b am Pausenkiosk Äpfel und Brötchen. Das Geld kommt in die Klassenkasse. Heute ist Elif für den Schlüssel zuständig. Doch als sie den Kiosk öffnen will, ist der Schlüssel weg.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Oh nein! Heute Morgen war er doch noch in meiner Jackentasche. Das weiss ich genau. Im Tram habe ich ihn noch gespürt.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Elif überlegt. Nach dem Tram ist sie direkt ins Schulhaus gegangen. Im Gang hat sie die Jacke an den Haken gehängt. Danach hatte sie Turnen. Die Jacke hatte sie in der Turnhalle gar nicht dabei. Elif geht zum Hauswart.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Herr Brunner, hat jemand einen Schlüssel abgegeben? Er hat einen roten Anhänger.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-ConradNeural",
+    "text": "Einen Schlüssel mit rotem Anhänger? Nein, tut mir leid. Aber heute Morgen habe ich im Gang vor deinem Schulzimmer geputzt. Dort lag eine Jacke am Boden. Ich habe sie wieder an den Haken gehängt.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Elif rennt zurück zu ihrer Jacke. Sie schaut unter die Garderobe. Und tatsächlich: Ganz hinten, zwischen zwei Turnsäcken, liegt der Schlüssel mit dem roten Anhänger.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Da ist er ja! Er ist bestimmt aus der Tasche gefallen, als die Jacke vom Haken gerutscht ist. Danke, Herr Brunner!",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Zehn Minuten später ist der Kiosk offen. Und Elif macht ab jetzt immer den Reissverschluss ihrer Jackentasche zu.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h3-klassenrat.mp3",
+  "sprache": "de",
+  "titel": "Streit um den Pausenplatz",
+  "teile": [
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Im Klassenrat haben wir heute ein Thema von Lina. Lina, erzähl mal.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Also … in der grossen Pause spielen die Jungs aus unserer Klasse immer Fussball, und zwar auf dem ganzen Platz. Wir können dort gar nicht mehr Seil springen oder Fangen spielen. Gestern hat mich ein Ball am Kopf getroffen. Das hat richtig wehgetan.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KillianNeural",
+    "text": "Das war aber keine Absicht! Ich habe mich sofort entschuldigt.",
+    "tempo": "-3%",
+    "hoehe": "+6%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Ja, das stimmt. Trotzdem: Es ist jeden Tag dasselbe.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Ben, wie siehst du das?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KillianNeural",
+    "text": "Ehrlich gesagt verstehe ich Lina schon. Aber Fussball braucht halt viel Platz. Und das kleine Feld hinter der Turnhalle ist immer nass und rutschig.",
+    "tempo": "-3%",
+    "hoehe": "+6%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Hat jemand eine Idee, wie wir das lösen könnten?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Vielleicht könnten wir den Platz in zwei Hälften teilen. Eine Hälfte für Fussball und eine Hälfte für die anderen Spiele.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KillianNeural",
+    "text": "Hm. Oder wir wechseln ab: Am Montag, Mittwoch und Freitag spielen wir Fussball auf dem grossen Platz, und am Dienstag und Donnerstag gehört er euch.",
+    "tempo": "-3%",
+    "hoehe": "+6%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Das finde ich nicht so fair. Dann habt ihr drei Tage und wir nur zwei.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Dann stimmen wir ab. Wer ist für Linas Vorschlag mit den zwei Hälften? … Das ist die Mehrheit. Wir probieren es zwei Wochen lang aus und sprechen dann im Klassenrat wieder darüber.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KillianNeural",
+    "text": "Okay. Ich sage es den anderen aus dem Fussballteam.",
+    "tempo": "-3%",
+    "hoehe": "+6%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h3-tierheim.mp3",
+  "sprache": "de",
+  "titel": "Zu Besuch im Tierheim",
+  "teile": [
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Hallo, ich bin Emma von der Schülerzeitung. Ich bin heute im Tierheim und spreche mit Frau Studer. Sie ist Tierpflegerin. Frau Studer, wie viele Tiere leben zurzeit hier?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Im Moment haben wir vierzehn Hunde, etwa dreissig Katzen und viele Kaninchen und Meerschweinchen.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Woher kommen die Tiere?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Manche wurden gefunden, zum Beispiel eine Katze, die sich verlaufen hat. Andere werden abgegeben. Oft hören wir: «Wir haben keine Zeit mehr für den Hund.» Oder: «Unser Kind hat keine Lust mehr auf das Kaninchen.»",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Das klingt traurig.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Ja, das ist es manchmal. Ein Tier ist kein Spielzeug. Ein Kaninchen kann acht bis zehn Jahre alt werden, eine Katze sogar fünfzehn Jahre oder mehr. Man muss sich also gut überlegen, ob man so lange für ein Tier sorgen will.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Was ist das Schönste an Ihrer Arbeit?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Wenn ein Tier, das lange bei uns war, endlich ein neues Zuhause findet. Letzte Woche hat ein älteres Ehepaar unseren Hund Bruno abgeholt. Bruno war fast ein Jahr hier, weil niemand einen alten Hund wollte. Als er ins Auto gesprungen ist, hat er mit dem Schwanz gewedelt wie verrückt. Da hatte ich Tränen in den Augen.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Und was ist schwierig?",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Die vielen Wochenenden. Die Tiere brauchen auch am Sonntag Futter und Bewegung. Aber ehrlich gesagt: Ich würde mit keinem anderen Beruf tauschen.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Vielen Dank, Frau Studer!",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/hv/h3-lager.mp3",
+  "sprache": "de",
+  "titel": "Der erste Abend im Lager",
+  "teile": [
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Es ist der erste Abend im Klassenlager. Die anderen Mädchen im Zimmer lachen und erzählen Witze. Noa liegt in ihrem Schlafsack und schaut an die Decke. Sie sagt kein Wort. Da klopft es an der Tür. Frau Keller schaut herein.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Noa, kommst du kurz mit? Ich brauche jemanden, der mir hilft, den Tee für morgen vorzubereiten.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Noa steht auf. In der Küche ist es ruhig. Frau Keller stellt ihr eine Tasse warmen Tee hin.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Weisst du, in meinem ersten Lager war ich auch ganz still. Ich habe die ganze erste Nacht an meinen Hund gedacht.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Ich vermisse meine kleine Schwester. Zu Hause schlafen wir im selben Zimmer. Und jetzt ist alles so … anders.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-CH-LeniNeural",
+    "text": "Das verstehe ich gut. Möchtest du ihr morgen eine Postkarte schreiben? Dann kannst du ihr erzählen, was ihr hier alles erlebt.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-GiselaNeural",
+    "text": "Ja … das wäre schön. Ich könnte ihr ein Murmeltier zeichnen. Murmeltiere findet sie lustig.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "de-DE-KatjaNeural",
+    "text": "Als Noa zurück ins Zimmer kommt, rückt Sara ein Stück zur Seite und fragt: «Willst du auch einen Witz hören?» Noa lächelt – zum ersten Mal an diesem Abend.",
+    "tempo": "-3%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/e1h-farm.mp3",
+  "sprache": "en",
+  "titel": "Isla's day on the farm",
+  "teile": [
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Hi! My name is Isla. I'm eleven years old and I live on a sheep farm in Scotland. We have about three hundred sheep, two dogs and lots of chickens.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "I get up at half past six every morning. Before breakfast I feed the chickens and collect the eggs. My brother Callum feeds the dogs. Then we have porridge for breakfast.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "The school bus comes at a quarter to eight. The journey to school takes forty minutes, because our farm is far away from the village. There are only twelve children in my class.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "After school I do my homework in the kitchen. In spring I help my dad with the baby lambs. That's my favourite time of the year!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 700
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "We have dinner at six o'clock, and I usually go to bed at nine. Life on a farm is hard work, but I love it.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/e1h-tinyhouse.mp3",
+  "sprache": "en",
+  "titel": "Living in a tiny house",
+  "teile": [
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Hello and welcome to Homes and Lives. Today I'm talking to Dan Evans. Dan lives with his wife and his daughter in a tiny house. Dan, how big is your house?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "It's very small. It's only eight metres long and two and a half metres wide. It's on wheels, so we can move it with a car.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Wow! How many rooms are there?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "There's a living room with a small kitchen, a tiny bathroom and two beds under the roof. My daughter Rosie sleeps up there, too.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Why did you decide to live in a tiny house?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "We wanted a simple life. A big house is expensive, and you need a lot of time to clean it. Now we don't have much stuff, and we have more time for things we like. For example, we go walking in the forest.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Is there anything you don't like?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Well, when it rains, it's really loud on the roof. And when Rosie's friends come to visit, it gets very crowded! In summer we eat outside, so that's no problem.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Would you go back to a normal house?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "No way! We're very happy here.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/e2h-aquarium.mp3",
+  "sprache": "en",
+  "titel": "At the aquarium",
+  "teile": [
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Welcome to the turtle tank! This is Ollie. He's a green sea turtle, and he's about forty years old.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Forty? That's older than my mum!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Sea turtles can live for more than fifty years. Look, Ollie is swimming up to the top now. Do you know why?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Is he hungry?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "No, he needs to breathe. Sea turtles breathe air, like us. But they can stay under water for a long time.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Where do baby turtles come from?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "The females swim back to the beach where they were born. At night, they dig a hole in the sand and lay about one hundred eggs. After about two months, the babies come out of the eggs and run to the sea.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "All alone? Without their mum?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Yes. And it's dangerous. Birds and crabs eat a lot of the babies. Only a few of them survive.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Oh, poor little turtles! And what does Ollie eat?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Green sea turtles feed on sea grass and algae. Now, follow me to the next tank. The sharks are waiting!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Sharks? Cool!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/e2h-quiz.mp3",
+  "sprache": "en",
+  "titel": "Animal Quiz Time",
+  "teile": [
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Welcome to Animal Quiz Time! Our player today is Lily from Bristol. Hi, Lily!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Hi!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Five questions, five points. Ready? Question one: Which animal is the biggest animal on Earth?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "That's easy. The blue whale!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Correct! One point. A blue whale can be thirty metres long. Question two: How many kinds of beetles are there in the world? About three hundred, about three thousand, or more than three hundred thousand?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Hmm … I think more than three hundred thousand.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Yes, that's right! There are more kinds of beetles than any other kind of animal. Two points. Question three: What does a jellyfish not have? A brain, a heart, or both?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Er … a brain?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Oh, sorry, Lily. The answer is both. A jellyfish has no brain and no heart! Question four: Golden eagles have amazing eyes. From how far away can an eagle see a rabbit? From three hundred metres, or from three kilometres?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "From three kilometres!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Right! Three points. And the last question: Do all sharks lay eggs?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "No. Some sharks lay eggs, and other sharks give birth to live babies.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Excellent! That's four points out of five. Well done, Lily! You win a book about wild animals.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Thank you! I love animal books!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ }
+]
