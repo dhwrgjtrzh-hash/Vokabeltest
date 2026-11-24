@@ -335,12 +335,18 @@ const FAECHER = [
       { name:'Rechtschreibung', text:'Du hörst Wörter und Sätze und schreibst sie auf.', zeichen:'Abc', url:BASIS+'rechtschreibung.html', chips:['Kopfhörer nötig'] },
       /* Grammatik (Beta, 20.11.2026): Wortarten, Kreisel, Morpheme, Sätze bauen – je 3 Stufen (Grundlagen, Vertiefung, Knacknüsse) */
       { name:'Grammatik', text:'Wortarten, Wortarten-Kreisel, Morpheme und Sätze bauen.', zeichen:'NVA', url:BASIS+'grammatik.html', chips:[], beta:true },
-      { name:'Leseverstehen', text:'Texte lesen und Fragen beantworten – Stufe für Stufe.', zeichen:'Aa', url:BASIS+'lesen.html', chips:[] }
+      { name:'Leseverstehen', text:'Texte lesen und Fragen beantworten – Stufe für Stufe.', zeichen:'Aa', url:BASIS+'lesen.html', chips:[] },
+      /* Hörverstehen (Beta, 24.11.2026): Hörtexte mit Azure-Stimmen, Stufen 1–3 */
+      { name:'Hörverstehen', beta:true, text:'Durchsagen, Gespräche und Geschichten anhören und Fragen beantworten.', zeichen:'🎧', url:BASIS+'hoeren.html', chips:['Kopfhörer nötig'] }
     ]},
   { id:'englisch', name:'Englisch',
     tipp:'Übe die Wörter so lange, bis du sie <b>ohne Fehler</b> schreiben kannst.',
     trainer:[
-      { name:'Vokabeln Unit 2', text:'Tiere, Tierfakten und Verben aus Young World 4, Unit 2.', zeichen:'ABC', url:BASIS+'tierwoerter.html', chips:['Vokabeln'] }
+      { name:'Vokabeln Unit 2', text:'Tiere, Tierfakten und Verben aus Young World 4, Unit 2.', zeichen:'ABC', url:BASIS+'tierwoerter.html', chips:['Vokabeln'] },
+      /* Englisch Lesen, Hören, Schreiben (Beta, 24.11.2026): nach den Units von Young World 4 */
+      { name:'Leseverstehen', beta:true, text:'Englische Texte lesen und Fragen beantworten – zu den Units von Young World 4.', zeichen:'Aa', url:BASIS+'englisch-lesen.html', chips:['Young World 4'] },
+      { name:'Hörverstehen', beta:true, text:'Englisch hören: Podcasts, Gespräche und ein Quiz – auch langsamer abspielbar.', zeichen:'🎧', url:BASIS+'englisch-hoeren.html', chips:['Kopfhörer nötig'] },
+      { name:'Schreiben', beta:true, text:'Sätze bauen, Wörter einsetzen, Sätze schreiben und ein eigener kurzer Text.', zeichen:'✏️', url:BASIS+'englisch-schreiben.html', chips:['Young World 4'] }
     ]},
   { id:'franzoesisch', name:'Französisch',
     tipp:'Übe in <b>beide Richtungen</b>: zuerst mit Auswählen, dann mit Schreiben.',
