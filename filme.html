@@ -391,7 +391,7 @@ $("#senden").addEventListener("click", () => {
   if(!gz || !window.LP){ location.reload(); return; }   // ohne Glückszahl: Seite fragt beim Neuladen danach
   const jetzt = Date.now();
   S.offen = {typ: "uebung-runde", v: 1, id: jetzt.toString(36) + Math.random().toString(36).slice(2, 10),
-    uebung: UEBUNG, glueckszahl: gz, thema: THEMA, datum: new Date(jetzt).toISOString(), punkte: 0, max: S.order.length,
+    uebung: UEBUNG, glueckszahl: gz, geraet: LP.geraet ? LP.geraet() : undefined, thema: THEMA, datum: new Date(jetzt).toISOString(), punkte: 0, max: S.order.length,
     aufgaben: S.order.map((f, i) => ({nr: i + 1, thema: THEMA, frage: f, antworten: [String(i + 1)], loesung: "", punkte: 0, t: jetzt})),
     art: "rangliste", rangliste: S.order.slice()};
   S.gesendetOrder = S.order.slice(); delete S.neu; delete S.nochmals;

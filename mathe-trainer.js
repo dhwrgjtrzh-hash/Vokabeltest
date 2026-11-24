@@ -41,6 +41,9 @@ const store = {
   get(k){ try{return localStorage.getItem(k)}catch(e){return null} },
   set(k,v){ try{localStorage.setItem(k,v)}catch(e){} }
 };
+/* Gerätekennung (24.11.2026): zufällig, nur auf diesem Gerät gespeichert, dieselbe wie im Rechtschreibtrainer und in lp-ergebnisse.js.
+   Geht mit jeder Runde mit (siehe sendOne) – so sieht die Station, wenn auf einem Gerät mit mehreren Glückszahlen geübt wird. */
+const GERAET = (()=>{ let g = store.get("rs.geraet"); if(!g){ g = Date.now().toString(36)+Math.random().toString(36).slice(2,8); store.set("rs.geraet", g); } return g; })();
 const gcd = (a,b)=>{ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; };
 const lcm = (a,b)=> a*b/gcd(a,b);
 const red = (n,d)=>{ const g=gcd(n,d); return {n:n/g, d:d/g}; };
@@ -517,7 +520,7 @@ function go(){
 const QKEY = "uebung.queue";
 function queue(){ try{ return JSON.parse(store.get(QKEY)||"[]"); }catch(e){ return []; } }
 function sendOne(rec){
-  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec),keepalive:true})
+  return fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec.geraet ? rec : Object.assign({geraet:GERAET}, rec)),keepalive:true})
     .then(r=>r.text()).then(t=>{ if(!/"ok"\s*:\s*true/.test(t)) throw new Error("abgelehnt"); });
 }
 let flushing = false;

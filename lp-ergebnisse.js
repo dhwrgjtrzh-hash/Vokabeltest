@@ -7,6 +7,7 @@
    - schickt jede fertige Runde in die Google-Tabelle «Übungen – Resultate»
      (jede Übung bekommt dort ihr eigenes Blatt); nur Glückszahl, nie ein Name
    - Runden, die wegen schlechtem WLAN nicht ankommen, werden gemerkt und später nachgeschickt
+   - jede Runde trägt eine zufällige Gerätekennung (geraet), damit die Station Gerätewechsel der Glückszahl sieht
 
    Verwendung im Trainer:
      LP.start({rechts: element})            // Glückszahl-Knopf in die Kopfzeile, ggf. Abfrage zeigen
@@ -21,6 +22,9 @@
     get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
     set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
   };
+  /* Gerätekennung (24.11.2026): zufällig, nur auf diesem Gerät gespeichert, dieselbe wie im Rechtschreibtrainer («rs.geraet»).
+     Geht mit jeder Runde mit – so sieht die Station, wenn auf einem Gerät mit mehreren Glückszahlen geübt wird. */
+  const GERAET = (() => { let g = store.get("rs.geraet"); if(!g){ g = Date.now().toString(36) + Math.random().toString(36).slice(2,8); store.set("rs.geraet", g); } return g; })();
   const gueltig = v => /^\d{1,2}$/.test(String(v)) && +v >= 1 && +v <= 21;
   let gz = (store.get("uebung.gz") || store.get("rs.gz") || "").replace(/\D/g,"");
   if(!gueltig(gz)) gz = "";
@@ -149,12 +153,13 @@
       senden();
     },
     glueckszahl(){ return gz; },
+    geraet(){ return GERAET; },
     /* eine fertige Runde merken und senden */
     endpoint: ENDPOINT,
     runde(uebung, thema, aufgaben, zusatz){
       if(VORSCHAU || !gz || !aufgaben || !aufgaben.length) return;
       const punkte = aufgaben.reduce((a,x) => a + (+x.punkte || 0), 0);
-      const rec = {typ:"uebung-runde", v:1, id:Date.now().toString(36)+Math.random().toString(36).slice(2,10), uebung, glueckszahl:gz, thema, datum:new Date().toISOString(),
+      const rec = {typ:"uebung-runde", v:1, id:Date.now().toString(36)+Math.random().toString(36).slice(2,10), uebung, glueckszahl:gz, geraet:GERAET, thema, datum:new Date().toISOString(),
         punkte, max:aufgaben.length,
         aufgaben: aufgaben.map((x,i) => ({nr:i+1, thema:x.thema||thema, frage:String(x.frage), antworten:[String(x.antwort==null?"":x.antwort)],
           loesung:String(x.loesung), punkte:+x.punkte||0, t:x.t||Date.now()}))};
