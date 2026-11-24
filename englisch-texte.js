@@ -1,12 +1,19 @@
 /* =====================================================================
    Englisch – Lese- und Hörtexte zu Young World 4 (Lernportal 6b)
-   Eigene Texte (nicht aus dem Lehrmittel kopiert), passend zu Thema und Wortschatz der Units.
-   Einfache Sprache (A1/A2): kurze Sätze, vor allem Present simple.
-   woerter: kleine Wörterhilfe unter dem Text ([englisch, deutsch]).
-   hilfe (bei einer Frage): kurze Erklärung auf Deutsch unter der Frage.
-
-   Lesetexte: Aufbau wie im Leseverstehen Deutsch (lesen-texte.js), aber nach Units (unit statt stufe).
-   Hörtexte: wie im Hörverstehen Deutsch (hoeren-texte.js) nach Stufen 1–3, über alle Themen (nicht nach Units).
+   Grundlage: Teacher's Book Young World 4 (Themen, Lernziele, Class vocabulary, Strukturen pro Unit):
+     Unit 1 The way we live      – Frühstück und kulturelle Unterschiede, Mengenangaben, how much / how many,
+                                   always/usually/sometimes/never, Nachhaltigkeit (food waste, regional, seasonal, recycle)
+     Unit 2 Fascinating animal facts – Tierfakten (speed, weight, life expectancy, breeding …), Migration,
+                                   present simple, have to, Komparativ/Superlativ
+     Unit 3 Yesterday and today  – Leben früher, Erfindungen, past simple
+     Unit 4 The call of the Alps – Ferien und Sport in den Alpen, Seilbahn, Jugendherberge
+     Unit 5 The story of chocolate – Herstellung, first/then/after that/finally, Fairtrade
+   Eigene Texte – nichts aus dem Pupil's Book, dem Activity Book oder den Lernkontrollen übernommen.
+   Bewusst NICHT verwendet, weil es in den Lernkontrollen vorkommt: Zoës Frühstück, Bananen-Pancakes,
+   Sonntagsbrunch-Einkaufsliste, Frühstück in der Schule (Vanja/Tim), Sonnenbär, Würfelqualle, Galapagos-Leguan,
+   Apollo 11, Tiere im All, Ueli Steck, Engelberg-Postkarte, Kakaoanbau, Kakaobäuerin Comfort.
+   Einfache Sprache (A1/A2). woerter: kleine Wörterhilfe ([englisch, deutsch]). hilfe: kurze Erklärung auf Deutsch.
+   Lesetexte nach Units (unit), Hörtexte nach Stufen 1–3 über alle Themen (stufe).
    ===================================================================== */
 const EN_UNITS = {1:"The way we live", 2:"Fascinating animal facts", 3:"Yesterday and today", 4:"The call of the Alps", 5:"The story of chocolate"};
 
@@ -21,71 +28,67 @@ const EN_STIMMEN = {
 /* ============================== Reading ============================== */
 const EN_LESETEXTE = [
 
-/* ---------- Unit 1: The way we live ---------- */
-{ id:"e1-houseboat", unit:1, titel:"Life on a houseboat", art:"Text", thema:"Homes",
+/* ---------- Unit 1: The way we live (Frühstück, Nachhaltigkeit) ---------- */
+{ id:"e1-breakfasts", unit:1, titel:"Three breakfasts", art:"Text", thema:"Breakfast around the world",
   absaetze:[[
-    "Hi! My name is Femke.",
-    "I'm twelve years old and I live in Amsterdam in the Netherlands.",
-    "My home is special: it's a houseboat!",
-    "There are about 2,500 houseboats in Amsterdam."
+    "Hi, I'm Yuki and I live in Osaka, Japan.",
+    "On school days I usually have a bowl of rice, miso soup and a small piece of grilled fish.",
+    "I always drink green tea with it.",
+    "My little brother doesn't like fish, so he sometimes has toast with jam instead."
   ],[
-    "Our boat is long and narrow.",
-    "It has a small kitchen, a living room and two bedrooms.",
-    "I share my bedroom with my little brother, Daan.",
-    "From my window I can see the water and the ducks."
+    "Hello! My name is Emre. I'm from Izmir in Turkey.",
+    "On Sundays my family has a really big breakfast.",
+    "There is fresh bread, white cheese, olives, tomatoes, cucumbers, honey and eggs.",
+    "My grandfather often drinks four or five glasses of black tea!",
+    "We sit at the table for two hours."
   ],[
-    "Every morning I get up at seven o'clock.",
-    "I have breakfast with my family, and then I ride my bike to school.",
-    "Almost everybody in Amsterdam rides a bike!"
-  ],[
-    "Life on a houseboat is great, but sometimes it's difficult.",
-    "In winter it's often cold and windy, and the boat moves a little.",
-    "We don't have a garden, so we put flowers in pots on the roof.",
-    "In summer I sometimes swim next to our house!"
+    "Hi, I'm Oliver from Leeds in England.",
+    "During the week I usually eat a bowl of cereal with milk, because I don't have much time.",
+    "But on special occasions, like my birthday, my dad cooks a full English breakfast:",
+    "fried eggs, bacon, sausages, baked beans, tomatoes and toast.",
+    "I never eat all of it. It's too much for me!"
   ]],
-  woerter:[["houseboat","Hausboot"],["share","teilen"],["ride a bike","Velo fahren"],["pots","Töpfe"]],
+  woerter:[["a bowl of","eine Schale"],["instead","stattdessen"],["on special occasions","zu besonderen Anlässen"],["baked beans","Bohnen in Tomatensauce"]],
   fragen:[
-    { typ:"mc", art:"finden", frage:"Where does Femke live?", hilfe:"Wo wohnt Femke?", richtig:"on a houseboat in Amsterdam", falsch:["in a flat in Amsterdam","on a farm in the Netherlands","in a house next to a lake"] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Femke has her own bedroom.","False"],["Femke goes to school by bike.","True"],["Femke's father works on a ship.","Not in the text"]] },
-    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «schmal».", hilfe:"Tippe im Text auf das englische Wort für «schmal».", loesung:["narrow"] },
-    { typ:"mc", art:"verbinden", frage:"Why are there flowers on the roof?", hilfe:"Warum stehen Blumen auf dem Dach?", richtig:"Because the family has no garden.", falsch:["Because the ducks eat them.","Because it is cold in winter.","Because Daan likes flowers."] },
-    { typ:"multi", art:"finden", frage:"What is sometimes difficult about life on a houseboat?", hilfe:"Was ist manchmal schwierig? Es können mehrere Antworten stimmen.", richtig:["It is cold and windy in winter.","The boat moves a little."], falsch:["There is no kitchen.","The ducks are very loud.","School is far away."] },
-    { typ:"kurz", art:"finden", frage:"How many houseboats are there in Amsterdam?", hilfe:"Schreib die Zahl.", loesung:["2500","about 2500","2,500","two thousand five hundred"] }
+    { typ:"tf", art:"verbinden", frage:"Who says this? Yuki, Emre or Oliver?", hilfe:"Wer sagt das?", wahl:["Yuki","Emre","Oliver"], aussagen:[["«I always drink green tea.»","Yuki"],["«I don't have much time in the morning.»","Oliver"],["«Breakfast on Sundays takes two hours.»","Emre"],["«My brother doesn't like fish.»","Yuki"]] },
+    { typ:"multi", art:"finden", frage:"What does Emre's family eat on Sundays?", hilfe:"Was isst Emres Familie am Sonntag? Es können mehrere Antworten stimmen.", richtig:["white cheese","olives","honey"], falsch:["rice","bacon","cereal"] },
+    { typ:"kurz", art:"finden", frage:"How many glasses of tea does Emre's grandfather often drink?", hilfe:"Schreib die Zahl(en).", loesung:["four or five","4 or 5","four","five","4","5","4-5"] },
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Speck».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["bacon"] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Oliver usually eats a full English breakfast.","False"],["Yuki's brother sometimes has toast with jam.","True"],["Emre's mother makes the bread.","Not in the text"]] },
+    { typ:"mc", art:"schliessen", frage:"Why does Oliver never eat all of his birthday breakfast?", hilfe:"Warum isst Oliver sein Geburtstagsfrühstück nie ganz auf?", richtig:"It is too much food for him.", falsch:["He doesn't like his dad's cooking.","He has no time on his birthday.","He doesn't eat meat."] }
   ]},
 
-{ id:"e1-two-homes", unit:1, titel:"Two children, two homes", art:"Text", thema:"Ways of life",
+{ id:"e1-wasteweek", unit:1, titel:"Our Zero Waste Week", art:"Class blog", thema:"Sustainability",
   absaetze:[[
-    "Batu is eleven.",
-    "He lives with his family in Mongolia.",
-    "They live in a ger.",
-    "A ger is a round tent with a wooden frame and thick walls.",
-    "In the middle there is a stove.",
-    "It keeps the family warm when it is very cold outside."
+    "Last month our class did a Zero Waste Week.",
+    "Our teacher told us that in Switzerland about one third of all food is wasted.",
+    "We wanted to do something about it."
   ],[
-    "Batu's family has sheep, goats and horses.",
-    "The animals need fresh grass, so the family moves three or four times a year.",
-    "They can take down the ger and put it up again in about two hours.",
-    "Before school, Batu helps his father with the animals.",
-    "He can ride a horse very well."
+    "On Monday we weighed the rubbish from our classroom: three kilograms!",
+    "There was a lot of paper, plastic from prepackaged portions and old bread."
   ],[
-    "Lucy is twelve.",
-    "She lives in London, in a flat on the tenth floor.",
-    "From her window she can see the River Thames.",
-    "Lucy takes the Underground to school.",
-    "The journey takes twenty minutes."
+    "Then we made a plan.",
+    "Everybody brought their snack in a box that we can re-use.",
+    "We put apple and banana skins on the compost behind the school.",
+    "We recycled paper and bottles.",
+    "And we gave away the bread we didn't eat to the chickens of a farmer nearby."
   ],[
-    "After school, Lucy plays the violin or meets her friends in the park.",
-    "She doesn't have a pet because the flat is very small.",
-    "But she has a big dream: one day she wants to ride a horse!"
+    "We also talked about where our food comes from.",
+    "Strawberries in December come from far away, by plane or by truck.",
+    "Apples from Switzerland are regional, and in autumn they are seasonal, too.",
+    "So we decided to buy more regional and seasonal food for our class picnic."
+  ],[
+    "On Friday we weighed the rubbish again: only one kilogram!",
+    "We are proud of it, and we want to keep going."
   ]],
-  woerter:[["wooden frame","Holzgerüst"],["stove","Ofen"],["flat","Wohnung"],["the Underground","die U-Bahn"]],
+  woerter:[["weigh","wiegen"],["wasted","verschwendet"],["skins","Schalen"],["nearby","in der Nähe"]],
   fragen:[
-    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["A round home",1],["Life with animals",2],["High above the city",3],["Free time and a dream",4]] },
-    { typ:"beleg", art:"finden", frage:"Why does Batu's family move three or four times a year?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"The animals need fresh grass.", falsch:["They want to see new places.","The ger is too small.","Batu has to go to a new school."], beleg:["need fresh grass"] },
-    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["There is a stove in the middle of the ger.","True"],["Lucy goes to school by bus.","False"],["Lucy's flat is on the tenth floor.","True"],["Batu has a little sister.","Not in the text"]] },
-    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Reise, Fahrt».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["journey"] },
-    { typ:"kurz", art:"finden", frage:"How long is Lucy's journey to school?", hilfe:"Wie lange dauert Lucys Schulweg?", loesung:["twenty minutes","20 minutes","20","20 min","twenty"] },
-    { typ:"mc", art:"schliessen", frage:"Lucy would probably love to …", hilfe:"Was würde Lucy wohl gerne tun?", richtig:"help Batu with his horses.", falsch:["move three times a year.","live on the tenth floor.","take the Underground every day."] }
+    { typ:"zuordnen", art:"ganz", frage:"Match the headings to the paragraphs.", hilfe:"Welche Überschrift passt zu welchem Abschnitt?", titel:[["Why we started",1],["Checking our rubbish",2],["What we did",3],["Where does food come from?",4],["The result",5]] },
+    { typ:"kurz", art:"finden", frage:"How much rubbish was there on Friday?", hilfe:"Wie viel Abfall war es am Freitag?", loesung:["one kilogram","1 kilogram","1 kg","one kilo","1","one","1 kilo"] },
+    { typ:"multi", art:"finden", frage:"What did the class do against waste?", hilfe:"Was hat die Klasse gegen Abfall gemacht? Es können mehrere Antworten stimmen.", richtig:["They brought snacks in boxes they can re-use.","They put fruit skins on the compost.","They gave old bread to a farmer's chickens."], falsch:["They stopped eating snacks.","They bought strawberries in December.","They threw the bread away."] },
+    { typ:"beleg", art:"verbinden", frage:"Why are strawberries in December not a good idea?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"They come from far away.", falsch:["They are too expensive.","They don't taste good.","They are not healthy."], beleg:["Strawberries in December come from far away"] },
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «saisonal».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["seasonal"] },
+    { typ:"mc", art:"schliessen", frage:"How does the class feel at the end of the week?", hilfe:"Wie fühlt sich die Klasse am Ende der Woche?", richtig:"Proud, and they want to do more.", falsch:["Tired, and they want to stop.","Sad, because there is still rubbish.","Bored, because it was too easy."] }
   ]},
 
 /* ---------- Unit 2: Fascinating animal facts ---------- */
@@ -158,49 +161,79 @@ const EN_LESETEXTE = [
     { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Both parents care for the babies.","True"],["Storks like to fly over the sea.","False"],["Storks can live for thirty years.","Not in the text"]] },
     { typ:"beleg", art:"verbinden", frage:"Why do storks cross the sea near Gibraltar?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"Because the sea is very narrow there.", falsch:["Because there is a lot of food there.","Because it is warmer there.","Because their nests are there."], beleg:["where it is very narrow"] },
     { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Reise».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["journey"] }
+  ]},
+
+{ id:"e2-humpback", unit:2, titel:"Fact file: The humpback whale", art:"Fact file", thema:"Animals / Migration",
+  absaetze:[[
+    "Humpback whales live in all the oceans of the world.",
+    "An adult humpback whale is about fourteen metres long. That's longer than a bus!",
+    "It weighs about thirty thousand kilograms."
+  ],[
+    "Humpback whales feed on krill and small fish.",
+    "In summer they stay in cold waters near the North Pole or the South Pole, because there is a lot of food there.",
+    "They eat a lot and get fat."
+  ],[
+    "In winter they swim to warm waters near the equator.",
+    "Some of them swim more than eight thousand kilometres. That is one of the longest journeys of all mammals!",
+    "During the journey they eat almost nothing."
+  ],[
+    "In the warm water the females give birth.",
+    "A newborn whale is about four metres long and drinks its mother's milk.",
+    "The mother cares for her baby for about one year and protects it from enemies like orcas."
+  ],[
+    "Whales are not fish. They have to come up to the surface to breathe air.",
+    "The males are famous for their long songs. Scientists think they sing to find a mate."
+  ]],
+  woerter:[["krill","Krill (kleine Krebse)"],["equator","Äquator"],["mammals","Säugetiere"],["surface","Wasseroberfläche"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"How long is an adult humpback whale?", hilfe:"Wie lang ist ein erwachsener Buckelwal?", richtig:"about fourteen metres", falsch:["about four metres","about forty metres","about eight metres"] },
+    { typ:"beleg", art:"verbinden", frage:"Why do humpback whales stay in cold waters in summer?", hilfe:"Wähle die Antwort. Tippe dann im Text auf den Satz, wo es steht.", richtig:"There is a lot of food there.", falsch:["The water is cleaner there.","They give birth there.","There are no orcas there."], beleg:["there is a lot of food there"] },
+    { typ:"ordnen", art:"verbinden", frage:"Put the whale's year in the right order. Start with summer.", hilfe:"Bring das Jahr des Wals in die richtige Reihenfolge. Beginne mit dem Sommer.", items:["They eat a lot in cold waters.","They swim to warm waters.","The females give birth.","The mother cares for her baby."] },
+    { typ:"tf", art:"finden", frage:"True, false or not in the text?", aussagen:[["Humpback whales have to come up to breathe air.","True"],["Humpback whales eat a lot during their long journey.","False"],["Humpback whales can jump out of the water.","Not in the text"]] },
+    { typ:"wort", art:"wortschatz", frage:"Tap the word that means «Feinde».", hilfe:"Tippe im Text auf das englische Wort.", loesung:["enemies"] },
+    { typ:"mc", art:"ganz", frage:"Which sentence is the best summary of the text?", hilfe:"Welcher Satz fasst den Text am besten zusammen?", richtig:"Humpback whales are huge mammals that travel very far between cold and warm waters.", falsch:["Humpback whales are fish that live only near the North Pole.","Humpback whales are dangerous for people.","Humpback whales sing because they are hungry."] }
   ]}
 ];
 
 /* ============================== Listening ==============================
-   Hörverstehen: NICHT nach Units, sondern über alles – Stufen 1–3 wie im Hörverstehen Deutsch
-   (Stufe 1 kurze Texte, Stufe 2 längere Gespräche, Stufe 3 zwischen den Zeilen hören).
-   Die Themen der Units kommen vor (Wohnen, Tiere, früher und heute, Alpen …), dazu Alltag.
+   Hörverstehen: NICHT nach Units, sondern über alles – Stufen 1–3 wie im Hörverstehen Deutsch.
+   Jede Unit kommt vor: Frühstück (U1), Tiere und Migration (U2), früher und heute (U3), Alpen (U4), Schokolade (U5).
    Situation auf Deutsch, damit die Kinder wissen, worum es geht. */
 const EN_HOERTEXTE = [
 
 /* ---------- Stufe 1: Genau zuhören ---------- */
-{ id:"eh1-station", stufe:1, titel:"At the station", art:"Announcement", thema:"Travel",
-  situation:"Du bist am Bahnhof Victoria in London und willst mit dem Zug nach Brighton fahren. Da kommt eine Durchsage.",
+{ id:"eh1-breakfast", stufe:1, titel:"My breakfast", art:"Podcast", thema:"Unit 1 · Breakfast",
+  situation:"Lena aus Zürich erzählt in einem Podcast für Kinder, was sie zum Frühstück isst.",
+  rollen:{ L:{name:"Lena", stimme:"maedchen"} },
+  teile:[
+    ["L","Hi! I'm Lena and I live in Zurich. On school days I usually have a bowl of muesli with yoghurt and berries. I always drink a glass of orange juice. I never drink coffee. I don't like it!"],
+    ["L","But on Sundays we have a big breakfast. My dad buys a special Swiss bread called Zopf. We eat it with butter, honey or jam. There is also a slice of cheese for everybody, and boiled eggs. I usually eat two eggs. Mmm, I love Sundays!"]
+  ],
+  woerter:[["berries","Beeren"],["boiled eggs","gekochte Eier"],["a slice of","eine Scheibe"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"What does Lena usually have on school days?", hilfe:"Was isst Lena an Schultagen meistens?", richtig:"a bowl of muesli with yoghurt and berries", falsch:["bread with honey and jam","two boiled eggs","a bowl of cereal with milk"] },
+    { typ:"mc", art:"finden", frage:"What does Lena always drink?", hilfe:"Was trinkt Lena immer?", richtig:"a glass of orange juice", falsch:["a cup of coffee","a glass of milk","a cup of tea"] },
+    { typ:"multi", art:"finden", frage:"What does the family eat on Sundays?", hilfe:"Was isst die Familie am Sonntag? Es können mehrere Antworten stimmen.", richtig:["Zopf with butter, honey or jam","a slice of cheese","boiled eggs"], falsch:["bacon","pancakes","sausages"] },
+    { typ:"kurz", art:"finden", frage:"How many eggs does Lena usually eat on Sundays?", hilfe:"Schreib die Zahl.", loesung:["2","two","two eggs","2 eggs"] },
+    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["Lena likes coffee.","False"],["Lena's dad buys the bread.","True"],["Lena has breakfast with her grandmother.","Not said"]] }
+  ]},
+
+{ id:"eh1-cablecar", stufe:1, titel:"At the cable car", art:"Announcement", thema:"Unit 4 · The Alps",
+  situation:"Du bist mit deiner Familie in den Ferien in den Bergen. An der Talstation der Seilbahn kommt eine Durchsage.",
   rollen:{ D:{name:"Announcement", stimme:"mann"} },
   teile:[
-    ["D","Good morning. This is an announcement for passengers travelling to Brighton. The ten fifteen train to Brighton is delayed by about fifteen minutes. It will now leave from platform six, not from platform two. The café on the train is closed today. We are sorry for the delay."],
-    ["D","Once again: the ten fifteen train to Brighton will leave from platform six. Please have your tickets ready."]
+    ["D","Good morning and welcome to the Alpenblick cable car. Because of strong wind, the cable car to the top is closed until two o'clock this afternoon. The cable car to the middle station is open."],
+    ["D","From the middle station you can go hiking, or you can visit our rope park. You can rent mountain bikes and scooters at the shop next to the ticket office. The restaurant at the middle station is open until five o'clock. Enjoy your day in the mountains!"]
   ],
-  woerter:[["delayed","verspätet"],["platform","Gleis"],["passengers","Reisende"]],
+  woerter:[["cable car","Seilbahn"],["middle station","Mittelstation"],["rent","mieten"],["rope park","Seilpark"]],
   fragen:[
-    { typ:"mc", art:"finden", frage:"Where does the train go?", hilfe:"Wohin fährt der Zug?", richtig:"to Brighton", falsch:["to London","to Bristol","to Bath"] },
-    { typ:"kurz", art:"finden", frage:"Which platform does the train leave from now?", hilfe:"Schreib die Zahl.", loesung:["6","six","platform 6","platform six"] },
-    { typ:"mc", art:"verbinden", frage:"When does the train leave now?", hilfe:"Wann fährt der Zug jetzt ungefähr ab?", richtig:"at about 10.30", falsch:["at 10.15","at about 10.00","at about 11.15"] },
-    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["The train is delayed by about fifteen minutes.","True"],["You can buy food in the café on the train today.","False"],["The train is very full today.","Not said"]] }
+    { typ:"mc", art:"finden", frage:"Why is the cable car to the top closed?", hilfe:"Warum fährt die Seilbahn nicht bis ganz oben?", richtig:"because of strong wind", falsch:["because of snow","because it is too early","because of a party at the top"] },
+    { typ:"kurz", art:"finden", frage:"Until what time is the cable car to the top closed?", hilfe:"Bis wann ist sie geschlossen? Schreib die Uhrzeit.", loesung:["two o'clock","2 o'clock","2","two","2 pm","14.00","14:00","2.00"] },
+    { typ:"multi", art:"finden", frage:"What can you rent at the shop?", hilfe:"Was kann man im Laden mieten? Es können mehrere Antworten stimmen.", richtig:["mountain bikes","scooters"], falsch:["skis","kayaks","sledges"] },
+    { typ:"tf", art:"verbinden", frage:"True, false or not said?", aussagen:[["You can go hiking from the middle station.","True"],["The restaurant at the middle station closes at two o'clock.","False"],["The rope park is only for adults.","Not said"]] }
   ]},
 
-{ id:"eh1-message", stufe:1, titel:"A message from Aunt Kate", art:"Voice message", thema:"Free time",
-  situation:"Tom hört eine Sprachnachricht von seiner Tante Kate ab. Es geht um den Samstag.",
-  rollen:{ K:{name:"Aunt Kate", stimme:"frau"} },
-  teile:[
-    ["K","Hi Tom, it's Aunt Kate. I've got a great idea for Saturday: let's go to the zoo! I can pick you up at half past nine at your house. Please bring a packed lunch, a drink and your cap. It's going to be sunny."],
-    ["K","The zoo has new baby penguins, and at eleven o'clock you can watch them eat. If it rains, we can go to the science museum instead. Please call me back tonight. Bye!"]
-  ],
-  woerter:[["pick you up","dich abholen"],["packed lunch","Lunch zum Mitnehmen"],["instead","stattdessen"]],
-  fragen:[
-    { typ:"mc", art:"finden", frage:"Where do they want to go on Saturday?", hilfe:"Wohin wollen sie am Samstag?", richtig:"to the zoo", falsch:["to the science museum","to the cinema","to the swimming pool"] },
-    { typ:"kurz", art:"finden", frage:"What time does Aunt Kate pick Tom up?", hilfe:"Schreib die Uhrzeit (auf Englisch oder als Zahl).", loesung:["half past nine","9.30","9:30","nine thirty","half past 9"] },
-    { typ:"multi", art:"finden", frage:"What must Tom bring?", hilfe:"Was muss Tom mitnehmen? Es können mehrere Antworten stimmen.", richtig:["a packed lunch","a drink","a cap"], falsch:["a jacket","money","a camera"] },
-    { typ:"mc", art:"verbinden", frage:"What will they do if it rains?", hilfe:"Was machen sie, wenn es regnet?", richtig:"They will go to the science museum.", falsch:["They will stay at home.","They will go to the zoo another day.","They will go to the cinema."] },
-    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["At eleven o'clock the penguins eat.","True"],["Tom must call Aunt Kate back tomorrow morning.","False"],["Aunt Kate has a dog.","Not said"]] }
-  ]},
-
-{ id:"e1h-farm", stufe:1, titel:"Isla's day on the farm", art:"Podcast", thema:"Daily routine",
+{ id:"e1h-farm", stufe:1, titel:"Isla's day on the farm", art:"Podcast", thema:"Unit 1 · Daily routine",
   situation:"Isla wohnt in Schottland. In einem Podcast für Kinder erzählt sie von ihrem Tag.",
   rollen:{ I:{name:"Isla", stimme:"maedchen"} },
   teile:[
@@ -221,32 +254,7 @@ const EN_HOERTEXTE = [
   ]},
 
 /* ---------- Stufe 2: Zusammenhänge verstehen ---------- */
-{ id:"e1h-tinyhouse", stufe:2, titel:"Living in a tiny house", art:"Radio interview", thema:"Homes",
-  situation:"In einer Radiosendung spricht eine Moderatorin mit Dan Evans. Dan wohnt mit seiner Familie in einem sehr kleinen Haus.",
-  rollen:{ P:{name:"Presenter", stimme:"erzaehlerin"}, D:{name:"Dan", stimme:"mann"} },
-  teile:[
-    ["P","Hello and welcome to Homes and Lives. Today I'm talking to Dan Evans. Dan lives with his wife and his daughter in a tiny house. Dan, how big is your house?"],
-    ["D","It's very small. It's only eight metres long and two and a half metres wide. It's on wheels, so we can move it with a car."],
-    ["P","Wow! How many rooms are there?"],
-    ["D","There's a living room with a small kitchen, a tiny bathroom and two beds under the roof. My daughter Rosie sleeps up there, too."],
-    ["P","Why did you decide to live in a tiny house?"],
-    ["D","We wanted a simple life. A big house is expensive, and you need a lot of time to clean it. Now we don't have much stuff, and we have more time for things we like. For example, we go walking in the forest."],
-    ["P","Is there anything you don't like?"],
-    ["D","Well, when it rains, it's really loud on the roof. And when Rosie's friends come to visit, it gets very crowded! In summer we eat outside, so that's no problem."],
-    ["P","Would you go back to a normal house?"],
-    ["D","No way! We're very happy here."]
-  ],
-  woerter:[["tiny","winzig"],["wheels","Räder"],["stuff","Sachen, Zeug"]],
-  fragen:[
-    { typ:"mc", art:"finden", frage:"How long is the tiny house?", hilfe:"Wie lang ist das Haus?", richtig:"eight metres", falsch:["eighteen metres","two and a half metres","eighty metres"] },
-    { typ:"multi", art:"finden", frage:"What is in the tiny house?", hilfe:"Was gibt es im Haus? Es können mehrere Antworten stimmen.", richtig:["a living room with a small kitchen","a tiny bathroom","two beds under the roof"], falsch:["a big garden","a garage","a big bedroom for Rosie"] },
-    { typ:"mc", art:"verbinden", frage:"Why does the family live in a tiny house?", hilfe:"Warum wohnt die Familie in einem so kleinen Haus?", richtig:"They wanted a simple life with more free time.", falsch:["They wanted to live near the sea.","Their old house was too old.","Rosie wanted her own room."] },
-    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["The tiny house is on wheels.","True"],["The family has a dog.","Not said"],["When it rains, it is very quiet inside.","False"]] },
-    { typ:"mc", art:"wortschatz", frage:"Dan says: «It gets very crowded.» What does «crowded» mean?", hilfe:"Was bedeutet «crowded»? Denk daran, wann Dan das sagt.", richtig:"There are too many people in a small space.", falsch:["It gets very cold.","It gets very quiet.","It gets very dirty."] },
-    { typ:"mc", art:"ganz", frage:"How does Dan feel about his tiny house?", hilfe:"Wie findet Dan sein kleines Haus?", richtig:"He's very happy and wants to stay.", falsch:["He wants to go back to a normal house.","He thinks it's too expensive.","He isn't sure."] }
-  ]},
-
-{ id:"e2h-aquarium", stufe:2, titel:"At the aquarium", art:"Conversation", thema:"Animals",
+{ id:"e2h-aquarium", stufe:2, titel:"At the aquarium", art:"Conversation", thema:"Unit 2 · Animals",
   situation:"Amy ist mit ihrer Klasse im Aquarium. Ein Guide zeigt ihnen eine grosse Meeresschildkröte.",
   rollen:{ G:{name:"Guide", stimme:"mann"}, A:{name:"Amy", stimme:"maedchen"} },
   teile:[
@@ -273,7 +281,7 @@ const EN_HOERTEXTE = [
     { typ:"mc", art:"schliessen", frage:"How does Amy feel at the end?", hilfe:"Wie fühlt sich Amy am Schluss?", richtig:"She's excited about the sharks.", falsch:["She's scared of the sharks.","She's sad because she has to go.","She's bored."] }
   ]},
 
-{ id:"e2h-quiz", stufe:2, titel:"Animal Quiz Time", art:"Radio quiz", thema:"Animals",
+{ id:"e2h-quiz", stufe:2, titel:"Animal Quiz Time", art:"Radio quiz", thema:"Unit 2 · Animal facts",
   situation:"Lily spielt bei einem Tier-Quiz im Radio mit. Es gibt fünf Fragen. Für jede richtige Antwort gibt es einen Punkt.",
   rollen:{ H:{name:"Quiz host", stimme:"mann"}, L:{name:"Lily", stimme:"maedchen"} },
   teile:[
@@ -302,54 +310,29 @@ const EN_HOERTEXTE = [
     { typ:"mc", art:"schliessen", frage:"How does Lily feel about her prize?", hilfe:"Wie findet Lily ihren Preis?", richtig:"She's happy because she loves animal books.", falsch:["She's disappointed.","She wanted a different prize.","She doesn't care."] }
   ]},
 
+{ id:"eh2-factory", stufe:2, titel:"A visit to a chocolate factory", art:"Guided tour", thema:"Unit 5 · Chocolate",
+  situation:"Emma ist mit ihrer Klasse in einer Schokoladenfabrik. Die Führerin erklärt, wie aus Kakaobohnen Schokolade wird.",
+  rollen:{ G:{name:"Guide", stimme:"frau"}, E:{name:"Emma", stimme:"maedchen"} },
+  teile:[
+    ["G","Welcome to our chocolate factory! Our cocoa beans come from Ghana and Ecuador. They travel to Europe by ship. At the port we put them on trucks, and the trucks bring them here."],
+    ["E","What do you do with the beans first?"],
+    ["G","First, we clean the beans and roast them in a big oven. That gives the chocolate its flavour. Then we break the beans into small pieces and grind them. After that, they turn into a thick brown mixture. We call it cocoa mass."],
+    ["E","And where does the sugar come in?"],
+    ["G","Good question! Now we add sugar and milk powder. Then a machine stirs the mixture for many hours. This makes the chocolate very smooth. Finally, we pour the chocolate into moulds and let it cool down. And then the chocolate bars get their wrappers."],
+    ["E","Can we taste it now?"],
+    ["G","Of course! But only one piece each, please!"]
+  ],
+  woerter:[["roast","rösten"],["grind","mahlen"],["stir","rühren"],["mould","Form"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"How do the cocoa beans travel to Europe?", hilfe:"Wie kommen die Kakaobohnen nach Europa?", richtig:"by ship", falsch:["by plane","by train","by truck"] },
+    { typ:"ordnen", art:"verbinden", frage:"How is chocolate made? Put the steps in order.", hilfe:"Bring die Schritte in die richtige Reihenfolge.", items:["They clean and roast the beans.","They break and grind the beans.","They add sugar and milk powder.","A machine stirs the mixture for hours.","They pour the chocolate into moulds."] },
+    { typ:"mc", art:"verbinden", frage:"Why does the machine stir the chocolate for many hours?", hilfe:"Warum rührt die Maschine so lange?", richtig:"to make the chocolate very smooth", falsch:["to make the chocolate cold","to make the chocolate sweeter","to make the chocolate darker"] },
+    { typ:"kurz", art:"wortschatz", frage:"What do they call the thick brown mixture?", hilfe:"Wie heisst die dicke braune Masse?", loesung:["cocoa mass","cocoa"] },
+    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["The beans come from Ghana and Ecuador.","True"],["The children can eat as much chocolate as they want.","False"],["The factory has two hundred workers.","Not said"]] }
+  ]},
+
 /* ---------- Stufe 3: Zwischen den Zeilen hören ---------- */
-{ id:"eh3-newgirl", stufe:3, titel:"The new girl", art:"Story", thema:"School / Friendship",
-  situation:"Eine Geschichte aus einer Schule in England. Sofia ist neu in der Klasse. Achte darauf, wie es ihr geht.",
-  rollen:{ E:{name:"Narrator", stimme:"erzaehlerin"}, T:{name:"Mrs Hall", stimme:"frau"}, M:{name:"Mia", stimme:"maedchen"} },
-  teile:[
-    ["E","It was Sofia's first day at her new school. Her family had moved from Portugal to England only two weeks before. In the classroom, Sofia sat in the last row. She looked out of the window and didn't say a word."],
-    ["T","Everybody, this is Sofia. She comes from Lisbon. Mia, can you show her around at break time?"],
-    ["E","Mia nodded. At break time, she found Sofia next to the door. Sofia was holding her lunch box very tightly."],
-    ["M","Hi! Do you want to see the library? It's my favourite place in the school."],
-    ["E","Sofia smiled a little and followed her. In the library, Mia showed her a big book about animals. Sofia pointed at a picture of a dolphin and said, very quietly, that she loved dolphins."],
-    ["M","Me too! There are dolphins near Lisbon, right? Can you tell me about them tomorrow?"],
-    ["E","The next morning, Sofia didn't sit in the last row. She sat next to Mia, and she had brought a photo of a dolphin from home."]
-  ],
-  woerter:[["row","Reihe"],["break time","Pause"],["tightly","fest"]],
-  fragen:[
-    { typ:"mc", art:"schliessen", frage:"How does Sofia feel on her first day?", hilfe:"Wie fühlt sich Sofia am ersten Tag?", richtig:"She is shy and a bit nervous.", falsch:["She is angry with Mia.","She is bored.","She is very happy and loud."] },
-    { typ:"mc", art:"finden", frage:"Where does Sofia come from?", hilfe:"Woher kommt Sofia?", richtig:"from Lisbon in Portugal", falsch:["from London","from Madrid in Spain","from Rome in Italy"] },
-    { typ:"mc", art:"schliessen", frage:"Why does Sofia hold her lunch box very tightly?", hilfe:"Warum hält Sofia ihre Znünibox so fest?", richtig:"She feels unsure in the new school.", falsch:["She is very hungry.","She doesn't want to share her lunch.","The lunch box is broken."] },
-    { typ:"ordnen", art:"verbinden", frage:"Put the story in the right order.", hilfe:"Bring die Geschichte in die richtige Reihenfolge.", items:["Mrs Hall introduces Sofia to the class.","Mia finds Sofia next to the door.","They go to the library.","Sofia sees a picture of a dolphin.","Sofia sits next to Mia."] },
-    { typ:"mc", art:"ganz", frage:"What does the end of the story show?", hilfe:"Was zeigt der Schluss der Geschichte?", richtig:"Sofia and Mia are becoming friends.", falsch:["Sofia wants to go back to Portugal.","Mia doesn't like dolphins.","Sofia is still alone."] }
-  ]},
-
-{ id:"eh3-alps", stufe:3, titel:"Hiking in the Alps", art:"Radio interview", thema:"The Alps",
-  situation:"In einer Reisesendung im Radio spricht die Moderatorin mit Marco. Er ist Bergführer in Grindelwald.",
-  rollen:{ P:{name:"Presenter", stimme:"erzaehlerin"}, M:{name:"Marco", stimme:"mann"} },
-  teile:[
-    ["P","Today on Travel Time I'm talking to Marco. He is a mountain guide in Grindelwald, in Switzerland. Marco, what do people love about the Alps?"],
-    ["M","Oh, lots of things! The mountains, the lakes, the fresh air. And the cows with their big bells! Many tourists say the Alps look like a postcard."],
-    ["P","What's the best time for hiking?"],
-    ["M","Most people come in July and August. But my favourite time is September. There are fewer people on the paths, and the colours are beautiful."],
-    ["P","What should hikers bring?"],
-    ["M","Good shoes, a rain jacket, enough water and something to eat. And sun cream! The sun is very strong up in the mountains."],
-    ["P","Is hiking in the mountains dangerous?"],
-    ["M","It can be. The weather changes very fast. On hot summer days there are often thunderstorms in the afternoon. That's why I always tell my groups: start early in the morning. Then you're back before the storm comes."],
-    ["P","One last question: what's your favourite mountain?"],
-    ["M","That's easy. The Eiger. I can see it from my kitchen window every morning, and it still makes me happy."]
-  ],
-  woerter:[["mountain guide","Bergführer"],["hikers","Wandernde"],["thunderstorm","Gewitter"],["sun cream","Sonnencreme"]],
-  fragen:[
-    { typ:"mc", art:"finden", frage:"Where does Marco work?", hilfe:"Wo arbeitet Marco?", richtig:"in Grindelwald in Switzerland", falsch:["in Zermatt in Switzerland","in Austria","in Italy"] },
-    { typ:"mc", art:"verbinden", frage:"Why is September Marco's favourite time?", hilfe:"Warum mag Marco den September am liebsten?", richtig:"There are fewer people and the colours are beautiful.", falsch:["It is the hottest month.","There are no thunderstorms.","The cows come down from the mountains."] },
-    { typ:"multi", art:"finden", frage:"What should hikers bring?", hilfe:"Was sollen Wandernde mitnehmen? Es können mehrere Antworten stimmen.", richtig:["a rain jacket","water","sun cream"], falsch:["a tent","a big camera","a map of London"] },
-    { typ:"mc", art:"verbinden", frage:"Why should hikers start early in the morning?", hilfe:"Warum soll man früh am Morgen losgehen?", richtig:"So they are back before the afternoon thunderstorms.", falsch:["Because the paths are closed in the afternoon.","Because it is too hot in the morning.","Because the cows need the paths in the afternoon."] },
-    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["Marco says the weather in the mountains changes very fast.","True"],["Most people come to the Alps in winter.","False"],["Marco has climbed the Eiger ten times.","Not said"]] },
-    { typ:"mc", art:"schliessen", frage:"How does Marco feel when he sees the Eiger every morning?", hilfe:"Wie fühlt sich Marco, wenn er jeden Morgen den Eiger sieht?", richtig:"Happy – he still loves the view.", falsch:["Bored – he has seen it too often.","Scared – he thinks it is dangerous.","Sad – he wants to live in a city."] }
-  ]},
-
-{ id:"eh3-grandpa", stufe:3, titel:"Grandpa's school days", art:"Conversation", thema:"Yesterday and today",
+{ id:"eh3-grandpa", stufe:3, titel:"Grandpa's school days", art:"Conversation", thema:"Unit 3 · Yesterday and today",
   situation:"Ella macht ein Englischprojekt über die Schule früher. Sie fragt ihren Grossvater.",
   rollen:{ E:{name:"Ella", stimme:"maedchen"}, G:{name:"Grandpa", stimme:"mann2"} },
   teile:[
@@ -374,5 +357,51 @@ const EN_HOERTEXTE = [
     { typ:"mc", art:"schliessen", frage:"What did Grandpa like most about school?", hilfe:"Was mochte Grossvater an der Schule am meisten?", richtig:"the stories on Friday afternoons", falsch:["standing in the corner","walking in the snow","the strict teacher"] },
     { typ:"mc", art:"schliessen", frage:"Ella says: «I think I'm happy with my school today.» What does she mean?", hilfe:"Was meint Ella damit?", richtig:"Her school today is easier and nicer than Grandpa's school.", falsch:["She wants to go to Grandpa's old school.","She doesn't like her teacher.","She wants to write on blackboards."] },
     { typ:"mc", art:"ganz", frage:"What is the conversation mainly about?", hilfe:"Worum geht es im Gespräch vor allem?", richtig:"what school was like in the past", falsch:["how to walk in the snow","Grandpa's favourite stories","Ella's English teacher"] }
+  ]},
+
+{ id:"eh3-alps", stufe:3, titel:"Hiking in the Alps", art:"Radio interview", thema:"Unit 4 · The Alps",
+  situation:"In einer Reisesendung im Radio spricht die Moderatorin mit Marco. Er ist Bergführer in Grindelwald.",
+  rollen:{ P:{name:"Presenter", stimme:"erzaehlerin"}, M:{name:"Marco", stimme:"mann"} },
+  teile:[
+    ["P","Today on Travel Time I'm talking to Marco. He is a mountain guide in Grindelwald, in Switzerland. Marco, what do people love about the Alps?"],
+    ["M","Oh, lots of things! The mountains, the lakes, the fresh air. And the cows with their big bells! Many tourists say the Alps look like a postcard."],
+    ["P","What's the best time for hiking?"],
+    ["M","Most people come in July and August. But my favourite time is September. There are fewer people on the paths, and the colours are beautiful."],
+    ["P","What should hikers bring?"],
+    ["M","Good shoes, a rain jacket, enough water and something to eat. And sun cream! The sun is very strong up in the mountains."],
+    ["P","Is hiking in the mountains dangerous?"],
+    ["M","It can be. The weather changes very fast. On hot summer days there are often thunderstorms in the afternoon. That's why I always tell my groups: start early in the morning. Then you're back before the storm comes."],
+    ["P","One last question: what's your favourite mountain?"],
+    ["M","That's easy. The Eiger. I can see it from my kitchen window every morning, and it still makes me happy."]
+  ],
+  woerter:[["mountain guide","Bergführer"],["hikers","Wandernde"],["thunderstorm","Gewitter"],["sun cream","Sonnencreme"]],
+  fragen:[
+    { typ:"mc", art:"finden", frage:"Where does Marco work?", hilfe:"Wo arbeitet Marco?", richtig:"in Grindelwald in Switzerland", falsch:["in Zermatt in Switzerland","in Austria","in Italy"] },
+    { typ:"mc", art:"verbinden", frage:"Why is September Marco's favourite time?", hilfe:"Warum mag Marco den September am liebsten?", richtig:"There are fewer people and the colours are beautiful.", falsch:["It is the hottest month.","There are no thunderstorms.","The cows come down from the mountains."] },
+    { typ:"multi", art:"finden", frage:"What should hikers bring?", hilfe:"Was sollen Wandernde mitnehmen? Es können mehrere Antworten stimmen.", richtig:["a rain jacket","water","sun cream"], falsch:["a tent","a big camera","a map of London"] },
+    { typ:"mc", art:"verbinden", frage:"Why should hikers start early in the morning?", hilfe:"Warum soll man früh am Morgen losgehen?", richtig:"So they are back before the afternoon thunderstorms.", falsch:["Because the paths are closed in the afternoon.","Because it is too hot in the morning.","Because the cows need the paths in the afternoon."] },
+    { typ:"tf", art:"finden", frage:"True, false or not said?", aussagen:[["Marco says the weather in the mountains changes very fast.","True"],["Most people come to the Alps in winter.","False"],["Marco has climbed the Eiger ten times.","Not said"]] },
+    { typ:"mc", art:"schliessen", frage:"How does Marco feel when he sees the Eiger every morning?", hilfe:"Wie fühlt sich Marco, wenn er jeden Morgen den Eiger sieht?", richtig:"Happy – he still loves the view.", falsch:["Bored – he has seen it too often.","Scared – he thinks it is dangerous.","Sad – he wants to live in a city."] }
+  ]},
+
+{ id:"eh3-fairtrade", stufe:3, titel:"Is fair trade worth it?", art:"Radio interview", thema:"Unit 5 · Fair trade",
+  situation:"In einer Radiosendung spricht die Moderatorin mit Ruth. Sie hat einen kleinen Laden und verkauft nur Fairtrade-Schokolade.",
+  rollen:{ P:{name:"Presenter", stimme:"erzaehlerin"}, R:{name:"Ruth", stimme:"frau"} },
+  teile:[
+    ["P","Ruth, in your shop you only sell fair trade chocolate. Why?"],
+    ["R","A few years ago I saw a film about cocoa farms in West Africa. Many farmers there work very hard, but they get very little money for their beans. Some children have to work on the farms and can't go to school. After the film I couldn't sleep. I knew I had to do something."],
+    ["P","What is different with fair trade?"],
+    ["R","The farmers get a fair price for their cocoa. They also get extra money for their village, for example for a school or for clean water. And children must not do hard work on the farms. They go to school."],
+    ["P","But fair trade chocolate is more expensive, isn't it?"],
+    ["R","Yes, a little. Some customers say: «Why should I pay more?» Then I let them taste it. Most of them come back the next week. I think when you know the story behind your chocolate, it tastes even better."],
+    ["P","Thank you, Ruth."]
+  ],
+  woerter:[["fair price","gerechter Preis"],["customers","Kundinnen und Kunden"],["must not","dürfen nicht"]],
+  fragen:[
+    { typ:"mc", art:"verbinden", frage:"Why did Ruth start to sell fair trade chocolate?", hilfe:"Warum verkauft Ruth Fairtrade-Schokolade?", richtig:"She saw a film about cocoa farms and wanted to help.", falsch:["Fair trade chocolate is cheaper for her.","Her customers asked for it.","She has a cocoa farm in West Africa."] },
+    { typ:"mc", art:"schliessen", frage:"Ruth says: «After the film I couldn't sleep.» What does this show?", hilfe:"Was zeigt dieser Satz?", richtig:"The film made her very sad and worried.", falsch:["The film was very long.","She drank too much coffee.","She was excited about her new shop."] },
+    { typ:"multi", art:"finden", frage:"What does fair trade do for the farmers?", hilfe:"Was bringt Fairtrade den Bauernfamilien? Es können mehrere Antworten stimmen.", richtig:["They get a fair price for their cocoa.","They get extra money for their village.","Children must not do hard work on the farms."], falsch:["They get a new truck.","They get free chocolate.","They can sell their beans in Ruth's shop."] },
+    { typ:"tf", art:"ganz", frage:"Fact or opinion?", hilfe:"Tatsache (fact) oder Meinung (opinion)?", wahl:["Fact","Opinion"], aussagen:[["Fair trade chocolate is a little more expensive.","Fact"],["When you know the story behind your chocolate, it tastes even better.","Opinion"],["The farmers get extra money for their village.","Fact"]] },
+    { typ:"mc", art:"schliessen", frage:"Why do most customers come back the next week?", hilfe:"Warum kommen die meisten Kundinnen und Kunden wieder?", richtig:"They liked the taste of the chocolate.", falsch:["The chocolate was cheaper the next week.","Ruth gave them money back.","They had to bring back the wrapper."] }
   ]}
 ];

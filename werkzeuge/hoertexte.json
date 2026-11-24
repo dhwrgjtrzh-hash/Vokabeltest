@@ -567,20 +567,20 @@
   ]
  },
  {
-  "datei": "audio/en/eh1-station.mp3",
+  "datei": "audio/en/eh1-breakfast.mp3",
   "sprache": "en",
-  "titel": "At the station",
+  "titel": "My breakfast",
   "teile": [
    {
-    "stimme": "en-GB-RyanNeural",
-    "text": "Good morning. This is an announcement for passengers travelling to Brighton. The ten fifteen train to Brighton is delayed by about fifteen minutes. It will now leave from platform six, not from platform two. The café on the train is closed today. We are sorry for the delay.",
+    "stimme": "en-GB-MaisieNeural",
+    "text": "Hi! I'm Lena and I live in Zurich. On school days I usually have a bowl of muesli with yoghurt and berries. I always drink a glass of orange juice. I never drink coffee. I don't like it!",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 700
    },
    {
-    "stimme": "en-GB-RyanNeural",
-    "text": "Once again: the ten fifteen train to Brighton will leave from platform six. Please have your tickets ready.",
+    "stimme": "en-GB-MaisieNeural",
+    "text": "But on Sundays we have a big breakfast. My dad buys a special Swiss bread called Zopf. We eat it with butter, honey or jam. There is also a slice of cheese for everybody, and boiled eggs. I usually eat two eggs. Mmm, I love Sundays!",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0
@@ -588,20 +588,20 @@
   ]
  },
  {
-  "datei": "audio/en/eh1-message.mp3",
+  "datei": "audio/en/eh1-cablecar.mp3",
   "sprache": "en",
-  "titel": "A message from Aunt Kate",
+  "titel": "At the cable car",
   "teile": [
    {
-    "stimme": "en-GB-LibbyNeural",
-    "text": "Hi Tom, it's Aunt Kate. I've got a great idea for Saturday: let's go to the zoo! I can pick you up at half past nine at your house. Please bring a packed lunch, a drink and your cap. It's going to be sunny.",
+    "stimme": "en-GB-RyanNeural",
+    "text": "Good morning and welcome to the Alpenblick cable car. Because of strong wind, the cable car to the top is closed until two o'clock this afternoon. The cable car to the middle station is open.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 700
    },
    {
-    "stimme": "en-GB-LibbyNeural",
-    "text": "The zoo has new baby penguins, and at eleven o'clock you can watch them eat. If it rains, we can go to the science museum instead. Please call me back tonight. Bye!",
+    "stimme": "en-GB-RyanNeural",
+    "text": "From the middle station you can go hiking, or you can visit our rope park. You can rent mountain bikes and scooters at the shop next to the ticket office. The restaurant at the middle station is open until five o'clock. Enjoy your day in the mountains!",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0
@@ -644,83 +644,6 @@
    {
     "stimme": "en-GB-MaisieNeural",
     "text": "We have dinner at six o'clock, and I usually go to bed at nine. Life on a farm is hard work, but I love it.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 0
-   }
-  ]
- },
- {
-  "datei": "audio/en/e1h-tinyhouse.mp3",
-  "sprache": "en",
-  "titel": "Living in a tiny house",
-  "teile": [
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Hello and welcome to Homes and Lives. Today I'm talking to Dan Evans. Dan lives with his wife and his daughter in a tiny house. Dan, how big is your house?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "It's very small. It's only eight metres long and two and a half metres wide. It's on wheels, so we can move it with a car.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Wow! How many rooms are there?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "There's a living room with a small kitchen, a tiny bathroom and two beds under the roof. My daughter Rosie sleeps up there, too.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Why did you decide to live in a tiny house?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "We wanted a simple life. A big house is expensive, and you need a lot of time to clean it. Now we don't have much stuff, and we have more time for things we like. For example, we go walking in the forest.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Is there anything you don't like?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "Well, when it rains, it's really loud on the roof. And when Rosie's friends come to visit, it gets very crowded! In summer we eat outside, so that's no problem.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Would you go back to a normal house?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "No way! We're very happy here.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0
@@ -924,132 +847,55 @@
   ]
  },
  {
-  "datei": "audio/en/eh3-newgirl.mp3",
+  "datei": "audio/en/eh2-factory.mp3",
   "sprache": "en",
-  "titel": "The new girl",
+  "titel": "A visit to a chocolate factory",
   "teile": [
    {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "It was Sofia's first day at her new school. Her family had moved from Portugal to England only two weeks before. In the classroom, Sofia sat in the last row. She looked out of the window and didn't say a word.",
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Welcome to our chocolate factory! Our cocoa beans come from Ghana and Ecuador. They travel to Europe by ship. At the port we put them on trucks, and the trucks bring them here.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-MaisieNeural",
+    "text": "What do you do with the beans first?",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450
    },
    {
     "stimme": "en-GB-LibbyNeural",
-    "text": "Everybody, this is Sofia. She comes from Lisbon. Mia, can you show her around at break time?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Mia nodded. At break time, she found Sofia next to the door. Sofia was holding her lunch box very tightly.",
+    "text": "First, we clean the beans and roast them in a big oven. That gives the chocolate its flavour. Then we break the beans into small pieces and grind them. After that, they turn into a thick brown mixture. We call it cocoa mass.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450
    },
    {
     "stimme": "en-GB-MaisieNeural",
-    "text": "Hi! Do you want to see the library? It's my favourite place in the school.",
+    "text": "And where does the sugar come in?",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450
    },
    {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Sofia smiled a little and followed her. In the library, Mia showed her a big book about animals. Sofia pointed at a picture of a dolphin and said, very quietly, that she loved dolphins.",
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Good question! Now we add sugar and milk powder. Then a machine stirs the mixture for many hours. This makes the chocolate very smooth. Finally, we pour the chocolate into moulds and let it cool down. And then the chocolate bars get their wrappers.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450
    },
    {
     "stimme": "en-GB-MaisieNeural",
-    "text": "Me too! There are dolphins near Lisbon, right? Can you tell me about them tomorrow?",
+    "text": "Can we taste it now?",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 450
    },
    {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "The next morning, Sofia didn't sit in the last row. She sat next to Mia, and she had brought a photo of a dolphin from home.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 0
-   }
-  ]
- },
- {
-  "datei": "audio/en/eh3-alps.mp3",
-  "sprache": "en",
-  "titel": "Hiking in the Alps",
-  "teile": [
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Today on Travel Time I'm talking to Marco. He is a mountain guide in Grindelwald, in Switzerland. Marco, what do people love about the Alps?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "Oh, lots of things! The mountains, the lakes, the fresh air. And the cows with their big bells! Many tourists say the Alps look like a postcard.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "What's the best time for hiking?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "Most people come in July and August. But my favourite time is September. There are fewer people on the paths, and the colours are beautiful.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "What should hikers bring?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "Good shoes, a rain jacket, enough water and something to eat. And sun cream! The sun is very strong up in the mountains.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "Is hiking in the mountains dangerous?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "It can be. The weather changes very fast. On hot summer days there are often thunderstorms in the afternoon. That's why I always tell my groups: start early in the morning. Then you're back before the storm comes.",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-SoniaNeural",
-    "text": "One last question: what's your favourite mountain?",
-    "tempo": "-10%",
-    "hoehe": "+0%",
-    "pause": 450
-   },
-   {
-    "stimme": "en-GB-RyanNeural",
-    "text": "That's easy. The Eiger. I can see it from my kitchen window every morning, and it still makes me happy.",
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Of course! But only one piece each, please!",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0
@@ -1141,6 +987,139 @@
    {
     "stimme": "en-GB-ThomasNeural",
     "text": "I think so too!",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh3-alps.mp3",
+  "sprache": "en",
+  "titel": "Hiking in the Alps",
+  "teile": [
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Today on Travel Time I'm talking to Marco. He is a mountain guide in Grindelwald, in Switzerland. Marco, what do people love about the Alps?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Oh, lots of things! The mountains, the lakes, the fresh air. And the cows with their big bells! Many tourists say the Alps look like a postcard.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "What's the best time for hiking?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Most people come in July and August. But my favourite time is September. There are fewer people on the paths, and the colours are beautiful.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "What should hikers bring?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "Good shoes, a rain jacket, enough water and something to eat. And sun cream! The sun is very strong up in the mountains.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Is hiking in the mountains dangerous?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "It can be. The weather changes very fast. On hot summer days there are often thunderstorms in the afternoon. That's why I always tell my groups: start early in the morning. Then you're back before the storm comes.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "One last question: what's your favourite mountain?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-RyanNeural",
+    "text": "That's easy. The Eiger. I can see it from my kitchen window every morning, and it still makes me happy.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 0
+   }
+  ]
+ },
+ {
+  "datei": "audio/en/eh3-fairtrade.mp3",
+  "sprache": "en",
+  "titel": "Is fair trade worth it?",
+  "teile": [
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Ruth, in your shop you only sell fair trade chocolate. Why?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "A few years ago I saw a film about cocoa farms in West Africa. Many farmers there work very hard, but they get very little money for their beans. Some children have to work on the farms and can't go to school. After the film I couldn't sleep. I knew I had to do something.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "What is different with fair trade?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "The farmers get a fair price for their cocoa. They also get extra money for their village, for example for a school or for clean water. And children must not do hard work on the farms. They go to school.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "But fair trade chocolate is more expensive, isn't it?",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-LibbyNeural",
+    "text": "Yes, a little. Some customers say: «Why should I pay more?» Then I let them taste it. Most of them come back the next week. I think when you know the story behind your chocolate, it tastes even better.",
+    "tempo": "-10%",
+    "hoehe": "+0%",
+    "pause": 450
+   },
+   {
+    "stimme": "en-GB-SoniaNeural",
+    "text": "Thank you, Ruth.",
     "tempo": "-10%",
     "hoehe": "+0%",
     "pause": 0

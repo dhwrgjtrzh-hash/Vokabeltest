@@ -7,42 +7,46 @@
               (jede Gruppe: mögliche Schreibweisen), beispiel = so könnte der Satz lauten
      text     kurzer eigener Text mit Checkliste (woerter = Hinweise, an denen die Checkliste
               einen Punkt erkennt) – die Lehrperson liest den Text in der Station
+   Grundlage: Class vocabulary und Strukturen pro Unit aus dem Teacher's Book Young World 4.
+   Nicht wie in den Lernkontrollen (Einkaufsliste Sonntagsbrunch, have-to-Bilder, Butler John, Postkarte, Bildbeschreibungen).
    ===================================================================== */
 const EN_SCHREIBEN = [
 
-/* ---------- Unit 1: The way we live ---------- */
+/* ---------- Unit 1: The way we live (Frühstück, Mengenangaben, how much/many, always/usually/never, Nachhaltigkeit) ---------- */
 { unit:1,
   satzbau:[
-    "I live in a flat with my family.",
-    "We have breakfast at seven o'clock.",
-    "My sister rides her bike to school.",
-    "They don't have a garden.",
-    "Do you live on a houseboat?"
+    "I usually have a bowl of porridge for breakfast.",
+    "We never throw away old bread.",
+    "How many eggs do you need?",
+    "My brother sometimes eats baked beans on toast.",
+    "We buy regional and seasonal food."
   ],
   luecken:[
-    { satz:"Femke lives on a ___ in Amsterdam.", de:"Hausboot", loesung:["houseboat"] },
-    { satz:"I ___ my bedroom with my little brother.", de:"teile", loesung:["share"] },
-    { satz:"Lucy lives in a ___ on the tenth floor.", de:"Wohnung", loesung:["flat"] },
-    { satz:"The ___ to school takes twenty minutes.", de:"Fahrt / Reise", loesung:["journey"] },
-    { satz:"Batu's family lives in a round ___.", de:"Zelt", loesung:["tent"] },
-    { satz:"Every morning I get ___ at seven o'clock.", de:"aufstehen = get …", loesung:["up"] }
+    { satz:"Can I have a ___ of cheese, please?", de:"Scheibe", loesung:["slice"] },
+    { satz:"I drink a ___ of milk every morning.", de:"Glas", loesung:["glass"] },
+    { satz:"Yoghurt and cheese are ___ products.", de:"Molkerei-", loesung:["dairy"] },
+    { satz:"How ___ sugar do we need for the cake?", de:"wie viel = how …", loesung:["much"] },
+    { satz:"Strawberries in winter come from ___ away.", de:"weit", loesung:["far"] },
+    { satz:"We put the apple skins on the ___.", de:"Kompost", loesung:["compost"] },
+    { satz:"Apples are ___ in autumn.", de:"saisonal", loesung:["seasonal"] },
+    { satz:"Don't throw away old bread. You can ___ it away to a farmer.", de:"verschenken = … away", loesung:["give"] }
   ],
   saetze:[
-    { woerter:["Femke","live","houseboat"], muss:[["femke"],["lives"],["houseboat"]], beispiel:"Femke lives on a houseboat.", tipp:"he / she / it → Verb mit -s: she lives" },
-    { woerter:["I","get up","seven o'clock"], muss:[["i"],["get up"],["seven","7"]], beispiel:"I get up at seven o'clock.", tipp:"Die Uhrzeit: at seven o'clock" },
-    { woerter:["Batu","ride","horse"], muss:[["batu"],["rides","can ride"],["horse"]], beispiel:"Batu rides a horse.", tipp:"he → rides" },
-    { woerter:["we","not","have","garden"], muss:[["we"],["don't","do not"],["have"],["garden"]], beispiel:"We don't have a garden.", tipp:"Verneinung: don't + Verb" }
+    { woerter:["I","usually","eat","cereal"], muss:[["i"],["usually"],["eat"],["cereal"]], beispiel:"I usually eat cereal for breakfast.", tipp:"always/usually/never stehen vor dem Verb: I usually eat …" },
+    { woerter:["how many","eggs","need"], muss:[["how many"],["eggs"],["do","does"],["need"]], beispiel:"How many eggs do we need?", tipp:"Frage: How many … do we need?" },
+    { woerter:["she","never","drink","coffee"], muss:[["she"],["never"],["drinks"],["coffee"]], beispiel:"She never drinks coffee.", tipp:"she → drinks (mit -s)" },
+    { woerter:["we","recycle","bottles"], muss:[["we"],["recycle"],["bottles"]], beispiel:"We recycle our bottles.", tipp:"we → recycle (ohne -s)" }
   ],
-  text:{ titel:"My dream home", auftrag:"Write about your dream home.",
-    hilfe:"Stell dir dein Traumzuhause vor: ein Hausboot, ein Baumhaus, eine Wohnung hoch über der Stadt … Schreib 5 bis 8 Sätze.",
+  text:{ titel:"My special breakfast", auftrag:"Write about your breakfast.",
+    hilfe:"Was isst und trinkst du an Schultagen? Gibt es ein spezielles Frühstück am Wochenende oder an Festtagen? Schreib 5 bis 8 Sätze.",
     punkte:[
-      { text:"Where is your dream home?", woerter:["live","home","house","flat","boat","tent","is in","is on","is near"] },
-      { text:"What is it like? (big, small, round …)", woerter:["big","small","round","long","old","new","beautiful","great","cool","tiny","high","nice","wooden","modern"] },
-      { text:"What rooms are there?", woerter:["kitchen","bedroom","bathroom","living room","room","rooms"] },
-      { text:"Who or what lives there with you?", woerter:["with","family","brother","sister","friend","friends","dog","cat","parents","mum","dad","pet"] },
-      { text:"What do you do there every day?", woerter:["every day","every morning","every evening","in the morning","after school","play","swim","read","watch","cook","sleep"] }
+      { text:"What do you usually eat on school days?", woerter:["usually","school days","school day","eat","cereal","bread","muesli","toast","porridge"] },
+      { text:"What do you drink?", woerter:["drink","milk","tea","juice","cocoa","hot chocolate","water"] },
+      { text:"Is there a special breakfast? (weekend, birthday …)", woerter:["weekend","sunday","saturday","special","birthday","holiday","christmas","occasion"] },
+      { text:"Quantities (a bowl of, a slice of, a glass of …)", woerter:["a bowl of","a slice of","a glass of","a cup of","a piece of","a loaf of","a box of"] },
+      { text:"How often? (always, usually, sometimes, never)", woerter:["always","usually","often","sometimes","never"] }
     ],
-    anfaenge:["My dream home is …","It is …","There is a … / There are …","I live there with …","Every day I …"],
+    anfaenge:["On school days I usually …","I always drink …","On Sundays we …","I never …","My favourite breakfast is …"],
     minWoerter:35 }
 },
 
@@ -52,8 +56,8 @@ const EN_SCHREIBEN = [
     "Storks build their nests on roofs.",
     "Marmots sleep for six months.",
     "Sea turtles lay their eggs in the sand.",
-    "A jellyfish has no brain.",
-    "Eagles and foxes are enemies of the marmot."
+    "Whales have to come up to breathe.",
+    "An eagle is faster than a marmot."
   ],
   luecken:[
     { satz:"The Alps are the ___ of the marmot.", de:"Lebensraum", loesung:["habitat"] },
@@ -61,7 +65,7 @@ const EN_SCHREIBEN = [
     { satz:"Some sharks ___ eggs.", de:"legen", loesung:["lay"] },
     { satz:"Sea turtles swim to the top to ___ air.", de:"atmen", loesung:["breathe"] },
     { satz:"Only a few baby turtles ___.", de:"überleben", loesung:["survive"] },
-    { satz:"Some jellyfish are ___.", de:"giftig", loesung:["poisonous"] },
+    { satz:"Some snakes are ___.", de:"giftig", loesung:["poisonous"] },
     { satz:"In August, storks start their long ___ to Africa.", de:"Wanderung, Zug (der Tiere)", loesung:["migration"] },
     { satz:"In autumn, a marmot can ___ up to seven kilograms.", de:"wiegen", loesung:["weigh"] }
   ],
