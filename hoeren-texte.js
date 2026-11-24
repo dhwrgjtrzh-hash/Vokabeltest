@@ -112,7 +112,7 @@ const HOERTEXTE = [
   rollen:{ M:{name:"Moderatorin", stimme:"erzaehlerin"}, G:{name:"Herr Graf", stimme:"mann_ch"} },
   teile:[
     ["M","Willkommen bei «Wissen am Mittag». In der Schweiz trinken wir jedes Jahr aus über einer Milliarde PET-Flaschen. Was passiert eigentlich mit diesen Flaschen? Das frage ich Herrn Graf. Er arbeitet in einer Recyclingfirma. Herr Graf, wohin gehört eine leere PET-Flasche?"],
-    ["G","In die PET-Sammlung. Sammelstellen gibt es in fast jedem Supermarkt und an vielen Bahnhöfen. Ganz wichtig: Nur Getränkeflaschen aus PET gehören hinein. Flaschen von Shampoo oder Speiseöl gehören nicht in die PET-Sammlung."],
+    ["G","In die PET-Sammlung. Sammelstellen gibt es in fast jedem Supermarkt und an vielen Bahnhöfen. Ganz wichtig: Nur Getränkeflaschen aus PET gehören hinein. Flaschen von Shampoo oder Putzmitteln gehören nicht in die PET-Sammlung."],
     ["M","Und was passiert dann mit den Flaschen?"],
     ["G","Ein Lastwagen bringt sie in ein Sortierwerk. Dort werden sie nach Farben sortiert: durchsichtig, hellblau, grün und braun. Danach werden die Flaschen in ganz kleine Stücke zerschnitten und gewaschen. Diese Stücke nennt man Flakes, auf Deutsch Flocken."],
     ["M","Und aus diesen Flocken macht man wieder neue Flaschen?"],
@@ -122,7 +122,7 @@ const HOERTEXTE = [
     ["M","Herzlichen Dank, Herr Graf."]
   ],
   fragen:[
-    { typ:"mc", art:"finden", frage:"Was gehört in die PET-Sammlung?", richtig:"leere Getränkeflaschen aus PET", falsch:["Shampooflaschen","Flaschen von Speiseöl","alle Flaschen aus Plastik"] },
+    { typ:"mc", art:"finden", frage:"Was gehört in die PET-Sammlung?", richtig:"leere Getränkeflaschen aus PET", falsch:["Shampooflaschen","Flaschen von Putzmitteln","alle Flaschen aus Plastik"] },
     { typ:"ordnen", art:"verbinden", frage:"Was passiert mit der Flasche? Bring die Schritte in die richtige Reihenfolge.", items:["Die Flasche kommt in die PET-Sammlung.","Ein Lastwagen bringt sie ins Sortierwerk.","Die Flaschen werden nach Farben sortiert.","Sie werden zerschnitten und gewaschen.","Die Flocken werden geschmolzen.","Eine Fabrik macht neue Flaschen."] },
     { typ:"kurz", art:"wortschatz", frage:"Wie nennt man die ganz kleinen Plastikstücke?", loesung:["Flakes","Flocken"] },
     { typ:"tf", art:"verbinden", frage:"Stimmt das?", aussagen:[["Mehr als die Hälfte der PET-Flaschen kommt zurück.","Stimmt"],["Aus farbigen Flocken kann man Fasern für Pullover machen.","Stimmt"],["Herr Graf arbeitet in einem Supermarkt.","Stimmt nicht"],["Eine PET-Flasche braucht 100 Jahre, bis sie zerfällt.","Wurde nicht gesagt"]] },

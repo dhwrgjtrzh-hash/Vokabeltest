@@ -181,7 +181,7 @@ function luecke(it){
     const genau = L.includes(a), fast = !genau && L.some(l => l.length >= 4 && abstand(a, l) <= 1);
     const p = genau ? 1 : fast ? 0.5 : 0;
     f.style.borderColor = genau ? "var(--gut)" : fast ? "#d39b16" : "var(--falsch)";
-    S.log[S.i] = {frage:it.satz.replace("___", "…") + " (" + it.de + ")", antwort:f.value.trim(), loesung:it.loesung[0], punkte:p, thema:"wortschatz", t:Date.now()};
+    S.log[S.i] = {frage:it.satz.replace("___", "…") + " (" + it.de + ")", antwort:f.value.trim(), loesung:it.loesung[0], punkte:p, thema:"woerter", t:Date.now()};
     meldung(genau ? true : fast ? "halb" : false, genau ? "Richtig!" : fast ? `Fast! Achte auf die Schreibweise: <b>${esc(it.loesung[0])}</b> (½ Punkt)` : `Nicht ganz. Richtig ist: <b>${esc(it.loesung[0])}</b>`);
     weiterKnopf();
   };
@@ -284,7 +284,7 @@ function zeigeText(){
       return meldung("halb", `Bevor du abgibst:<p>${h.map(esc).join("<br>")}</p><p>Du kannst deinen Text noch verbessern – oder nochmals auf «Abgeben» tippen.</p>`);
     }
     const log = T.punkte.map((p,i) => ({frage:p.text, antwort: erfuellt[i] ? "✓" : "–", loesung:"", punkte: erfuellt[i] ? 1 : 0, thema:"text", t:Date.now()}));
-    if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · Mein Text: ${T.titel}`, log, {unit:S.U.unit, teil:"text", text:t.slice(0, 4000), woerter, saetze:saetze.length, start:S.start, dauer:Date.now() - S.start});
+    if(window.LP) LP.runde(UEBUNG, `Unit ${S.U.unit} · Mein Text: ${T.titel}`, log, {unit:S.U.unit, teil:"text", aufsatz:t.slice(0, 4000), woerter, saetze:saetze.length, start:S.start, dauer:Date.now() - S.start});
     const key = S.U.unit + ".text", x = P.teile[key] || (P.teile[key] = {best:0, n:0});
     x.n++; x.best = Math.max(x.best, erfuellt.filter(Boolean).length / erfuellt.length); x.t = Date.now(); speichereP();
     store.set(ek, "");
