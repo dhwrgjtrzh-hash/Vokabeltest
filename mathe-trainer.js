@@ -16,6 +16,14 @@
      (im Lernportal rot/orange je nach Fehlern) und es geht mit dem nächsten Lernziel weiter. So kommen auch
      Kinder mit vielen Fehlern durch alle Grundanforderungen. Bearbeitete Lernziele kommen später wieder dran
      (vor den erweiterten) und können dann noch geschafft werden.
+   - Aufwärmen (seit 24.11.2026): Eine Grundanforderung ist rot, solange sie nicht geschafft ist und nicht klappt –
+     ab 4 Aufgaben weniger als 60 % richtig oder nach 10 Aufgaben «bearbeitet» ohne «geschafft» (gleich im Lernportal).
+     Dann kommen ganz einfache Aufgaben (warm() im Trainer, Stufe 0), nach 3 richtigen wieder Aufgaben der
+     Grundanforderung, dort, wo das Kind war. Wieder aufgewärmt wird beim nächsten Einstieg in ein rotes Lernziel
+     oder wenn seit dem letzten Aufwärmen wieder 4 Aufgaben unter 60 % richtig sind.
+     Aufwärm-Aufgaben zählen nicht für «geschafft» und nicht für «% richtig» (n/ok), wohl aber für die 10 Aufgaben bis
+     «bearbeitet». Farben: rot = noch nicht geschafft (Aufwärmen), gelb leuchtend = Grundanforderung geschafft,
+     grün leuchtend = erweiterte Anforderung geschafft.
    - «Ich komme nicht weiter» (nach einer Rückfrage): Lösung anschauen, zählt als falsch. «Weiter» geht erst nach
      2 Minuten – damit die Kinder den Lösungsweg anschauen statt durchzuklicken (bleibt auch nach Neuladen).
      (Bis 18.11.2026: drei Stufen mit je 5 Punkten – das waren zu viele Aufgaben pro Matheplan.)
@@ -156,7 +164,10 @@ const NEED = [0, 2, 4];      // so viele Punkte braucht es: Stufe 1 · Einstieg 
 const LEVELS = 2;            // mit Stufe 2 ist ein Lernziel geschafft; Stufe 3 · knifflig nur noch als Zusatz
 const DURCHGANG = 10;        // so viele Aufgaben pro Lernziel, dann «bearbeitet» und weiter (wenn nicht schon geschafft)
 const ZUSATZ_KNIFFLIG = 0.4; // geschaffte Lernziele: so oft kommt eine knifflige Aufgabe, sonst eine wie im Test
-const LVNAME = ["","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
+const LVNAME = ["Aufwärmen · ganz einfach","Stufe 1 · Einstieg","Stufe 2 · wie im Test","Stufe 3 · knifflig"];
+const AW_ZIEL = 3;           // Aufwärmen: so viele richtige ganz einfache Aufgaben, dann zurück zu den Grundanforderungen
+const AW_MAX = 6;            // «bearbeitet» wartet, bis das Aufwärmen fertig ist – aber höchstens so viele Aufwärm-Aufgaben
+const ROT_MIN = 4, ROT_Q = 0.6;   // rot wie im Lernportal: ab 4 Aufgaben weniger als 60 % richtig
 let gz = (store.get("uebung.gz")||store.get("dz.gz")||store.get("rs.gz")||"").replace(/\D/g,"");
 const gzGueltig = v => /^\d{1,2}$/.test(String(v)) && +v >= 1 && +v <= 21;   // Glückszahlen der Klasse: 1 bis 21
 if(gz && !gzGueltig(gz)) gz = "";
@@ -176,6 +187,29 @@ function gs(id){
   }
   return s;
 }
+
+/* Rot: Ein Lernziel der Grundanforderungen klappt noch nicht – ab 4 Aufgaben weniger als 60 % richtig (wie im Lernportal).
+   Gezählt werden die Aufgaben seit dem letzten Aufwärmen (awB), sonst käme gleich danach wieder Aufwärmen.
+   Nur bei Lernzielen mit Aufwärm-Aufgaben (warm), nie bei erweiterten Anforderungen. */
+function rot(id){
+  const g = GOAL[id];
+  if(!g || g.erw || typeof g.warm !== "function") return false;
+  const s = gs(id);
+  if(s.done || s.aw) return false;
+  const n = s.n - (s.awB ? s.awB.n : 0), ok = s.ok - (s.awB ? s.awB.ok : 0);
+  return n >= ROT_MIN && ok / n < ROT_Q;
+}
+/* Rot im Lernportal: nicht geschafft und ab 4 Aufgaben unter 60 % richtig oder «bearbeitet» ohne «geschafft».
+   Beim Einstieg in ein solches Lernziel wird zuerst aufgewärmt – ausser es wurde seit dem letzten Aufwärmen nicht weitergeübt. */
+function rotBeimEinstieg(id){
+  const g = GOAL[id];
+  if(!g || g.erw || typeof g.warm !== "function") return false;
+  const s = gs(id);
+  if(s.done || s.aw) return false;
+  const seither = s.n - (s.awB ? s.awB.n : 0);
+  return seither >= 1 && ((s.n >= ROT_MIN && s.ok / s.n < ROT_Q) || !!s.bearbeitet);
+}
+const amAufwaermen = (id, s) => !!(s.aw && !s.done && GOAL[id] && typeof GOAL[id].warm === "function");
 
 /* Aufgaben aus der Lernzielkontrolle kommen nie vor (SPERRE im Trainer) */
 function lzkGesperrt(t, id){
@@ -238,22 +272,27 @@ function otherNumber(){ sendPending(); STAND.jetzt(true); S = null; gz = ""; sto
 function startGoal(id){
   wiederAufnehmen(id);
   P.last = id; saveP();
-  S = {mode:"goal", goal:id, log:[], pending:[], nr:0};
+  S = {mode:"goal", goal:id, log:[], pending:[], nr:0, frisch:true};
   next();
 }
 
 function next(){
   const id = S.goal;
   const st = gs(id);
-  let lv = st.done ? (Math.random() < ZUSATZ_KNIFFLIG ? 3 : 2) : st.lv;   // geschafft: Zusatzaufgaben, auch knifflige
-  const probe = st.lv===1 && st.pr===0 && !st.done && !st.probed;   // Einstufung: gleich mit Stufe 2 beginnen
+  if(rot(id) || (S.frisch && rotBeimEinstieg(id))){ st.aw = {n:0, r:0, f:0}; saveP(); }   // rot → zuerst ganz einfache Aufgaben
+  S.frisch = false;
+  if(st.aw && !amAufwaermen(id, st)){ delete st.aw; saveP(); }
+  const aw = amAufwaermen(id, st);
+  let lv = aw ? 0 : st.done ? (Math.random() < ZUSATZ_KNIFFLIG ? 3 : 2) : st.lv;   // geschafft: Zusatzaufgaben, auch knifflige
+  const probe = !aw && st.lv===1 && st.pr===0 && !st.done && !st.probed;   // Einstufung: gleich mit Stufe 2 beginnen
   if(probe) lv = 2;
+  const gen = aw ? ()=>GOAL[id].warm() : ()=>GOAL[id].gen(lv);
   const sig = t=>t.type+"|"+String(t.html||"").replace(/<[^>]*>/g,"").replace(/[0-9.,’'\/]+/g,"#").slice(0,70);
   let t;
-  for(let k=0;k<60;k++){ const c = GOAL[id].gen(lv); if(!c || lzkGesperrt(c, id)) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
-  for(let k=0; !t && k<2000; k++){ const c = GOAL[id].gen(lv); if(c && !lzkGesperrt(c, id)) t = c; }   // nie eine Testaufgabe
+  for(let k=0;k<60;k++){ const c = gen(); if(!c || lzkGesperrt(c, id)) continue; t = c; if(!S.lastSig || sig(c)!==S.lastSig) break; }
+  for(let k=0; !t && k<2000; k++){ const c = gen(); if(c && !lzkGesperrt(c, id)) t = c; }   // nie eine Testaufgabe
   S.lastSig = sig(t);
-  t.goal = id; t.lv = lv; t.probe = probe;
+  t.goal = id; t.lv = lv; t.probe = probe; t.aw = aw;
   S.task = t; S.done = false; S.nr++;
   draw(); S.hilfeOffen = false;
 }
@@ -263,6 +302,13 @@ const fracInput = (a,b)=>`<span class="fin">${inp(a,"small","numeric")}<i></i>${
 
 function head(){
   const g = GOAL[S.task.goal], s = gs(g.id), need = NEED[s.lv];
+  if(S.task.aw){   // Aufwärmen: roter Bereich
+    const r = s.aw ? s.aw.r : 0;
+    let d = ""; for(let i=0;i<AW_ZIEL;i++) d += `<i class="${i<r?"on":""}"></i>`;
+    return `<div class="sesshead"><span class="qtype" style="background:${g.c}1a;color:${g.c};margin:0">${g.ic} ${g.code?g.code+" · ":""}${g.title}</span><span class="anf aw">Aufwärmen</span></div>
+    <div class="sesshead"><b>${LVNAME[0]}</b><span class="grow"></span><span class="dots">${d}<span>${r}/${AW_ZIEL}</span></span></div>
+    ${s.aw && !s.aw.n ? `<p class="awinfo">Dieses Lernziel klappt noch nicht ganz. Darum kommen jetzt ein paar <b>ganz einfache Aufgaben zum Aufwärmen</b>. Nach ${AW_ZIEL} richtigen geht es weiter mit den Grundanforderungen.</p>` : ""}`;
+  }
   const folge = (s.streak||0)>1 ? `🔥 ${s.streak} in Folge` : "";
   let dots=""; if(!s.done) for(let i=0;i<need;i++) dots+=`<i class="${i<s.pr?"on":""}"></i>`;
   const stand = s.done ? `<span class="dots"><span>${folge}</span></span>`
@@ -437,9 +483,18 @@ function finish(ok, given, extra){
   app.querySelectorAll(".cmpbtns button").forEach(b=>b.disabled=true);
   const c=document.getElementById("check"); if(c) c.hidden=true;
   const nw=document.getElementById("nw"); if(nw) nw.hidden=true;
-  s.n++; if(ok) s.ok++;
-  let toast = "";
-  if(t.probe){
+  if(!t.aw){ s.n++; if(ok) s.ok++; }                         // Aufwärm-Aufgaben zählen nicht für «% richtig»
+  const wirdRot = !t.aw && rot(g.id);                         // diese Antwort macht das Lernziel rot → Aufwärmen
+  let toast = "", awFertig = false;
+  if(t.aw){
+    if(!s.aw) s.aw = {n:0, r:0, f:0};
+    s.aw.n++;
+    if(ok){ s.aw.r++; s.aw.f = 0; } else { s.aw.f = (s.aw.f||0) + 1; if(s.aw.f >= 2) S.hilfeOffen = true; }
+    if(s.aw.r >= AW_ZIEL){
+      delete s.aw; s.awB = {n:s.n, ok:s.ok}; s.fe = 0; awFertig = true;   // ab jetzt wird neu gezählt
+      toast = `💪 Gut aufgewärmt! Jetzt geht es weiter mit den Grundanforderungen – ${s.lv===1 ? "zuerst mit dem <b>Einstieg</b>" : "mit Aufgaben <b>wie im Test</b>"}${s.lv===2 && s.pr ? ` (${s.pr===1?"dein 1 Punkt ist":`deine ${s.pr} Punkte sind`} noch da)` : ""}.`;
+    }
+  } else if(t.probe){
     s.probed = true;
     if(ok){ s.lv = 2; s.pr = 1; s.streak = 1; toast = `🚀 Stark! Das kannst du schon – den Einstieg überspringst du.`; }
     else s.streak = 0;                         // weiter mit Stufe 1 · Einstieg
@@ -450,7 +505,7 @@ function finish(ok, given, extra){
     s.pr = Math.min(NEED[s.lv], s.pr+1);
     if(s.pr >= NEED[s.lv]){
       if(s.lv < LEVELS && s.zw){ s.lv = 2; s.pr = Math.min(s.pr2||0, NEED[2]-1); s.pr2 = 0; s.zw = false; s.streak = 0;
-        toast = `👍 Gut! Jetzt wieder Aufgaben <b>wie im Test</b>${s.pr?` – deine ${s.pr} ${s.pr===1?"Punkt ist":"Punkte sind"} noch da`:""}.`; }
+        toast = `👍 Gut! Jetzt wieder Aufgaben <b>wie im Test</b>${s.pr?` – ${s.pr===1?"dein 1 Punkt ist":`deine ${s.pr} Punkte sind`} noch da`:""}.`; }
       else if(s.lv < LEVELS){ s.lv++; s.pr = 0; s.streak = 0; toast = `🎉 Einstieg geschafft! Jetzt kommen Aufgaben <b>wie im Test</b>.`; }
       else { s.done = true; S.goalDone = true;
         const nx = nextGoal(g.id);
@@ -460,6 +515,7 @@ function finish(ok, given, extra){
     s.streak = 0; s.fe = (s.fe||0) + 1;
     if(s.lv===1){ if(s.fe>=2) S.hilfeOffen = true; }          // Einstieg: ein Fehler kostet keinen Punkt
     else if(s.fe<2) s.pr = Math.max(0, s.pr-1);
+    else if(wirdRot) s.fe = 0;                                  // rot: gleich Aufwärmen statt kurzer Zwischenhalt
     else {                     // zwei Fehler hintereinander bei «wie im Test» (der zweite kostet keinen Punkt mehr)
       s.fe = 0;
       s.pr2 = s.pr; s.lv = 1; s.pr = 0; s.zw = true; S.hilfeOffen = true;
@@ -468,13 +524,19 @@ function finish(ok, given, extra){
   }
   /* Durchgang fertig: Nach 10 Aufgaben ist das Lernziel «bearbeitet» – die Hausaufgabe ist gemacht, auch mit Fehlern */
   if(!s.done) s.nb = (s.nb||0) + 1;
-  if(!s.done && s.nb >= DURCHGANG){
+  const wartet = s.aw && s.aw.n < AW_MAX;                      // erst fertig aufwärmen, dann «bearbeitet»
+  if(!s.done && s.nb >= DURCHGANG && !wartet){
     s.bearbeitet = Date.now(); s.nb = 0;
     const nx = nextGoal(g.id);
     if(nx && (g.erw || !GOAL[nx].erw)){                         // von einer Grundanforderung nie zu einer erweiterten
       S.weiter = nx; P.last = nx; S.hilfeOffen = false;          // das nächste Lernziel beginnt mit der Einstufung
-      toast = `📝 Du hast «${g.title}» <b>bearbeitet</b>. Es hat noch Fehler – du kannst es später nochmals üben.<br>Jetzt geht es weiter mit <b>«${GOAL[nx].title}»</b>.`;
+      toast = `${awFertig ? "💪 Gut aufgewärmt!<br>" : ""}📝 Du hast «${g.title}» <b>bearbeitet</b>. Es hat noch Fehler – du kannst es später nochmals üben.<br>Jetzt geht es weiter mit <b>«${GOAL[nx].title}»</b>.`;
     } else toast = (toast ? toast+"<br>" : "") + `📝 Du hast «${g.title}» <b>bearbeitet</b>. Übe weiter – vielleicht schaffst du es noch!`;
+  }
+  /* rot geworden und es geht beim gleichen Lernziel weiter: jetzt aufwärmen */
+  if(wirdRot && !S.weiter && !s.done){
+    s.aw = {n:0, r:0, f:0}; S.hilfeOffen = false;
+    toast = (toast ? toast+"<br>" : "") + `🔴 Das ist noch schwierig. Jetzt kommen ein paar <b>ganz einfache Aufgaben zum Aufwärmen</b>.`;
   }
   saveP();
   const entry = {nr:S.nr, thema:g.title, stufe:t.lv, frage:t.text, antworten:[given], loesung:t.show, punkte:ok?1:0, test:false, t:Date.now()};
@@ -510,7 +572,7 @@ function go(){
     const nx = S.weiter || nextGoal(S.goal);
     S.goalDone = false; S.weiter = null;
     sendPending();
-    if(nx){ wiederAufnehmen(nx); S.goal = nx; P.last = nx; saveP(); }
+    if(nx){ wiederAufnehmen(nx); S.goal = nx; P.last = nx; S.frisch = true; saveP(); }
   }
   if(allDone()) S.goal = pick(GOALS).id;   // alles geschafft: gemischt weiterüben
   next();

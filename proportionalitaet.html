@@ -69,6 +69,18 @@ const GOALS = [
  help:()=>`<p><b>Proportional</b> heisst: Rechnest du den einen Wert <b>mal</b> oder <b>durch</b> eine Zahl, rechnest du den anderen Wert genau gleich.</p>
    ${wpTab(["Zeit","Strecke"],[{l:"60 min",r:"54 km"},{l:"20 min",r:"18 km",op:": 3"},{l:"40 min",r:"36 km",op:"· 2"}])}
    <p>Ein Bus fährt 54 km/h. In 20 min fährt er 18 km, in 40 min doppelt so weit: 36 km.</p>`,
+ /* Aufwärmen (roter Bereich): Der Preis für 1 Stück ist bekannt, kleine ganze Preise, nur rechts zwei Felder */
+ warm(){
+   const ware = pick([["Hefte","Heft"],["Stifte","Stift"],["Glacen","Glace"],["Bälle","Ball"],["Brötli","Brötli"]]);
+   const p = pick([2,3,4,5,10]);
+   const xs = shuffle([2,3,4,5]).slice(0,2).sort((a,b)=>a-b);
+   const zeilen = [{l:"1", r:chfZahl(p)}].concat(xs.map(x=>({l:zahl(x), r:null})));
+   return {type:"tab", html:situation(`Alle ${ware[0]} kosten gleich viel: <b>1 ${ware[1]}</b> kostet <b>${chf(p)}</b>`)+frage(`Ergänze die Preise.`),
+     kopf:[`Anzahl ${ware[0]}`, "Preis in Fr."], zeilen, answers:xs.map(x=>x*p), k:["p"+p],
+     text:`Aufwärmen: 1 ${ware[1]} kostet ${chf(p)} · gesucht ${xs.map(x=>x+" – ?").join(", ")}`,
+     show:xs.map(x=>`${x} – ${chfZahl(x*p)}`).join("; "),
+     explain:`<p>1 ${ware[1]} kostet ${chf(p)} Für mehr ${ware[0]} rechnest du <b>mal</b>:</p>${ol(xs.map(x=>`${x} ${ware[0]}: ${x} · ${zahl(p)} Fr. = <b>${chf(x*p)}</b>`))}`};
+ },
  gen(lv){
    let kopf, rows, known, txt, fmtL=zahl, fmtR=zahl, lab, k=[], sit;
    if(lv===1){
@@ -149,6 +161,13 @@ const GOALS = [
  help:()=>`<p>1. Schreibe das bekannte Wertepaar oben hin, zum Beispiel <b>60 min – 66 km</b> (66 km/h).<br>2. Darunter, was gesucht ist: <b>50 min – ?</b><br>3. Suche einen Zwischenschritt, mit dem du gut rechnen kannst, zum Beispiel 10 min.<br>4. Rechne links und rechts gleich.</p>
    ${wpTab(["Zeit","Strecke"],[{l:"60 min",r:"66 km"},{l:"50 min",r:"?",frage:true,strich:true},{l:"60 min",r:"66 km"},{l:"10 min",r:"11 km",op:": 6"},{l:"50 min",r:"55 km",op:"· 5",fett:true}])}
    <p>Für eine Zeitdauer gehst du gleich vor – nur rechnest du dann die Strecke um und schaust, wie sich die Zeit verändert.</p>`,
+ /* Aufwärmen (roter Bereich): km/h heisst «so weit in 1 Stunde» – in 2 oder 3 Stunden doppelt oder dreimal so weit */
+ warm(){
+   const v = pick([5,10,20,30,40,50,60,100]), h = pick([2,3]), u = wer(v), s = v*h;
+   const html = situation(`${u.n} ist mit <b>${v} km/h</b> unterwegs. Das heisst: In <b>1 Stunde</b> kommt ${u.p} <b>${v} km</b> weit.`) + frage(`Wie weit kommt ${u.p} in <b>${h} Stunden</b>?`);
+   return {type:"input", html, answer:s, unit:"km", k:["v"+v, "v"+v+"t"+(h*3600)], text:`Aufwärmen: ${v} km/h – Strecke in ${h} h`, show:km(s),
+     explain: wpTab(["Zeit","Strecke"],[{l:"1 h",r:km(v)},{l:h+" h",r:km(s),op:"· "+h,fett:true}]) + `<p>${h}-mal so lange → ${h}-mal so weit: ${h} · ${v} km = <b>${km(s)}</b>.</p>`};
+ },
  gen(lv){
    for(let tries=0; tries<400; tries++){
      const v = pick(ALLE_V), u = wer(v);
@@ -189,6 +208,23 @@ const GOALS = [
    <p>4 km in 10 min → <b>24 km/h</b>.</p>
    ${wpTab(["Zeit","Strecke"],[{l:"15 s",r:"100 m"},{l:"1 min",r:"400 m",op:"· 4"},{l:"60 min",r:"24’000 m = 24 km",op:"· 60",fett:true}])}
    <p>100 m in 15 s → ebenfalls <b>24 km/h</b>.</p>`,
+ /* Aufwärmen (roter Bereich): Strecke in 1 Stunde, in 30 min oder in 2 Stunden – daraus die km/h */
+ warm(){
+   const WER = [["Eine Wanderin",3,6],["Ein Velofahrer",10,30],["Ein Schiff",10,40],["Ein Bus",30,60],["Ein Auto",40,120]];
+   for(let i=0;i<200;i++){
+     const T = pick([3600,3600,1800,7200]), v = pick([4,6,10,12,16,20,24,30,40,50,60,100]);
+     const d = v*T/3600;
+     if(!ganz(d)) continue;
+     const kand = WER.filter(w=>v>=w[1] && v<=w[2]); if(!kand.length) continue;
+     const subj = pick(kand)[0];
+     const tTxt = T===3600 ? "1 Stunde" : T===1800 ? "einer halben Stunde (30 min)" : "2 Stunden";
+     const html = situation(`${subj} legt in <b>${tTxt}</b> genau <b>${km(d)}</b> zurück.`) + frage(`Wie gross ist die Geschwindigkeit in km/h?`);
+     const explain = T===3600
+       ? `<p>km/h heisst: so viele km in <b>1 Stunde</b>. In 1 Stunde sind es ${km(d)} → <b>${v} km/h</b>.</p>`
+       : wpTab(["Zeit","Strecke"],[{l:T===1800?"30 min":"2 h", r:km(d)},{l:T===1800?"60 min":"1 h", r:km(v), op:T===1800?"· 2":": 2", fett:true}]) + `<p>In 1 Stunde sind es ${km(v)} → <b>${v} km/h</b>.</p>`;
+     return {type:"input", html, answer:v, unit:"km/h", k:["gs"+(d*1000)+"m"+T+"s"], text:`Aufwärmen: ${km(d)} in ${zeit(T)} → km/h`, show:v+" km/h", explain};
+   }
+ },
  gen(lv){
    const WER = [["Ein Pedalo",3,8],["Ein Ruderboot",6,12],["Eine Läuferin",8,20],["Ein Inline-Skater",10,25],["Eine Velofahrerin",12,40],["Ein Hund",15,40],
      ["Ein Pferd",18,60],["Ein Hase",20,60],["Ein Strauss",30,70],["Ein Delfin",20,45],["Ein Skifahrer",30,100],["Ein Gepard",60,110],["Ein Zug",60,220]];
@@ -231,6 +267,17 @@ const GOALS = [
  help:()=>`<p>Rechne bei jedem Wertepaar aus, wie viel es für <b>1</b> gibt (zum Beispiel für 1 h, 1 min oder 100 g). Ist es überall gleich viel, sind die Wertepaare proportional.</p>
    <p>In 2 h verdient Tom 30 Fr., in 5 h verdient er 75 Fr.<br>→ 30 Fr. : 2 = <b>15 Fr.</b> pro Stunde und 75 Fr. : 5 = <b>15 Fr.</b> pro Stunde → <b>proportional</b> ✓</p>
    <p>In 3 h verdient Lea 42 Fr., in 4 h verdient sie 60 Fr.<br>→ 14 Fr. und 15 Fr. pro Stunde → <b>nicht proportional</b></p>`,
+ /* Aufwärmen (roter Bereich): 1 Stück und 2 oder 3 Stück – kostet es genau das Doppelte bzw. Dreifache? */
+ warm(){
+   const w = pick([["Kugel Glace","Kugeln Glace"],["Heft","Hefte"],["Busbillett","Busbillette"],["Brötli","Brötli"]]);
+   const p = pick([2,3,4,5]), a = pick([2,3]), ja = Math.random()<.5;
+   const b = ja ? a*p : a*p - 1;                 // nicht proportional: Mengenrabatt
+   return {type:"choice", words:true, html:situation(`<b>1 ${w[0]}</b> kostet <b>${chf(p)}</b><br><b>${a} ${w[1]}</b> kosten <b>${chf(b)}</b>`) + frage(`Sind die beiden Wertepaare proportional zueinander?`),
+     options:[{label:"Ja, proportional"},{label:"Nein, nicht proportional"}], answer: ja?0:1, k:[],
+     text:`Aufwärmen: 1 ${w[0]} ${chf(p)} und ${a} ${w[1]} ${chf(b)} proportional?`, show: ja?"proportional":"nicht proportional",
+     explain: ol([`1 ${w[0]} kostet ${chf(p)} Proportional wäre: ${a} ${w[1]} kosten ${a}-mal so viel, also ${a} · ${zahl(p)} Fr. = <b>${chf(a*p)}</b>`,
+       ja ? `Sie kosten genau ${chf(b)} → <b>proportional</b>.` : `Sie kosten aber nur ${chf(b)} → <b>nicht proportional</b>.`])};
+ },
  gen(lv){
    /* Zusammenhänge: Grundmenge a (in Grundeinheiten) → Wert b = rate · a */
    const KONT = [
@@ -283,6 +330,26 @@ const GOALS = [
  help:()=>`<p>Gleich wie bei Strecke und Zeit: das bekannte Wertepaar oben, das Gesuchte darunter, dann über einen Zwischenschritt rechnen.</p>
    ${wpTab(["Gewicht","Preis"],[{l:"200 g",r:"5.20 Fr."},{l:"500 g",r:"?",frage:true,strich:true},{l:"200 g",r:"5.20 Fr."},{l:"100 g",r:"2.60 Fr.",op:": 2"},{l:"500 g",r:"13.00 Fr.",op:"· 5",fett:true}])}
    <p>Beim Durchfluss gibt die Zahl an, wie viel Wasser in <b>1 Minute</b> fliesst: 8 l/min heisst 8 l in 1 min, also 40 l in 5 min.</p>`,
+ /* Aufwärmen (roter Bereich): «pro Minute» bzw. «pro 100 g» ist bekannt – nur mal 2 bis 5 rechnen */
+ warm(){
+   const art = pick(["fluss","maschine","preis"]), f = pick([2,3,4,5]);
+   if(art==="fluss"){
+     const r = pick([2,3,5,10]);
+     return {type:"input", html:situation(`Aus einem Wasserhahn fliessen <b>${r} l pro Minute</b>.`)+frage(`Wie viele Liter fliessen in <b>${f} Minuten</b>?`), answer:r*f, unit:"l", k:["r"+r],
+       text:`Aufwärmen: ${r} l pro Minute – Liter in ${f} min`, show:(r*f)+" l",
+       explain: wpTab(["Zeit","Wasser"],[{l:"1 min",r:r+" l"},{l:f+" min",r:(r*f)+" l",op:"· "+f,fett:true}]) + `<p>In ${f} min fliessen ${f} · ${r} l = <b>${r*f} l</b>.</p>`};
+   }
+   if(art==="maschine"){
+     const r = pick([5,10,20]), ding = pick(["Flaschen","Joghurtbecher"]);
+     return {type:"input", html:situation(`Eine Maschine füllt in <b>1 Minute</b> genau <b>${r} ${ding}</b> ab.`)+frage(`Wie viele ${ding} sind es in <b>${f} Minuten</b>?`), answer:r*f, unit:ding, k:["m1-"+r],
+       text:`Aufwärmen: ${r} ${ding} in 1 min – Anzahl in ${f} min`, show:(r*f)+" "+ding,
+       explain: wpTab(["Zeit",ding],[{l:"1 min",r:zahl(r)},{l:f+" min",r:zahl(r*f),op:"· "+f,fett:true}]) + `<p>In ${f} min sind es ${f} · ${r} = <b>${r*f} ${ding}</b>.</p>`};
+   }
+   const p = pick([1,2,3,4]), ware = pick(["Käse","Nüsse","Oliven","Schinken"]), g = pick([2,3,5]);
+   return {type:"input", html:situation(`<b>100 g</b> ${ware} kosten <b>${chf(p)}</b>`)+frage(`Wie viel kosten <b>${g*100} g</b> ${ware}?`), answer:p*g, unit:"Fr.", k:["preis100-"+p],
+     text:`Aufwärmen: 100 g ${ware} kosten ${chf(p)} – Preis für ${g*100} g`, show:chf(p*g),
+     explain: wpTab(["Gewicht","Preis"],[{l:"100 g",r:chf(p)},{l:(g*100)+" g",r:chf(p*g),op:"· "+g,fett:true}]) + `<p>${g*100} g sind ${g}-mal so viel wie 100 g: ${g} · ${zahl(p)} Fr. = <b>${chf(p*g)}</b></p>`};
+ },
  gen(lv){
    const art = pick(lv===1 ? ["preis","fluss","maschine"] : ["preis","fluss","maschine","menge"]);
    if(art==="preis"){

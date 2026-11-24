@@ -55,6 +55,18 @@ const GOALS = [
  help:()=>`<p><b>Umgekehrt proportional</b> heisst: Wird der eine Wert <b>doppelt</b> so gross, wird der andere Wert <b>halb</b> so gross.</p>
    ${wpTab(["Anzahl Kinder","Sticker pro Kind"],[{l:"3",r:"20"},{l:"6",r:"10",op:"· 2",opR:": 2"},{l:"2",r:"30",op:": 3",opR:"· 3"}])}
    <p>60 Sticker werden verteilt. Bei 3 Kindern bekommt jedes 20 Sticker, bei 6 Kindern nur noch 10.<br><b>Kontrolle:</b> Anzahl Kinder · Sticker pro Kind gibt immer 60.</p>`,
+ /* Aufwärmen (roter Bereich): 1 Kind bekommt alles, 2 Kinder je die Hälfte … – kleine Zahlen, nur rechts ergänzen */
+ warm(){
+   const P = pick([12,20,24,30,40]), it = pick(["Sticker","Murmeln","Nüsse","Glasperlen"]);
+   const z = pick([3,4,5,10].filter(x=>P%x===0 && P/x>=2));
+   const xs = [2, z];
+   const zeilen = [{l:"1", r:zahl(P)}].concat(xs.map(x=>({l:zahl(x), r:null})));
+   return {type:"tab", html:situation(`<b>${P} ${it}</b> werden gleichmässig an Kinder verteilt.`)+frage(`Die Wertepaare sind umgekehrt proportional. Ergänze die fehlenden Werte.`),
+     kopf:["Anzahl Kinder", `${it} pro Kind`], zeilen, answers:xs.map(x=>P/x), k:["p"+P],
+     text:`Aufwärmen: ${P} ${it} verteilen · 1 – ${P} · gesucht ${xs.map(x=>x+" – ?").join(", ")}`,
+     show:xs.map(x=>`${x} – ${P/x}`).join("; "),
+     explain:`<p>1 Kind bekommt alle ${P} ${it}. Mehr Kinder → jedes bekommt <b>weniger</b>:</p>${ol(xs.map(x=>`${x} Kinder: ${P} : ${x} = <b>${P/x}</b> ${it} pro Kind`))}${REGEL}`};
+ },
  gen(lv){
    const KONT = {
      verteilen: P => { const it = pick(["Sticker","Murmeln","Nüsse","Glasperlen"]); return {sit:`<b>${P} ${it}</b> werden gleichmässig an Kinder verteilt.`, kopf:["Anzahl Kinder", `${it} pro Kind`], lab:["Kinder", it], ganzR:true}; },
@@ -105,6 +117,27 @@ const GOALS = [
  help:()=>`<p>Überlege zuerst: Wird es <b>mehr</b> oder <b>weniger</b>?</p>
    <p>4 Kinder räumen den Werkraum in 30 min auf. 8 Kinder sind doppelt so viele → sie brauchen <b>die Hälfte</b> der Zeit.<br>2 Kinder sind halb so viele → sie brauchen <b>das Doppelte</b> der Zeit.</p>
    <p>· 2 → das Doppelte<br>· 3 → das Dreifache<br>· 4 → das Vierfache<br>: 2 → die Hälfte<br>: 3 → ein Drittel<br>: 4 → ein Viertel</p>`,
+ /* Aufwärmen (roter Bereich): nur doppelt so viele oder halb so viele – und nur zwei Antworten */
+ warm(){
+   const hoch = Math.random()<.5, fr0 = pick(["kinder","hahn"]);
+   let sit, q, erk;
+   if(fr0==="kinder"){
+     const a = hoch ? pick([2,3,4]) : pick([4,6,8]), b = hoch ? a*2 : a/2, t = pick([10,20,30]);
+     sit = `${a} Kinder räumen zusammen den Werkraum in ${t} min auf.`; q = `${b} Kinder brauchen dafür ____ der Zeit.`;
+     erk = [`${b} Kinder sind ${hoch?"doppelt so viele":"halb so viele"} wie ${a} Kinder.`,
+       hoch ? `Mehr Kinder sind schneller fertig → <b>die Hälfte</b> der Zeit (${t/2} min).` : `Weniger Kinder brauchen länger → <b>das Doppelte</b> der Zeit (${t*2} min).`];
+   } else {
+     const r = hoch ? pick([5,10]) : pick([10,20]), r2 = hoch ? r*2 : r/2, t = pick([10,20,30]);
+     sit = `Bei ${r} l pro Minute ist die Badewanne in ${t} min voll.`; q = `Bei ${r2} l pro Minute dauert es ____ der Zeit.`;
+     erk = [`${r2} l pro Minute ist ${hoch?"doppelt so viel":"halb so viel"} Wasser wie ${r} l pro Minute.`,
+       hoch ? `Mehr Wasser pro Minute → die Wanne ist schneller voll → <b>die Hälfte</b> der Zeit (${t/2} min).` : `Weniger Wasser pro Minute → es dauert länger → <b>das Doppelte</b> der Zeit (${t*2} min).`];
+   }
+   const richtig = hoch ? "die Hälfte" : "das Doppelte";
+   const opts = shuffle(["das Doppelte","die Hälfte"]);
+   return {type:"choice", words:true, html:situation(sit)+frage(`Welche Angabe passt in die Lücke?<br>${q.replace("____",'<span style="color:var(--accent)">______</span>')}`),
+     options:opts.map(o=>({label:o})), answer:opts.indexOf(richtig), k:[],
+     text:`Aufwärmen: ${sit} ${q}`, show:richtig, explain: ol(erk.concat([q.replace("____", `<b>${richtig}</b>`)]))};
+ },
  gen(lv){
    const MEHR = {2:"das Doppelte",3:"das Dreifache",4:"das Vierfache",5:"das Fünffache"}, WENIGER = {2:"die Hälfte",3:"ein Drittel",4:"ein Viertel",5:"ein Fünftel"};
    const fs = lv===1 ? [2] : lv===2 ? [2,3,4] : [3,4,5];
@@ -152,6 +185,20 @@ const GOALS = [
 {id:"BE", code:"", title:"Stimmt die Aussage?", ic:"🤔", c:"#7c4dff", info:"Behauptungen zur umgekehrten Proportionalität beurteilen", tb:"TB S. 37",
  help:()=>`<p>1. Überlege: Was passiert mit dem zweiten Wert, wenn der erste grösser wird – wird er grösser oder kleiner?<br>2. Bei Zahlen: Rechne nach.</p>
    <p>«3 Maschinen brauchen 8 Tage. 6 Maschinen brauchen 16 Tage.»<br>Doppelt so viele Maschinen brauchen nur <b>die Hälfte</b> der Zeit: 8 Tage : 2 = 4 Tage. → Die Aussage <b>stimmt nicht</b>.</p>`,
+ /* Aufwärmen (roter Bereich): Aussage ohne Rechnen, mit Dingen aus dem Alltag */
+ warm(){
+   const K = pick([
+     {s:()=>`${pick([2,3,4,5])} Kinder räumen zusammen das Schulzimmer in ${pick([15,20,30])} min auf.`, mehr:"Wenn mehr Kinder helfen,", weniger:"Wenn weniger Kinder helfen,", gr:"dauert das Aufräumen länger", kl:"geht das Aufräumen schneller"},
+     {s:()=>`Mia fährt mit dem Velo ${pick([12,15,18])} km/h schnell und ist nach ${pick(["1 Stunde","30 min"])} bei ihrer Tante.`, mehr:"Wenn Mia schneller fährt,", weniger:"Wenn Mia langsamer fährt,", gr:"braucht sie mehr Zeit", kl:"ist sie früher bei der Tante"},
+     {s:()=>`Ein Futtervorrat reicht für ${pick([2,3,4])} Hasen ${pick([8,10,12])} Tage.`, mehr:"Für mehr Hasen", weniger:"Für weniger Hasen", gr:"reicht der Vorrat länger", kl:"reicht der Vorrat weniger lange"},
+   ]);
+   const sit = K.s(), mehr = Math.random()<.5, sagtGroesser = Math.random()<.5;
+   const stimmt = mehr ? !sagtGroesser : sagtGroesser;
+   const behauptung = `${mehr?K.mehr:K.weniger} ${sagtGroesser?K.gr:K.kl}.`;
+   return {type:"choice", words:true, html:situation(sit)+frage(`Stimmt diese Aussage?<br>«${behauptung}»`), options:[{label:"Stimmt"},{label:"Stimmt nicht"}], answer: stimmt?0:1, k:[],
+     text:`Aufwärmen: ${sit} «${behauptung}»`, show: stimmt?"stimmt":"stimmt nicht",
+     explain: ol([`Das ist <b>umgekehrt proportional</b>: Wird das eine grösser, wird das andere kleiner.`, `${mehr?K.mehr:K.weniger} ${mehr?K.kl:K.gr}.`, `Die Aussage <b>${stimmt?"stimmt":"stimmt nicht"}</b>.`])};
+ },
  gen(lv){
    const KONT = [
      {id:"masch", min:[2,24], minB:2, a:[2,3,4,5,6,8,9,10,12], b:[2,3,4,5,6,8,9,10,12,15,18,20], s:(a,b)=>`${a} gleiche Maschinen erledigen einen Auftrag in ${b} Tagen.`, s2:(a,b)=>`Mit ${a} Maschinen dauert es ${b} Tage.`,
@@ -201,6 +248,21 @@ const GOALS = [
    <p>Ein Futtervorrat reicht für 4 Ziegen 15 Tage. Wie lange reicht er für 6 Ziegen?</p>
    ${wpTab(["Ziegen","Tage"],[{l:"4",r:"15"},{l:"6",r:"?",frage:true,strich:true},{l:"4",r:"15"},{l:"2",r:"30",op:": 2",opR:"· 2"},{l:"6",r:"10",op:"· 3",opR:": 3",fett:true}])}
    <p>Er reicht <b>10 Tage</b>. Kontrolle: 4 · 15 = 60 und 6 · 10 = 60.</p>`,
+ /* Aufwärmen (roter Bereich): doppelt so viele → halb so lange, halb so viele → doppelt so lange */
+ warm(){
+   const hoch = Math.random()<.5;
+   if(Math.random()<.5){
+     const tier = pick(["Hasen","Ziegen","Meerschweinchen","Schafe"]);
+     const a = hoch ? pick([2,3,4,5]) : pick([4,6,8,10]), b = pick([6,8,10,12,20]), c = hoch ? a*2 : a/2, y = hoch ? b/2 : b*2;
+     return {type:"input", html:situation(`Ein Futtervorrat reicht für <b>${a} ${tier}</b> genau <b>${b} Tage</b>.`)+frage(`Wie lange reicht der gleiche Vorrat für <b>${c} ${tier}</b>?`), answer:y, unit:"Tage", k:["futter"+a+"-"+b+"-"+c],
+       text:`Aufwärmen: Futter ${a} ${tier} ${b} Tage → ${c} ${tier}`, show:y+" Tage",
+       explain:`<p>${c} ${tier} sind ${hoch?"doppelt so viele":"halb so viele"} → der Vorrat reicht ${hoch?"nur halb so lange":"doppelt so lange"}: ${b} ${hoch?":":"·"} 2 = <b>${y} Tage</b>.</p>` + wpTab([tier,"Tage"],[{l:a,r:b},{l:c,r:y,op:hoch?"· 2":": 2",opR:hoch?": 2":"· 2",fett:true}])};
+   }
+   const a = hoch ? pick([2,3,4]) : pick([4,6,8]), t = pick([10,20,30,40]), c = hoch ? a*2 : a/2, y = hoch ? t/2 : t*2;
+   return {type:"input", html:situation(`<b>${a} Kinder</b> räumen zusammen das Schulzimmer in <b>${t} min</b> auf.`)+frage(`Wie lange brauchen <b>${c} Kinder</b>?`), answer:y, unit:"min", k:["kinder"+a+"-"+t+"-"+c],
+     text:`Aufwärmen: ${a} Kinder ${t} min → ${c} Kinder`, show:y+" min",
+     explain:`<p>${c} Kinder sind ${hoch?"doppelt so viele":"halb so viele"} → sie brauchen ${hoch?"nur halb so lange":"doppelt so lange"}: ${t} min ${hoch?":":"·"} 2 = <b>${y} min</b>.</p>` + wpTab(["Kinder","Zeit"],[{l:a,r:t+" min"},{l:c,r:y+" min",op:hoch?"· 2":": 2",opR:hoch?": 2":"· 2",fett:true}])};
+ },
  gen(lv){
    for(let tries=0; tries<500; tries++){
      const art = pick(lv===1 ? ["futter","umpacken","gaertner"] : ["futter","treppe","umpacken","tempo","tempoV","gaertner"]);   // Einstieg ohne Treppe (krumme Zahlen)

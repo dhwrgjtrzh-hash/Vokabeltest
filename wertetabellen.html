@@ -60,6 +60,18 @@ const GOALS = [
    <p>• Gibt <b>rechts : links</b> immer das Gleiche? → <b>proportional</b><br>• Gibt <b>links · rechts</b> immer das Gleiche? → <b>umgekehrt proportional</b><br>• Beides nicht? → <b>weder noch</b></p>
    ${statTab(["Anzahl Hefte","Preis in Fr."],[["2","5"],["4","10"],["6","15"]])}
    <p>5 : 2 = 2.5, 10 : 4 = 2.5, 15 : 6 = 2.5 → immer gleich → <b>proportional</b>.</p>`,
+ /* Aufwärmen (roter Bereich): kleine, klare Tabellen mit 1, 2, 3 – proportional oder umgekehrt proportional (nur zwei Antworten) */
+ warm(){
+   const prop = Math.random()<.5;
+   let A, kopf, rows;
+   if(prop){ const k = pick([2,3,5,10]); A = ART.prop(k); kopf = pick([["Anzahl Gipfeli","Preis in Fr."],["Anzahl Pakete","Gewicht in kg"]]); rows = [1,2,3].map(x=>[x, k*x]); }
+   else { const P = pick([12,24,60]); A = ART.umg(P); kopf = pick([["Anzahl Kinder","Sticker pro Kind"],["Anzahl Maschinen","Arbeitstage"]]); rows = [1,2,3].map(x=>[x, P/x]); }
+   const fR = kopf[1].includes("Fr.") ? chfZahl : zahl;
+   const O = OPT3.slice(0,2);
+   return {type:"choice", words:true, html:frage(`Wie hängen die Werte in dieser Tabelle zusammen?`)+statTab(kopf, rows.map(r=>[zahl(r[0]), fR(r[1])])), options:O.map(l=>({label:l})), answer: prop?0:1, k:[],
+     text:`Aufwärmen: Tabelle ${kopf[0]} – ${kopf[1]}: ${rows.map(r=>zahl(r[0])+"–"+zahl(r[1])).join(", ")}`, show:A.typ,
+     explain:`<p>${prop ? "Links doppelt so viel → rechts auch doppelt so viel." : "Links doppelt so viel → rechts nur halb so viel."}</p>${pruefZeilen(rows)}<p>${A.regel}</p><p>Also: <b>${A.typ}</b>.</p>`};
+ },
  gen(lv){
    for(let tries=0; tries<300; tries++){
      if(lv===2){
@@ -112,6 +124,20 @@ const GOALS = [
 {id:"DH", code:"", title:"Doppelt, halb oder weder noch?", ic:"⚖️", c:"#d6336c", info:"Was passiert, wenn sich ein Wert verdoppelt oder halbiert?", tb:"TB S. 40 · AH S. 12",
  help:()=>`<p>• <b>Proportional:</b> doppelt so viel → doppelt so viel<br>• <b>Umgekehrt proportional:</b> doppelt so viel → halb so viel<br>• <b>Weder noch:</b> Rechne nach – es ist weder das Doppelte noch die Hälfte.</p>
    <p>Beispiel: Tim ist 10 Jahre alt, sein Bruder 13. Wenn Tim doppelt so alt ist (20), ist sein Bruder 23 – das ist <b>weder doppelt noch halb</b> so alt wie 13.</p>`,
+ /* Aufwärmen (roter Bereich): doppelt so viele – kostet es doppelt so viel oder dauert es halb so lange? Nur zwei Antworten */
+ warm(){
+   const O = ["doppelt","halb"];
+   let sit, q, ans, erk;
+   if(Math.random()<.5){ const n = pick([2,3,4]), p = pick([1,2]);
+     sit = `${n} Gipfeli kosten ${chf(n*p)}`; q = `Doppelt so viele Gipfeli kosten ______ so viel.`; ans = 0;
+     erk = `Doppelt so viele Gipfeli kosten doppelt so viel: ${2*n} Gipfeli kosten ${chf(2*n*p)}`; }
+   else { const a = pick([2,3,4]), t = pick([20,30,40,60]);
+     sit = `${a} Kinder stellen die Stühle für das Schulfest in ${t} min auf.`; q = `Doppelt so viele Kinder brauchen dafür ______ so lange.`; ans = 1;
+     erk = `Mehr Kinder sind schneller fertig: ${2*a} Kinder brauchen ${t/2} min – das ist halb so lange.`; }
+   return {type:"choice", words:true, html:situation(sit)+frage(q.replace("______",'<span style="color:var(--accent)">______</span>')), options:O.map(l=>({label:l})), answer:ans, k:[],
+     text:`Aufwärmen: ${sit} ${q}`, show:O[ans],
+     explain:`<p>${erk}</p><p><b>${q.replace("______", "<u>"+O[ans]+"</u>")}</b></p>`};
+ },
  gen(lv){
    const O = ["doppelt","halb","weder doppelt noch halb"];
    for(let tries=0; tries<300; tries++){
@@ -165,6 +191,21 @@ const GOALS = [
  help:()=>`<p>1. Lies die Situation genau.<br>2. Schau die vollständigen Wertepaare an: Wie hängen sie zusammen?<br>3. Rechne die fehlenden Werte mit der gleichen Regel aus.</p>
    ${statTab(["Gelesene Seiten","Seiten noch zu lesen"],[["20","130"],["50","100"],["70","?"]])}
    <p>Das Buch hat 150 Seiten: links + rechts gibt immer 150. Also 150 − 70 = <b>80</b>.</p>`,
+ /* Aufwärmen (roter Bereich): kurze Tabelle, nur ein Feld leer – proportional (1 Brötli kostet …) oder immer gleich viel mehr (Alter) */
+ warm(){
+   const prop = Math.random()<.5;
+   let A, kopf, sit, xs;
+   if(prop){ const p = pick([1,2,5]); A = ART.prop(p); kopf = ["Anzahl Brötli","Preis in Fr."]; sit = `In der Bäckerei kostet <b>1 Brötli ${chf(p)}</b>`; xs = [1,2,3,4]; }
+   else { const d = pick([2,3,4,5]); A = ART.diff(d); kopf = ["Alter von Jan","Alter von Lea"]; sit = `Lea ist <b>${d} Jahre älter</b> als ihr Bruder Jan.`; xs = [5,6,7,8]; }
+   const fR = kopf[1].includes("Fr.") ? chfZahl : zahl;
+   const rows = xs.map(x=>({x, y:A.f(x)}));
+   const leer = pick(rows.slice(1));
+   const zeilen = rows.map(r=> r===leer ? {l:zahl(r.x), r:null} : {l:zahl(r.x), r:fR(r.y)});
+   return {type:"tab", html:situation(sit)+frage(`Ergänze den fehlenden Wert.`), kopf, zeilen, answers:[leer.y], k:[],
+     text:`Aufwärmen: Tabelle ${kopf[0]} – ${kopf[1]}: ${zeilen.map(z=>z.l+"–"+(z.r===null?"?":z.r)).join(", ")}`,
+     show:`${zahl(leer.x)} – ${fR(leer.y)}`,
+     explain:`<p>${A.regel}</p>${statTab(kopf, rows.map(r=>[zahl(r.x), r===leer ? `<b>${fR(r.y)}</b>` : fR(r.y)]))}`};
+ },
  gen(lv){
    for(let tries=0; tries<300; tries++){
      const arten = lv===1 ? ["prop","summe","prop","summe","diff"] : lv===2 ? ["prop","umg","summe","diff"] : ["umg","summe","diff","lin","ab","stock"];
@@ -208,6 +249,19 @@ const GOALS = [
 {id:"SA", code:"", title:"Sachaufgaben", ic:"📝", c:"#e0732b", info:"Zuerst den Zusammenhang erkennen, dann rechnen", tb:"TB S. 42 · AH S. 13",
  help:()=>`<p>1. Überlege zuerst: <b>proportional</b>, <b>umgekehrt proportional</b> oder <b>weder noch</b>?<br>2. Erstelle eine kleine Tabelle mit dem bekannten Wertepaar.<br>3. Rechne mit der passenden Regel.</p>
    <p>Tim ist 8, seine Tante 31. Wie alt ist die Tante, wenn Tim 16 ist?<br>→ Nicht proportional! Der Unterschied bleibt immer 23 Jahre: 16 + 23 = <b>39</b>.</p>`,
+ /* Aufwärmen (roter Bereich): 1 Liter Saft kostet …, oder doppelt so viele Freundinnen teilen sich ein Geschenk */
+ warm(){
+   if(Math.random()<.5){
+     const p = pick([1,2,3]), b = pick([2,3,4,5]);
+     return {type:"input", html:situation(`<b>1 l</b> Orangensaft kostet <b>${chf(p)}</b>`)+frage(`Wie viel kosten <b>${b} l</b>?`), answer:p*b, unit:"Fr.", k:[],
+       text:`Aufwärmen: 1 l Saft kostet ${chf(p)} – Preis für ${b} l`, show:chf(p*b),
+       explain:`<p>${b}-mal so viel Saft kostet ${b}-mal so viel → <b>proportional</b>.</p><p>${b} · ${zahl(p)} Fr. = <b>${chf(p*b)}</b></p>`};
+   }
+   const a = pick([2,3]), x = pick([6,8,10,12]), b = a*2;
+   return {type:"input", html:situation(`${a} Freundinnen kaufen zusammen ein Geschenk. Jede bezahlt <b>${chf(x)}</b>`)+frage(`Wie viel bezahlt jede, wenn <b>${b} Freundinnen</b> mitmachen?`), answer:x/2, unit:"Fr.", k:[],
+     text:`Aufwärmen: ${a} Freundinnen à ${chf(x)} → ${b} Freundinnen`, show:chf(x/2),
+     explain:`<p>Doppelt so viele Freundinnen → jede bezahlt nur die Hälfte → <b>umgekehrt proportional</b>.</p><p>${zahl(x)} Fr. : 2 = <b>${chf(x/2)}</b></p>`};
+ },
  gen(lv){
    for(let tries=0; tries<400; tries++){
      const art = pick(lv===1 ? ["saft","teilen","saft"] : lv===2 ? ["saft","schritte","teilen","alter","buch"] : ["schritte","teilen","alter","buch","stock","papa"]);

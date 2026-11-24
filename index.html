@@ -205,18 +205,29 @@ body.fach-offen header .klasse{display:none}
 /* Grundanforderungen gelb, erweiterte Anforderungen grün (wie im Matheplan) */
 .u-balken .u-gr{display:inline-flex; gap:3px; padding:3px; border-radius:6px}
 .u-balken .u-gr i{flex:none; width:14px}
-.u-balken .u-gr i:not([class]), .u-balken .u-gr i[class=""]{background:rgba(255,255,255,.8)}
-.u-gr.grund, .anf.grund{background:#ffe58a} .u-gr.erw, .anf.erw{background:#bfe8a8}
+.u-balken .u-gr i:not([class]), .u-balken .u-gr i[class=""]{background:var(--line)}
+.anf.grund{background:#ffe58a} .anf.erw{background:#bfe8a8}
+/* Balken (seit 24.11.2026): Rahmen gelb = Grundanforderungen, grün = erweiterte Anforderungen.
+   Strichlein: leer = noch nicht geübt · grau = angefangen · rot = Grundanforderung noch nicht geschafft (im Trainer: Aufwärmen)
+   · gelb leuchtend = Grundanforderung geschafft · grün leuchtend = erweiterte Anforderung geschafft. Kein Orange mehr. */
+.u-gr.grund{box-shadow:inset 0 0 0 2px #f0c419} .u-gr.erw{box-shadow:inset 0 0 0 2px #6cc35a}
+.u-balken .u-gr i.angef, .u-l.angef{background:#9aa4b2}
+.u-balken .u-gr i.rot, .u-l.rot{background:#e0614f}
+.u-balken .u-gr i.gelb, .u-l.gelb{background:#ffc800; box-shadow:0 0 5px 1px rgba(255,200,0,.8)}
+.u-balken .u-gr i.gruen, .u-l.gruen{background:#2fa35c; box-shadow:0 0 5px 1px rgba(47,163,92,.65)}
+.u-legende{display:flex; flex-wrap:wrap; gap:4px 12px; align-items:center; font-size:13px; color:var(--muted); margin:14px 0 2px!important}
+.u-legende span{display:inline-flex; align-items:center; gap:5px}
+.u-l{display:inline-block; width:14px; height:7px; border-radius:4px}
 .anf{display:inline-flex; align-items:center; border-radius:999px; padding:2px 9px; font-size:12px; font-weight:700; white-space:nowrap}
 .anf.grund{color:#5c4400} .anf.erw{color:#1f5410}
 .u-buch{margin:4px 0 6px!important; font-size:14px}
 @media (prefers-color-scheme: dark){
-  .u-gr.grund, .anf.grund{background:#4a3c08} .u-gr.erw, .anf.erw{background:#1d3d14}
+  .anf.grund{background:#4a3c08} .anf.erw{background:#1d3d14}
   .anf.grund{color:#ffe08a} .anf.erw{color:#b6eb98}
   .u-balken .u-gr i:not([class]), .u-balken .u-gr i[class=""]{background:rgba(255,255,255,.2)}
 }
 .u-balken i.halb-ok{background:linear-gradient(90deg,#2fa35c 50%,#f0a020 50%)}
-.u-ziel.halb{border-left-color:#f0a020}
+.u-ziel.halb{border-left-color:#9aa4b2}
 .u-leise{color:var(--muted)}
 .ueben{--rot:#d93a2b; background:var(--surface); border:3px solid var(--rot); border-radius:18px; box-shadow:var(--shadow); overflow:hidden}
 .ueben > summary{display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; font-family:var(--display); font-weight:600; font-size:20px; list-style:none; background:#fdeceb; color:#a32315}
@@ -460,13 +471,16 @@ function planLage(p, st){
     return Object.assign({}, x, { n, ok, done, bearbeitet: !done && !!(s.bearbeitet || s.spaeter), lv: +s.lv || 1, q: n ? ok / n : null }); });
   const geschafft = z.filter(x => x.done), begonnen = z.filter(x => x.n > 0);
   /* rot: unter 60 % richtig · orange: 60–84 % richtig (noch nicht ganz sicher) · jeweils nur, solange das Lernziel nicht geschafft ist */
-  const nochmal = z.filter(x => !x.done && x.n >= 4 && x.q < 0.6).sort(grundZuerst);
+  /* rot (seit 24.11.2026): Grundanforderung nicht geschafft und ab 4 Aufgaben unter 60 % richtig oder «bearbeitet» ohne «geschafft».
+     Gleich wie im Mathe-Trainer – dort gibt es dann ganz einfache Aufgaben zum Aufwärmen. */
+  const rot = z.filter(x => !x.done && !x.erw && ((x.n >= 4 && x.q < 0.6) || x.bearbeitet));
+  const nochmal = z.filter(x => !x.done && (rot.includes(x) || (x.n >= 4 && x.q < 0.6))).sort(grundZuerst);
   const sicherer = z.filter(x => !x.done && x.n >= 3 && !nochmal.includes(x) && x.q < 0.85).sort(grundZuerst);
   /* geschafft, aber insgesamt unter 75 % richtig: nochmals anschauen */
   const auffrischen = z.filter(x => x.done && x.n >= 3 && x.q < 0.75).sort(grundZuerst);
   const dran = z.filter(x => !x.done && x.n > 0 && !nochmal.includes(x) && !sicherer.includes(x));
   const offen = z.filter(x => x.n === 0 && !x.done);
-  return { z, geschafft, begonnen, nochmal, sicherer, auffrischen, dran, offen, last: st && st.last };
+  return { z, geschafft, begonnen, rot, nochmal, sicherer, auffrischen, dran, offen, last: st && st.last };
 }
 function matheUebenHtml(gz, staende){
   const lagen = MATHE_PLAENE.map(p => ({ p, l: planLage(p, staende[p.plan]) }));
@@ -474,7 +488,7 @@ function matheUebenHtml(gz, staende){
   const status = {};
   lagen.forEach(({p, l}) => {
     const tot = p.ziele.length, gs = l.geschafft.length;
-    const seg = z => `<i class="${z.done ? (l.auffrischen.includes(z) ? 'ok halb-ok' : 'ok') : z.n ? (l.nochmal.includes(z) ? 'no' : l.sicherer.includes(z) || z.bearbeitet ? 'halb' : 'dran') : ''}"></i>`;
+    const seg = z => `<i class="${z.done ? (z.erw ? 'gruen' : 'gelb') : l.rot.includes(z) ? 'rot' : z.n ? 'angef' : ''}"></i>`;
     /* gelb: Grundanforderungen · grün: erweiterte Anforderungen */
     const grund = l.z.filter(z => !z.erw), erw = l.z.filter(z => z.erw);
     const gsG = grund.filter(z => z.done).length, erlG = grund.filter(z => z.done || z.bearbeitet).length;
@@ -521,6 +535,7 @@ function matheUebenHtml(gz, staende){
   if (allesGut && (neu.length || offen.length)) teile.push(`<p class="u-intro">Super, was du bisher geübt hast, klappt gut! Hier wartet noch Neues auf dich:</p>`);
   if (neu.length) teile.push(`<p><b>Noch nicht begonnen:</b> ${neu.map(esc).join(', ')}</p>`);
   if (offen.length) teile.push(`<p><b>Noch nicht geübt</b> <span class="anf grund">Grundanforderungen</span></p><ul class="u-offen">${MATHE_PLAENE.filter(p => offen.some(o => o.p === p)).map(p => `<li><span class="u-leise">${esc(p.plan)}:</span> ${offen.filter(o => o.p === p).map(({x}) => esc(x.titel)).join(', ')}</li>`).join('')}</ul>`);
+  if (teile.length) teile.push(`<p class="u-legende"><span><i class="u-l gelb"></i>Grundanforderung geschafft</span><span><i class="u-l gruen"></i>Erweiterte Anforderung geschafft</span><span><i class="u-l rot"></i>Noch nicht geschafft – zuerst ganz einfache Aufgaben</span><span><i class="u-l angef"></i>Angefangen</span></p>`);
   const anzahl = nochmal.length + sicherer.length + auffrischen.length;
   const detail = teile.length ? `<summary><span>🎯 Das solltest du noch üben</span>${anzahl ? `<span class="u-zahl">${anzahl}</span>` : ''}<span class="u-nr">Nr. ${esc(gz)}</span></summary>
     <div class="u-inhalt">${teile.join('')}</div>` : '';
