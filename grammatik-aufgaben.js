@@ -530,16 +530,16 @@ G.nomenTap = () => tapWortart("N");
 G.nomenTapKnack = () => tapWortart("N", {knack:true});
 G.begleiter = () => { const [b, n] = nimm(NOMEN); return {typ:"wahl", thema:"Begleiter", frage:"Welcher Begleiter passt?", zeile:`___ ${n}`, optionen:["der","die","das"], richtig:b,
   erkl:`Es heisst «${b} ${n}». Das Geschlecht eines Nomens bleibt immer gleich.`}; };
-G.mehrzahl = () => { const [b, n, m] = nimm(NOMEN); return {typ:"eingabe", thema:"Mehrzahl", frage:"Schreib die Mehrzahl.", teile:[`${b} ${n} → die `, {l:[m], nomen:true}],
+G.mehrzahl = () => { const [b, n, m] = nimm(NOMEN); return {typ:"eingabe", thema:"Mehrzahl", frage:"Schreib die Mehrzahl.", teile:[`${b} ${n} → die `, {l:[m], nomen:true, art:["die"]}],
   erkl:`${b} ${n} → die ${m}`}; };
-G.mehrzahlKnack = () => { const [b, n, m] = nimm(NOMEN_GLEICH.concat(NOMEN.filter(x => /[äöü]/i.test(x[2]) && !/[äöü]/i.test(x[1])))); return {typ:"eingabe", thema:"Mehrzahl", frage:"Schreib die Mehrzahl. Achtung: Manchmal ändert sich fast nichts!", teile:[`${b} ${n} → die `, {l:[m], nomen:true}],
+G.mehrzahlKnack = () => { const [b, n, m] = nimm(NOMEN_GLEICH.concat(NOMEN.filter(x => /[äöü]/i.test(x[2]) && !/[äöü]/i.test(x[1])))); return {typ:"eingabe", thema:"Mehrzahl", frage:"Schreib die Mehrzahl. Achtung: Manchmal ändert sich fast nichts!", teile:[`${b} ${n} → die `, {l:[m], nomen:true, art:["die"]}],
   erkl:`${b} ${n} → die ${m}${n === m ? " – hier sehen Einzahl und Mehrzahl gleich aus. Nur der Begleiter zeigt die Mehrzahl." : ""}`}; };
 G.abstrakt = () => {
   const ja = mische(ABSTRAKT).slice(0, 3), nein = mische(NICHT_NOMEN).slice(0, 3);
   return {typ:"multi", thema:"Gefühle und Gedanken", frage:"Welche Wörter sind Nomen? Die Wörter stehen in Grossbuchstaben – mach die Begleiterprobe.", gross:true,
     optionen: mische(ja.concat(nein)), richtig: ja, erkl:"Auch Gefühle und Gedanken sind Nomen: die Freude, der Mut, die Idee. Du kannst einen Begleiter davorsetzen."};
 };
-G.nomenBilden = () => { const [w, n, l] = nimm(NOMEN_BILDEN); return {typ:"eingabe", thema:"Nomen bilden", frage:`Bilde ein Nomen mit dem Nachmorphem ${n}.`, teile:[`${w} → `, {l:[l], nomen:true}],
+G.nomenBilden = () => { const [w, n, l] = nimm(NOMEN_BILDEN); return {typ:"eingabe", thema:"Nomen bilden", frage:`Bilde ein Nomen mit dem Nachmorphem ${n}.`, teile:[`${w} → `, {l:[l], nomen:true, art: n === "-nis" ? ["das","ein"] : ["die","eine"]}],
   erkl:`${w} → ${l}. Wörter mit ${n} sind Nomen – man schreibt sie gross.`}; };
 G.fall = () => { const [v, m, n, f] = nimm(FAELLE); return {typ:"wahl", thema:"Fälle", frage:"In welchem Fall steht das markierte Satzglied?", zeileHtml:true,
   zeile:`${esc(v)}<mark>${esc(m)}</mark>${esc(n)}`, optionen:[FALL.wer, FALL.wen, FALL.wem, FALL.wessen], richtig:FALL[f],

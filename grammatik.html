@@ -422,12 +422,19 @@ function baueMulti(a, E){
 /* ---- Eintippen ---- */
 const norm = s => String(s || "").normalize("NFC").replace(/ß/g, "ss").replace(/\s+/g, " ").trim();
 const ohneUmlaut = s => s.replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/Ä/g, "Ae").replace(/Ö/g, "Oe").replace(/Ü/g, "Ue");
-function vergleiche(eingabe, loesungen){
-  const e = norm(eingabe);
+/* Bei Nomen-Lücken darf das Kind den Begleiter mitschreiben («Die Gesundheit») – er muss aber stimmen */
+const BEGLEITER = /^(der|die|das|des|dem|den|ein|eine|einer|eines|einem|einen)\s+(.+)$/i;
+function vergleiche(eingabe, loesungen, ziel = {}){
+  let e = norm(eingabe), begl = "";
+  if(ziel.nomen){ const m = e.match(BEGLEITER); if(m){ begl = m[1].toLowerCase(); e = m[2]; } }
   for(const l of loesungen){
-    if(e === l) return {ok:true};
-    if(e.toLowerCase() === l.toLowerCase()) return {ok:true, hinweis: l[0] === l[0].toUpperCase() ? `«${l}» schreibt man gross.` : `«${l}» schreibt man klein.`};
-    if(ohneUmlaut(e).toLowerCase() === ohneUmlaut(l).toLowerCase()) return {ok:true, hinweis:`Schreib «${l}» mit ä, ö oder ü.`};
+    let r = null;
+    if(e === l) r = {ok:true};
+    else if(e.toLowerCase() === l.toLowerCase()) r = {ok:true, hinweis: l[0] === l[0].toUpperCase() ? `«${l}» schreibt man gross.` : `«${l}» schreibt man klein.`};
+    else if(ohneUmlaut(e).toLowerCase() === ohneUmlaut(l).toLowerCase()) r = {ok:true, hinweis:`Schreib «${l}» mit ä, ö oder ü.`};
+    if(!r) continue;
+    if(begl && ziel.art && !ziel.art.includes(begl)) return {ok:false, hinweis:`Der Begleiter stimmt nicht: Es heisst «${ziel.art[0]} ${l}».`};
+    return r;
   }
   return {ok:false};
 }
@@ -438,7 +445,7 @@ function baueEingabe(a, E){
   const pruefen = () => {
     if(felder.some(f => !norm(f.value))) return fehlt(felder.length > 1 ? "Fülle zuerst alle Lücken aus." : "Schreib zuerst eine Antwort.");
     const ziele = a.teile.filter(t => typeof t !== "string");
-    const erg = felder.map((f, i) => vergleiche(f.value, ziele[i].l));
+    const erg = felder.map((f, i) => vergleiche(f.value, ziele[i].l, ziele[i]));
     const ok = erg.every(r => r.ok);
     felder.forEach((f, i) => { f.readOnly = true; f.classList.add(erg[i].ok ? "ok" : "falsch"); });
     const hinweise = erg.filter(r => r.hinweis).map(r => r.hinweis);
